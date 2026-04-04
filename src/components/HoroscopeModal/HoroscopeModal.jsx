@@ -1,5 +1,5 @@
 import { useEffect }        from 'react'
-import { generateHoroscope } from '../../game/horoscope.js'
+import { generateHoroscope } from '../../game/horoscope.jsx'
 
 // Generated once per session (same result for the whole day)
 const { zodiac, cosmic, guidance, lucky } = generateHoroscope()

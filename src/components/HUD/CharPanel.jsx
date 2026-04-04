@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
-import { drawHead } from '../../game/drawWarrior.js'
+import { drawHead } from '../../game/draw/head.jsx'
 
 export default function CharPanel({ facing, moving }) {
   const canvasRef   = useRef(null)

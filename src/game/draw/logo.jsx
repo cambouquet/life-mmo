@@ -25,11 +25,9 @@ export function drawLogo(ctx) {
   })
   ctx.restore()
   for (const [x, y] of S) p(x, y, '#5030a0')
-  // Bright anchor — top star
   p(12, 2, '#ffffff')
   p(11, 2, '#c0a0ff'); p(13, 2, '#c0a0ff')
   p(12, 1, '#c0a0ff'); p(12, 3, '#c0a0ff')
-  // Medium star
   p(5, 4, '#d8c8ff')
   p(4, 4, '#7050b8'); p(6, 4, '#7050b8')
   p(5, 3, '#7050b8'); p(5, 5, '#7050b8')
@@ -68,10 +66,7 @@ export function drawLogo(ctx) {
     }
   }
 
-  // "THE" small / muted
   drawStr('THE',  26,  2, 1, '#6a48a0')
-  // "LIFE" large / bright
   drawStr('LIFE', 26,  9, 2, '#c8a8f0')
-  // "GAME" small / muted
   drawStr('GAME', 26, 21, 1, '#6a48a0')
 }

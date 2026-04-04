@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { drawLogo } from '../../game/drawLogo.js'
+import { drawLogo } from '../../game/draw/logo.jsx'
 
 export default function Logo() {
   const canvasRef = useRef(null)

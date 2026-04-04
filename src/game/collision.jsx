@@ -1,4 +1,4 @@
-import { TILE, COLS, ROWS } from './constants.js'
+import { TILE, COLS, ROWS } from './constants.jsx'
 
 export function tileAt(map, px, py) {
   const c = Math.floor(px / TILE)
