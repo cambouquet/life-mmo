@@ -1,15 +1,17 @@
 import { useState, useCallback, useEffect, useRef } from 'react'
-import HUD  from './HUD/HUD.jsx'
-import Game from './Game/Game.jsx'
+import HUD              from './HUD/HUD.jsx'
+import Game             from './Game/Game.jsx'
+import HoroscopeModal   from './HoroscopeModal/HoroscopeModal.jsx'
 
 export default function App() {
-  const [facing,     setFacing]     = useState('down')
-  const [moving,     setMoving]     = useState(false)
-  const [logEntries, setLogEntries] = useState([
+  const [facing,       setFacing]       = useState('down')
+  const [moving,       setMoving]       = useState(false)
+  const [logEntries,   setLogEntries]   = useState([
     '<em>System:</em> Move with WASD.',
     'The torches flicker in the dark.',
     '<em>Kami</em> enters the dungeon.',
   ])
+  const [showHoroscope, setShowHoroscope] = useState(false)
 
   const wrapRef = useRef(null)
 
@@ -38,11 +40,22 @@ export default function App() {
     setLogEntries(log)
   }, [])
 
+  const handleInteract = useCallback(() => {
+    setShowHoroscope(true)
+  }, [])
+
   return (
     <div className="game-wrap" ref={wrapRef}>
       <HUD facing={facing} moving={moving} logEntries={logEntries} />
-      <Game onStateChange={handleStateChange} />
-      <div className="hint">WASD / ARROW KEYS to move</div>
+      <Game
+        onStateChange={handleStateChange}
+        onInteract={handleInteract}
+        paused={showHoroscope}
+      />
+      <div className="hint">WASD / ARROW KEYS to move &nbsp;·&nbsp; E to interact</div>
+      {showHoroscope && (
+        <HoroscopeModal onClose={() => setShowHoroscope(false)} />
+      )}
     </div>
   )
 }

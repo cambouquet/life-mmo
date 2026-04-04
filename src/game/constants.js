@@ -19,6 +19,9 @@ export function buildMap() {
   }
   map[ROWS - 1][Math.floor(COLS / 2)]     = 2
   map[ROWS - 1][Math.floor(COLS / 2) + 1] = 2
+  // Divination table — 2 tiles wide, upper centre (type 3 = solid furniture)
+  map[2][9]  = 3
+  map[2][10] = 3
   return map
 }
 

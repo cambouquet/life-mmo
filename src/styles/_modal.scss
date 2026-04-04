@@ -1,0 +1,119 @@
+@use 'variables' as *;
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.72);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  backdrop-filter: blur(3px);
+}
+
+.modal {
+  background: #0e0a1e;
+  border: 2px solid $border;
+  box-shadow: 0 0 50px #8040c055, 0 0 100px #30106020;
+  padding: 28px 32px 24px;
+  width: min(460px, 90vw);
+  font-family: $font;
+  color: $text-primary;
+  animation: modalIn 0.22s ease;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 16px;
+    margin-bottom: 18px;
+    border-bottom: 1px solid $border-dim;
+  }
+
+  &__zodiac {
+    font-size: 30px;
+    color: $text-clock;
+    opacity: 0.75;
+    user-select: none;
+  }
+
+  &__title {
+    text-align: center;
+    font-size: 17px;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    text-shadow: 0 0 14px #c8a0f066;
+  }
+
+  &__subtitle {
+    text-align: center;
+    color: $text-muted;
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-top: 5px;
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  &__section {
+    border-left: 2px solid $border-dim;
+    padding-left: 12px;
+  }
+
+  &__label {
+    color: #5a3880;
+    font-size: 8px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+  }
+
+  &__text {
+    color: $text-log;
+    font-size: 13px;
+    line-height: 1.65;
+    letter-spacing: 0.3px;
+    font-style: italic;
+  }
+
+  &__lucky-value {
+    color: $text-clock;
+    font-style: normal;
+    font-size: 12px;
+    letter-spacing: 2px;
+  }
+
+  &__footer {
+    margin-top: 22px;
+    display: flex;
+    justify-content: center;
+  }
+
+  &__close {
+    background: none;
+    border: 1px solid $border;
+    color: $text-muted;
+    font-family: $font;
+    font-size: 9px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    padding: 8px 28px;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+
+    &:hover {
+      border-color: $text-primary;
+      color: $text-primary;
+    }
+  }
+}
+
+@keyframes modalIn {
+  from { opacity: 0; transform: translateY(-10px) scale(0.97); }
+  to   { opacity: 1; transform: none; }
+}

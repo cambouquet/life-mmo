@@ -1,13 +1,18 @@
 const KEYS = {}
 
 export function initInput() {
-  window.addEventListener('keydown', e => { KEYS[e.code] = true;  e.preventDefault() })
-  window.addEventListener('keyup',   e => { KEYS[e.code] = false })
+  const onDown = e => { KEYS[e.code] = true;  e.preventDefault() }
+  const onUp   = e => { KEYS[e.code] = false }
+  window.addEventListener('keydown', onDown)
+  window.addEventListener('keyup',   onUp)
+  return () => {
+    window.removeEventListener('keydown', onDown)
+    window.removeEventListener('keyup',   onUp)
+  }
 }
 
-export function destroyInput() {
-  // caller should store the handlers and remove them; this module keeps it simple
-  // — keys will just stop updating which is fine on unmount
+export function isKeyDown(code) {
+  return !!KEYS[code]
 }
 
 export function inputDir() {
