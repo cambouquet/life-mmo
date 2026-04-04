@@ -117,3 +117,82 @@
   from { opacity: 0; transform: translateY(-10px) scale(0.97); }
   to   { opacity: 1; transform: none; }
 }
+
+// ── Dialog modal ──────────────────────────────────────────────
+.dialog {
+  width: min(400px, 90vw);
+  padding: 22px 26px 20px;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding-bottom: 14px;
+    margin-bottom: 16px;
+    border-bottom: 1px solid $border-dim;
+  }
+
+  &__portrait {
+    width: 48px;
+    height: 48px;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+    border: 1px solid $border-dim;
+    background: #08041a;
+    flex-shrink: 0;
+  }
+
+  &__npc-name {
+    font-size: 13px;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    color: $text-clock;
+    text-shadow: 0 0 14px #c8a0f055;
+  }
+
+  &__speech {
+    color: $text-log;
+    font-size: 13px;
+    line-height: 1.75;
+    letter-spacing: 0.3px;
+    font-style: italic;
+    min-height: 56px;
+  }
+
+  &__choices {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 20px;
+  }
+
+  &__choice {
+    background: none;
+    border: 1px solid $border-dim;
+    color: $text-muted;
+    font-family: $font;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 9px 14px;
+    text-align: left;
+    cursor: pointer;
+    transition: border-color 0.18s, color 0.18s, background 0.18s;
+
+    &::before {
+      content: '\203A  ';
+      color: $border;
+      transition: color 0.18s;
+    }
+
+    &:hover,
+    &--focused {
+      border-color: $border;
+      color: $text-primary;
+      background: rgba(80, 30, 120, 0.15);
+      outline: none;
+
+      &::before { color: $text-clock; }
+    }
+  }
+}

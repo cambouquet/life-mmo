@@ -1,75 +1,70 @@
-const P = {
-  robe:   '#3a1858',
-  robeLt: '#5a2878',
-  hood:   '#1e0c38',
-  hoodLt: '#3a1860',
-  rim:    '#7040a8',
-  skin:   '#c8a882',
-  eye:    '#c0a0ff',
-  eyeGlo: '#e0d0ff',
+// Lyra - a seer in dark robes, facing down toward the player
+const C = {
+  skin:    '#f0c890',
+  hair:    '#2a0e18',
+  robe:    '#3a1858',
+  robeLt:  '#5a2878',
+  robeDk:  '#220c38',
+  belt:    '#7040a8',
+  crystal: '#b080e8',
+  staff:   '#5c3a1e',
+  eye:     '#2a0a0a',
 }
 
 export function drawNpc(ctx, x, y, phase) {
   x = Math.floor(x); y = Math.floor(y)
-  const bob = Math.sin(phase * 0.8) > 0 ? 1 : 0
 
   const r = (ox, oy, w, h, c) => { ctx.fillStyle = c; ctx.fillRect(x+ox, y+oy, w, h) }
   const p = (ox, oy, c)       => { ctx.fillStyle = c; ctx.fillRect(x+ox, y+oy, 1, 1) }
 
-  // Aura glow
+  // Staff (behind body)
+  r(13, 1, 1, 14, C.staff)
+  // Crystal orb on staff tip - pulsing glow
+  const glowA = 0.3 + Math.sin(phase * 1.4) * 0.2
   ctx.save()
-  ctx.globalAlpha = 0.1 + Math.sin(phase * 0.7) * 0.05
-  ctx.fillStyle   = '#8040d0'
-  ctx.beginPath(); ctx.arc(x + 8, y + 9 + bob, 9, 0, Math.PI * 2); ctx.fill()
+  ctx.globalAlpha = glowA
+  ctx.fillStyle   = '#9060e0'
+  ctx.beginPath(); ctx.arc(x + 13.5, y + 1, 4, 0, Math.PI * 2); ctx.fill()
   ctx.restore()
+  p(13, 0, C.crystal)
+  p(13, 1, '#e0d0ff')
+
+  // Hair (escaping from hood on the sides)
+  r(3, 2, 2, 5, C.hair)
+  r(11, 2, 2, 5, C.hair)
+  r(5, 1, 6, 1, C.hair)
 
   // Hood
-  r(4, 0+bob, 8, 5, P.hood)
-  r(3, 2+bob, 10, 3, P.hood)
-  r(4, 0+bob, 8, 2, P.hoodLt)
-  // Hood rim
-  r(3, 5+bob, 10, 1, P.rim)
-  // Face strip
-  r(4, 3+bob, 8, 2, P.skin)
-  // Glowing eyes
-  ctx.save()
-  ctx.globalAlpha = 0.55 + Math.sin(phase * 1.3) * 0.3
-  p(6, 4+bob, P.eyeGlo); p(9, 4+bob, P.eyeGlo)
-  ctx.restore()
-  p(6, 4+bob, P.eye); p(9, 4+bob, P.eye)
+  r(4, 0, 8, 2, C.robeDk)
+  r(3, 1, 10, 1, C.robeDk)
+  r(5, 0, 6, 1, '#160830')
+  // Hood shadow framing face
+  r(4, 2, 2, 3, C.robeDk)
+  r(10, 2, 2, 3, C.robeDk)
+
+  // Face
+  r(6, 2, 4, 4, C.skin)
+  r(5, 3, 1, 2, C.skin)
+  r(10, 3, 1, 2, C.skin)
+  // Eyes
+  p(6, 3, C.eye); p(9, 3, C.eye)
+  ctx.fillStyle = '#5a3020'; ctx.fillRect(x+6, y+2, 2, 1); ctx.fillRect(x+8, y+2, 2, 1)
+  p(8, 5, '#c09870')
 
   // Robe body
-  r(2, 6+bob, 12, 7, P.robe)
-  r(3, 5+bob, 10, 2, P.robeLt)  // shoulder
-  r(2, 6+bob, 1, 7, P.robeLt)   // left edge
-
-  // Hem
-  r(2, 12+bob, 5, 2, P.robe)
-  r(9, 12+bob, 5, 2, P.robe)
-  p(2, 14+bob, P.robeLt)
-  p(13, 14+bob, P.robeLt)
-}
-
-export function drawSpeechBubble(ctx, text, cx, top) {
-  ctx.font         = '5px "Courier New"'
-  const tw         = ctx.measureText(text).width
-  const bw         = Math.ceil(tw) + 8
-  const bh         = 9
-  const bx         = Math.floor(cx - bw / 2)
-  const by         = top - bh - 5
-
-  ctx.fillStyle    = 'rgba(12,6,26,0.92)'
-  ctx.fillRect(bx, by, bw, bh)
-  ctx.strokeStyle  = '#7040a8'
-  ctx.lineWidth    = 0.5
-  ctx.strokeRect(bx, by, bw, bh)
-
-  // Pointer triangle (3 px tail)
-  ctx.fillStyle    = 'rgba(12,6,26,0.92)'
-  ctx.fillRect(Math.floor(cx) - 1, by + bh, 3, 3)
-
-  ctx.fillStyle    = '#d8b8ff'
-  ctx.textAlign    = 'center'
-  ctx.textBaseline = 'middle'
-  ctx.fillText(text, cx, by + Math.floor(bh / 2))
+  r(3, 6, 10, 7, C.robe)
+  r(4, 5, 8, 2, C.robeLt)
+  r(3, 6, 1, 7, C.robeLt)
+  // Belt
+  r(4, 9, 8, 1, C.belt)
+  r(8, 7, 1, 5, C.robeDk)
+  // Sleeves
+  r(1, 6, 3, 4, C.robe)
+  r(12, 6, 2, 4, C.robe)
+  r(1, 9, 3, 1, C.robeLt)
+  r(12, 9, 2, 1, C.robeLt)
+  // Lower robe hem
+  r(3, 12, 4, 2, C.robe)
+  r(9, 12, 4, 2, C.robe)
+  r(7, 13, 2, 1, C.robeDk)
 }

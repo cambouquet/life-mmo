@@ -6,7 +6,7 @@ import { drawFloor, drawWall, drawDoor, drawRug, drawShadow } from '../game/draw
 import { drawTorch }                 from '../game/draw/torch.jsx'
 import { drawTable }                 from '../game/draw/table.jsx'
 import { drawWarriorSprite }         from '../game/draw/warrior.jsx'
-import { drawNpc, drawSpeechBubble } from '../game/draw/npc.jsx'
+import { drawNpc } from '../game/draw/npc.jsx'
 
 const LOG_MAX         = 3
 const TORCH_R2        = 26 * 26
@@ -15,24 +15,7 @@ const NPC_Y           = 3  * TILE
 const NPC_CX          = NPC_X + 8
 const NPC_CY          = NPC_Y + 8
 const NPC_INTERACT_R2 = 28 * 28
-const NPC_SPEECH_R2   = 52 * 52
-const NPC_LINE_DUR    = 4
-const NPC_PAUSE_MIN   = 2
-const NPC_PAUSE_MAX   = 5
-const NPC_LINES       = [
-  'The stars align\u2026',
-  'I sense great destiny.',
-  'The orb reveals all.',
-  'Saturn has returned.',
-  'The veil grows thin.',
-  'Seek cosmic wisdom.',
-  'Many paths before you.',
-  'Fortune smiles tonight.',
-  'The moon beckons\u2026',
-  'I have read your stars.',
-  'Destiny calls to you.',
-  'The cosmos watches.',
-]
+
 const MAX_JUMP_H  = 9
 const JUMP_VEL    = 70
 const GRAVITY     = 280
@@ -67,8 +50,6 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused }) {
     let torchStates = TORCHES.map(() => true)
     let prevShift   = false
     let prevSpace   = false
-    let npcLine     = null
-    let npcTimer    = 1.5 + Math.random()
     let log         = [
       '<em>System:</em> Move with WASD.',
       'The torches flicker in the dark.',
@@ -79,12 +60,6 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused }) {
       const px = player.x + TILE / 2, py = player.y + TILE / 2
       const dx = px - NPC_CX, dy = py - NPC_CY
       return dx * dx + dy * dy < NPC_INTERACT_R2
-    }
-
-    function nearNpcSpeech() {
-      const px = player.x + TILE / 2, py = player.y + TILE / 2
-      const dx = px - NPC_CX, dy = py - NPC_CY
-      return dx * dx + dy * dy < NPC_SPEECH_R2
     }
 
     function nearTorchIdx() {
@@ -116,7 +91,7 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused }) {
       ctx.restore()
     }
 
-    function render(npcNear, nearTch, npcSpeech) {
+    function render(npcNear, nearTch) {
       ctx.clearRect(0, 0, W, H)
       for (let row = 0; row < ROWS; row++) {
         for (let col = 0; col < COLS; col++) {
@@ -135,8 +110,6 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused }) {
       const jf = player.jumpHeight / MAX_JUMP_H
       drawShadow(ctx, player.x, player.y, jf)
       drawWarriorSprite(ctx, player.x, player.y - player.jumpHeight, player.facing, player.frame)
-
-      if (npcSpeech) drawSpeechBubble(ctx, npcSpeech, NPC_CX, NPC_Y)
 
       if (!pausedRef.current) {
         if (npcNear) badge(NPC_CX, NPC_Y - 2)
@@ -158,7 +131,6 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused }) {
       torchPhase += dt * 4.5
 
       const npcNear    = nearNpc()
-      const npcInRange = nearNpcSpeech()
       const torchIdx   = nearTorchIdx()
 
       if (!pausedRef.current) {
@@ -200,25 +172,13 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused }) {
           }
         }
 
-        // NPC speech timer
-        if (npcInRange) {
-          npcTimer -= dt
-          if (npcLine !== null) {
-            if (npcTimer <= 0) { npcLine = null; npcTimer = NPC_PAUSE_MIN + Math.random() * (NPC_PAUSE_MAX - NPC_PAUSE_MIN) }
-          } else if (npcTimer <= 0) {
-            npcLine  = NPC_LINES[Math.floor(Math.random() * NPC_LINES.length)]
-            npcTimer = NPC_LINE_DUR
-          }
-        } else {
-          npcLine  = null
-          npcTimer = 1.5 + Math.random()
-        }
+        // NPC speech timer removed — dialog modal handles NPC interaction
 
         // Interact
         const shiftNow = isKeyDown('ShiftLeft') || isKeyDown('ShiftRight')
         if (shiftNow && !prevShift) {
           if (npcNear) {
-            log = ['<em>Lyra</em> reads the celestial orb.', ...log].slice(0, LOG_MAX)
+            log = ['<em>Kami</em> speaks with Lyra.', ...log].slice(0, LOG_MAX)
             onInteractRef.current?.()
           } else if (torchIdx >= 0) {
             torchStates[torchIdx] = !torchStates[torchIdx]
@@ -234,7 +194,7 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused }) {
         prevSpace = isKeyDown('Space')
       }
 
-      render(npcNear, torchIdx, npcLine)
+      render(npcNear, torchIdx)
       rafId = requestAnimationFrame(loop)
     }
 

@@ -3,6 +3,7 @@ import { useViewportScale }  from '../hooks/useViewportScale.jsx'
 import HUD                   from './HUD/HUD.jsx'
 import Game                  from './Game/Game.jsx'
 import HoroscopeModal        from './HoroscopeModal/HoroscopeModal.jsx'
+import DialogModal           from './DialogModal/DialogModal.jsx'
 
 export default function App() {
   const [facing,        setFacing]        = useState('down')
@@ -12,6 +13,7 @@ export default function App() {
     'The torches flicker in the dark.',
     '<em>Kami</em> enters the dungeon.',
   ])
+  const [showDialog,    setShowDialog]    = useState(false)
   const [showHoroscope, setShowHoroscope] = useState(false)
 
   const wrapRef = useViewportScale()
@@ -22,7 +24,10 @@ export default function App() {
     setLogEntries(log)
   }, [])
 
-  const handleInteract = useCallback(() => setShowHoroscope(v => !v), [])
+  const handleInteract = useCallback(() => {
+    if (showHoroscope) setShowHoroscope(false)
+    else if (!showDialog) setShowDialog(true)
+  }, [showHoroscope, showDialog])
 
   return (
     <div className="game-wrap" ref={wrapRef}>
@@ -30,9 +35,15 @@ export default function App() {
       <Game
         onStateChange={handleStateChange}
         onInteract={handleInteract}
-        paused={showHoroscope}
+        paused={showDialog || showHoroscope}
       />
       <div className="hint">WASD to move &nbsp;·&nbsp; SPACE to jump &nbsp;·&nbsp; SHIFT to interact</div>
+      {showDialog && (
+        <DialogModal
+          onClose={() => setShowDialog(false)}
+          onHoroscope={() => { setShowDialog(false); setShowHoroscope(true) }}
+        />
+      )}
       {showHoroscope && <HoroscopeModal onClose={() => setShowHoroscope(false)} />}
     </div>
   )
