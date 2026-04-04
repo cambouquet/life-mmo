@@ -7,17 +7,11 @@ import { drawTorch }                 from '../game/draw/torch.jsx'
 import { drawTable }                 from '../game/draw/table.jsx'
 import { drawWarriorSprite }         from '../game/draw/warrior.jsx'
 
-const DIR_MSG = {
-  down:  'moves <em>south</em>.',
-  up:    'moves <em>north</em>.',
-  left:  'moves <em>west</em>.',
-  right: 'moves <em>east</em>.',
-}
-
 const LOG_MAX     = 3
 const TABLE_CX    = 10 * TILE
 const TABLE_CY    = 2  * TILE + TILE / 2
 const INTERACT_R2 = 32 * 32
+const TORCH_R2    = 26 * 26
 const MAX_JUMP_H  = 9
 const JUMP_VEL    = 70
 const GRAVITY     = 280
@@ -47,11 +41,11 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused }) {
       jumpHeight: 0, jumpVel: 0, jumping: false,
     }
 
-    let torchPhase = 0
-    let last       = 0
-    let lastFacing = ''
-    let prevShift  = false
-    let prevSpace  = false
+    let torchPhase  = 0
+    let last        = 0
+    let torchStates = TORCHES.map(() => true)
+    let prevShift   = false
+    let prevSpace   = false
     let log        = [
       '<em>System:</em> Move with WASD.',
       'The torches flicker in the dark.',
@@ -66,7 +60,36 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused }) {
       return dx * dx + dy * dy < INTERACT_R2
     }
 
-    function render(near) {
+    function nearTorchIdx() {
+      const px = player.x + TILE / 2
+      const py = player.y + TILE / 2
+      for (let i = 0; i < TORCHES.length; i++) {
+        const tx = TORCHES[i].c * TILE + TILE / 2
+        const ty = TORCHES[i].r * TILE + TILE / 2
+        const dx = px - tx, dy = py - ty
+        if (dx * dx + dy * dy < TORCH_R2) return i
+      }
+      return -1
+    }
+
+    function badge(bx, by) {
+      const pulse = Math.sin(torchPhase * 2.5) * 0.18 + 0.82
+      ctx.save()
+      ctx.globalAlpha  = pulse
+      ctx.fillStyle    = 'rgba(10,6,22,0.78)'
+      ctx.fillRect(bx - 14, by - 4, 28, 8)
+      ctx.strokeStyle  = '#4a2878'
+      ctx.lineWidth    = 0.5
+      ctx.strokeRect(bx - 14, by - 4, 28, 8)
+      ctx.font         = '6px "Courier New"'
+      ctx.textAlign    = 'center'
+      ctx.textBaseline = 'middle'
+      ctx.fillStyle    = '#c8a8f0'
+      ctx.fillText('[SHF]', bx, by)
+      ctx.restore()
+    }
+
+    function render(nearTbl, nearTch) {
       ctx.clearRect(0, 0, W, H)
       for (let row = 0; row < ROWS; row++) {
         for (let col = 0; col < COLS; col++) {
@@ -79,27 +102,23 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused }) {
       }
       drawRug(ctx)
       drawTable(ctx, torchPhase)
-      TORCHES.forEach(t => drawTorch(ctx, t.c, t.r, torchPhase + t.c))
+      TORCHES.forEach((t, i) => drawTorch(ctx, t.c, t.r, torchPhase + t.c, torchStates[i]))
 
       const jf = player.jumpHeight / MAX_JUMP_H
       drawShadow(ctx, player.x, player.y, jf)
       drawWarriorSprite(ctx, player.x, player.y - player.jumpHeight, player.facing, player.frame)
 
-      if (near && !pausedRef.current) {
-        const pulse = Math.sin(torchPhase * 2.5) * 0.18 + 0.82
-        ctx.save()
-        ctx.globalAlpha  = pulse
-        ctx.fillStyle    = 'rgba(10,6,22,0.78)'
-        ctx.fillRect(TABLE_CX - 14, TABLE_CY - 18, 28, 8)
-        ctx.strokeStyle  = '#4a2878'
-        ctx.lineWidth    = 0.5
-        ctx.strokeRect(TABLE_CX - 14, TABLE_CY - 18, 28, 8)
-        ctx.font         = '6px "Courier New"'
-        ctx.textAlign    = 'center'
-        ctx.textBaseline = 'middle'
-        ctx.fillStyle    = '#c8a8f0'
-        ctx.fillText('[SHF]', TABLE_CX, TABLE_CY - 14)
-        ctx.restore()
+      if (!pausedRef.current) {
+        if (nearTbl) badge(TABLE_CX, TABLE_CY - 10)
+        if (nearTch >= 0 && !nearTbl) {
+          const tt = TORCHES[nearTch]
+          const bx = tt.c === 0            ? 2 * TILE + 6
+                   : tt.c === COLS - 1     ? (COLS - 2) * TILE - 6
+                   :                          tt.c * TILE + TILE / 2
+          const by = tt.r === 0            ? TILE + 6
+                   :                          tt.r * TILE + TILE / 2
+          badge(bx, by)
+        }
       }
     }
 
@@ -108,7 +127,8 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused }) {
       last = ts
       torchPhase += dt * 4.5
 
-      const near = nearTable()
+      const near    = nearTable()
+      const torchIdx = nearTorchIdx()
 
       if (!pausedRef.current) {
         const { dx, dy } = inputDir()
@@ -151,24 +171,25 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused }) {
 
         // Interact
         const shiftNow = isKeyDown('ShiftLeft') || isKeyDown('ShiftRight')
-        if (player.moving && player.facing !== lastFacing) {
-          log = [`<em>Kami</em> ${DIR_MSG[player.facing]}`, ...log].slice(0, LOG_MAX)
-          lastFacing = player.facing
-        }
-        if (shiftNow && !prevShift && near) {
-          log = ['<em>Kami</em> consults the celestial orb.', ...log].slice(0, LOG_MAX)
-          onStateRef.current?.({ facing: player.facing, moving: player.moving, log })
-          onInteractRef.current?.()
-        } else {
-          onStateRef.current?.({ facing: player.facing, moving: player.moving, log })
+        if (shiftNow && !prevShift) {
+          if (near) {
+            log = ['<em>Kami</em> consults the celestial orb.', ...log].slice(0, LOG_MAX)
+            onInteractRef.current?.()
+          } else if (torchIdx >= 0) {
+            torchStates[torchIdx] = !torchStates[torchIdx]
+            log = [`<em>Kami</em> ${torchStates[torchIdx] ? 'lights' : 'snuffs'} a torch.`, ...log].slice(0, LOG_MAX)
+          }
         }
         prevShift = shiftNow
+        onStateRef.current?.({ facing: player.facing, moving: player.moving, log })
       } else {
-        prevShift = isKeyDown('ShiftLeft') || isKeyDown('ShiftRight')
+        const shiftNow = isKeyDown('ShiftLeft') || isKeyDown('ShiftRight')
+        if (shiftNow && !prevShift) onInteractRef.current?.()
+        prevShift = shiftNow
         prevSpace = isKeyDown('Space')
       }
 
-      render(near)
+      render(near, torchIdx)
       rafId = requestAnimationFrame(loop)
     }
 

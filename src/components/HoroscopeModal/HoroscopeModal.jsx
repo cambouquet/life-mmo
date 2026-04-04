@@ -7,11 +7,9 @@ const { zodiac, cosmic, guidance, lucky } = generateHoroscope()
 const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
 
 export default function HoroscopeModal({ onClose }) {
-  // Close on Shift or Escape
+  // Close on Escape (Shift toggle is handled by the game loop)
   useEffect(() => {
-    const handler = e => {
-      if (e.code === 'Escape' || e.code === 'ShiftLeft' || e.code === 'ShiftRight') onClose()
-    }
+    const handler = e => { if (e.code === 'Escape') onClose() }
     window.addEventListener('keydown', handler)
     return () => window.removeEventListener('keydown', handler)
   }, [onClose])

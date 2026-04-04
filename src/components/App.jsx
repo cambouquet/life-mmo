@@ -22,7 +22,7 @@ export default function App() {
     setLogEntries(log)
   }, [])
 
-  const handleInteract = useCallback(() => setShowHoroscope(true), [])
+  const handleInteract = useCallback(() => setShowHoroscope(v => !v), [])
 
   return (
     <div className="game-wrap" ref={wrapRef}>
