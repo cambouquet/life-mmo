@@ -11,11 +11,13 @@ const DIR_MSG = {
   left:  'moves <em>west</em>.',
   right: 'moves <em>east</em>.',
 }
-const LOG_MAX = 3
-// Divination table — centre between tiles (9,2) and (10,2)
-const TABLE_CX    = 10 * TILE         // 160
-const TABLE_CY    = 2 * TILE + TILE / 2  // 40
-const INTERACT_R2 = 32 * 32           // squared interact radius
+const LOG_MAX     = 3
+const TABLE_CX    = 10 * TILE
+const TABLE_CY    = 2 * TILE + TILE / 2
+const INTERACT_R2 = 32 * 32
+const MAX_JUMP_H  = 9    // logical px at apex
+const JUMP_VEL    = 70   // initial upward velocity px/s
+const GRAVITY     = 280  // px/s²
 
 export default function Game({ onStateChange, onInteract, paused }) {
   const canvasRef     = useRef(null)
@@ -23,7 +25,7 @@ export default function Game({ onStateChange, onInteract, paused }) {
   const onInteractRef = useRef(onInteract)
   const onStateRef    = useRef(onStateChange)
 
-  useEffect(() => { pausedRef.current = paused },       [paused])
+  useEffect(() => { pausedRef.current = paused },         [paused])
   useEffect(() => { onInteractRef.current = onInteract }, [onInteract])
   useEffect(() => { onStateRef.current = onStateChange }, [onStateChange])
 
@@ -38,18 +40,17 @@ export default function Game({ onStateChange, onInteract, paused }) {
     const player = {
       x: (COLS / 2 - 0.5) * TILE,
       y: (ROWS / 2 - 0.5) * TILE,
-      w: TILE,
-      h: TILE,
-      frame: 0,
-      frameTick: 0,
-      facing: 'down',
-      moving: false,
+      w: TILE, h: TILE,
+      frame: 0, frameTick: 0,
+      facing: 'down', moving: false,
+      jumpHeight: 0, jumpVel: 0, jumping: false,
     }
 
     let torchPhase = 0
     let last       = 0
     let lastFacing = ''
-    let prevE      = false
+    let prevShift  = false
+    let prevSpace  = false
     let log        = [
       '<em>System:</em> Move with WASD.',
       'The torches flicker in the dark.',
@@ -73,30 +74,32 @@ export default function Game({ onStateChange, onInteract, paused }) {
           if      (t === 0) drawFloor(ctx, c, r)
           else if (t === 1) drawWall(ctx, c, r)
           else if (t === 2) drawDoor(ctx, c, r)
-          else if (t === 3) drawFloor(ctx, c, r)   // floor under table
+          else if (t === 3) drawFloor(ctx, c, r)
         }
       }
       drawRug(ctx)
       drawTable(ctx, torchPhase)
       TORCHES.forEach(t => drawTorch(ctx, t.c, t.r, torchPhase + t.c))
-      drawShadow(ctx, player.x, player.y)
-      drawWarriorSprite(ctx, player.x, player.y, player.facing, player.frame)
 
-      // "Press E" badge above table when player is near
+      const jf = player.jumpHeight / MAX_JUMP_H
+      drawShadow(ctx, player.x, player.y, jf)
+      drawWarriorSprite(ctx, player.x, player.y - player.jumpHeight, player.facing, player.frame)
+
+      // Interaction badge above table
       if (near && !pausedRef.current) {
         const pulse = Math.sin(torchPhase * 2.5) * 0.18 + 0.82
         ctx.save()
         ctx.globalAlpha = pulse
-        ctx.fillStyle = 'rgba(10,6,22,0.78)'
+        ctx.fillStyle   = 'rgba(10,6,22,0.78)'
         ctx.fillRect(TABLE_CX - 14, TABLE_CY - 18, 28, 8)
         ctx.strokeStyle = '#4a2878'
-        ctx.lineWidth = 0.5
+        ctx.lineWidth   = 0.5
         ctx.strokeRect(TABLE_CX - 14, TABLE_CY - 18, 28, 8)
-        ctx.font = '6px "Courier New"'
-        ctx.textAlign = 'center'
-        ctx.textBaseline = 'middle'
-        ctx.fillStyle = '#c8a8f0'
-        ctx.fillText('[ E ]', TABLE_CX, TABLE_CY - 14)
+        ctx.font          = '6px "Courier New"'
+        ctx.textAlign     = 'center'
+        ctx.textBaseline  = 'middle'
+        ctx.fillStyle     = '#c8a8f0'
+        ctx.fillText('[SHF]', TABLE_CX, TABLE_CY - 14)
         ctx.restore()
       }
     }
@@ -130,17 +133,35 @@ export default function Game({ onStateChange, onInteract, paused }) {
           player.frameTick = 0
         }
 
+        // ── Jump (Space) ────────────────────────────────────────────────────
+        const spaceNow     = isKeyDown('Space')
+        const spacePressed = spaceNow && !prevSpace
+        prevSpace = spaceNow
+        if (spacePressed && !player.jumping) {
+          player.jumping  = true
+          player.jumpVel  = JUMP_VEL
+        }
+        if (player.jumping) {
+          player.jumpVel    -= GRAVITY * dt
+          player.jumpHeight += player.jumpVel * dt
+          if (player.jumpHeight <= 0) {
+            player.jumpHeight = 0
+            player.jumpVel    = 0
+            player.jumping    = false
+          }
+        }
+
+        // ── Interact (Shift) ────────────────────────────────────────────────
+        const shiftNow     = isKeyDown('ShiftLeft') || isKeyDown('ShiftRight')
+        const shiftPressed = shiftNow && !prevShift
+        prevShift = shiftNow
+
         if (player.moving && player.facing !== lastFacing) {
           log = [`<em>Kami</em> ${DIR_MSG[player.facing]}`, ...log].slice(0, LOG_MAX)
           lastFacing = player.facing
         }
 
-        // E key — edge-triggered interact
-        const eNow     = isKeyDown('KeyE')
-        const ePressed = eNow && !prevE
-        prevE = eNow
-
-        if (ePressed && near) {
+        if (shiftPressed && near) {
           log = ['<em>Kami</em> consults the celestial orb.', ...log].slice(0, LOG_MAX)
           onStateRef.current?.({ facing: player.facing, moving: player.moving, log })
           onInteractRef.current?.()
@@ -148,8 +169,9 @@ export default function Game({ onStateChange, onInteract, paused }) {
           onStateRef.current?.({ facing: player.facing, moving: player.moving, log })
         }
       } else {
-        // While paused: keep tracking E so release is registered before unpause
-        prevE = isKeyDown('KeyE')
+        // Paused: drain input state so nothing fires on unpause
+        prevShift = isKeyDown('ShiftLeft') || isKeyDown('ShiftRight')
+        prevSpace = isKeyDown('Space')
       }
 
       render(near)

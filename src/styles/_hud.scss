@@ -22,18 +22,18 @@
 
 // ── 1 – Logo panel ───────────────────────────────────────────────────────────
 .logo-panel {
-  flex: 0 0 110px;
+  flex: 0 0 158px;
   border-right: 1px solid $border-dim;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 6px;
+  padding: 4px 7px;
 
   canvas {
     display: block;
     image-rendering: pixelated;
     image-rendering: crisp-edges;
-    width: 96px;
+    width: 144px;
     height: 52px;
   }
 }

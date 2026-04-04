@@ -134,12 +134,14 @@ export function drawTable(ctx, phase) {
   ctx.fillStyle = '#c8901a'; ctx.fillRect(cx - 2, cy + 6, 4, 1)
 }
 
-export function drawShadow(ctx, x, y) {
+export function drawShadow(ctx, x, y, jumpFactor = 0) {
   ctx.save()
-  ctx.globalAlpha = 0.35
+  ctx.globalAlpha = 0.35 * (1 - jumpFactor * 0.7)
   ctx.fillStyle = '#000000'
   ctx.beginPath()
-  ctx.ellipse(Math.floor(x) + 8, Math.floor(y) + 15, 5, 2, 0, 0, Math.PI * 2)
+  const rx = Math.max(1, 5 * (1 - jumpFactor * 0.5))
+  const ry = Math.max(0.5, 2 * (1 - jumpFactor * 0.5))
+  ctx.ellipse(Math.floor(x) + 8, Math.floor(y) + 15, rx, ry, 0, 0, Math.PI * 2)
   ctx.fill()
   ctx.restore()
 }

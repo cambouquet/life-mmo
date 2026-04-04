@@ -7,9 +7,11 @@ const { zodiac, cosmic, guidance, lucky } = generateHoroscope()
 const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
 
 export default function HoroscopeModal({ onClose }) {
-  // Close on Escape
+  // Close on Shift or Escape
   useEffect(() => {
-    const handler = e => { if (e.code === 'Escape') onClose() }
+    const handler = e => {
+      if (e.code === 'Escape' || e.code === 'ShiftLeft' || e.code === 'ShiftRight') onClose()
+    }
     window.addEventListener('keydown', handler)
     return () => window.removeEventListener('keydown', handler)
   }, [onClose])
@@ -49,7 +51,7 @@ export default function HoroscopeModal({ onClose }) {
 
         <div className="modal__footer">
           <button className="modal__close" onClick={onClose}>
-            Close &mdash; Esc
+            Close &mdash; Shift / Esc
           </button>
         </div>
 

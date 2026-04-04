@@ -12,7 +12,7 @@ export default function Logo() {
 
   return (
     <div className="logo-panel">
-      <canvas ref={canvasRef} width={48} height={26} />
+      <canvas ref={canvasRef} width={72} height={26} />
     </div>
   )
 }

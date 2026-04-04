@@ -52,7 +52,7 @@ export default function App() {
         onInteract={handleInteract}
         paused={showHoroscope}
       />
-      <div className="hint">WASD / ARROW KEYS to move &nbsp;·&nbsp; E to interact</div>
+      <div className="hint">WASD to move &nbsp;·&nbsp; SPACE to jump &nbsp;·&nbsp; SHIFT to interact</div>
       {showHoroscope && (
         <HoroscopeModal onClose={() => setShowHoroscope(false)} />
       )}
