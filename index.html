@@ -28,39 +28,82 @@
     #hud {
       display: flex;
       align-items: stretch;
-      width: 960px;  /* 20 tiles × 16px × 3 scale */
-      height: 56px;
+      width: 960px;
+      height: 64px;
       background: #0e0a1e;
       border: 2px solid #3a2060;
       border-bottom: 1px solid #2a1650;
       box-shadow: 0 0 24px #6020b044;
-      gap: 0;
       overflow: hidden;
     }
 
-    /* Logo + Log panel – left */
+    /* 1 – Logo */
+    #logo-panel {
+      flex: 0 0 110px;
+      border-right: 1px solid #2a1650;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6px;
+    }
+    #logo-canvas {
+      display: block;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+    }
+
+    /* 2 – Head + player info */
+    #char-panel {
+      flex: 0 0 190px;
+      border-right: 1px solid #2a1650;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 12px;
+    }
+    #head-canvas {
+      display: block;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+      width: 48px;
+      height: 40px;
+      border: 1px solid #5a3090;
+      border-radius: 3px;
+      background: #0a0616;
+      box-shadow: 0 0 10px #8040c066, 0 0 3px #3a2060;
+      flex-shrink: 0;
+    }
+    #char-name {
+      color: #e8c8ff;
+      font-size: 14px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      text-shadow: 0 0 10px #c8a0f077;
+    }
+    #char-class {
+      color: #7050a0;
+      font-size: 8px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-top: 3px;
+    }
+
+    /* 3 – Log (center, flex-grows) */
     #log-panel {
-      flex: 0 0 230px;
+      flex: 1;
       border-right: 1px solid #2a1650;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
-      padding: 6px 8px;
+      justify-content: center;
+      padding: 6px 10px;
       overflow: hidden;
     }
-    #logo-title {
-      color: #c8a0f0;
-      font-size: 11px;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      text-shadow: 0 0 10px #c8a0f055;
-    }
     #log-title {
-      color: #7a50a0;
+      color: #5a3880;
       font-size: 8px;
       letter-spacing: 2px;
       text-transform: uppercase;
-      margin-bottom: 2px;
+      margin-bottom: 3px;
     }
     #log-entries {
       display: flex;
@@ -76,46 +119,11 @@
       animation: logFade 0.3s ease;
     }
     .log-line span { color: #e0b8ff; }
-    @keyframes logFade { from { opacity:0; transform: translateY(4px); } to { opacity:1; transform: none; } }
+    @keyframes logFade { from { opacity:0; transform: translateY(3px); } to { opacity:1; transform: none; } }
 
-    /* Character identity – centre */
-    #char-info {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-    }
-    #head-canvas {
-      display: block;
-      image-rendering: pixelated;
-      image-rendering: crisp-edges;
-      width: 48px;
-      height: 40px;
-      border: 1px solid #5a3090;
-      border-radius: 3px;
-      background: #0a0616;
-      box-shadow: 0 0 10px #8040c066, 0 0 3px #3a2060;
-    }
-    #char-name {
-      color: #e8c8ff;
-      font-size: 15px;
-      letter-spacing: 5px;
-      text-transform: uppercase;
-      text-shadow: 0 0 10px #c8a0f077;
-    }
-    #char-class {
-      color: #7050a0;
-      font-size: 9px;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      margin-top: 2px;
-    }
-
-    /* Clock – right */
+    /* 4 – Clock */
     #clock-panel {
       flex: 0 0 130px;
-      border-left: 1px solid #2a1650;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -159,17 +167,14 @@
   <div id="game-wrap">
     <!-- ── HUD Header ── -->
     <div id="hud">
-      <!-- Logo + Log -->
-      <div id="log-panel">
-        <div id="logo-title">⬡ Life MMO</div>
-        <div>
-          <div id="log-title">» log</div>
-          <div id="log-entries"></div>
-        </div>
+
+      <!-- 1: Logo -->
+      <div id="logo-panel">
+        <canvas id="logo-canvas" width="88" height="44"></canvas>
       </div>
 
-      <!-- Character head + name -->
-      <div id="char-info">
+      <!-- 2: Head + player info -->
+      <div id="char-panel">
         <canvas id="head-canvas" width="12" height="10"></canvas>
         <div>
           <div id="char-name">Kami</div>
@@ -177,11 +182,18 @@
         </div>
       </div>
 
-      <!-- Clock -->
+      <!-- 3: Log -->
+      <div id="log-panel">
+        <div id="log-title">» Activity Log</div>
+        <div id="log-entries"></div>
+      </div>
+
+      <!-- 4: Clock -->
       <div id="clock-panel">
         <div id="clock-time">00:00:00</div>
         <div id="clock-date"></div>
       </div>
+
     </div>
 
     <canvas id="game"></canvas>
@@ -197,6 +209,91 @@
     const W      = COLS * TILE;
     const H      = ROWS * TILE;
     const SPEED  = 80;        // px/s (logical)
+
+    // ─── Logo canvas ──────────────────────────────────────────────────────────
+    (function drawLogo() {
+      const lc = document.getElementById('logo-canvas');
+      const lx = lc.getContext('2d');
+      lx.imageSmoothingEnabled = false;
+
+      lx.fillStyle = '#0a0616'; lx.fillRect(0, 0, 88, 44);
+      const r = (x,y,w,h,c) => { lx.fillStyle=c; lx.fillRect(x,y,w,h); };
+      const p = (x,y,c)     => { lx.fillStyle=c; lx.fillRect(x,y,1,1); };
+
+      // ── Pixel-art sword (x 3-15, centred vertically) ────────────────
+      // Blade
+      r(8,  3,  2, 17, '#b8cede');
+      r(8,  3,  1,  5, '#ddf0ff');   // shine
+      r(8,  3,  2,  1, '#ffffff');   // tip
+      r(9,  4,  1, 15, '#8aaabf');   // bevel shadow
+      // Crossguard
+      r(4, 20, 10,  2, '#d4981a');
+      r(4, 18,  2,  5, '#d4981a');
+      r(12,18,  2,  5, '#d4981a');
+      p(5, 19, '#ffee80'); p(13,19,'#ffee80');  // gleam
+      p(4, 20, '#ffe040'); p(13,20,'#ffe040');
+      // Grip
+      r(8, 22,  2,  8, '#5a3010');
+      p(9, 23, '#7a4820'); p(9,25,'#7a4820'); p(9,27,'#7a4820');
+      // Pommel
+      r(7, 30,  4,  4, '#d4981a');
+      r(8, 31,  2,  2, '#ffee80');
+      p(7, 33, '#b07810'); p(10,33,'#b07810');
+      // Magic sparks around blade
+      for (const [x,y,a] of [[5,7,.38],[13,6,.30],[4,12,.20],[14,11,.22],[6,16,.15]]) {
+        lx.fillStyle=`rgba(190,150,255,${a})`; lx.fillRect(x,y,1,1);
+      }
+
+      // ── Dotted vertical separator at x=17 ───────────────────────────
+      for (let y=4; y<40; y+=3) r(17,y,1,2,'#2a1850');
+
+      // ── 4×6 pixel bitmap font ────────────────────────────────────────
+      // Each glyph: 6 rows (top→bottom), each row a string of '1'(on)/'0'(off)
+      const G = {
+        L: ['1000','1000','1000','1000','1000','1111'],
+        I: ['111','010','010','010','010','111'],
+        F: ['1111','1000','1110','1000','1000','1000'],
+        E: ['1111','1000','1110','1000','1000','1111'],
+        M: ['10001','11011','10101','10001','10001','10001'],
+        O: ['0110','1001','1001','1001','1001','0110'],
+      };
+
+      // Draw one glyph; returns its pixel width
+      function glyph(ch, ox, oy, sc, col) {
+        const rows = G[ch]; if (!rows) return sc*2;
+        lx.fillStyle = col;
+        rows.forEach((row, ry) =>
+          [...row].forEach((b, rx) => {
+            if (b === '1') lx.fillRect(ox+rx*sc, oy+ry*sc, sc, sc);
+          })
+        );
+        return rows[0].length;
+      }
+
+      // Draw a string; returns total pixel width drawn
+      function text(str, x, y, sc, cols, gap=1) {
+        let cx = x;
+        str.split('').forEach((ch, i) => {
+          const col = Array.isArray(cols) ? cols[i % cols.length] : cols;
+          cx += (glyph(ch, cx, y, sc, col) + gap) * sc;
+        });
+        return cx - x - gap * sc;
+      }
+
+      // ── "LIFE" at scale 2 (x=20, y=8) ───────────────────────────────
+      const LIFE_COLS = ['#e8d4ff','#d8b8ff','#c8a0f0','#b888e0'];
+      const lifeW = text('LIFE', 20, 8, 2, LIFE_COLS);
+
+      // Underline: left third bright, rest dim
+      r(20, 22, Math.round(lifeW * 0.5), 1, '#8840c8');
+      r(20 + Math.round(lifeW * 0.5), 22, lifeW - Math.round(lifeW * 0.5), 1, '#3a1860');
+
+      // ── "MMO" at scale 1 (x=20, y=26) ───────────────────────────────
+      text('MMO', 20, 26, 1, '#9070c0');
+
+      // ── Gold dot accent after MMO ────────────────────────────────────
+      p(37, 28, '#c8901a'); p(39, 28, '#c8901a');
+    })();
 
     // ─── Canvas setup ─────────────────────────────────────────────────────────
     const canvas = document.getElementById('game');
