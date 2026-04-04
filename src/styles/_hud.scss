@@ -1,0 +1,146 @@
+@use 'variables' as *;
+
+// ── Wrapper that gets CSS transform-scaled to fit viewport ──────────────────
+.game-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+// ── HUD header ───────────────────────────────────────────────────────────────
+.hud {
+  display: flex;
+  align-items: stretch;
+  width: $game-w;
+  height: $hud-h;
+  background: $bg-hud;
+  border: 2px solid $border;
+  border-bottom: 1px solid $border-dim;
+  box-shadow: 0 0 24px $glow-hud;
+  overflow: hidden;
+}
+
+// ── 1 – Logo panel ───────────────────────────────────────────────────────────
+.logo-panel {
+  flex: 0 0 110px;
+  border-right: 1px solid $border-dim;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+
+  canvas {
+    display: block;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+    width: 96px;
+    height: 52px;
+  }
+}
+
+// ── 2 – Character panel ───────────────────────────────────────────────────────
+.char-panel {
+  flex: 0 0 190px;
+  border-right: 1px solid $border-dim;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 12px;
+
+  canvas {
+    display: block;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+    width: 48px;
+    height: 40px;
+    border: 1px solid #5a3090;
+    border-radius: 3px;
+    background: #0a0616;
+    box-shadow: 0 0 10px $glow-head, 0 0 3px $glow-head-sh;
+    flex-shrink: 0;
+  }
+
+  &__name {
+    color: $text-primary;
+    font-size: 14px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    text-shadow: 0 0 10px #c8a0f077;
+  }
+
+  &__class {
+    color: $text-muted;
+    font-size: 8px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-top: 3px;
+  }
+}
+
+// ── 3 – Log panel ─────────────────────────────────────────────────────────────
+.log-panel {
+  flex: 1;
+  border-right: 1px solid $border-dim;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 6px 10px;
+  overflow: hidden;
+
+  &__title {
+    color: #5a3880;
+    font-size: 8px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 3px;
+  }
+
+  &__entries {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+}
+
+.log-line {
+  color: $text-log;
+  font-size: 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  animation: logFade 0.3s ease;
+
+  em {
+    color: $text-log-em;
+    font-style: normal;
+  }
+}
+
+@keyframes logFade {
+  from { opacity: 0; transform: translateY(3px); }
+  to   { opacity: 1; transform: none; }
+}
+
+// ── 4 – Clock panel ───────────────────────────────────────────────────────────
+.clock-panel {
+  flex: 0 0 130px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  padding: 4px 8px;
+
+  &__time {
+    color: $text-clock;
+    font-size: 14px;
+    letter-spacing: 2px;
+    text-shadow: 0 0 8px $glow-clock;
+  }
+
+  &__date {
+    color: $text-date;
+    font-size: 9px;
+    letter-spacing: 1px;
+  }
+}

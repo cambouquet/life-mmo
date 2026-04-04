@@ -1,0 +1,22 @@
+@use 'variables' as *;
+
+.game-canvas {
+  display: block;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  width: $game-w;
+  height: $game-h;
+  border: 2px solid $border;
+  border-top: none;
+  box-shadow:
+    0 0 0 1px #1a0a30,
+    0 0 30px #6020b055,
+    0 0 60px #3010601a;
+}
+
+.hint {
+  margin-top: 10px;
+  color: $text-hint;
+  font-size: 11px;
+  letter-spacing: 2px;
+}

@@ -1,0 +1,26 @@
+// ── Palette ─────────────────────────────────────────────────────────────────
+$bg:           #0a0a1a;
+$bg-hud:       #0e0a1e;
+$border:       #3a2060;
+$border-dim:   #2a1650;
+$text-primary: #e8c8ff;
+$text-muted:   #7050a0;
+$text-log:     #b090d0;
+$text-log-em:  #e0b8ff;
+$text-clock:   #c8a0f0;
+$text-date:    #9070b8;
+$text-hint:    #6a507a;
+$glow-hud:     #6020b044;
+$glow-head:    #8040c066;
+$glow-head-sh: #3a2060;
+$glow-clock:   #c8a0f055;
+
+// ── Layout ───────────────────────────────────────────────────────────────────
+$tile:         16px;
+$scale:        3;
+$cols:         20;
+$rows:         14;
+$game-w:       $tile * $cols * $scale;   // 960px
+$game-h:       $tile * $rows * $scale;   // 672px
+$hud-h:        64px;
+$font:         'Courier New', monospace;
