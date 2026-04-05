@@ -17,11 +17,11 @@ $glow-clock:   #c8a0f055;
 
 // ── Layout ───────────────────────────────────────────────────────────────────
 $tile:         16px;
-$scale:        3;
+$scale:        2;
 $cols:         20;
 $rows:         14;
-$game-w:       $tile * $cols * $scale;   // 960px
-$game-h:       $tile * $rows * $scale;   // 672px
+$game-w:       $tile * $cols * $scale;   // 640px
+$game-h:       $tile * $rows * $scale;   // 448px
 $hud-h:        64px;
 $font:         'Courier New', monospace;
 $font-ui:      'Inter', system-ui, -apple-system, sans-serif;

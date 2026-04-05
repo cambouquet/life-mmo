@@ -2,17 +2,17 @@
 
 .canvas-wrap {
   position: relative;
-  width: $game-w;
-  height: $game-h;
-  line-height: 0; // prevent inline gap below canvas
+  flex: 1;
+  overflow: hidden;
+  line-height: 0;
 }
 
 .game-canvas {
   display: block;
   image-rendering: pixelated;
   image-rendering: crisp-edges;
-  width: $game-w;
-  height: $game-h;
+  width: 100%;
+  height: 100%;
   border: 1px solid $border-dim;
   border-top: none;
   box-shadow: 0 8px 40px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(0, 0, 0, 0.4);
@@ -42,7 +42,11 @@
 }
 
 .hint {
-  margin-top: 12px;
+  flex-shrink: 0;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-family: $font-ui;
   font-size: 11px;
   color: $text-hint;

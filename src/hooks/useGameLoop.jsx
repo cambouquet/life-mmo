@@ -102,17 +102,32 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused }) {
     }
 
     function render(npcNear) {
-      // Dark void background
+      const cw = ctx.canvas.width, ch = ctx.canvas.height
+
+      // Dark void background — fill full screen
       ctx.fillStyle = '#06040e'
-      ctx.fillRect(0, 0, W, H)
+      ctx.fillRect(0, 0, cw, ch)
+
+      // Draw world at 2× centred in the viewport
+      const DS = 2
+      const ox = Math.round((cw - W * DS) / 2)
+      const oy = Math.round((ch - H * DS) / 2)
+      ctx.save()
+      ctx.translate(ox, oy)
+      ctx.scale(DS, DS)
 
       drawTable(ctx, torchPhase)
 
-      // Auras — drawn before sprites so they sit beneath
-      const pAlpha = 0.60 + Math.sin(torchPhase * 0.8) * 0.12 + (npcNear ? 0.18 : 0)
-      const nAlpha = 0.65 + Math.sin(torchPhase * 0.7 + 1) * 0.12 + (npcNear ? 0.15 : 0)
-      drawAura(ctx, player.x + 8, player.y + 10, '160,50,255', pAlpha, 22, 14)
-      drawAura(ctx, NPC_X + 8,   NPC_Y + 10,    '0,210,230',  nAlpha, 20, 13)
+      // Auras — vertical body halos, drawn before sprites
+      // sprite centre: x+7 horizontal, y+8 vertical (mid of 14px figure)
+      const pAlpha = 0.72 + Math.sin(torchPhase * 0.8) * 0.10 + (npcNear ? 0.15 : 0)
+      const nAlpha = 0.78 + Math.sin(torchPhase * 0.7 + 1) * 0.10 + (npcNear ? 0.12 : 0)
+      // outer soft halo
+      drawAura(ctx, player.x + 7, player.y + 8, '160,50,255', pAlpha * 0.30, 14, 20)
+      drawAura(ctx, NPC_X + 7,   NPC_Y + 8,   '0,220,240',  nAlpha * 0.30, 14, 20)
+      // inner bright core
+      drawAura(ctx, player.x + 7, player.y + 8, '160,50,255', pAlpha,         8, 12)
+      drawAura(ctx, NPC_X + 7,   NPC_Y + 8,   '0,220,240',  nAlpha,          8, 12)
 
       drawNpc(ctx, NPC_X, NPC_Y, torchPhase)
 
@@ -121,6 +136,8 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused }) {
       drawWarriorSprite(ctx, player.x, player.y - player.jumpHeight, player.facing, player.frame)
 
       if (!pausedRef.current && npcNear) badge(NPC_CX, NPC_Y - 2)
+
+      ctx.restore()
     }
 
     function loop(ts) {

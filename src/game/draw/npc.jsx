@@ -1,83 +1,73 @@
-// Lyra — compact NPC sprite: 10px wide × 15px tall within 16x16 tile.
-// Hair y=0-4 | Face y=2-5 | Coat y=5-13 | Hem y=14
-
 const C = {
-  skin:       '#f0c890',
-  skinDk:     '#c08858',
-  hair:       '#180828',
-  hairHi:     '#3a1860',
-  coat:       '#1c1840',
-  coatLt:     '#2e2a5e',
-  coatDk:     '#0e0c20',
-  coatFold:   '#221e4a',
-  collar:     '#2a1050',
-  tattoo:     '#a040f0',
-  tattooLt:   '#d090ff',
-  crystal:    '#c090f0',
-  crystalHi:  '#f0e0ff',
-  chain:      '#b09860',
-  eye:        '#200828',
+  skin:      '#f5c9a0',
+  skinDk:    '#c8956a',
+  hair:      '#e8d090',   // warm blonde
+  hairHi:    '#fff8d0',   // bright highlight
+  hairDk:    '#b09858',   // shadow
+  robe:      '#3820b8',   // vivid indigo robe
+  robeLt:    '#5840e0',   // lit edge
+  robeDk:    '#100840',   // deep fold
+  robeFold:  '#2a1890',
+  collar:    '#8030d8',
+  crystal:   '#c090f0',
+  crystalHi: '#f0e0ff',
+  tattoo:    '#c040ff',
+  tattooLt:  '#f090ff',
+  eye:       '#2a0a40',
 }
 
+// 7px wide × 14px, centered in 16×16 tile at ox=x+4, oy=y+1
 export function drawNpc(ctx, x, y, phase) {
   x = Math.floor(x); y = Math.floor(y)
-  const r = (ox, oy, w, h, c) => { ctx.fillStyle = c; ctx.fillRect(x+ox, y+oy, w, h) }
-  const p = (ox, oy, c)       => { ctx.fillStyle = c; ctx.fillRect(x+ox, y+oy, 1, 1) }
+  const ox = x + 4, oy = y + 1
+  const r = (lx, ly, w, h, c) => { ctx.fillStyle = c; ctx.fillRect(ox+lx, oy+ly, w, h) }
+  const p = (lx, ly, c)       => { ctx.fillStyle = c; ctx.fillRect(ox+lx, oy+ly, 1, 1) }
 
-  // Hair (dark, side-swept, 10px wide)
-  r( 3, 0, 10, 2, C.hair)
-  r( 2, 1,  2, 4, C.hair)    // left sweep
-  r(12, 1,  2, 4, C.hair)    // right fall
-  p( 4, 0, C.hairHi); p( 9, 0, C.hairHi)
+  // ── Hair ──────────────────────────────────────────────────────────────────
+  r(1, 0, 5, 1, C.hair)
+  r(0, 1, 7, 1, C.hair)
+  r(0, 2, 1, 4, C.hair)         // left hair sweep
+  r(6, 2, 1, 4, C.hair)         // right hair sweep
+  p(2, 0, C.hairHi); p(4, 0, C.hairHi)
+  p(0, 3, C.hairDk); p(6, 3, C.hairDk)
 
-  // Face (6px wide, delicate — same width as player)
-  r( 5, 2, 6, 4, C.skin)
-  p( 6, 3, C.eye); p( 9, 3, C.eye)
-  p( 8, 4, C.skinDk)
-  p( 7, 5, C.skinDk); p( 8, 5, C.skinDk)
+  // ── Face ──────────────────────────────────────────────────────────────────
+  r(1, 2, 5, 3, C.skin)
+  p(1, 3, C.skinDk); p(5, 3, C.skinDk)   // cheek shadows
+  p(2, 2, C.eye);    p(4, 2, C.eye)       // eyes
+  p(3, 3, C.skinDk)                       // nose
+  p(2, 4, C.skinDk); p(3, 4, C.skinDk)   // subtle mouth
 
-  // High coat collar
-  r( 5, 5, 6, 2, C.collar)
-  p( 5, 5, C.coatLt); p(10, 5, C.coatLt)
+  // ── Neck ──────────────────────────────────────────────────────────────────
+  r(2, 5, 3, 1, C.skin)
 
-  // Coat body (covers legs entirely)
-  r( 4, 6, 8, 8, C.coat)
-  r( 4, 6, 1, 8, C.coatLt)   // left lit edge
-  r( 9, 8, 1, 5, C.coatFold) // right vertical fold
-  r( 5, 9, 1, 4, C.coatFold) // left inner fold
+  // ── Collar ────────────────────────────────────────────────────────────────
+  r(1, 6, 5, 1, C.collar)
+  p(0, 6, C.robeLt); p(6, 6, C.robeLt)
 
-  // Sleeves
-  r( 2, 6, 3, 6, C.coat)
-  r(11, 6, 3, 6, C.coat)
-  r( 2,11, 2, 1, C.coatDk)   // left cuff
-  r(11,11, 2, 1, C.coatDk)   // right cuff
+  // ── Robe body (full height to row 13, tapers slightly) ────────────────────
+  r(0, 7, 7, 6, C.robe)
+  r(0, 7, 1, 6, C.robeLt)        // left rim light
+  r(6, 7, 1, 6, C.robeDk)        // right shadow
+  r(3, 7, 1, 5, C.robeFold)      // centre fold
+  r(1, 7, 5, 1, C.robeLt)        // shoulder highlight
 
-  // Forearm tattoo (left sleeve)
-  p( 2, 9, C.tattoo); p( 3, 9, C.tattooLt)
-
-  // Chest tattoo sigils (animated)
-  const tw = 0.5 + Math.sin(phase * 1.6) * 0.5
-  ctx.save(); ctx.globalAlpha = tw
-  ctx.fillStyle = C.tattoo
-  ctx.fillRect(x+6, y+7, 1, 1); ctx.fillRect(x+7, y+8, 1, 1); ctx.fillRect(x+6, y+9, 1, 1)
-  ctx.fillRect(x+9, y+7, 1, 1); ctx.fillRect(x+8, y+8, 1, 1); ctx.fillRect(x+9, y+9, 1, 1)
-  ctx.fillStyle = C.tattooLt
-  ctx.fillRect(x+7, y+8, 2, 1)
-  ctx.restore()
-
-  // Crystal pendant glow (soft)
-  const cp = 0.6 + Math.sin(phase * 2.1) * 0.4
-  ctx.save(); ctx.globalAlpha = cp * 0.45
+  // ── Crystal pendant ───────────────────────────────────────────────────────
+  p(3, 8, C.crystalHi); p(3, 9, C.crystal); p(3,10, C.crystal)
+  const cp = 0.5 + Math.sin(phase * 2.1) * 0.5
+  ctx.save(); ctx.globalAlpha = cp * 0.55
   ctx.fillStyle = '#9040e0'
-  ctx.beginPath(); ctx.arc(x+8, y+9, 3, 0, Math.PI * 2); ctx.fill()
+  ctx.beginPath(); ctx.arc(ox + 3, oy + 9, 2.5, 0, Math.PI * 2); ctx.fill()
   ctx.restore()
 
-  // Chain + crystal gem
-  p( 7, 7, C.chain); p( 8, 7, C.chain); p( 8, 8, C.chain)
-  p( 7,10, C.crystal); p( 8, 9, C.crystalHi); p( 9,10, C.crystal)
-  p( 8,10, C.crystalHi)
+  // ── Tattoo (animated) ─────────────────────────────────────────────────────
+  const tw = 0.3 + Math.sin(phase * 1.6) * 0.3
+  ctx.save(); ctx.globalAlpha = tw
+  p(1, 9, C.tattoo); p(5, 9, C.tattoo)
+  p(2, 8, C.tattooLt); p(4, 8, C.tattooLt)
+  ctx.restore()
 
-  // Coat hem (slight flare at bottom)
-  r( 3,13, 10, 1, C.coat)
-  r( 3,13, 10, 1, C.coatDk)
+  // ── Robe hem / feet ───────────────────────────────────────────────────────
+  r(0,13, 7, 1, C.robeDk)
+  p(0,13, C.robeFold); p(6,13, C.robeFold)
 }
