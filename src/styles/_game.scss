@@ -1,5 +1,12 @@
 @use 'variables' as *;
 
+.canvas-wrap {
+  position: relative;
+  width: $game-w;
+  height: $game-h;
+  line-height: 0; // prevent inline gap below canvas
+}
+
 .game-canvas {
   display: block;
   image-rendering: pixelated;
@@ -12,6 +19,29 @@
     0 0 0 1px #1a0a30,
     0 0 30px #6020b055,
     0 0 60px #3010601a;
+}
+
+.guidance {
+  position: absolute;
+  top: 28px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-family: 'Lora', Georgia, serif;
+  font-size: 16px;
+  font-weight: 400;
+  letter-spacing: 0.3px;
+  color: rgba(220, 185, 255, 0.78);
+  text-shadow: 0 0 18px rgba(0,0,0,0.95), 0 1px 6px rgba(0,0,0,0.9);
+  pointer-events: none;
+
+  &--in  { animation: guidanceIn 0.7s ease forwards; }
+  &--out { opacity: 0; transition: opacity 0.5s ease; }
+}
+
+@keyframes guidanceIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 
 .hint {

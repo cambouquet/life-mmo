@@ -4,6 +4,7 @@ import HUD                   from './HUD/HUD.jsx'
 import Game                  from './Game/Game.jsx'
 import HoroscopeModal        from './HoroscopeModal/HoroscopeModal.jsx'
 import DialogModal           from './DialogModal/DialogModal.jsx'
+import GuidanceVoice         from './GuidanceVoice/GuidanceVoice.jsx'
 
 export default function App() {
   const [facing,        setFacing]        = useState('down')
@@ -13,15 +14,17 @@ export default function App() {
     'The torches flicker in the dark.',
     '<em>Kami</em> enters the dungeon.',
   ])
+  const [guidance,      setGuidance]      = useState(null)
   const [showDialog,    setShowDialog]    = useState(false)
   const [showHoroscope, setShowHoroscope] = useState(false)
 
   const wrapRef = useViewportScale()
 
-  const handleStateChange = useCallback(({ facing, moving, log }) => {
+  const handleStateChange = useCallback(({ facing, moving, log, guidance }) => {
     setFacing(facing)
     setMoving(moving)
     setLogEntries(log)
+    setGuidance(guidance ?? null)
   }, [])
 
   const handleInteract = useCallback(() => {
@@ -32,11 +35,14 @@ export default function App() {
   return (
     <div className="game-wrap" ref={wrapRef}>
       <HUD facing={facing} moving={moving} logEntries={logEntries} />
-      <Game
-        onStateChange={handleStateChange}
-        onInteract={handleInteract}
-        paused={showDialog || showHoroscope}
-      />
+      <div className="canvas-wrap">
+        <Game
+          onStateChange={handleStateChange}
+          onInteract={handleInteract}
+          paused={showDialog || showHoroscope}
+        />
+        {!showDialog && !showHoroscope && <GuidanceVoice text={guidance} />}
+      </div>
       <div className="hint">WASD to move &nbsp;·&nbsp; SPACE to jump &nbsp;·&nbsp; SHIFT to interact</div>
       {showDialog && (
         <DialogModal

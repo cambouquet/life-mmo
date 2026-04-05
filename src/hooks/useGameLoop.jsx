@@ -21,6 +21,28 @@ const JUMP_VEL    = 70
 const GRAVITY     = 280
 const FRAME_TIME  = 0.18
 
+const GUIDANCE_NPC = [
+  "She's been watching you.",
+  "The orb stirs when you draw close.",
+  "A question hangs in the air between you.",
+  "She has something to say. Or maybe she's waiting for you to ask.",
+]
+const GUIDANCE_TORCH = [
+  "The flame flickers.",
+  "A torch half-lit. The choice is yours.",
+  "Darken it or feed it — some things ask to be decided.",
+]
+const GUIDANCE_IDLE = [
+  "Still.",
+  "Nothing moves but the torchlight.",
+  "You've been standing here a while.",
+  "The room is patient. Are you?",
+  "What are you looking for?",
+  "Some doors don't open until you stop rushing.",
+]
+
+function pick(arr) { return arr[Math.floor(Math.random() * arr.length)] }
+
 export function useGameLoop(canvasRef, { onStateChange, onInteract, paused }) {
   const pausedRef     = useRef(paused)
   const onInteractRef = useRef(onInteract)
@@ -50,6 +72,11 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused }) {
     let torchStates = TORCHES.map(() => true)
     let prevShift   = false
     let prevSpace   = false
+    let idleTime       = 0
+    let guidanceTimer  = 16
+    let guidance       = null
+    let lastGuidanceCtx = null
+    let idleSaidCount  = 0
     let log         = [
       '<em>System:</em> Move with WASD.',
       'The torches flicker in the dark.',
@@ -174,6 +201,21 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused }) {
 
         // NPC speech timer removed — dialog modal handles NPC interaction
 
+        // Guidance voice
+        idleTime += player.moving ? -idleTime * dt * 3 : dt
+        const guidanceCtx = npcNear ? 'npc' : torchIdx >= 0 ? 'torch' : (idleTime > 15 && idleSaidCount < 2) ? 'idle' : null
+        if (guidanceCtx !== lastGuidanceCtx) {
+          guidanceTimer = Math.min(guidanceTimer, guidanceCtx ? 4 : 2)
+          lastGuidanceCtx = guidanceCtx
+        }
+        guidanceTimer -= dt
+        if (guidanceTimer <= 0) {
+          if      (guidanceCtx === 'npc')   { guidance = pick(GUIDANCE_NPC);   guidanceTimer = 30 + Math.random() * 20 }
+          else if (guidanceCtx === 'torch') { guidance = pick(GUIDANCE_TORCH); guidanceTimer = 30 + Math.random() * 20 }
+          else if (guidanceCtx === 'idle')  { guidance = pick(GUIDANCE_IDLE);  guidanceTimer = 999; idleSaidCount++ }
+          else                              { guidance = null; guidanceTimer = 20 }
+        }
+
         // Interact
         const shiftNow = isKeyDown('ShiftLeft') || isKeyDown('ShiftRight')
         if (shiftNow && !prevShift) {
@@ -186,7 +228,7 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused }) {
           }
         }
         prevShift = shiftNow
-        onStateRef.current?.({ facing: player.facing, moving: player.moving, log })
+        onStateRef.current?.({ facing: player.facing, moving: player.moving, log, guidance })
       } else {
         const shiftNow = isKeyDown('ShiftLeft') || isKeyDown('ShiftRight')
         if (shiftNow && !prevShift) onInteractRef.current?.()
