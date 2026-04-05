@@ -74,6 +74,22 @@ export function drawRug(ctx) {
     r_(ctx, rx + ox, ry + oy, 3, 3, PAL.rugBord)
 }
 
+// Soft elliptical aura — drawn beneath a character sprite.
+// rgb: comma-separated r,g,b string  e.g. '140,32,220'
+// alpha: 0-1 center opacity   rx/ry: ellipse radii in logical pixels
+export function drawAura(ctx, cx, cy, rgb, alpha, rx, ry) {
+  ctx.save()
+  ctx.translate(Math.floor(cx), Math.floor(cy))
+  ctx.scale(1, ry / rx)
+  const grd = ctx.createRadialGradient(0, 0, 0, 0, 0, rx)
+  grd.addColorStop(0,   `rgba(${rgb},${alpha})`)
+  grd.addColorStop(0.5, `rgba(${rgb},${(alpha * 0.4).toFixed(3)})`)
+  grd.addColorStop(1,   `rgba(${rgb},0)`)
+  ctx.fillStyle = grd
+  ctx.fillRect(-rx, -rx, rx * 2, rx * 2)
+  ctx.restore()
+}
+
 export function drawShadow(ctx, x, y, jumpFactor = 0) {
   ctx.save()
   ctx.globalAlpha = 0.35 * (1 - jumpFactor * 0.7)

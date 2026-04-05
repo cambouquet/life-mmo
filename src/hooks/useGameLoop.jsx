@@ -2,13 +2,12 @@ import { useEffect, useRef } from 'react'
 import { W, H, COLS, ROWS, TILE, SPEED, buildMap } from '../game/constants.jsx'
 import { movePlayer }                from '../game/collision.jsx'
 import { initInput, inputDir, isKeyDown } from '../game/input.jsx'
-import { drawShadow } from '../game/draw/room.jsx'
+import { drawShadow, drawAura } from '../game/draw/room.jsx'
 import { drawTable }                 from '../game/draw/table.jsx'
 import { drawWarriorSprite }         from '../game/draw/warrior.jsx'
 import { drawNpc } from '../game/draw/npc.jsx'
 
 const LOG_MAX         = 3
-const TORCH_R2        = 26 * 26
 const NPC_X           = 10 * TILE       // col 10, row 3
 const NPC_Y           = 3  * TILE
 const NPC_CX          = NPC_X + 8
@@ -108,6 +107,13 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused }) {
       ctx.fillRect(0, 0, W, H)
 
       drawTable(ctx, torchPhase)
+
+      // Auras — drawn before sprites so they sit beneath
+      const pAlpha = 0.60 + Math.sin(torchPhase * 0.8) * 0.12 + (npcNear ? 0.18 : 0)
+      const nAlpha = 0.65 + Math.sin(torchPhase * 0.7 + 1) * 0.12 + (npcNear ? 0.15 : 0)
+      drawAura(ctx, player.x + 8, player.y + 10, '160,50,255', pAlpha, 22, 14)
+      drawAura(ctx, NPC_X + 8,   NPC_Y + 10,    '0,210,230',  nAlpha, 20, 13)
+
       drawNpc(ctx, NPC_X, NPC_Y, torchPhase)
 
       const jf = player.jumpHeight / MAX_JUMP_H
