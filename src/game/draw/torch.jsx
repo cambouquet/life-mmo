@@ -11,45 +11,42 @@ export function drawTorch(ctx, c, row, phase, on = true) {
     const f1 = Math.sin(phase) * 0.28 + 0.72
     const f2 = Math.sin(phase * 1.9 + 1.1) * 0.18 + 0.82
 
-    // Wide warm glow pool
+    // Wide arcane glow pool (neon purple)
     const grd = ctx.createRadialGradient(x, y - 4, 0, x, y - 4, 54)
-    grd.addColorStop(0,    `rgba(255,160,40,${0.24 * f1})`)
-    grd.addColorStop(0.3,  `rgba(255,100,15,${0.11 * f1})`)
-    grd.addColorStop(0.65, `rgba(150,45,0,${0.04 * f1})`)
+    grd.addColorStop(0,    `rgba(160,60,255,${0.28 * f1})`)
+    grd.addColorStop(0.3,  `rgba(100,20,220,${0.12 * f1})`)
+    grd.addColorStop(0.65, `rgba(50,0,120,${0.05 * f1})`)
     grd.addColorStop(1,    'rgba(0,0,0,0)')
     ctx.fillStyle = grd
     ctx.fillRect(x - 54, y - 58, 108, 108)
 
-    // Wall backplate (iron)
-    r_(-1, 0, 3, 6, '#484e5c')
-    p_( 0, 1, '#686e7e')        // center highlight stripe
+    // Wall backplate (dark metal)
+    r_(-1, 0, 3, 6, '#28243c')
+    p_( 0, 1, '#3c3858')        // highlight stripe
     // Sconce arm
     r_(-3, -2, 4, 1, PAL.metal)
-    p_(-3, -1, '#6a7080')       // arm underside shadow
-    // Cup holder
+    p_(-3, -1, '#484460')       // arm shadow
+    // Cup / mount
     r_(-1, -3, 3, 2, PAL.metal)
-    p_( 0, -2, '#9aa8b4')       // cup highlight
-    // Candle wax body
-    r_(-1, -6, 2, 3, '#ede4c4')
-    p_( 0, -6, '#f8f2dc')       // lighter face
-    p_(-1, -5, '#c4b490')       // shadow side
-    p_(-1, -4, '#d0c4a0')       // wax drip
-    // Wick
-    p_(0, -7, '#705840')
+    p_( 0, -2, '#7070a0')       // cup highlight
+    // Crystal tube body (replaces candle)
+    r_(-1, -7, 2, 4, '#1a0830')
+    p_( 0, -7, '#3a2060')       // tube face
+    p_(-1, -6, '#0e0418')       // shadow side
 
-    // Flame — layered, warm centre cooler edges
-    if (f2 > 0.84) p_(0, -11, '#ffffffbb')
-    p_(0,  -10, f1 > 0.7 ? '#fff8a0' : '#ffea60')
-    p_(-1,  -9, '#ffdd44'); p_(0, -9, '#fff098'); p_(1, -9, '#ffcc33')
-    p_(-1,  -8, '#ffaa22'); p_(0, -8, '#ffdd55'); p_(1, -8, '#ff9900')
-    p_(-1,  -7, '#ff6800'); p_(0, -7, '#ffab30'); p_(1, -7, '#ee4500')
+    // Arcane flame — blue-violet core, white tip
+    if (f2 > 0.84) p_(0, -11, '#ffffff')
+    p_(0,  -10, f1 > 0.7 ? '#e0c0ff' : '#c080ff')
+    p_(-1,  -9, '#a040e0'); p_(0, -9, '#d090ff'); p_(1, -9, '#8820d0')
+    p_(-1,  -8, '#7020b0'); p_(0, -8, '#b060f0'); p_(1, -8, '#6010a0')
+    p_(-1,  -7, '#401080'); p_(0, -7, '#8040c0'); p_(1, -7, '#300870')
 
   } else {
-    // Unlit sconce
-    r_(-1, 0,  3, 6, '#3a404e')
+    // Unlit mount
+    r_(-1, 0,  3, 6, '#1c1828')
     r_(-3, -2, 4, 1, PAL.metal)
-    r_(-1, -3, 3, 2, '#484e5c')
-    r_(-1, -6, 2, 3, '#252018')  // charred wax
-    p_(0,  -7, '#181410')        // dead wick
+    r_(-1, -3, 3, 2, '#28243c')
+    r_(-1, -7, 2, 4, '#100818')  // dead crystal tube
+    p_(0,  -7, '#0c0614')        // dark
   }
 }

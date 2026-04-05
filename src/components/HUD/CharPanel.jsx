@@ -41,7 +41,7 @@ export default function CharPanel({ facing, moving }) {
       <canvas ref={canvasRef} width={12} height={10} />
       <div>
         <div className="char-panel__name">Kami</div>
-        <div className="char-panel__class">Warrior · Lv.1</div>
+        <div className="char-panel__class">Novice · Lv.1</div>
       </div>
     </div>
   )

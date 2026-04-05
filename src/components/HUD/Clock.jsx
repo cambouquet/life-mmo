@@ -1,16 +1,19 @@
 import { useEffect, useState } from 'react'
 
+const TZ = 'Europe/Paris'
+
 function formatTime(d) {
-  const hh = String(d.getHours()).padStart(2, '0')
-  const mm = String(d.getMinutes()).padStart(2, '0')
-  const ss = String(d.getSeconds()).padStart(2, '0')
-  return `${hh}:${mm}:${ss}`
+  return d.toLocaleTimeString('en-GB', { timeZone: TZ, hour12: false })
 }
 
 function formatDate(d) {
-  const days   = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']
-  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
-  return `${days[d.getDay()]} ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`
+  return d.toLocaleDateString('en-GB', {
+    timeZone: TZ,
+    weekday: 'short',
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  })
 }
 
 export default function Clock() {

@@ -5,43 +5,49 @@ const r_ = (ctx, x, y, w, h, c) => { ctx.fillStyle = c; ctx.fillRect(x, y, w, h)
 export function drawFloor(ctx, c, row) {
   const x = c * 16, y = row * 16
   const isA = (c + row) % 2 === 0
-  // Grout lines — top and left edges only (each tile provides its own border)
+  // Grout seams
   ctx.fillStyle = PAL.floorGrout
   ctx.fillRect(x, y, 16, 1)
   ctx.fillRect(x, y, 1, 16)
-  // Stone tile face
+  // Polished concrete face
   r_(ctx, x+1, y+1, 15, 15, isA ? PAL.floorA : PAL.floorB)
-  // Top-left edge highlight (light from upper-left)
-  ctx.fillStyle = isA ? '#1e1838' : '#25204a'
-  ctx.fillRect(x+1, y+1, 13, 1)
-  ctx.fillRect(x+1, y+2, 1, 11)
+  // Faint arcane vein — diagonal crack with subtle glow on A tiles
+  if (isA) {
+    ctx.fillStyle = '#1e1240'
+    ctx.fillRect(x+3,  y+3,  1, 1)
+    ctx.fillRect(x+5,  y+5,  2, 1)
+    ctx.fillRect(x+8,  y+8,  2, 1)
+    ctx.fillRect(x+11, y+11, 1, 1)
+  }
+  // Specular sheen (top-left highlight)
+  ctx.fillStyle = isA ? '#1a1428' : '#141020'
+  ctx.fillRect(x+1, y+1, 12, 1)
+  ctx.fillRect(x+1, y+2, 1, 10)
 }
 
 export function drawWall(ctx, c, row) {
   const x = c * 16, y = row * 16
   // Deep shadow base
   r_(ctx, x, y, 16, 16, PAL.wall)
-  // Stone front face
+  // Concrete panel face (no brick — smooth urban)
   r_(ctx, x, y+4, 16, 12, PAL.wallFace)
-  // Brick rows
-  r_(ctx, x+1, y+5,  14, 4, PAL.wallBrick)
-  r_(ctx, x+1, y+10, 14, 5, PAL.wallBrick)
-  // Mortar lines — lower vertical staggered for realistic brickwork
+  // Panel seam lines (industrial concrete joints)
   ctx.fillStyle = PAL.wallMort
-  ctx.fillRect(x,   y+4, 16, 1)   // top mortar
-  ctx.fillRect(x,   y+9, 16, 1)   // mid horizontal mortar
-  ctx.fillRect(x+8, y+5, 1,  4)   // upper vertical (center)
-  ctx.fillRect(x+4, y+10,1,  5)   // lower vertical (staggered)
-  // Subtle inner brick shadow (top edge of each brick row)
-  ctx.fillStyle = PAL.wallMort
-  ctx.fillRect(x+1, y+5,  14, 1)
-  ctx.fillRect(x+1, y+10, 14, 1)
-  // Lit top face
+  ctx.fillRect(x,   y+4,  16, 1)   // top seam
+  ctx.fillRect(x+8, y+5,   1, 11)  // vertical centre joint
+  ctx.fillRect(x,   y+10, 16, 1)   // mid horizontal joint
+  // Subtle panel depth shadow (top of lower panel)
+  ctx.fillStyle = PAL.wallBrick
+  ctx.fillRect(x+1, y+5,  7, 4)
+  ctx.fillRect(x+9, y+11, 7, 4)
+  // Arcane rune glow strip on the top cap underside
+  r_(ctx, x, y+3, 16, 1, PAL.wallGlow)
+  // Top cap
   r_(ctx, x, y, 16, 4, PAL.wallTop)
-  ctx.fillStyle = '#6252b4'
-  ctx.fillRect(x, y,   16, 1)   // bright highlight
-  ctx.fillStyle = '#221850'
-  ctx.fillRect(x, y+3, 16, 1)   // shadow at base of top face
+  ctx.fillStyle = '#2a2048'
+  ctx.fillRect(x, y,   16, 1)   // top edge
+  ctx.fillStyle = '#0e0c1c'
+  ctx.fillRect(x, y+3, 16, 1)   // shadow at base of cap
 }
 
 export function drawDoor(ctx, c, row) {

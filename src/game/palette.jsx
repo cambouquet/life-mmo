@@ -1,22 +1,23 @@
 // ── Room colour palette ───────────────────────────────────────────────────────
 export const PAL = {
-  floorA:    '#141020',
-  floorB:    '#1d1a32',
-  floorGrout:'#0b0916',
-  wall:      '#0d0a18',
-  wallTop:   '#46357c',
-  wallFace:  '#161230',
-  wallBrick: '#1f1a3c',
-  wallMort:  '#0c0918',
-  rug:       '#2e1e56',
-  rugBord:   '#5c3490',
-  rugInner:  '#3c2468',
-  light:     '#ffe8a022',
-  torch:     '#ffb830',
-  torchGlo:  '#ff840088',
+  floorA:    '#131118',   // dark concrete tile A
+  floorB:    '#0f0e16',   // dark concrete tile B
+  floorGrout:'#090810',   // grout seam
+  wall:      '#0c0a14',   // wall deep shadow
+  wallTop:   '#1e1a38',   // wall cap (darker, industrial)
+  wallFace:  '#100e1c',   // wall stone face
+  wallBrick: '#161428',   // concrete panel
+  wallMort:  '#0a0816',   // mortar / seam
+  wallGlow:  '#3a1060',   // rune strip behind wall top
+  rug:       '#1a1430',   // floor mat (dark teal-purple)
+  rugBord:   '#4a2880',   // mat border glow
+  rugInner:  '#2a1848',   // mat inner
+  light:     '#c080ff18', // ambient arcane light tint
+  torch:     '#b060ff',   // neon arcane lamp colour
+  torchGlo:  '#8030d088', // lamp bloom
   wood:      '#6b4424',
   woodDark:  '#472d14',
-  metal:     '#8898a8',
+  metal:     '#7880a0',
   shadow:    '#00000060',
 }
 
@@ -24,24 +25,17 @@ export const PAL = {
 export const PC = {
   skin:      '#f5c9a0',
   skinDk:    '#c8956a',
-  armor:     '#3e4d6a',
-  armorLt:   '#6e88a8',
-  armorDk:   '#1e2838',
-  armorRim:  '#9aacc0',
-  belt:      '#9a7025',
-  boot:      '#241a10',
   eye:       '#1a0a30',
-  helm:      '#323f56',
-  helmLt:    '#5c7090',
-  helmRim:   '#a0b0c8',
-  visor:     '#182030',
-  sword:     '#c8d8e8',
-  swordHi:   '#eef4fc',
-  swordHlt:  '#d4a020',
-  swordGrp:  '#4a2810',
-  shield:    '#323f56',
-  shieldRim: '#d4a020',
-  cape:      '#8a1520',
-  capeDk:    '#550810',
-  capeMid:   '#700e18',
+  mouth:     '#b06858',
+  hair:      '#160800',
+  hairLt:    '#3c1800',
+  hood:      '#12142a',
+  jacket:    '#1c2248',
+  jacketLt:  '#2a3268',
+  jeans:     '#1a2d58',
+  jeansDk:   '#0e1830',
+  sneak:     '#e4e4f2',
+  sneakSole: '#a8a8c0',
+  magic:     '#9020e0',
+  magicLt:   '#d880ff',
 }
