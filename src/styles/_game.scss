@@ -13,12 +13,9 @@
   image-rendering: crisp-edges;
   width: $game-w;
   height: $game-h;
-  border: 2px solid $border;
+  border: 1px solid $border-dim;
   border-top: none;
-  box-shadow:
-    0 0 0 1px #1a0a30,
-    0 0 30px #6020b055,
-    0 0 60px #3010601a;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(0, 0, 0, 0.4);
 }
 
 .guidance {
@@ -45,8 +42,9 @@
 }
 
 .hint {
-  margin-top: 10px;
-  color: $text-hint;
+  margin-top: 12px;
+  font-family: $font-ui;
   font-size: 11px;
-  letter-spacing: 2px;
+  color: $text-hint;
+  letter-spacing: 0.3px;
 }

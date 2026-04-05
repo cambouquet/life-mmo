@@ -13,11 +13,11 @@
 
 .modal {
   background: #0e0a1e;
-  border: 2px solid $border;
-  box-shadow: 0 0 50px #8040c055, 0 0 100px #30106020;
+  border: 1px solid $border;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.04);
   padding: 28px 32px 24px;
   width: min(460px, 90vw);
-  font-family: $font;
+  font-family: $font-ui;
   color: $text-primary;
   animation: modalIn 0.22s ease;
 
@@ -39,19 +39,17 @@
 
   &__title {
     text-align: center;
-    font-size: 17px;
-    letter-spacing: 5px;
-    text-transform: uppercase;
-    text-shadow: 0 0 14px #c8a0f066;
+    font-size: 18px;
+    font-weight: 500;
+    letter-spacing: 0.3px;
   }
 
   &__subtitle {
     text-align: center;
     color: $text-muted;
-    font-size: 9px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    margin-top: 5px;
+    font-size: 12px;
+    letter-spacing: 0.3px;
+    margin-top: 4px;
   }
 
   &__body {
@@ -66,26 +64,27 @@
   }
 
   &__label {
-    color: #5a3880;
-    font-size: 8px;
-    letter-spacing: 3px;
+    color: #6a4898;
+    font-size: 10px;
+    letter-spacing: 1px;
     text-transform: uppercase;
     margin-bottom: 5px;
   }
 
   &__text {
+    font-family: 'Lora', Georgia, serif;
     color: $text-log;
-    font-size: 13px;
-    line-height: 1.65;
-    letter-spacing: 0.3px;
+    font-size: 14px;
+    line-height: 1.7;
     font-style: italic;
   }
 
   &__lucky-value {
+    font-family: $font-ui;
     color: $text-clock;
-    font-style: normal;
-    font-size: 12px;
-    letter-spacing: 2px;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
   }
 
   &__footer {
@@ -98,11 +97,11 @@
     background: none;
     border: 1px solid $border;
     color: $text-muted;
-    font-family: $font;
-    font-size: 9px;
-    letter-spacing: 4px;
-    text-transform: uppercase;
+    font-family: $font-ui;
+    font-size: 12px;
+    letter-spacing: 0.3px;
     padding: 8px 28px;
+    border-radius: 4px;
     cursor: pointer;
     transition: border-color 0.2s, color 0.2s;
 
@@ -143,18 +142,18 @@
   }
 
   &__npc-name {
-    font-size: 13px;
-    letter-spacing: 5px;
-    text-transform: uppercase;
-    color: $text-clock;
-    text-shadow: 0 0 14px #c8a0f055;
+    font-family: $font-ui;
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: 0.2px;
+    color: $text-primary;
   }
 
   &__speech {
+    font-family: 'Lora', Georgia, serif;
     color: $text-log;
-    font-size: 13px;
-    line-height: 1.75;
-    letter-spacing: 0.3px;
+    font-size: 14px;
+    line-height: 1.8;
     font-style: italic;
     min-height: 56px;
   }
@@ -170,11 +169,11 @@
     background: none;
     border: 1px solid $border-dim;
     color: $text-muted;
-    font-family: $font;
-    font-size: 10px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    padding: 9px 14px;
+    font-family: $font-ui;
+    font-size: 13px;
+    letter-spacing: 0.2px;
+    padding: 10px 14px;
+    border-radius: 4px;
     text-align: left;
     cursor: pointer;
     transition: border-color 0.18s, color 0.18s, background 0.18s;
