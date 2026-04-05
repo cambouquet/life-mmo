@@ -118,16 +118,16 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused }) {
 
       drawTable(ctx, torchPhase)
 
-      // Auras — vertical body halos, drawn before sprites
-      // sprite centre: x+7 horizontal, y+8 vertical (mid of 14px figure)
+      // Auras — round glow centred on knees (oy=y+1, legs rows 11-12 → y+12)
+      const pKneeY = player.y - player.jumpHeight + 12
       const pAlpha = 0.72 + Math.sin(torchPhase * 0.8) * 0.10 + (npcNear ? 0.15 : 0)
       const nAlpha = 0.78 + Math.sin(torchPhase * 0.7 + 1) * 0.10 + (npcNear ? 0.12 : 0)
-      // outer soft halo
-      drawAura(ctx, player.x + 7, player.y + 8, '160,50,255', pAlpha * 0.30, 14, 20)
-      drawAura(ctx, NPC_X + 7,   NPC_Y + 8,   '0,220,240',  nAlpha * 0.30, 14, 20)
+      // outer soft ring
+      drawAura(ctx, player.x + 7, pKneeY,     '160,50,255', pAlpha * 0.28, 20, 20)
+      drawAura(ctx, NPC_X + 7,   NPC_Y + 12, '0,220,240',  nAlpha * 0.28, 20, 20)
       // inner bright core
-      drawAura(ctx, player.x + 7, player.y + 8, '160,50,255', pAlpha,         8, 12)
-      drawAura(ctx, NPC_X + 7,   NPC_Y + 8,   '0,220,240',  nAlpha,          8, 12)
+      drawAura(ctx, player.x + 7, pKneeY,     '160,50,255', pAlpha,        11, 11)
+      drawAura(ctx, NPC_X + 7,   NPC_Y + 12, '0,220,240',  nAlpha,         11, 11)
 
       drawNpc(ctx, NPC_X, NPC_Y, torchPhase)
 
