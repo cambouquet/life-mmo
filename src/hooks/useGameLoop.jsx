@@ -108,8 +108,8 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused }) {
       ctx.fillStyle = '#06040e'
       ctx.fillRect(0, 0, cw, ch)
 
-      // Draw world at 2× centred in the viewport
-      const DS = 2
+      // Scale world to fill viewport (integer steps for crisp pixel art room tiles)
+      const DS = Math.max(1, Math.floor(Math.min(cw / W, ch / H)))
       const ox = Math.round((cw - W * DS) / 2)
       const oy = Math.round((ch - H * DS) / 2)
       ctx.save()

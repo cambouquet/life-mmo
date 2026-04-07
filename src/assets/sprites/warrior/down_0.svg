@@ -1,0 +1,122 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+<defs>
+  <linearGradient id="sg" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#fef0dc"/>
+    <stop offset="55%" stop-color="#f8c898"/>
+    <stop offset="100%" stop-color="#be8048"/>
+  </linearGradient>
+  <linearGradient id="hg" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#5028b8"/>
+    <stop offset="100%" stop-color="#0c031a"/>
+  </linearGradient>
+  <linearGradient id="jg" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0%" stop-color="#5898ff"/>
+    <stop offset="45%" stop-color="#1e52c8"/>
+    <stop offset="100%" stop-color="#08183c"/>
+  </linearGradient>
+  <linearGradient id="ag" x1="1" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#3a68c0"/>
+    <stop offset="100%" stop-color="#081438"/>
+  </linearGradient>
+  <linearGradient id="ng" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#3a5a9a"/>
+    <stop offset="100%" stop-color="#14204a"/>
+  </linearGradient>
+  <linearGradient id="kg" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0%" stop-color="#8890b8"/>
+    <stop offset="45%" stop-color="#eeeefc"/>
+    <stop offset="100%" stop-color="#a8a8c8"/>
+  </linearGradient>
+  <linearGradient id="cg" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#9030d8"/>
+    <stop offset="100%" stop-color="#481090"/>
+  </linearGradient>
+</defs>
+<g transform="scale(2)">
+
+<!-- hair side locks behind face -->
+<rect x="3.4" y="2" width="1.5" height="5.4" rx="0.75" fill="#0c031a"/>
+<rect x="11.1" y="2" width="1.5" height="5.4" rx="0.75" fill="#0c031a"/>
+
+<!-- face oval -->
+<ellipse cx="8" cy="4.5" rx="3.1" ry="2.7" fill="url(#sg)" stroke="#09031a" stroke-width="0.5"/>
+<ellipse cx="7.7" cy="3.2" rx="1.4" ry="0.6" fill="#ffffff" opacity="0.28"/>
+
+<!-- hair crown -->
+<ellipse cx="8" cy="2" rx="4.3" ry="2.3" fill="url(#hg)" stroke="#09031a" stroke-width="0.5"/>
+<ellipse cx="6.6" cy="1.2" rx="1.7" ry="0.65" fill="#7045d0" opacity="0.72"/>
+<ellipse cx="9.7" cy="1.05" rx="1" ry="0.42" fill="#5838b8" opacity="0.6"/>
+
+<!-- eyebrows -->
+<path d="M5.5,3.6 Q6.25,3.1 7,3.45" stroke="#24103a" stroke-width="0.62" fill="none" stroke-linecap="round"/>
+<path d="M9,3.45 Q9.75,3.1 10.5,3.6" stroke="#24103a" stroke-width="0.62" fill="none" stroke-linecap="round"/>
+
+<!-- left eye -->
+<ellipse cx="6.4" cy="4.35" rx="0.98" ry="0.88" fill="#ddd0ee" stroke="#09031a" stroke-width="0.28"/>
+<ellipse cx="6.5" cy="4.4" rx="0.62" ry="0.7" fill="#180820"/>
+<path d="M5.5,3.92 Q6.4,3.52 7.3,3.92" fill="none" stroke="#24103a" stroke-width="0.32"/>
+<circle cx="6.72" cy="4.12" r="0.2" fill="#fff"/>
+
+<!-- right eye -->
+<ellipse cx="9.6" cy="4.35" rx="0.98" ry="0.88" fill="#ddd0ee" stroke="#09031a" stroke-width="0.28"/>
+<ellipse cx="9.5" cy="4.4" rx="0.62" ry="0.7" fill="#180820"/>
+<path d="M8.7,3.92 Q9.6,3.52 10.5,3.92" fill="none" stroke="#24103a" stroke-width="0.32"/>
+<circle cx="9.75" cy="4.12" r="0.2" fill="#fff"/>
+
+<!-- nose -->
+<path d="M7.45,5.5 Q8,6 8.55,5.5" fill="#c08050" fill-opacity="0.45" stroke="none"/>
+
+<!-- mouth -->
+<path d="M6.9,6.3 Q8,7.05 9.1,6.3" fill="none" stroke="#c06858" stroke-width="0.52" stroke-linecap="round"/>
+
+<!-- ears -->
+<ellipse cx="4.85" cy="4.8" rx="0.5" ry="0.85" fill="#f0c090" stroke="#09031a" stroke-width="0.28"/>
+<ellipse cx="11.15" cy="4.8" rx="0.5" ry="0.85" fill="#f0c090" stroke="#09031a" stroke-width="0.28"/>
+
+<!-- neck -->
+<rect x="6.9" y="7.2" width="2.2" height="1.1" rx="0.42" fill="#f0c090" stroke="#09031a" stroke-width="0.3"/>
+
+<!-- collar -->
+<rect x="4.3" y="7.8" width="7.4" height="1.55" rx="0.85" fill="url(#cg)" stroke="#09031a" stroke-width="0.45"/>
+<ellipse cx="8" cy="8" rx="1.1" ry="0.3" fill="#b040f0" opacity="0.62"/>
+<line x1="8" y1="7.8" x2="8" y2="9.35" stroke="#9e36d8" stroke-width="0.4"/>
+
+<!-- left arm -->
+<rect x="1.6" y="9" width="2.15" height="4" rx="0.95" fill="url(#ag)" stroke="#09031a" stroke-width="0.4"/>
+<rect x="1.9" y="9.3" width="0.65" height="3" rx="0.32" fill="#70a8ff" opacity="0.4"/>
+
+<!-- right arm -->
+<rect x="12.25" y="9" width="2.15" height="4" rx="0.95" fill="url(#ag)" stroke="#09031a" stroke-width="0.4"/>
+<rect x="13.6" y="9.3" width="0.5" height="3" rx="0.25" fill="#050e28" opacity="0.48"/>
+
+<!-- torso -->
+<path d="M4,9 Q8,8.3 12,9 L12,13.2 Q8,13.55 4,13.2 Z" fill="url(#jg)" stroke="#09031a" stroke-width="0.5"/>
+<path d="M4.3,9.2 L5.9,9 L5.9,13 L4.3,13.2 Z" fill="#70a8ff" opacity="0.35"/>
+<line x1="8" y1="9" x2="8" y2="13.2" stroke="#0a2060" stroke-width="0.32" opacity="0.5"/>
+<line x1="4.2" y1="12" x2="11.8" y2="12" stroke="#09031a" stroke-width="0.45" opacity="0.6"/>
+<rect x="7.45" y="11.8" width="1.1" height="0.65" rx="0.2" fill="#1a3080" stroke="#09031a" stroke-width="0.22"/>
+
+<!-- magic sigil -->
+<circle cx="8" cy="10.6" r="1.52" fill="none" stroke="#c040ff" stroke-width="0.42"/>
+<line x1="8" y1="9.08" x2="8" y2="12.12" stroke="#c040ff" stroke-width="0.36"/>
+<line x1="6.48" y1="10.6" x2="9.52" y2="10.6" stroke="#c040ff" stroke-width="0.36"/>
+<circle cx="8" cy="10.6" r="0.5" fill="#f090ff"/>
+
+<!-- hands -->
+<ellipse cx="2.68" cy="13.2" rx="1.08" ry="0.85" fill="#f0c090" stroke="#09031a" stroke-width="0.28"/>
+<ellipse cx="13.32" cy="13.2" rx="1.08" ry="0.85" fill="#f0c090" stroke="#09031a" stroke-width="0.28"/>
+
+<!-- legs -->
+<rect x="4" y="13" width="3.4" height="1.95" rx="0.6" fill="url(#ng)" stroke="#09031a" stroke-width="0.4"/>
+<rect x="8.6" y="13" width="3.4" height="1.95" rx="0.6" fill="url(#ng)" stroke="#09031a" stroke-width="0.4"/>
+<line x1="8" y1="13" x2="8" y2="14.95" stroke="#101830" stroke-width="0.48"/>
+<ellipse cx="5.7" cy="13.55" rx="1.15" ry="0.44" fill="#4870b8" opacity="0.65"/>
+<ellipse cx="10.3" cy="13.55" rx="1.15" ry="0.44" fill="#4870b8" opacity="0.65"/>
+
+<!-- shoes -->
+<rect x="3.1" y="14.85" width="4.45" height="1.0" rx="0.52" fill="url(#kg)" stroke="#09031a" stroke-width="0.38"/>
+<rect x="8.45" y="14.85" width="4.45" height="1.0" rx="0.52" fill="url(#kg)" stroke="#09031a" stroke-width="0.38"/>
+<line x1="3.5" y1="15.45" x2="7.1" y2="15.45" stroke="#7070a0" stroke-width="0.25" opacity="0.7"/>
+<line x1="8.85" y1="15.45" x2="12.5" y2="15.45" stroke="#7070a0" stroke-width="0.25" opacity="0.7"/>
+</g>
+</svg>

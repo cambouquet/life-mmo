@@ -1,0 +1,121 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+<defs>
+  <linearGradient id="sg" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#f8ddb8"/>
+    <stop offset="55%" stop-color="#f5c9a0"/>
+    <stop offset="100%" stop-color="#c8956a"/>
+  </linearGradient>
+  <linearGradient id="hag" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#fff8d0"/>
+    <stop offset="50%" stop-color="#e8d090"/>
+    <stop offset="100%" stop-color="#b09858"/>
+  </linearGradient>
+  <linearGradient id="rg" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0%" stop-color="#6048f0"/>
+    <stop offset="45%" stop-color="#3820b8"/>
+    <stop offset="100%" stop-color="#100840"/>
+  </linearGradient>
+  <linearGradient id="cog" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#a050f0"/>
+    <stop offset="100%" stop-color="#5818a0"/>
+  </linearGradient>
+  <linearGradient id="crg" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0%" stop-color="#ffffff"/>
+    <stop offset="50%" stop-color="#d0a8ff"/>
+    <stop offset="100%" stop-color="#9060c8"/>
+  </linearGradient>
+</defs>
+<g transform="scale(2)">
+
+<!-- HAIR side falls (long golden, behind face) -->
+<rect x="2.8" y="2.5" width="1.5" height="9" rx="0.75" fill="#b09858" stroke="#09031a" stroke-width="0.3"/>
+<rect x="11.7" y="2.5" width="1.5" height="9" rx="0.75" fill="#b09858" stroke="#09031a" stroke-width="0.3"/>
+<!-- hair inner highlight on falls -->
+<rect x="3.1" y="2.8" width="0.6" height="8" rx="0.3" fill="#e8d090" opacity="0.7"/>
+<rect x="12.3" y="2.8" width="0.6" height="8" rx="0.3" fill="#e8d090" opacity="0.7"/>
+
+<!-- HAIR crown -->
+<ellipse cx="8" cy="2" rx="4.2" ry="2.2" fill="url(#hag)" stroke="#09031a" stroke-width="0.5"/>
+<!-- sheen highlights on crown -->
+<ellipse cx="6.8" cy="1.2" rx="1.6" ry="0.62" fill="#fff8d0" opacity="0.8"/>
+<ellipse cx="9.5" cy="1.0" rx="0.9" ry="0.38" fill="#ffe890" opacity="0.65"/>
+<!-- hair wave at crown top -->
+<path d="M4.5,1.5 Q6,0.3 8,0.8 Q10,0.3 11.5,1.5" fill="none" stroke="#c8a040" stroke-width="0.35" opacity="0.7"/>
+
+<!-- FACE -->
+<ellipse cx="8" cy="4.5" rx="3" ry="2.7" fill="url(#sg)" stroke="#09031a" stroke-width="0.5"/>
+<ellipse cx="7.7" cy="3.2" rx="1.4" ry="0.58" fill="#ffffff" opacity="0.28"/>
+
+<!-- EYEBROWS (arched, feminine) -->
+<path d="M5.6,3.5 Q6.5,2.9 7.3,3.3" stroke="#8030a0" stroke-width="0.7" fill="none" stroke-linecap="round"/>
+<path d="M8.7,3.3 Q9.5,2.9 10.4,3.5" stroke="#8030a0" stroke-width="0.7" fill="none" stroke-linecap="round"/>
+
+<!-- LEFT EYE (large, with lashes) -->
+<ellipse cx="6.4" cy="4.3" rx="1.05" ry="0.95" fill="#e0d0f8" stroke="#09031a" stroke-width="0.28"/>
+<ellipse cx="6.4" cy="4.35" rx="0.7" ry="0.78" fill="#2a0a40"/>
+<!-- iris shimmer -->
+<ellipse cx="6.4" cy="4.2" rx="0.4" ry="0.3" fill="#5010a0" opacity="0.8"/>
+<circle cx="6.62" cy="4.08" r="0.22" fill="#fff"/>
+<!-- upper lash line -->
+<path d="M5.4,3.82 Q6.4,3.38 7.4,3.82" fill="none" stroke="#5020a0" stroke-width="0.4"/>
+
+<!-- RIGHT EYE -->
+<ellipse cx="9.6" cy="4.3" rx="1.05" ry="0.95" fill="#e0d0f8" stroke="#09031a" stroke-width="0.28"/>
+<ellipse cx="9.6" cy="4.35" rx="0.7" ry="0.78" fill="#2a0a40"/>
+<ellipse cx="9.6" cy="4.2" rx="0.4" ry="0.3" fill="#5010a0" opacity="0.8"/>
+<circle cx="9.82" cy="4.08" r="0.22" fill="#fff"/>
+<path d="M8.6,3.82 Q9.6,3.38 10.6,3.82" fill="none" stroke="#5020a0" stroke-width="0.4"/>
+
+<!-- NOSE -->
+<path d="M7.5,5.45 Q8,5.9 8.5,5.45" fill="#c8956a" fill-opacity="0.4" stroke="none"/>
+
+<!-- LIPS (fuller, feminine) -->
+<path d="M6.8,6.2 Q8,7.0 9.2,6.2" fill="#f08080" fill-opacity="0.35" stroke="#d06060" stroke-width="0.5" stroke-linecap="round"/>
+<path d="M7.2,6.5 Q8,6.85 8.8,6.5" fill="none" stroke="#b04040" stroke-width="0.32"/>
+
+<!-- EAR hints -->
+<ellipse cx="4.95" cy="4.7" rx="0.5" ry="0.8" fill="#f5c9a0" stroke="#09031a" stroke-width="0.28"/>
+<ellipse cx="11.05" cy="4.7" rx="0.5" ry="0.8" fill="#f5c9a0" stroke="#09031a" stroke-width="0.28"/>
+
+<!-- NECK -->
+<rect x="7" y="7.2" width="2" height="1.0" rx="0.4" fill="#f5c9a0" stroke="#09031a" stroke-width="0.28"/>
+
+<!-- HIGH COLLAR (magician's ruff) -->
+<ellipse cx="8" cy="8.1" rx="4.2" ry="1.2" fill="url(#cog)" stroke="#09031a" stroke-width="0.5"/>
+<ellipse cx="8" cy="7.85" rx="3.8" ry="0.8" fill="#c060ff" opacity="0.45"/>
+<!-- collar gem highlight -->
+<ellipse cx="8" cy="8.0" rx="0.7" ry="0.28" fill="#f0c0ff" opacity="0.75"/>
+<line x1="8" y1="7.5" x2="8" y2="8.9" stroke="#b040e8" stroke-width="0.4"/>
+
+<!-- ROBE BODY (covers all of body, flowing to feet) -->
+<path d="M3,8.8 Q8,8.2 13,8.8 L14,16 L2,16 Z" fill="url(#rg)" stroke="#09031a" stroke-width="0.5"/>
+<!-- robe left highlight panel -->
+<path d="M3.2,9 L5.2,8.7 L5.5,16 L3,16 Z" fill="#7060f0" opacity="0.35"/>
+<!-- robe right shadow -->
+<path d="M12.8,9 L10.8,8.7 L10.5,16 L13,16 Z" fill="#08040a" opacity="0.3"/>
+<!-- robe center seam -->
+<line x1="8" y1="8.8" x2="8" y2="16" stroke="#2a18a0" stroke-width="0.38" opacity="0.55"/>
+<!-- robe fold lines (gentle curves suggesting fabric) -->
+<path d="M5,10.5 Q8,10 11,10.5" fill="none" stroke="#2a18a0" stroke-width="0.32" opacity="0.6"/>
+<path d="M4.5,12.5 Q8,12 11.5,12.5" fill="none" stroke="#2a18a0" stroke-width="0.28" opacity="0.5"/>
+<path d="M4,14.5 Q8,14 12,14.5" fill="none" stroke="#2a18a0" stroke-width="0.25" opacity="0.4"/>
+
+<!-- CRYSTAL PENDANT -->
+<ellipse cx="8" cy="10" rx="1.0" ry="0.65" fill="#d0a8ff" opacity="0.7"/>
+<polygon points="8,8.8 7,10.2 8,11.4 9,10.2" fill="url(#crg)" stroke="#09031a" stroke-width="0.35"/>
+<ellipse cx="8" cy="10.2" rx="0.6" ry="0.5" fill="#ffffff" opacity="0.55"/>
+<circle cx="7.8" cy="9.8" r="0.2" fill="#ffffff" opacity="0.9"/>
+
+<!-- TATTOO hints on robe arms (arms suggested by slight robe shaping) -->
+<!-- left arm area -->
+<path d="M3.8,10 Q3.2,11 3.5,12" fill="none" stroke="#c040ff" stroke-width="0.4" opacity="0.7"/>
+<circle cx="3.6" cy="11" r="0.35" fill="none" stroke="#c040ff" stroke-width="0.35" opacity="0.65"/>
+<!-- right arm area -->
+<path d="M12.2,10 Q12.8,11 12.5,12" fill="none" stroke="#c040ff" stroke-width="0.4" opacity="0.7"/>
+<circle cx="12.4" cy="11" r="0.35" fill="none" stroke="#c040ff" stroke-width="0.35" opacity="0.65"/>
+
+<!-- HEM of robe (dark accent) -->
+<rect x="2" y="15.2" width="12" height="0.8" rx="0.3" fill="#100840" stroke="#09031a" stroke-width="0.3"/>
+<line x1="2.5" y1="15.6" x2="13.5" y2="15.6" stroke="#3820b8" stroke-width="0.28" opacity="0.7"/>
+</g>
+</svg>
