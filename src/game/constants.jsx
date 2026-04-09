@@ -8,7 +8,7 @@ export const H     = ROWS * TILE;   // 224
 export const SPEED = 80;            // px/s (logical)
 
 // ── Room tile map  (0=floor, 1=wall, 2=door gap) ─────────────────────────────
-export function buildMap(cols = COLS, rows = ROWS) {
+export function buildMap(cols = COLS, rows = ROWS, tableC, tableR) {
   const map = []
   for (let r = 0; r < rows; r++) {
     map[r] = []
@@ -19,9 +19,12 @@ export function buildMap(cols = COLS, rows = ROWS) {
   }
   map[rows - 1][Math.floor(cols / 2)]     = 2
   map[rows - 1][Math.floor(cols / 2) + 1] = 2
-  if (rows > 3 && cols > 11) {
-    map[2][9]  = 3
-    map[2][10] = 3
+  // Furniture — use provided coords or default to fixed position
+  const tc = tableC ?? 9
+  const tr = tableR ?? 2
+  if (tr > 0 && tr < rows - 1 && tc > 0 && tc + 1 < cols - 1) {
+    map[tr][tc]     = 3
+    map[tr][tc + 1] = 3
   }
   return map
 }

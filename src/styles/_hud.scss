@@ -2,20 +2,25 @@
 
 // ── Wrapper ─────────────────────────────────────────────────────────────────
 .game-wrap {
-  display: flex;
-  flex-direction: column;
+  position: relative;
   width: 100vw;
   height: 100vh;
   overflow: hidden;
 }
 
-// ── HUD header ───────────────────────────────────────────────────────────────
+// ── HUD header — floats over the game ────────────────────────────────────────
 .hud {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
   display: flex;
   align-items: stretch;
   width: 100%;
   height: $hud-h;
-  background: $bg-hud;
+  background: rgba(14, 10, 30, 0.72);
+  backdrop-filter: blur(6px);
   border-bottom: 1px solid $border-dim;
   overflow: hidden;
 }

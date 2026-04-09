@@ -1,6 +1,5 @@
-const TX = 144, TY = 32
-
-export function drawTable(ctx, phase) {
+export function drawTable(ctx, phase, tx, ty) {
+  const TX = tx, TY = ty
   const b = (ox, oy, w, h, c) => { ctx.fillStyle = c; ctx.fillRect(TX+ox, TY+oy, w, h) }
   const p = (ox, oy, c)       => { ctx.fillStyle = c; ctx.fillRect(TX+ox, TY+oy, 1, 1) }
 

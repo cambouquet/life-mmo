@@ -6,12 +6,9 @@ import { drawTable }                 from '../game/draw/table.jsx'
 import { drawWarriorSprite }         from '../game/draw/warrior.jsx'
 import { drawNpc }                   from '../game/draw/npc.jsx'
 import { drawBoundsOfLight }         from '../game/draw/bounds.jsx'
+import { drawProximityAura }         from '../game/draw/proximityAura.jsx'
 
 const LOG_MAX         = 3
-const NPC_X           = 10 * TILE       // col 10, row 3
-const NPC_Y           = 3  * TILE
-const NPC_CX          = NPC_X + 8
-const NPC_CY          = NPC_Y + 8
 const NPC_INTERACT_R2 = 28 * 28
 
 const MAX_JUMP_H  = 9
@@ -57,7 +54,20 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused }) {
     const ROWS   = Math.max(6, Math.floor(ch0 / TILE))
     const W      = COLS * TILE
     const H      = ROWS * TILE
-    const map    = buildMap(COLS, ROWS)
+    const pcStartC = Math.floor(COLS / 2)
+    const pcStartR = Math.floor(ROWS / 2)
+    const tableC   = pcStartC - 2
+    const tableR   = pcStartR - 2
+    const TABLE_X  = tableC * TILE
+    const TABLE_Y  = tableR * TILE
+    const TABLE_CX = TABLE_X + 16
+    const TABLE_CY = TABLE_Y + 8
+    // NPC stands 2 tiles to the right of the table
+    const NPC_X    = (tableC + 3) * TILE
+    const NPC_Y    = tableR * TILE
+    const NPC_CX   = NPC_X + 8
+    const NPC_CY   = NPC_Y + 8
+    const map    = buildMap(COLS, ROWS, tableC, tableR)
     const player = {
       x: Math.floor(COLS / 2) * TILE,
       y: Math.floor(ROWS / 2) * TILE,
@@ -109,12 +119,15 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused }) {
 
     function render(npcNear) {
       const cw = ctx.canvas.width, ch = ctx.canvas.height
+      const pcx = player.x + 8, pcy = player.y + 8
 
-      // Dark void outside the world
       ctx.fillStyle = '#06040e'
       ctx.fillRect(0, 0, cw, ch)
 
-      drawTable(ctx, torchPhase)
+      // Proximity auras — drawn before sprites so they appear beneath
+      drawProximityAura(ctx, NPC_CX,   NPC_CY,   pcx, pcy, 64, '96,232,255')  // NPC — cyan
+
+      drawTable(ctx, torchPhase, TABLE_X, TABLE_Y)
       drawNpc(ctx, NPC_X, NPC_Y, torchPhase)
       drawWarriorSprite(ctx, player.x, player.y - player.jumpHeight, player.facing, player.frame, torchPhase)
 
