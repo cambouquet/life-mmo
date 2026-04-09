@@ -28,3 +28,40 @@ export function drawShadow(ctx, x, y, jumpFactor = 0) {
   ctx.fill()
   ctx.restore()
 }
+
+const TILE = 16
+
+// Draws the full room tile-by-tile from the map array
+export function drawRoom(ctx, map) {
+  const rows = map.length
+  const cols = map[0]?.length ?? 0
+
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      const t  = map[r][c]
+      const px = c * TILE
+      const py = r * TILE
+
+      if (t === 1) {
+        // Wall tile — stone
+        ctx.fillStyle = '#1a1530'
+        ctx.fillRect(px, py, TILE, TILE)
+        // Top highlight edge
+        ctx.fillStyle = '#28243c'
+        ctx.fillRect(px, py, TILE, 1)
+        // Right shadow edge
+        ctx.fillStyle = '#100d20'
+        ctx.fillRect(px + TILE - 1, py, 1, TILE)
+      } else {
+        // Floor tile (0 = floor, 2 = door gap, 3 = furniture base)
+        ctx.fillStyle = c % 2 === r % 2 ? '#0e0b1a' : '#0b0917'
+        ctx.fillRect(px, py, TILE, TILE)
+        // Subtle grid seam
+        ctx.fillStyle = '#050310'
+        ctx.fillRect(px, py, 1, TILE)
+        ctx.fillRect(px, py, TILE, 1)
+      }
+    }
+  }
+}
+

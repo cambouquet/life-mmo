@@ -8,20 +8,21 @@ export const H     = ROWS * TILE;   // 224
 export const SPEED = 80;            // px/s (logical)
 
 // ── Room tile map  (0=floor, 1=wall, 2=door gap) ─────────────────────────────
-export function buildMap() {
+export function buildMap(cols = COLS, rows = ROWS) {
   const map = []
-  for (let r = 0; r < ROWS; r++) {
+  for (let r = 0; r < rows; r++) {
     map[r] = []
-    for (let c = 0; c < COLS; c++) {
-      const edge = r === 0 || r === ROWS - 1 || c === 0 || c === COLS - 1
+    for (let c = 0; c < cols; c++) {
+      const edge = r === 0 || r === rows - 1 || c === 0 || c === cols - 1
       map[r][c] = edge ? 1 : 0
     }
   }
-  map[ROWS - 1][Math.floor(COLS / 2)]     = 2
-  map[ROWS - 1][Math.floor(COLS / 2) + 1] = 2
-  // Divination table — 2 tiles wide, upper centre (type 3 = solid furniture)
-  map[2][9]  = 3
-  map[2][10] = 3
+  map[rows - 1][Math.floor(cols / 2)]     = 2
+  map[rows - 1][Math.floor(cols / 2) + 1] = 2
+  if (rows > 3 && cols > 11) {
+    map[2][9]  = 3
+    map[2][10] = 3
+  }
   return map
 }
 

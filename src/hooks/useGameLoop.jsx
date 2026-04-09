@@ -1,10 +1,11 @@
 import { useEffect, useRef } from 'react'
-import { W, H, COLS, ROWS, TILE, SCALE, SPEED, buildMap } from '../game/constants.jsx'
+import { TILE, SPEED, buildMap } from '../game/constants.jsx'
 import { movePlayer }                from '../game/collision.jsx'
 import { initInput, inputDir, isKeyDown } from '../game/input.jsx'
 import { drawTable }                 from '../game/draw/table.jsx'
 import { drawWarriorSprite }         from '../game/draw/warrior.jsx'
-import { drawNpc } from '../game/draw/npc.jsx'
+import { drawNpc }                   from '../game/draw/npc.jsx'
+import { drawBoundsOfLight }         from '../game/draw/bounds.jsx'
 
 const LOG_MAX         = 3
 const NPC_X           = 10 * TILE       // col 10, row 3
@@ -50,10 +51,16 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused }) {
     const ctx = canvasRef.current.getContext('2d')
     ctx.imageSmoothingEnabled = false
 
-    const map    = buildMap()
+    const cw0    = ctx.canvas.width
+    const ch0    = ctx.canvas.height
+    const COLS   = Math.max(8, Math.floor(cw0 / TILE))
+    const ROWS   = Math.max(6, Math.floor(ch0 / TILE))
+    const W      = COLS * TILE
+    const H      = ROWS * TILE
+    const map    = buildMap(COLS, ROWS)
     const player = {
-      x: (COLS / 2 - 0.5) * TILE,
-      y: (ROWS / 2 - 0.5) * TILE,
+      x: Math.floor(COLS / 2) * TILE,
+      y: Math.floor(ROWS / 2) * TILE,
       w: TILE, h: TILE,
       frame: 0, frameTick: 0,
       facing: 'down', moving: false,
@@ -103,27 +110,17 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused }) {
     function render(npcNear) {
       const cw = ctx.canvas.width, ch = ctx.canvas.height
 
-      // Dark void background — fill full screen
+      // Dark void outside the world
       ctx.fillStyle = '#06040e'
       ctx.fillRect(0, 0, cw, ch)
 
-      // Fixed display scale — world size stays constant, bigger screens see more border
-      const DS = SCALE
-      const ox = Math.round((cw - W * DS) / 2)
-      const oy = Math.round((ch - H * DS) / 2)
-      ctx.save()
-      ctx.translate(ox, oy)
-      ctx.scale(DS, DS)
-
       drawTable(ctx, torchPhase)
-
       drawNpc(ctx, NPC_X, NPC_Y, torchPhase)
-
       drawWarriorSprite(ctx, player.x, player.y - player.jumpHeight, player.facing, player.frame, torchPhase)
 
       if (!pausedRef.current && npcNear) badge(NPC_CX, NPC_Y - 2)
 
-      ctx.restore()
+      drawBoundsOfLight(ctx, W, H, torchPhase, player.x + 8, player.y + 8)
     }
 
     function loop(ts) {

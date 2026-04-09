@@ -1,32 +1,34 @@
 import sheetUrl from '../../assets/sprites/03000_magicienne.png'
 
-// Crops a 12×10 face portrait from the magicienne spritesheet (32×32 frames)
-// Face region within each frame: roughly x+10, y+0, w=12, h=10
 const FRAME_W = 32
 const FRAME_H = 32
 const ROW = { down: 0, right: 1, up: 2, left: 3 }
-// x/y offset into each frame to get the face area
-const CROP = { x: 10, y: 0, w: 12, h: 10 }
+// Source crop: 24×24 starting at x=4 of each frame (top of hat through collar)
+const CROP = { x: 4, y: 0, w: 24, h: 24 }
+// Canvas size (logical px, CSS doubles to 48×48)
+const CV = 24
 
 const sheet = new Image()
 sheet.src = sheetUrl
 
 export function drawHead(ctx, facing, expr) {
-  ctx.fillStyle = '#0a0616'
-  ctx.fillRect(0, 0, 12, 10)
+  ctx.clearRect(0, 0, CV, CV)
 
   if (!sheet.complete || sheet.naturalWidth === 0) return
 
   const row = ROW[facing] ?? ROW.down
-  // For blink expression use the standing col (1), otherwise col 0
   const col = expr === 'blink' ? 1 : 0
 
   ctx.save()
   ctx.imageSmoothingEnabled = false
+  // Circular mask: center (12, 10) radius 12 — shows hat + full face, clips body
+  ctx.beginPath()
+  ctx.arc(12, 10, 12, 0, Math.PI * 2)
+  ctx.clip()
   ctx.drawImage(
     sheet,
     col * FRAME_W + CROP.x, row * FRAME_H + CROP.y, CROP.w, CROP.h,
-    0, 0, 12, 10
+    0, 0, CROP.w, CROP.h
   )
   ctx.restore()
 }

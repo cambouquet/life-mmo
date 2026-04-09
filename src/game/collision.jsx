@@ -1,9 +1,9 @@
-import { TILE, COLS, ROWS } from './constants.jsx'
+import { TILE } from './constants.jsx'
 
 export function tileAt(map, px, py) {
   const c = Math.floor(px / TILE)
-  const r = Math.floor(py / TILE) 
-  if (r < 0 || r >= ROWS || c < 0 || c >= COLS) return 1
+  const r = Math.floor(py / TILE)
+  if (r < 0 || r >= map.length || c < 0 || c >= (map[0]?.length ?? 0)) return 1
   return map[r][c]
 }
 
