@@ -1,9 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
 <defs>
   <linearGradient id="sg" x1="0" y1="0" x2="0" y2="1">
-    <stop offset="0%" stop-color="#f8ddb8"/>
-    <stop offset="55%" stop-color="#f5c9a0"/>
-    <stop offset="100%" stop-color="#c8956a"/>
+    <stop offset="0%" stop-color="#fff8e0"/>
+    <stop offset="55%" stop-color="#f5d890"/>
+    <stop offset="100%" stop-color="#c8a048"/>
   </linearGradient>
   <linearGradient id="hag" x1="0" y1="0" x2="0" y2="1">
     <stop offset="0%" stop-color="#fff8d0"/>
@@ -24,6 +24,16 @@
     <stop offset="50%" stop-color="#d0a8ff"/>
     <stop offset="100%" stop-color="#9060c8"/>
   </linearGradient>
+  <radialGradient id="ieg" cx="0.4" cy="0.3" r="0.65">
+    <stop offset="0%" stop-color="#6A30C8"/>
+    <stop offset="55%" stop-color="#2a0880"/>
+    <stop offset="100%" stop-color="#0e031a"/>
+  </radialGradient>
+  <linearGradient id="tg" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0%" stop-color="#f8d040"/>
+    <stop offset="50%" stop-color="#ffe880"/>
+    <stop offset="100%" stop-color="#e0a820"/>
+  </linearGradient>
 </defs>
 <g transform="scale(2)">
 
@@ -37,85 +47,117 @@
 <!-- HAIR crown -->
 <ellipse cx="8" cy="2" rx="4.2" ry="2.2" fill="url(#hag)" stroke="#09031a" stroke-width="0.5"/>
 <!-- sheen highlights on crown -->
-<ellipse cx="6.8" cy="1.2" rx="1.6" ry="0.62" fill="#fff8d0" opacity="0.8"/>
-<ellipse cx="9.5" cy="1.0" rx="0.9" ry="0.38" fill="#ffe890" opacity="0.65"/>
+<ellipse cx="6.8" cy="1.2" rx="1.6" ry="0.62" fill="#fff8d0" opacity="0.82"/>
+<ellipse cx="9.5" cy="1.0" rx="0.9" ry="0.38" fill="#ffe890" opacity="0.68"/>
 <!-- hair wave at crown top -->
-<path d="M4.5,1.5 Q6,0.3 8,0.8 Q10,0.3 11.5,1.5" fill="none" stroke="#c8a040" stroke-width="0.35" opacity="0.7"/>
+<path d="M4.5,1.5 Q6,0.3 8,0.8 Q10,0.3 11.5,1.5" fill="none" stroke="#c8a040" stroke-width="0.35" opacity="0.72"/>
+
+<!-- TIARA / CROWN (Zelda princess style) -->
+<path d="M4.8,1.1 L5.5,0.1 L6.2,1.1" fill="url(#tg)" stroke="#09031a" stroke-width="0.28"/>
+<path d="M6.5,1.0 L7.2,0.0 L7.85,1.0" fill="url(#tg)" stroke="#09031a" stroke-width="0.28"/>
+<path d="M8.15,1.0 L8.8,0.0 L9.5,1.0" fill="url(#tg)" stroke="#09031a" stroke-width="0.28"/>
+<path d="M9.8,1.1 L10.5,0.1 L11.2,1.1" fill="url(#tg)" stroke="#09031a" stroke-width="0.28"/>
+<!-- tiara band -->
+<rect x="4.8" y="0.95" width="6.4" height="0.42" rx="0.2" fill="#f0c030" stroke="#09031a" stroke-width="0.2"/>
+<!-- tiara center gem -->
+<ellipse cx="8" cy="1.16" rx="0.55" ry="0.38" fill="#e060ff" stroke="#09031a" stroke-width="0.2"/>
+<circle cx="8" cy="1.12" r="0.18" fill="#ffffff" opacity="0.85"/>
+
+<!-- POINTED HYLIAN EARS (Zelda's elegant ears) -->
+<polygon points="4.18,4.35 2.7,3.2 3.35,5.45" fill="#f5d890" stroke="#09031a" stroke-width="0.38"/>
+<line x1="3.88" y1="3.98" x2="3.12" y2="3.65" stroke="#c8a048" stroke-width="0.22" opacity="0.55"/>
+<polygon points="11.82,4.35 13.3,3.2 12.65,5.45" fill="#f5d890" stroke="#09031a" stroke-width="0.38"/>
+<line x1="12.12" y1="3.98" x2="12.88" y2="3.65" stroke="#c8a048" stroke-width="0.22" opacity="0.55"/>
 
 <!-- FACE -->
-<ellipse cx="8" cy="4.5" rx="3" ry="2.7" fill="url(#sg)" stroke="#09031a" stroke-width="0.5"/>
-<ellipse cx="7.7" cy="3.2" rx="1.4" ry="0.58" fill="#ffffff" opacity="0.28"/>
+<ellipse cx="8" cy="4.8" rx="3.1" ry="2.85" fill="url(#sg)" stroke="#09031a" stroke-width="0.5"/>
+<ellipse cx="7.6" cy="3.35" rx="1.4" ry="0.58" fill="#ffffff" opacity="0.3"/>
 
-<!-- EYEBROWS (arched, feminine) -->
-<path d="M5.6,3.5 Q6.5,2.9 7.3,3.3" stroke="#8030a0" stroke-width="0.7" fill="none" stroke-linecap="round"/>
-<path d="M8.7,3.3 Q9.5,2.9 10.4,3.5" stroke="#8030a0" stroke-width="0.7" fill="none" stroke-linecap="round"/>
+<!-- EYEBROWS (arched, feminine, elegant) -->
+<path d="M5.55,3.48 Q6.48,2.88 7.32,3.28" stroke="#8030a0" stroke-width="0.72" fill="none" stroke-linecap="round"/>
+<path d="M8.68,3.28 Q9.52,2.88 10.45,3.48" stroke="#8030a0" stroke-width="0.72" fill="none" stroke-linecap="round"/>
 
-<!-- LEFT EYE (large, with lashes) -->
-<ellipse cx="6.4" cy="4.3" rx="1.05" ry="0.95" fill="#e0d0f8" stroke="#09031a" stroke-width="0.28"/>
-<ellipse cx="6.4" cy="4.35" rx="0.7" ry="0.78" fill="#2a0a40"/>
+<!-- LEFT EYE (large, luminous, princess-like) -->
+<ellipse cx="6.35" cy="4.42" rx="1.1" ry="1.04" fill="#e0d0f8" stroke="#09031a" stroke-width="0.3"/>
+<ellipse cx="6.35" cy="4.5" rx="0.76" ry="0.85" fill="url(#ieg)"/>
 <!-- iris shimmer -->
-<ellipse cx="6.4" cy="4.2" rx="0.4" ry="0.3" fill="#5010a0" opacity="0.8"/>
-<circle cx="6.62" cy="4.08" r="0.22" fill="#fff"/>
+<ellipse cx="6.3" cy="4.26" rx="0.42" ry="0.28" fill="#8040d0" opacity="0.82"/>
+<!-- lower iris glow -->
+<ellipse cx="6.35" cy="4.72" rx="0.38" ry="0.2" fill="#a060e8" opacity="0.45"/>
+<circle cx="6.62" cy="4.12" r="0.24" fill="#fff"/>
+<circle cx="6.18" cy="4.68" r="0.12" fill="#fff" opacity="0.72"/>
 <!-- upper lash line -->
-<path d="M5.4,3.82 Q6.4,3.38 7.4,3.82" fill="none" stroke="#5020a0" stroke-width="0.4"/>
+<path d="M5.35,3.88 Q6.35,3.38 7.35,3.88" fill="none" stroke="#5020a0" stroke-width="0.42"/>
+<!-- lower lash hint -->
+<path d="M5.48,4.98 Q6.35,5.25 7.22,4.98" fill="none" stroke="#09031a" stroke-width="0.18" opacity="0.5"/>
 
 <!-- RIGHT EYE -->
-<ellipse cx="9.6" cy="4.3" rx="1.05" ry="0.95" fill="#e0d0f8" stroke="#09031a" stroke-width="0.28"/>
-<ellipse cx="9.6" cy="4.35" rx="0.7" ry="0.78" fill="#2a0a40"/>
-<ellipse cx="9.6" cy="4.2" rx="0.4" ry="0.3" fill="#5010a0" opacity="0.8"/>
-<circle cx="9.82" cy="4.08" r="0.22" fill="#fff"/>
-<path d="M8.6,3.82 Q9.6,3.38 10.6,3.82" fill="none" stroke="#5020a0" stroke-width="0.4"/>
+<ellipse cx="9.65" cy="4.42" rx="1.1" ry="1.04" fill="#e0d0f8" stroke="#09031a" stroke-width="0.3"/>
+<ellipse cx="9.65" cy="4.5" rx="0.76" ry="0.85" fill="url(#ieg)"/>
+<ellipse cx="9.6" cy="4.26" rx="0.42" ry="0.28" fill="#8040d0" opacity="0.82"/>
+<ellipse cx="9.65" cy="4.72" rx="0.38" ry="0.2" fill="#a060e8" opacity="0.45"/>
+<circle cx="9.92" cy="4.12" r="0.24" fill="#fff"/>
+<circle cx="9.48" cy="4.68" r="0.12" fill="#fff" opacity="0.72"/>
+<path d="M8.65,3.88 Q9.65,3.38 10.65,3.88" fill="none" stroke="#5020a0" stroke-width="0.42"/>
+<path d="M8.78,4.98 Q9.65,5.25 10.52,4.98" fill="none" stroke="#09031a" stroke-width="0.18" opacity="0.5"/>
+
+<!-- BLUSH (delicate, princess) -->
+<ellipse cx="5.55" cy="5.32" rx="0.95" ry="0.42" fill="#ff9090" opacity="0.22"/>
+<ellipse cx="10.45" cy="5.32" rx="0.95" ry="0.42" fill="#ff9090" opacity="0.22"/>
 
 <!-- NOSE -->
-<path d="M7.5,5.45 Q8,5.9 8.5,5.45" fill="#c8956a" fill-opacity="0.4" stroke="none"/>
+<path d="M7.48,5.55 Q8,5.98 8.52,5.55" fill="#c8a048" fill-opacity="0.38" stroke="none"/>
 
-<!-- LIPS (fuller, feminine) -->
-<path d="M6.8,6.2 Q8,7.0 9.2,6.2" fill="#f08080" fill-opacity="0.35" stroke="#d06060" stroke-width="0.5" stroke-linecap="round"/>
-<path d="M7.2,6.5 Q8,6.85 8.8,6.5" fill="none" stroke="#b04040" stroke-width="0.32"/>
-
-<!-- EAR hints -->
-<ellipse cx="4.95" cy="4.7" rx="0.5" ry="0.8" fill="#f5c9a0" stroke="#09031a" stroke-width="0.28"/>
-<ellipse cx="11.05" cy="4.7" rx="0.5" ry="0.8" fill="#f5c9a0" stroke="#09031a" stroke-width="0.28"/>
+<!-- LIPS (fuller, feminine, princess rose) -->
+<path d="M6.78,6.32 Q8,7.05 9.22,6.32" fill="#f09090" fill-opacity="0.35" stroke="#d06060" stroke-width="0.5" stroke-linecap="round"/>
+<path d="M7.18,6.62 Q8,6.92 8.82,6.62" fill="none" stroke="#b04040" stroke-width="0.3"/>
 
 <!-- NECK -->
-<rect x="7" y="7.2" width="2" height="1.0" rx="0.4" fill="#f5c9a0" stroke="#09031a" stroke-width="0.28"/>
+<rect x="7.0" y="7.38" width="2.0" height="1.0" rx="0.38" fill="#f5d890" stroke="#09031a" stroke-width="0.28"/>
 
-<!-- HIGH COLLAR (magician's ruff) -->
-<ellipse cx="8" cy="8.1" rx="4.2" ry="1.2" fill="url(#cog)" stroke="#09031a" stroke-width="0.5"/>
-<ellipse cx="8" cy="7.85" rx="3.8" ry="0.8" fill="#c060ff" opacity="0.45"/>
+<!-- HIGH COLLAR (magician's ruff, ornate) -->
+<ellipse cx="8" cy="8.2" rx="4.2" ry="1.22" fill="url(#cog)" stroke="#09031a" stroke-width="0.5"/>
+<ellipse cx="8" cy="7.95" rx="3.8" ry="0.82" fill="#c060ff" opacity="0.45"/>
 <!-- collar gem highlight -->
-<ellipse cx="8" cy="8.0" rx="0.7" ry="0.28" fill="#f0c0ff" opacity="0.75"/>
-<line x1="8" y1="7.5" x2="8" y2="8.9" stroke="#b040e8" stroke-width="0.4"/>
+<ellipse cx="8" cy="8.08" rx="0.72" ry="0.28" fill="#f0c0ff" opacity="0.78"/>
+<!-- gold collar trim -->
+<path d="M4.2,8.02 Q8,7.55 11.8,8.02" fill="none" stroke="#f0c840" stroke-width="0.32" opacity="0.82"/>
+<line x1="8" y1="7.6" x2="8" y2="8.95" stroke="#b040e8" stroke-width="0.42"/>
+
+<!-- TRIFORCE BROOCH at collar center -->
+<polygon points="8,7.72 7.55,8.42 8.45,8.42" fill="#f8d848" stroke="#09031a" stroke-width="0.2"/>
+<polygon points="7.55,8.42 7.1,9.12 8.0,9.12" fill="#f8d848" stroke="#09031a" stroke-width="0.2"/>
+<polygon points="8.45,8.42 8.0,9.12 8.9,9.12" fill="#f8d848" stroke="#09031a" stroke-width="0.2"/>
+<circle cx="8" cy="8.42" r="0.15" fill="#09031a"/>
 
 <!-- ROBE BODY (covers all of body, flowing to feet) -->
-<path d="M3,8.8 Q8,8.2 13,8.8 L14,16 L2,16 Z" fill="url(#rg)" stroke="#09031a" stroke-width="0.5"/>
+<path d="M3,8.9 Q8,8.3 13,8.9 L14,16 L2,16 Z" fill="url(#rg)" stroke="#09031a" stroke-width="0.5"/>
 <!-- robe left highlight panel -->
-<path d="M3.2,9 L5.2,8.7 L5.5,16 L3,16 Z" fill="#7060f0" opacity="0.35"/>
+<path d="M3.2,9.1 L5.2,8.8 L5.5,16 L3,16 Z" fill="#7060f0" opacity="0.35"/>
 <!-- robe right shadow -->
-<path d="M12.8,9 L10.8,8.7 L10.5,16 L13,16 Z" fill="#08040a" opacity="0.3"/>
+<path d="M12.8,9.1 L10.8,8.8 L10.5,16 L13,16 Z" fill="#08040a" opacity="0.32"/>
 <!-- robe center seam -->
-<line x1="8" y1="8.8" x2="8" y2="16" stroke="#2a18a0" stroke-width="0.38" opacity="0.55"/>
+<line x1="8" y1="8.9" x2="8" y2="16" stroke="#2a18a0" stroke-width="0.38" opacity="0.55"/>
 <!-- robe fold lines (gentle curves suggesting fabric) -->
-<path d="M5,10.5 Q8,10 11,10.5" fill="none" stroke="#2a18a0" stroke-width="0.32" opacity="0.6"/>
-<path d="M4.5,12.5 Q8,12 11.5,12.5" fill="none" stroke="#2a18a0" stroke-width="0.28" opacity="0.5"/>
-<path d="M4,14.5 Q8,14 12,14.5" fill="none" stroke="#2a18a0" stroke-width="0.25" opacity="0.4"/>
+<path d="M5,10.6 Q8,10.1 11,10.6" fill="none" stroke="#2a18a0" stroke-width="0.32" opacity="0.62"/>
+<path d="M4.5,12.6 Q8,12.1 11.5,12.6" fill="none" stroke="#2a18a0" stroke-width="0.28" opacity="0.52"/>
+<path d="M4,14.5 Q8,14.05 12,14.5" fill="none" stroke="#2a18a0" stroke-width="0.24" opacity="0.42"/>
 
-<!-- CRYSTAL PENDANT -->
-<ellipse cx="8" cy="10" rx="1.0" ry="0.65" fill="#d0a8ff" opacity="0.7"/>
-<polygon points="8,8.8 7,10.2 8,11.4 9,10.2" fill="url(#crg)" stroke="#09031a" stroke-width="0.35"/>
-<ellipse cx="8" cy="10.2" rx="0.6" ry="0.5" fill="#ffffff" opacity="0.55"/>
-<circle cx="7.8" cy="9.8" r="0.2" fill="#ffffff" opacity="0.9"/>
+<!-- HEM of robe (dark accent with gold trim) -->
+<rect x="2" y="15.3" width="12" height="0.7" rx="0.3" fill="#100840" stroke="#09031a" stroke-width="0.3"/>
+<line x1="2.5" y1="15.65" x2="13.5" y2="15.65" stroke="#f0c840" stroke-width="0.28" opacity="0.65"/>
 
 <!-- TATTOO hints on robe arms (arms suggested by slight robe shaping) -->
-<!-- left arm area -->
-<path d="M3.8,10 Q3.2,11 3.5,12" fill="none" stroke="#c040ff" stroke-width="0.4" opacity="0.7"/>
-<circle cx="3.6" cy="11" r="0.35" fill="none" stroke="#c040ff" stroke-width="0.35" opacity="0.65"/>
-<!-- right arm area -->
-<path d="M12.2,10 Q12.8,11 12.5,12" fill="none" stroke="#c040ff" stroke-width="0.4" opacity="0.7"/>
-<circle cx="12.4" cy="11" r="0.35" fill="none" stroke="#c040ff" stroke-width="0.35" opacity="0.65"/>
+<path d="M3.8,10.1 Q3.2,11.1 3.5,12.1" fill="none" stroke="#c040ff" stroke-width="0.42" opacity="0.72"/>
+<circle cx="3.6" cy="11.1" r="0.36" fill="none" stroke="#c040ff" stroke-width="0.36" opacity="0.68"/>
+<path d="M12.2,10.1 Q12.8,11.1 12.5,12.1" fill="none" stroke="#c040ff" stroke-width="0.42" opacity="0.72"/>
+<circle cx="12.4" cy="11.1" r="0.36" fill="none" stroke="#c040ff" stroke-width="0.36" opacity="0.68"/>
 
-<!-- HEM of robe (dark accent) -->
-<rect x="2" y="15.2" width="12" height="0.8" rx="0.3" fill="#100840" stroke="#09031a" stroke-width="0.3"/>
-<line x1="2.5" y1="15.6" x2="13.5" y2="15.6" stroke="#3820b8" stroke-width="0.28" opacity="0.7"/>
+<!-- CRYSTAL PENDANT (larger, more ornate) -->
+<polygon points="8,9.35 6.8,10.85 8,12.25 9.2,10.85" fill="url(#crg)" stroke="#09031a" stroke-width="0.38"/>
+<ellipse cx="8" cy="10.88" rx="0.65" ry="0.55" fill="#ffffff" opacity="0.55"/>
+<circle cx="7.78" cy="10.42" r="0.22" fill="#ffffff" opacity="0.92"/>
+<!-- pendant chain hint -->
+<path d="M7.5,9.1 Q8,8.95 8.5,9.1" fill="none" stroke="#d0a830" stroke-width="0.25" opacity="0.8"/>
 </g>
 </svg>

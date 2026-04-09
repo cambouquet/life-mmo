@@ -1,43 +1,31 @@
-﻿import npcSvg from '../../assets/sprites/npc/idle.svg?raw'
+﻿import sheetUrl from '../../assets/sprites/03002_elfeF.png'
 
-function svgDataUri(svgText) {
-  return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgText)
-}
+// Sheet: 256×128 — 8 cols × 4 rows at 32×32 px per frame
+// Row 0 = facing down; col 0 = idle frame
+const FRAME_W = 32
+const FRAME_H = 32
 
-const npcImg = new Image()
-npcImg.src = svgDataUri(npcSvg)
+const sheet = new Image()
+sheet.src = sheetUrl
 
-export function drawNpc(ctx, x, y, phase) {
+export function drawNpc(ctx, x, y) {
   x = Math.floor(x); y = Math.floor(y)
+  if (!sheet.complete || sheet.naturalWidth === 0) return
 
-  if (npcImg.complete) {
-    ctx.save()
-    ctx.imageSmoothingEnabled = true
-    ctx.imageSmoothingQuality = 'high'
-    ctx.drawImage(npcImg, x - 8, y - 16, 32, 32)
-    ctx.restore()
-  }
-
-
-  // Crystal glow pulse (pendant center at x+8, y+4 in 32×32 sprite space)
-  const cp = 0.5 + Math.sin(phase * 2.1) * 0.5
+  // Static radial circle at feet — fades center to edge, no blinking (NPC)
+  const grd = ctx.createRadialGradient(x + 8, y + 11, 0, x + 8, y + 11, 11)
+  grd.addColorStop(0,   'rgba(96,232,255,0.38)')
+  grd.addColorStop(0.5, 'rgba(96,232,255,0.13)')
+  grd.addColorStop(1,   'rgba(96,232,255,0)')
   ctx.save()
-  ctx.globalAlpha = cp * 0.55
-  ctx.fillStyle = '#b060ff'
+  ctx.fillStyle = grd
   ctx.beginPath()
-  ctx.arc(x + 8, y + 4, 7, 0, Math.PI * 2)
+  ctx.arc(x + 8, y + 11, 11, 0, Math.PI * 2)
   ctx.fill()
   ctx.restore()
 
-  // Animated tattoo glow on robe arms (scaled positions)
-  const tw = 0.38 + Math.sin(phase * 1.6) * 0.32
   ctx.save()
-  ctx.globalAlpha = tw
-  ctx.fillStyle = '#c040ff'
-  ctx.fillRect(x, y + 6, 2, 2)
-  ctx.fillRect(x + 14, y + 6, 2, 2)
-  ctx.fillStyle = '#f090ff'
-  ctx.fillRect(x, y + 8, 2, 2)
-  ctx.fillRect(x + 14, y + 8, 2, 2)
+  ctx.imageSmoothingEnabled = false
+  ctx.drawImage(sheet, 0, 0, FRAME_W, FRAME_H, x - 8, y - 16, FRAME_W, FRAME_H)
   ctx.restore()
 }

@@ -51,18 +51,22 @@
 <path d="M11.7,5.2 Q12.0,5.6 11.6,5.95" fill="none" stroke="#c88050" stroke-width="0.5" stroke-linecap="round"/>
 <ellipse cx="11.65" cy="5.6" rx="0.35" ry="0.45" fill="#c08050" opacity="0.4"/>
 
-<!-- ear -->
-<ellipse cx="6.9" cy="4.9" rx="0.72" ry="0.98" fill="#f0c090" stroke="#09031a" stroke-width="0.3"/>
-<ellipse cx="6.9" cy="4.9" rx="0.4" ry="0.55" fill="#d8a870" opacity="0.7"/>
+<!-- POINTED HYLIAN EAR (far ear, left side, right-facing profile) -->
+<polygon points="7.12,4.18 7.0,5.58 5.1,3.72" fill="#f0c090" stroke="#09031a" stroke-width="0.32"/>
+<line x1="6.85" y1="4.62" x2="5.55" y2="4.02" stroke="#c08050" stroke-width="0.24" opacity="0.6"/>
+<ellipse cx="6.82" cy="4.88" rx="0.3" ry="0.48" fill="#d8a870" opacity="0.65"/>
 
 <!-- eyebrow -->
 <path d="M10.5,3.6 Q9.6,3.1 8.8,3.5" stroke="#24103a" stroke-width="0.62" fill="none" stroke-linecap="round"/>
 
-<!-- eye -->
-<ellipse cx="9.5" cy="4.35" rx="0.92" ry="0.85" fill="#ddd0ee" stroke="#09031a" stroke-width="0.28"/>
-<ellipse cx="9.6" cy="4.4" rx="0.6" ry="0.68" fill="#180820"/>
-<path d="M8.65,3.95 Q9.5,3.55 10.35,3.95" fill="none" stroke="#24103a" stroke-width="0.3"/>
-<circle cx="9.38" cy="4.15" r="0.2" fill="#fff"/>
+<!-- EYE (large vivid, Zelda chibi style) -->
+<ellipse cx="9.5" cy="4.35" rx="1.05" ry="0.98" fill="#e8d8f8" stroke="#09031a" stroke-width="0.3"/>
+<ellipse cx="9.58" cy="4.42" rx="0.7" ry="0.8" fill="#180820"/>
+<ellipse cx="9.56" cy="4.18" rx="0.38" ry="0.26" fill="#7040d8" opacity="0.82"/>
+<path d="M8.55,3.88 Q9.5,3.44 10.45,3.88" fill="none" stroke="#09031a" stroke-width="0.4"/>
+<path d="M8.68,5.02 Q9.5,5.28 10.32,5.02" fill="none" stroke="#09031a" stroke-width="0.2" opacity="0.5"/>
+<circle cx="9.28" cy="4.1" r="0.22" fill="#fff"/>
+<circle cx="9.72" cy="4.65" r="0.1" fill="#fff" opacity="0.7"/>
 
 <!-- mouth -->
 <path d="M10.9,6.3 Q10.2,6.85 9.2,6.5" fill="none" stroke="#c06858" stroke-width="0.5" stroke-linecap="round"/>
@@ -70,8 +74,9 @@
 <!-- neck -->
 <rect x="7.8" y="7.4" width="2.2" height="1.0" rx="0.4" fill="#f0c090" stroke="#09031a" stroke-width="0.28"/>
 
-<!-- collar -->
+<!-- COLLAR (gold trim) -->
 <rect x="4.2" y="7.9" width="7.6" height="1.5" rx="0.85" fill="url(#cg)" stroke="#09031a" stroke-width="0.45"/>
+<path d="M4.5,8.04 Q8,7.62 11.5,8.04" fill="none" stroke="#f0c840" stroke-width="0.3" opacity="0.85"/>
 <line x1="8" y1="7.9" x2="8" y2="9.4" stroke="#9e36d8" stroke-width="0.4"/>
 
 <!-- back arm (left, swings forward = lower during stride) -->
@@ -86,7 +91,8 @@
 <path d="M11.7,9.2 L10.1,9 L10.1,13 L11.7,13.2 Z" fill="#70a8ff" opacity="0.38"/>
 <line x1="8" y1="9" x2="8" y2="13.2" stroke="#0a2060" stroke-width="0.3" opacity="0.45"/>
 <line x1="4.2" y1="12.1" x2="11.8" y2="12.1" stroke="#09031a" stroke-width="0.42" opacity="0.55"/>
-<rect x="7.45" y="11.9" width="1.1" height="0.62" rx="0.2" fill="#1a3080" stroke="#09031a" stroke-width="0.22"/>
+<rect x="7.38" y="11.82" width="1.24" height="0.7" rx="0.22" fill="#f0b820" stroke="#09031a" stroke-width="0.22"/>
+<rect x="7.6" y="11.98" width="0.8" height="0.36" rx="0.1" fill="#ffe060" opacity="0.9"/>
 
 <!-- back hand (left arm swings forward, lower) -->
 <ellipse cx="2.85" cy="13.5" rx="0.88" ry="0.7" fill="#d8a870" stroke="#09031a" stroke-width="0.25"/>

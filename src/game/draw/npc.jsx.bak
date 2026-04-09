@@ -1,0 +1,34 @@
+﻿import sheetUrl from '../../assets/sprites/03002_elfeF.png'
+
+// Sheet: 256×128 — 8 cols × 4 rows at 32×32 px per frame
+// Row 0 = facing down (toward player); col 0 = idle frame
+const FRAME_W = 32
+const FRAME_H = 32
+
+const sheet = new Image()
+sheet.src = sheetUrl
+
+export function drawNpc(ctx, x, y, phase) {
+  x = Math.floor(x); y = Math.floor(y)
+
+  if (sheet.complete && sheet.naturalWidth > 0) {
+    ctx.save()
+    ctx.imageSmoothingEnabled = false
+    ctx.drawImage(
+      sheet,
+      0, 0, FRAME_W, FRAME_H,
+      x - 8, y - 16, FRAME_W, FRAME_H
+    )
+    ctx.restore()
+  }
+
+  // Fast-blinking halo beneath the sprite
+  const glow = 0.18 + Math.sin(phase * 2.1) * 0.12
+  ctx.save()
+  ctx.globalAlpha = glow
+  ctx.fillStyle = '#60e8ff'
+  ctx.beginPath()
+  ctx.ellipse(x + 8, y + 14, 10, 4, 0, 0, Math.PI * 2)
+  ctx.fill()
+  ctx.restore()
+}

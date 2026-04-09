@@ -1,8 +1,7 @@
 import { useEffect, useRef } from 'react'
-import { W, H, COLS, ROWS, TILE, SPEED, buildMap } from '../game/constants.jsx'
+import { W, H, COLS, ROWS, TILE, SCALE, SPEED, buildMap } from '../game/constants.jsx'
 import { movePlayer }                from '../game/collision.jsx'
 import { initInput, inputDir, isKeyDown } from '../game/input.jsx'
-import { drawShadow, drawAura } from '../game/draw/room.jsx'
 import { drawTable }                 from '../game/draw/table.jsx'
 import { drawWarriorSprite }         from '../game/draw/warrior.jsx'
 import { drawNpc } from '../game/draw/npc.jsx'
@@ -108,8 +107,8 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused }) {
       ctx.fillStyle = '#06040e'
       ctx.fillRect(0, 0, cw, ch)
 
-      // Scale world to fill viewport (integer steps for crisp pixel art room tiles)
-      const DS = Math.max(1, Math.floor(Math.min(cw / W, ch / H)))
+      // Fixed display scale — world size stays constant, bigger screens see more border
+      const DS = SCALE
       const ox = Math.round((cw - W * DS) / 2)
       const oy = Math.round((ch - H * DS) / 2)
       ctx.save()
@@ -118,22 +117,9 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused }) {
 
       drawTable(ctx, torchPhase)
 
-      // Auras — round glow centred on knees (oy=y+1, legs rows 11-12 → y+12)
-      const pKneeY = player.y - player.jumpHeight + 12
-      const pAlpha = 0.72 + Math.sin(torchPhase * 0.8) * 0.10 + (npcNear ? 0.15 : 0)
-      const nAlpha = 0.78 + Math.sin(torchPhase * 0.7 + 1) * 0.10 + (npcNear ? 0.12 : 0)
-      // outer soft ring
-      drawAura(ctx, player.x + 7, pKneeY,     '160,50,255', pAlpha * 0.28, 20, 20)
-      drawAura(ctx, NPC_X + 7,   NPC_Y + 12, '0,220,240',  nAlpha * 0.28, 20, 20)
-      // inner bright core
-      drawAura(ctx, player.x + 7, pKneeY,     '160,50,255', pAlpha,        11, 11)
-      drawAura(ctx, NPC_X + 7,   NPC_Y + 12, '0,220,240',  nAlpha,         11, 11)
-
       drawNpc(ctx, NPC_X, NPC_Y, torchPhase)
 
-      const jf = player.jumpHeight / MAX_JUMP_H
-      drawShadow(ctx, player.x, player.y, jf)
-      drawWarriorSprite(ctx, player.x, player.y - player.jumpHeight, player.facing, player.frame)
+      drawWarriorSprite(ctx, player.x, player.y - player.jumpHeight, player.facing, player.frame, torchPhase)
 
       if (!pausedRef.current && npcNear) badge(NPC_CX, NPC_Y - 2)
 
