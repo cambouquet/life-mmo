@@ -48,14 +48,13 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused }) {
     const ctx = canvasRef.current.getContext('2d')
     ctx.imageSmoothingEnabled = false
 
-    const cw0    = ctx.canvas.width
-    const ch0    = ctx.canvas.height
-    const COLS   = Math.max(8, Math.floor(cw0 / TILE))
-    const ROWS   = Math.max(6, Math.floor(ch0 / TILE))
-    const W      = COLS * TILE
-    const H      = ROWS * TILE
-    const pcStartC = Math.floor(COLS / 2)
-    const pcStartR = Math.floor(ROWS / 2)
+    // Fixed large world — player is always centered, camera follows
+    const WORLD_COLS = 60
+    const WORLD_ROWS = 40
+    const W      = WORLD_COLS * TILE
+    const H      = WORLD_ROWS * TILE
+    const pcStartC = Math.floor(WORLD_COLS / 2)
+    const pcStartR = Math.floor(WORLD_ROWS / 2)
     const tableC   = pcStartC - 2
     const tableR   = pcStartR - 2
     const TABLE_X  = tableC * TILE
@@ -67,10 +66,10 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused }) {
     const NPC_Y    = tableR * TILE
     const NPC_CX   = NPC_X + 8
     const NPC_CY   = NPC_Y + 8
-    const map    = buildMap(COLS, ROWS, tableC, tableR)
+    const map    = buildMap(WORLD_COLS, WORLD_ROWS, tableC, tableR)
     const player = {
-      x: Math.floor(COLS / 2) * TILE,
-      y: Math.floor(ROWS / 2) * TILE,
+      x: pcStartC * TILE,
+      y: pcStartR * TILE,
       w: TILE, h: TILE,
       frame: 0, frameTick: 0,
       facing: 'down', moving: false,
@@ -124,6 +123,10 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused }) {
       ctx.fillStyle = '#06040e'
       ctx.fillRect(0, 0, cw, ch)
 
+      // Camera: keep player centered on screen
+      ctx.save()
+      ctx.translate(Math.round(cw / 2 - pcx), Math.round(ch / 2 - pcy))
+
       // Proximity auras — drawn before sprites so they appear beneath
       drawProximityAura(ctx, NPC_CX,   NPC_CY,   pcx, pcy, 64, '96,232,255')  // NPC — cyan
 
@@ -133,7 +136,9 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused }) {
 
       if (!pausedRef.current && npcNear) badge(NPC_CX, NPC_Y - 2)
 
-      drawBoundsOfLight(ctx, W, H, torchPhase, player.x + 8, player.y + 8)
+      drawBoundsOfLight(ctx, W, H, torchPhase, pcx, pcy)
+
+      ctx.restore()
     }
 
     function loop(ts) {
