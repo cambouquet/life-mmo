@@ -11,10 +11,10 @@ const WALK_COLS = [0, 2]
 const sheet = new Image()
 sheet.src = sheetUrl
 
-export function drawWarriorSprite(ctx, x, y, facing, frame, phase, colors) {
+export function drawWarriorSprite(ctx, x, y, facing, frame, phase, colors, moving) {
   // Use vector character if colors are provided (custom character)
   if (colors) {
-    drawVectorWarrior(ctx, x, y, facing, frame, colors)
+    drawVectorWarrior(ctx, x, y, facing, frame, colors, moving)
   } else {
     if (!sheet.complete || sheet.naturalWidth === 0) return
     const row = ROW[facing] ?? ROW.down
@@ -60,8 +60,9 @@ import pixelData from '../../components/CharacterEditor/pixel_data.json';
  */
 let offscreenPlayerCanvas = null;
 let offscreenPlayerCtx = null;
+let lastRenderState = "";
 
-function drawVectorWarrior(ctx, x, y, facing, frame, colors) {
+function drawVectorWarrior(ctx, x, y, facing, frame, colors, moving) {
   const { hair, skin, outfit } = colors;
   
   // Create or resize offscreen canvas if needed (1:1 scale)
@@ -70,33 +71,53 @@ function drawVectorWarrior(ctx, x, y, facing, frame, colors) {
     offscreenPlayerCanvas.width = 32;
     offscreenPlayerCanvas.height = 32;
     offscreenPlayerCtx = offscreenPlayerCanvas.getContext('2d', { alpha: true });
+    offscreenPlayerCtx.imageSmoothingEnabled = false;
   }
   
-  // Clear offscreen to prevent "smearing" or ghosting
-  offscreenPlayerCtx.clearRect(0, 0, 32, 32);
+  // Generate a key for the current state to see if we actually need to redraw the buffer
+  // This prevents the "blank frame" flicker that happens when clearRect and drawing
+  // occur at precisely the wrong time relative to the main canvas draw.
+  const currentFrameIndex = moving ? (frame % 4) : 0;
+  const stateKey = `${facing}-${currentFrameIndex}-${hair}-${skin}-${outfit}`;
   
-  // Draw pixels 1:1 to offscreen buffer
-  pixelData.forEach(p => {
-    let fill = p.color;
-    if (p.type === 'hair') fill = hair;
-    else if (p.type === 'skin') fill = skin;
-    else if (p.type === 'outfit') fill = outfit;
+  if (stateKey !== lastRenderState) {
+    // Only update the offscreen buffer if the character state (frame/direction/color) changed
+    // We clear with a tiny buffer to avoid any alpha-bleed and immediately redraw.
+    offscreenPlayerCtx.clearRect(0, 0, 32, 32);
     
-    offscreenPlayerCtx.fillStyle = fill;
-    // Standard 1x1 fill on the 1:1 canvas
-    offscreenPlayerCtx.fillRect(p.x, p.y, 1, 1);
-  });
+    const dirFrames = pixelData[facing] || pixelData.down;
+    // Walk cycle usually starts: 0=LeftStep, 1=Standing, 2=RightStep, 3=Standing
+    // So if frame 3 is empty, we fall back to frame 1.
+    let currentFrame = dirFrames[currentFrameIndex];
+    if (!currentFrame || currentFrame.length < 10) {
+      currentFrame = dirFrames[1] || dirFrames[0];
+    }
+
+    // Draw pixels 1:1 to offscreen buffer
+    const len = currentFrame.length;
+    for (let i = 0; i < len; i++) {
+      const p = currentFrame[i];
+      let fill = p.color;
+      if (p.type === 'hair') fill = hair;
+      else if (p.type === 'skin') fill = skin;
+      else if (p.type === 'outfit') fill = outfit;
+      
+      offscreenPlayerCtx.fillStyle = fill;
+      offscreenPlayerCtx.fillRect(p.x, p.y, 1, 1);
+    }
+    
+    lastRenderState = stateKey;
+  }
 
   // Draw the buffer to main canvas
   ctx.save();
-  // CRITICAL: Disable smoothing so the 32x32 buffer is scaled up as sharp blocks
   ctx.imageSmoothingEnabled = false; 
-  ctx.mozImageSmoothingEnabled = false;
-  ctx.webkitImageSmoothingEnabled = false;
-  ctx.msImageSmoothingEnabled = false;
 
-  // Render centered on the tile grid position
-  ctx.translate(Math.floor(x), Math.floor(y));
+  // Position fixes: Ensure we use Math.round to avoid sub-pixel jitter
+  const drawX = Math.round(x) - 8;
+  const drawY = Math.round(y) - 16;
+  
+  ctx.translate(drawX, drawY);
   ctx.drawImage(offscreenPlayerCanvas, 0, 0, 32, 32);
   ctx.restore();
 }

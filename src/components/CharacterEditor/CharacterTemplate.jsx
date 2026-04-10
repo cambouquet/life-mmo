@@ -19,7 +19,9 @@ export const CharacterTemplate = ({
     canvas.height = 32;
     const ctx = canvas.getContext('2d');
     
-    pixelData.forEach(p => {
+    // Use the first frame for the editor preview (down facing)
+    const previewFrame = pixelData.down[0];
+    previewFrame.forEach(p => {
       let fill = p.color;
       if (p.type === 'hair') fill = hair;
       else if (p.type === 'skin') fill = skin;

@@ -153,7 +153,7 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
       drawRoom(ctx, map)
       drawTable(ctx, torchPhase, TABLE_X, TABLE_Y)
       drawNpc(ctx, NPC_X, NPC_Y, torchPhase)
-      drawWarriorSprite(ctx, player.x, player.y - player.jumpHeight, player.facing, player.frame, torchPhase, charColorsRef.current)
+      drawWarriorSprite(ctx, player.x, player.y - player.jumpHeight, player.facing, player.frame, torchPhase, charColorsRef.current, player.moving)
 
       if (!pausedRef.current) {
         if (npcNear) badge(NPC_CX, NPC_Y - 2)
@@ -175,10 +175,11 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
 
       if (!pausedRef.current) {
         const { dx, dy } = inputDir()
-        player.moving = dx !== 0 || dy !== 0
+        const isMoving = dx !== 0 || dy !== 0
+        player.moving = isMoving
 
-        if (player.moving) {
-          if      (dy < 0) player.facing = 'up'
+        if (isMoving) {
+          if (dy < 0) player.facing = 'up'
           else if (dy > 0) player.facing = 'down'
           else if (dx < 0) player.facing = 'left'
           else if (dx > 0) player.facing = 'right'
@@ -186,12 +187,14 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
           movePlayer(player, map, dx, dy, dt, SPEED)
 
           player.frameTick += dt
-          if (player.frameTick >= FRAME_TIME) {
+          // Cycle 0, 1, 2, 3
+          if (player.frameTick >= 0.12) {
             player.frameTick = 0
-            player.frame     = player.frame === 0 ? 1 : 0
+            player.frame = (player.frame + 1) % 4
           }
         } else {
-          player.frame     = 0
+          // Idle frame logic: if not moving, we reset frame to 0
+          player.frame = 0
           player.frameTick = 0
         }
 

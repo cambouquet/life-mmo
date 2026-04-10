@@ -1,7 +1,7 @@
 // ── Game constants ────────────────────────────────────────────────────────────
 export const TILE       = 16;
 export const DRAW_SCALE = 2;
-export const SCALE = 3;
+export const SCALE = 1;
 export const COLS  = 20;
 export const ROWS  = 14;
 export const W     = COLS * TILE;   // 320
