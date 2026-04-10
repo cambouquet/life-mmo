@@ -1,0 +1,151 @@
+@use '../../styles/variables' as *;
+
+.char-editor-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(4, 2, 12, 0.92);
+  backdrop-filter: blur(16px);
+  animation: modalFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.char-editor-content {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 48px;
+  background: rgba(255, 255, 255, 0.03);
+  padding: 48px;
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 32px 64px -16px rgba(0, 0, 0, 0.8);
+}
+
+.char-editor-preview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  
+  &-label {
+    font-family: $font-ui;
+    font-size: 14px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.4);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+}
+
+.character-preview-svg {
+  width: 256px;
+  height: 256px;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  filter: drop-shadow(0 0 32px rgba(168, 85, 247, 0.25));
+}
+
+.char-editor-controls {
+  display: flex;
+  flex-direction: column;
+  width: 320px;
+  gap: 24px;
+  
+  h3 {
+    font-family: $font-ui;
+    font-size: 28px;
+    font-weight: 700;
+    color: #f4f0ff;
+    letter-spacing: -0.5px;
+    margin-bottom: 8px;
+  }
+  
+  .control-group {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    
+    label {
+      font-family: $font-ui;
+      font-size: 16px;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.6);
+    }
+    
+    input[type="color"] {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 48px;
+      height: 48px;
+      padding: 0;
+      border: 4px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      background: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      
+      &:hover {
+        transform: scale(1.1);
+        border-color: rgba(255, 255, 255, 0.2);
+      }
+      
+      &::-webkit-color-swatch-wrapper { padding: 0; }
+      &::-webkit-color-swatch { 
+        border: none; 
+        border-radius: 8px;
+      }
+    }
+  }
+}
+
+.char-editor-actions {
+  display: flex;
+  gap: 16px;
+  margin-top: 24px;
+  
+  button {
+    flex: 1;
+    height: 56px;
+    border-radius: 16px;
+    font-family: $font-ui;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    border: none;
+  }
+  
+  .btn-cancel {
+    background: rgba(255, 255, 255, 0.05);
+    color: rgba(255, 255, 255, 0.6);
+    
+    &:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+    }
+  }
+  
+  .btn-save {
+    background: #a855f7;
+    color: #fff;
+    box-shadow: 0 8px 16px -4px rgba(168, 85, 247, 0.5);
+    
+    &:hover {
+      background: #c084fc;
+      transform: translateY(-2px);
+      box-shadow: 0 12px 24px -4px rgba(168, 85, 247, 0.6);
+    }
+    
+    &:active {
+      transform: translateY(0);
+    }
+  }
+}
+
+@keyframes modalFadeIn {
+  from { opacity: 0; transform: scale(0.95) translateY(20px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}

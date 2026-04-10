@@ -1,7 +1,8 @@
 import { useEffect, useRef } from 'react'
-import { TILE, SPEED, buildMap } from '../game/constants.jsx'
+import { TILE, DRAW_SCALE, SPEED, buildMap } from '../game/constants.jsx'
 import { movePlayer }                from '../game/collision.jsx'
 import { initInput, inputDir, isKeyDown } from '../game/input.jsx'
+import { drawRoom }                  from '../game/draw/room.jsx'
 import { drawTable }                 from '../game/draw/table.jsx'
 import { drawWarriorSprite }         from '../game/draw/warrior.jsx'
 import { drawNpc }                   from '../game/draw/npc.jsx'
@@ -34,14 +35,16 @@ const GUIDANCE_IDLE = [
 
 function pick(arr) { return arr[Math.floor(Math.random() * arr.length)] }
 
-export function useGameLoop(canvasRef, { onStateChange, onInteract, paused }) {
+export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, charColors }) {
   const pausedRef     = useRef(paused)
   const onInteractRef = useRef(onInteract)
   const onStateRef    = useRef(onStateChange)
+  const charColorsRef = useRef(charColors)
 
   useEffect(() => { pausedRef.current     = paused },        [paused])
   useEffect(() => { onInteractRef.current = onInteract },    [onInteract])
   useEffect(() => { onStateRef.current    = onStateChange }, [onStateChange])
+  useEffect(() => { charColorsRef.current = charColors },    [charColors])
 
   useEffect(() => {
     const cleanupInput = initInput()
@@ -66,7 +69,16 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused }) {
     const NPC_Y    = tableR * TILE
     const NPC_CX   = NPC_X + 8
     const NPC_CY   = NPC_Y + 8
-    const map    = buildMap(WORLD_COLS, WORLD_ROWS, tableC, tableR)
+
+    // Mirror position - moved far away from NPC/Table
+    // pcStartC is 30, pcStartR is 20. Table is at 28.
+    // Let's put Mirror to the left of the player (pcStartC - 5)
+    const MIRROR_C = pcStartC - 5
+    const MIRROR_R = pcStartR
+    const MIRROR_X = MIRROR_C * TILE + 8
+    const MIRROR_Y = MIRROR_R * TILE + 8
+
+    const map    = buildMap(WORLD_COLS, WORLD_ROWS, MIRROR_C, MIRROR_R, tableC, tableR)
     const player = {
       x: pcStartC * TILE,
       y: pcStartR * TILE,
@@ -97,9 +109,15 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused }) {
       return dx * dx + dy * dy < NPC_INTERACT_R2
     }
 
+    function nearMirror() {
+      const px = player.x + TILE / 2, py = player.y + TILE / 2
+      const mirrorX = MIRROR_C * TILE + TILE / 2
+      const mirrorY = MIRROR_R * TILE + TILE / 2
+      const dx = px - mirrorX, dy = py - mirrorY
+      return dx * dx + dy * dy < 24 * 24
+    }
 
-
-    function badge(bx, by) {
+    function badge(bx, by, label = '[SHF]') {
       const pulse = Math.sin(torchPhase * 2.5) * 0.18 + 0.82
       ctx.save()
       ctx.globalAlpha  = pulse
@@ -112,29 +130,35 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused }) {
       ctx.textAlign    = 'center'
       ctx.textBaseline = 'middle'
       ctx.fillStyle    = '#c8a8f0'
-      ctx.fillText('[SHF]', bx, by)
+      ctx.fillText(label, bx, by)
       ctx.restore()
     }
 
-    function render(npcNear) {
+    function render(npcNear, mirrorNear) {
       const cw = ctx.canvas.width, ch = ctx.canvas.height
       const pcx = player.x + 8, pcy = player.y + 8
 
       ctx.fillStyle = '#06040e'
       ctx.fillRect(0, 0, cw, ch)
 
-      // Camera: keep player centered on screen
+      // Camera: keep player centered on screen, world drawn at DRAW_SCALE
       ctx.save()
-      ctx.translate(Math.round(cw / 2 - pcx), Math.round(ch / 2 - pcy))
+      ctx.translate(cw / 2, ch / 2)
+      ctx.scale(DRAW_SCALE, DRAW_SCALE)
+      ctx.translate(-pcx, -pcy)
 
-      // Proximity auras — drawn before sprites so they appear beneath
       drawProximityAura(ctx, NPC_CX,   NPC_CY,   pcx, pcy, 64, '96,232,255')  // NPC — cyan
+      drawProximityAura(ctx, MIRROR_C * TILE + 8, MIRROR_R * TILE + 8, pcx, pcy, 48, '168,85,247') // Mirror — purple
 
+      drawRoom(ctx, map)
       drawTable(ctx, torchPhase, TABLE_X, TABLE_Y)
       drawNpc(ctx, NPC_X, NPC_Y, torchPhase)
-      drawWarriorSprite(ctx, player.x, player.y - player.jumpHeight, player.facing, player.frame, torchPhase)
+      drawWarriorSprite(ctx, player.x, player.y - player.jumpHeight, player.facing, player.frame, torchPhase, charColorsRef.current)
 
-      if (!pausedRef.current && npcNear) badge(NPC_CX, NPC_Y - 2)
+      if (!pausedRef.current) {
+        if (npcNear) badge(NPC_CX, NPC_Y - 2)
+        if (mirrorNear) badge(MIRROR_C * TILE + 8, MIRROR_R * TILE - 4, '[MIR]')
+      }
 
       drawBoundsOfLight(ctx, W, H, torchPhase, pcx, pcy)
 
@@ -147,6 +171,7 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused }) {
       torchPhase += dt * 4.5
 
       const npcNear    = nearNpc()
+      const mirrorNear = nearMirror()
 
       if (!pausedRef.current) {
         const { dx, dy } = inputDir()
@@ -191,24 +216,29 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused }) {
 
         // Guidance voice
         idleTime += player.moving ? -idleTime * dt * 3 : dt
-        const guidanceCtx = npcNear ? 'npc' : (idleTime > 15 && idleSaidCount < 2) ? 'idle' : null
+        const guidanceCtx = npcNear ? 'npc' : mirrorNear ? 'mirror' : (idleTime > 15 && idleSaidCount < 2) ? 'idle' : null
         if (guidanceCtx !== lastGuidanceCtx) {
           guidanceTimer = Math.min(guidanceTimer, guidanceCtx ? 4 : 2)
           lastGuidanceCtx = guidanceCtx
         }
         guidanceTimer -= dt
         if (guidanceTimer <= 0) {
-          if      (guidanceCtx === 'npc')   { guidance = pick(GUIDANCE_NPC);   guidanceTimer = 30 + Math.random() * 20 }
-
-          else if (guidanceCtx === 'idle')  { guidance = pick(GUIDANCE_IDLE);  guidanceTimer = 999; idleSaidCount++ }
-          else                              { guidance = null; guidanceTimer = 20 }
+          if      (guidanceCtx === 'npc')    { guidance = pick(GUIDANCE_NPC);   guidanceTimer = 30 + Math.random() * 20 }
+          else if (guidanceCtx === 'mirror') { guidance = "The glass reflects more than just your face."; guidanceTimer = 30 }
+          else if (guidanceCtx === 'idle')   { guidance = pick(GUIDANCE_IDLE);  guidanceTimer = 999; idleSaidCount++ }
+          else                               { guidance = null; guidanceTimer = 20 }
         }
 
         // Interact
         const shiftNow = isKeyDown('ShiftLeft') || isKeyDown('ShiftRight')
-        if (shiftNow && !prevShift && npcNear) {
-          log = ['<em>Kami</em> speaks with Lyra.', ...log].slice(0, LOG_MAX)
-          onInteractRef.current?.()
+        if (shiftNow && !prevShift && (npcNear || mirrorNear)) {
+          if (mirrorNear) {
+            log = ['<em>Kami</em> looks into the mirror.', ...log].slice(0, LOG_MAX)
+            onInteractRef.current?.('mirror')
+          } else {
+            log = ['<em>Kami</em> speaks with Lyra.', ...log].slice(0, LOG_MAX)
+            onInteractRef.current?.('npc')
+          }
         }
         prevShift = shiftNow
         onStateRef.current?.({ facing: player.facing, moving: player.moving, log, guidance })
@@ -219,7 +249,7 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused }) {
         prevSpace = isKeyDown('Space')
       }
 
-      render(npcNear)
+      render(npcNear, mirrorNear)
       rafId = requestAnimationFrame(loop)
     }
 

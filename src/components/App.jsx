@@ -5,6 +5,7 @@ import Game                  from './Game/Game.jsx'
 import HoroscopeModal        from './HoroscopeModal/HoroscopeModal.jsx'
 import DialogModal           from './DialogModal/DialogModal.jsx'
 import GuidanceVoice         from './GuidanceVoice/GuidanceVoice.jsx'
+import CharacterEditor       from './CharacterEditor/CharacterEditor.jsx'
 
 export default function App() {
   const [facing,        setFacing]        = useState('down')
@@ -17,6 +18,13 @@ export default function App() {
   const [guidance,      setGuidance]      = useState(null)
   const [showDialog,    setShowDialog]    = useState(false)
   const [showHoroscope, setShowHoroscope] = useState(false)
+  const [showEditor,    setShowEditor]    = useState(false)
+  const [charColors,    setCharColors]    = useState({
+    hair: '#6030d0',
+    skin: '#f8c898',
+    eyes: '#8040e8',
+    outfit: '#4a1090'
+  })
 
   const wrapRef = useViewportScale()
 
@@ -27,23 +35,36 @@ export default function App() {
     setGuidance(guidance ?? null)
   }, [])
 
-  const handleInteract = useCallback(() => {
+  const handleInteract = useCallback((target) => {
     if (showHoroscope) setShowHoroscope(false)
-    else if (!showDialog) setShowDialog(true)
-  }, [showHoroscope, showDialog])
+    else if (showEditor) setShowEditor(false)
+    else if (target === 'mirror') setShowEditor(true)
+    else if (target === 'npc' || !showDialog) setShowDialog(true)
+  }, [showHoroscope, showDialog, showEditor])
 
   return (
     <div className="game-wrap" ref={wrapRef}>
-      <HUD facing={facing} moving={moving} logEntries={logEntries} />
+      <HUD facing={facing} moving={moving} logEntries={logEntries} charColors={charColors} />
       <div className="canvas-wrap">
         <Game
           onStateChange={handleStateChange}
           onInteract={handleInteract}
-          paused={showDialog || showHoroscope}
+          paused={showDialog || showHoroscope || showEditor}
+          charColors={charColors}
         />
-        {!showDialog && !showHoroscope && <GuidanceVoice text={guidance} />}
+        {!showDialog && !showHoroscope && !showEditor && <GuidanceVoice text={guidance} />}
       </div>
       <div className="hint">WASD to move &nbsp;·&nbsp; SPACE to jump &nbsp;·&nbsp; SHIFT to interact</div>
+      {showEditor && (
+        <CharacterEditor
+          initialColors={charColors}
+          onClose={() => setShowEditor(false)}
+          onSave={(colors) => {
+            setCharColors(colors)
+            setShowEditor(false)
+          }}
+        />
+      )}
       {showDialog && (
         <DialogModal
           onClose={() => setShowDialog(false)}

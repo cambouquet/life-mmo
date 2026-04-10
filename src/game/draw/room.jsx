@@ -52,14 +52,28 @@ export function drawRoom(ctx, map) {
         // Right shadow edge
         ctx.fillStyle = '#100d20'
         ctx.fillRect(px + TILE - 1, py, 1, TILE)
-      } else {
-        // Floor tile (0 = floor, 2 = door gap, 3 = furniture base)
+      } else if (t === 4) {
+        // Mirror - Blue-ish glowing surface
+        ctx.fillStyle = '#2d2550'
+        ctx.fillRect(px, py, TILE, TILE)
+        ctx.fillStyle = '#5c4885'
+        ctx.fillRect(px + 2, py + 2, TILE - 4, TILE - 4)
+        ctx.fillStyle = '#a8bfff'
+        ctx.save()
+        ctx.globalAlpha = 0.6
+        ctx.fillRect(px + 3, py + 3, TILE - 6, TILE - 6)
+        ctx.restore()
+        // Shine
+        ctx.fillStyle = '#fff'
+        ctx.fillRect(px + 4, py + 4, 1, 1)
+      } else if (t === 3) {
+        // Table tile (already handled by drawTable in game loop, but needs background here)
         ctx.fillStyle = c % 2 === r % 2 ? '#0e0b1a' : '#0b0917'
         ctx.fillRect(px, py, TILE, TILE)
-        // Subtle grid seam
-        ctx.fillStyle = '#050310'
-        ctx.fillRect(px, py, 1, TILE)
-        ctx.fillRect(px, py, TILE, 1)
+      } else {
+        // Floor tile (0 = floor, 2 = door gap, 3 = furniture base)
+        // Hidden/void background is handled by the clearRect/fillRect, 
+        // we only draw interactable objects or let the floor remain the dark void.
       }
     }
   }

@@ -19,16 +19,16 @@
   align-items: stretch;
   width: 100%;
   height: $hud-h;
-  background: rgba(14, 10, 30, 0.72);
-  backdrop-filter: blur(6px);
-  border-bottom: 1px solid $border-dim;
+  background: rgba(8, 6, 18, 0.80);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   overflow: hidden;
 }
 
 // ── 1 – Logo panel ───────────────────────────────────────────────────────────
 .logo-panel {
-  flex: 0 0 158px;
-  border-right: 1px solid $border-dim;
+  flex: 0 0 190px;
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -39,8 +39,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 120px;
-    height: 52px;
+    width: 146px;
+    height: 64px;
   }
 
   &__constellation {
@@ -60,8 +60,8 @@
   }
 
   &__the {
-    font-family: $font-ui;
-    font-size: 9px;
+    font-family: $font-logo;
+    font-size: 11px;
     font-weight: 400;
     letter-spacing: 4px;
     text-transform: uppercase;
@@ -70,8 +70,8 @@
   }
 
   &__life {
-    font-family: $font-ui;
-    font-size: 26px;
+    font-family: $font-logo;
+    font-size: 32px;
     font-weight: 600;
     letter-spacing: 6px;
     text-transform: uppercase;
@@ -80,8 +80,8 @@
   }
 
   &__game {
-    font-family: $font-ui;
-    font-size: 9px;
+    font-family: $font-logo;
+    font-size: 11px;
     font-weight: 400;
     letter-spacing: 5px;
     text-transform: uppercase;
@@ -92,97 +92,111 @@
 
 // ── 2 – Character panel ───────────────────────────────────────────────────────
 .char-panel {
-  flex: 0 0 190px;
-  border-right: 1px solid $border-dim;
+  flex: 0 0 220px;
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 0 12px;
+  gap: 12px;
+  padding: 0 18px;
 
   canvas {
     display: block;
     image-rendering: pixelated;
     image-rendering: crisp-edges;
-    width: 48px;
-    height: 48px;
+    width: 54px;
+    height: 54px;
     flex-shrink: 0;
+  }
+
+  &__info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
   }
 
   &__name {
     font-family: $font-ui;
-    font-size: 15px;
-    font-weight: 500;
-    color: $text-primary;
-    letter-spacing: 0.2px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #f4f0ff;
+    letter-spacing: 0;
+    line-height: 1.2;
   }
 
   &__class {
     font-family: $font-ui;
-    font-size: 11px;
-    color: $text-muted;
-    letter-spacing: 0.3px;
-    margin-top: 3px;
+    font-size: 13px;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.35);
+    letter-spacing: 0;
   }
 }
 
 // ── 3 – Log panel ─────────────────────────────────────────────────────────────
 .log-panel {
   flex: 1;
-  border-right: 1px solid $border-dim;
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 6px 14px;
+  padding: 6px 16px;
   overflow: hidden;
 
   &__entries {
     display: flex;
     flex-direction: column;
-    gap: 1px;
+    gap: 2px;
   }
 }
 
 .log-line {
-  color: $text-log;
-  font-size: 10px;
+  font-family: $font-ui;
+  font-size: 14px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.45);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  animation: logFade 0.3s ease;
+  line-height: 1.4;
+  animation: logFade 0.25s ease;
 
   em {
-    color: $text-log-em;
+    color: #d8b4fe;
     font-style: normal;
+    font-weight: 500;
   }
 }
 
 @keyframes logFade {
-  from { opacity: 0; transform: translateY(3px); }
+  from { opacity: 0; transform: translateY(4px); }
   to   { opacity: 1; transform: none; }
 }
 
 // ── 4 – Clock panel ───────────────────────────────────────────────────────────
 .clock-panel {
-  flex: 0 0 130px;
+  flex: 0 0 150px;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-end;
   justify-content: center;
-  gap: 3px;
-  padding: 4px 8px;
+  gap: 2px;
+  padding: 0 18px;
 
   &__time {
     font-family: $font-ui;
-    font-size: 18px;
-    font-weight: 300;
-    color: $text-clock;
-    letter-spacing: 2px;
+    font-size: 22px;
+    font-weight: 500;
+    color: #f4f0ff;
+    letter-spacing: 0;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
   }
 
   &__date {
     font-family: $font-ui;
-    font-size: 11px;
-    color: $text-date;
-    letter-spacing: 0.3px;
+    font-size: 13px;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.3);
+    letter-spacing: 0;
   }
 }
