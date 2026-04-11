@@ -61,35 +61,35 @@
         "x": 17,
         "y": 4,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 18,
         "y": 4,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 19,
         "y": 4,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 20,
         "y": 4,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 21,
         "y": 4,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -117,42 +117,42 @@
         "x": 16,
         "y": 5,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 17,
         "y": 5,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 18,
         "y": 5,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 19,
         "y": 5,
         "color": "#32063d",
-        "type": "outfit",
+        "type": "other",
         "b": 25
       },
       {
         "x": 20,
         "y": 5,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 21,
         "y": 5,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -194,21 +194,21 @@
         "x": 17,
         "y": 6,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 18,
         "y": 6,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 19,
         "y": 6,
         "color": "#32063d",
-        "type": "outfit",
+        "type": "other",
         "b": 25
       },
       {
@@ -271,14 +271,14 @@
         "x": 18,
         "y": 7,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 19,
         "y": 7,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -341,14 +341,14 @@
         "x": 19,
         "y": 8,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 20,
         "y": 8,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -425,7 +425,7 @@
         "x": 20,
         "y": 9,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -551,14 +551,14 @@
         "x": 12,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 13,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -614,7 +614,7 @@
         "x": 21,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -656,63 +656,63 @@
         "x": 13,
         "y": 12,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 14,
         "y": 12,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 15,
         "y": 12,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 16,
         "y": 12,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 17,
         "y": 12,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 18,
         "y": 12,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 19,
         "y": 12,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 20,
         "y": 12,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 21,
         "y": 12,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -726,7 +726,7 @@
         "x": 9,
         "y": 13,
         "color": "#734221",
-        "type": "hair",
+        "type": "other",
         "b": 77
       },
       {
@@ -775,7 +775,7 @@
         "x": 16,
         "y": 13,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -936,14 +936,14 @@
         "x": 23,
         "y": 14,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
         "x": 24,
         "y": 14,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -1055,14 +1055,14 @@
         "x": 23,
         "y": 15,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
         "x": 24,
         "y": 15,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -1300,7 +1300,7 @@
         "x": 24,
         "y": 17,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -1419,7 +1419,7 @@
         "x": 24,
         "y": 18,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -1538,7 +1538,7 @@
         "x": 24,
         "y": 19,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -1643,7 +1643,7 @@
         "x": 23,
         "y": 20,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -1664,14 +1664,14 @@
         "x": 12,
         "y": 21,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 13,
         "y": 21,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -1706,14 +1706,14 @@
         "x": 18,
         "y": 21,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 19,
         "y": 21,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -1741,7 +1741,7 @@
         "x": 23,
         "y": 21,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -1818,14 +1818,14 @@
         "x": 19,
         "y": 22,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 20,
         "y": 22,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -1846,7 +1846,7 @@
         "x": 23,
         "y": 22,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -1874,7 +1874,7 @@
         "x": 12,
         "y": 23,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -1923,7 +1923,7 @@
         "x": 19,
         "y": 23,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -1951,7 +1951,7 @@
         "x": 23,
         "y": 23,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -1986,42 +1986,42 @@
         "x": 13,
         "y": 24,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 14,
         "y": 24,
         "color": "#32043e",
-        "type": "outfit",
+        "type": "other",
         "b": 24
       },
       {
         "x": 15,
         "y": 24,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 16,
         "y": 24,
         "color": "#32043e",
-        "type": "outfit",
+        "type": "other",
         "b": 24
       },
       {
         "x": 17,
         "y": 24,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 18,
         "y": 24,
         "color": "#32043e",
-        "type": "outfit",
+        "type": "other",
         "b": 24
       },
       {
@@ -2035,7 +2035,7 @@
         "x": 20,
         "y": 24,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -2049,7 +2049,7 @@
         "x": 22,
         "y": 24,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -2147,7 +2147,7 @@
         "x": 22,
         "y": 25,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -2210,7 +2210,7 @@
         "x": 19,
         "y": 26,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -2231,7 +2231,7 @@
         "x": 22,
         "y": 26,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -2294,7 +2294,7 @@
         "x": 21,
         "y": 27,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -2373,35 +2373,35 @@
         "x": 18,
         "y": 3,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 19,
         "y": 3,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 20,
         "y": 3,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 21,
         "y": 3,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 22,
         "y": 3,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -2429,42 +2429,42 @@
         "x": 17,
         "y": 4,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 18,
         "y": 4,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 19,
         "y": 4,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 20,
         "y": 4,
         "color": "#32063d",
-        "type": "outfit",
+        "type": "other",
         "b": 25
       },
       {
         "x": 21,
         "y": 4,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 22,
         "y": 4,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -2506,21 +2506,21 @@
         "x": 18,
         "y": 5,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 19,
         "y": 5,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 20,
         "y": 5,
         "color": "#32063d",
-        "type": "outfit",
+        "type": "other",
         "b": 25
       },
       {
@@ -2583,14 +2583,14 @@
         "x": 19,
         "y": 6,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 20,
         "y": 6,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -2653,14 +2653,14 @@
         "x": 19,
         "y": 7,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 20,
         "y": 7,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -2737,7 +2737,7 @@
         "x": 20,
         "y": 8,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -2863,14 +2863,14 @@
         "x": 12,
         "y": 10,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 13,
         "y": 10,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -2926,7 +2926,7 @@
         "x": 21,
         "y": 10,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -2982,63 +2982,63 @@
         "x": 13,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 14,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 15,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 16,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 17,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 18,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 19,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 20,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 21,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -3059,14 +3059,14 @@
         "x": 27,
         "y": 11,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
         "x": 28,
         "y": 11,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -3080,7 +3080,7 @@
         "x": 9,
         "y": 12,
         "color": "#734221",
-        "type": "hair",
+        "type": "other",
         "b": 77
       },
       {
@@ -3101,7 +3101,7 @@
         "x": 12,
         "y": 12,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -3129,7 +3129,7 @@
         "x": 16,
         "y": 12,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -3185,14 +3185,14 @@
         "x": 27,
         "y": 12,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
         "x": 28,
         "y": 12,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -3241,7 +3241,7 @@
         "x": 14,
         "y": 13,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -3444,7 +3444,7 @@
         "x": 27,
         "y": 14,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -3570,7 +3570,7 @@
         "x": 26,
         "y": 15,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -3703,7 +3703,7 @@
         "x": 26,
         "y": 16,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -3836,7 +3836,7 @@
         "x": 26,
         "y": 17,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -3962,7 +3962,7 @@
         "x": 25,
         "y": 18,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -4088,7 +4088,7 @@
         "x": 25,
         "y": 19,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -4116,14 +4116,14 @@
         "x": 12,
         "y": 20,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 13,
         "y": 20,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -4158,14 +4158,14 @@
         "x": 18,
         "y": 20,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 19,
         "y": 20,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -4193,7 +4193,7 @@
         "x": 25,
         "y": 20,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -4228,7 +4228,7 @@
         "x": 12,
         "y": 21,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -4277,7 +4277,7 @@
         "x": 19,
         "y": 21,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -4312,7 +4312,7 @@
         "x": 24,
         "y": 21,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -4361,7 +4361,7 @@
         "x": 12,
         "y": 22,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -4410,7 +4410,7 @@
         "x": 19,
         "y": 22,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -4445,7 +4445,7 @@
         "x": 24,
         "y": 22,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -4487,7 +4487,7 @@
         "x": 11,
         "y": 23,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -4501,42 +4501,42 @@
         "x": 13,
         "y": 23,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 14,
         "y": 23,
         "color": "#32043e",
-        "type": "outfit",
+        "type": "other",
         "b": 24
       },
       {
         "x": 15,
         "y": 23,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 16,
         "y": 23,
         "color": "#32043e",
-        "type": "outfit",
+        "type": "other",
         "b": 24
       },
       {
         "x": 17,
         "y": 23,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 18,
         "y": 23,
         "color": "#32043e",
-        "type": "outfit",
+        "type": "other",
         "b": 24
       },
       {
@@ -4550,7 +4550,7 @@
         "x": 20,
         "y": 23,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -4564,14 +4564,14 @@
         "x": 22,
         "y": 23,
         "color": "#6b759d",
-        "type": "other",
+        "type": "outfit",
         "b": 119
       },
       {
         "x": 23,
         "y": 23,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -4676,7 +4676,7 @@
         "x": 23,
         "y": 24,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -4697,7 +4697,7 @@
         "x": 11,
         "y": 25,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -4774,7 +4774,7 @@
         "x": 23,
         "y": 25,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -4788,7 +4788,7 @@
         "x": 11,
         "y": 26,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -4844,7 +4844,7 @@
         "x": 19,
         "y": 26,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -4865,7 +4865,7 @@
         "x": 22,
         "y": 26,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -4886,7 +4886,7 @@
         "x": 12,
         "y": 27,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -4935,7 +4935,7 @@
         "x": 19,
         "y": 27,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -5063,21 +5063,21 @@
         "x": 16,
         "y": 2,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 17,
         "y": 2,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 18,
         "y": 2,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -5105,28 +5105,28 @@
         "x": 15,
         "y": 3,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 16,
         "y": 3,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 17,
         "y": 3,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 18,
         "y": 3,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -5168,14 +5168,14 @@
         "x": 16,
         "y": 4,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 17,
         "y": 4,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -5231,14 +5231,14 @@
         "x": 17,
         "y": 5,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 18,
         "y": 5,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -5301,7 +5301,7 @@
         "x": 19,
         "y": 6,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -5378,7 +5378,7 @@
         "x": 20,
         "y": 7,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -5504,14 +5504,14 @@
         "x": 12,
         "y": 9,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 13,
         "y": 9,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -5567,7 +5567,7 @@
         "x": 21,
         "y": 9,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -5609,63 +5609,63 @@
         "x": 13,
         "y": 10,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 14,
         "y": 10,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 15,
         "y": 10,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 16,
         "y": 10,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 17,
         "y": 10,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 18,
         "y": 10,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 19,
         "y": 10,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 20,
         "y": 10,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 21,
         "y": 10,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -5679,7 +5679,7 @@
         "x": 9,
         "y": 11,
         "color": "#734221",
-        "type": "hair",
+        "type": "other",
         "b": 77
       },
       {
@@ -5728,7 +5728,7 @@
         "x": 16,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -5994,7 +5994,7 @@
         "x": 24,
         "y": 13,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -6120,7 +6120,7 @@
         "x": 24,
         "y": 14,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -6365,7 +6365,7 @@
         "x": 24,
         "y": 16,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -6484,7 +6484,7 @@
         "x": 24,
         "y": 17,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -6610,14 +6610,14 @@
         "x": 12,
         "y": 19,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 13,
         "y": 19,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -6652,14 +6652,14 @@
         "x": 18,
         "y": 19,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 19,
         "y": 19,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -6687,7 +6687,7 @@
         "x": 23,
         "y": 19,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -6785,7 +6785,7 @@
         "x": 23,
         "y": 20,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -6848,7 +6848,7 @@
         "x": 19,
         "y": 21,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -6911,35 +6911,35 @@
         "x": 14,
         "y": 22,
         "color": "#32043e",
-        "type": "outfit",
+        "type": "other",
         "b": 24
       },
       {
         "x": 15,
         "y": 22,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 16,
         "y": 22,
         "color": "#32043e",
-        "type": "outfit",
+        "type": "other",
         "b": 24
       },
       {
         "x": 17,
         "y": 22,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 18,
         "y": 22,
         "color": "#32043e",
-        "type": "outfit",
+        "type": "other",
         "b": 24
       },
       {
@@ -6953,7 +6953,7 @@
         "x": 20,
         "y": 22,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -6967,7 +6967,7 @@
         "x": 22,
         "y": 22,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -7051,7 +7051,7 @@
         "x": 20,
         "y": 23,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -7065,7 +7065,7 @@
         "x": 22,
         "y": 23,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -7317,7 +7317,7 @@
         "x": 19,
         "y": 27,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -7410,35 +7410,35 @@
         "x": 18,
         "y": 3,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 19,
         "y": 3,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 20,
         "y": 3,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 21,
         "y": 3,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 22,
         "y": 3,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -7466,42 +7466,42 @@
         "x": 17,
         "y": 4,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 18,
         "y": 4,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 19,
         "y": 4,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 20,
         "y": 4,
         "color": "#32063d",
-        "type": "outfit",
+        "type": "other",
         "b": 25
       },
       {
         "x": 21,
         "y": 4,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 22,
         "y": 4,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -7543,21 +7543,21 @@
         "x": 18,
         "y": 5,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 19,
         "y": 5,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 20,
         "y": 5,
         "color": "#32063d",
-        "type": "outfit",
+        "type": "other",
         "b": 25
       },
       {
@@ -7620,14 +7620,14 @@
         "x": 19,
         "y": 6,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 20,
         "y": 6,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -7690,14 +7690,14 @@
         "x": 19,
         "y": 7,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 20,
         "y": 7,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -7774,7 +7774,7 @@
         "x": 20,
         "y": 8,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -7900,14 +7900,14 @@
         "x": 12,
         "y": 10,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 13,
         "y": 10,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -7963,7 +7963,7 @@
         "x": 21,
         "y": 10,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -8019,63 +8019,63 @@
         "x": 13,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 14,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 15,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 16,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 17,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 18,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 19,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 20,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 21,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -8096,14 +8096,14 @@
         "x": 27,
         "y": 11,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
         "x": 28,
         "y": 11,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -8117,7 +8117,7 @@
         "x": 9,
         "y": 12,
         "color": "#734221",
-        "type": "hair",
+        "type": "other",
         "b": 77
       },
       {
@@ -8138,7 +8138,7 @@
         "x": 12,
         "y": 12,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -8166,7 +8166,7 @@
         "x": 16,
         "y": 12,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -8222,14 +8222,14 @@
         "x": 27,
         "y": 12,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
         "x": 28,
         "y": 12,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -8278,7 +8278,7 @@
         "x": 14,
         "y": 13,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -8481,7 +8481,7 @@
         "x": 27,
         "y": 14,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -8607,7 +8607,7 @@
         "x": 26,
         "y": 15,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -8740,7 +8740,7 @@
         "x": 26,
         "y": 16,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -8873,7 +8873,7 @@
         "x": 26,
         "y": 17,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -8999,7 +8999,7 @@
         "x": 25,
         "y": 18,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -9125,7 +9125,7 @@
         "x": 25,
         "y": 19,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -9153,14 +9153,14 @@
         "x": 12,
         "y": 20,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 13,
         "y": 20,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -9195,14 +9195,14 @@
         "x": 18,
         "y": 20,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 19,
         "y": 20,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -9230,7 +9230,7 @@
         "x": 25,
         "y": 20,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -9265,7 +9265,7 @@
         "x": 12,
         "y": 21,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -9314,7 +9314,7 @@
         "x": 19,
         "y": 21,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -9349,7 +9349,7 @@
         "x": 24,
         "y": 21,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -9398,7 +9398,7 @@
         "x": 12,
         "y": 22,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -9447,7 +9447,7 @@
         "x": 19,
         "y": 22,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -9482,7 +9482,7 @@
         "x": 24,
         "y": 22,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -9524,7 +9524,7 @@
         "x": 11,
         "y": 23,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -9538,42 +9538,42 @@
         "x": 13,
         "y": 23,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 14,
         "y": 23,
         "color": "#32043e",
-        "type": "outfit",
+        "type": "other",
         "b": 24
       },
       {
         "x": 15,
         "y": 23,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 16,
         "y": 23,
         "color": "#32043e",
-        "type": "outfit",
+        "type": "other",
         "b": 24
       },
       {
         "x": 17,
         "y": 23,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 18,
         "y": 23,
         "color": "#32043e",
-        "type": "outfit",
+        "type": "other",
         "b": 24
       },
       {
@@ -9587,7 +9587,7 @@
         "x": 20,
         "y": 23,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -9601,14 +9601,14 @@
         "x": 22,
         "y": 23,
         "color": "#6b759d",
-        "type": "other",
+        "type": "outfit",
         "b": 119
       },
       {
         "x": 23,
         "y": 23,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -9713,7 +9713,7 @@
         "x": 23,
         "y": 24,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -9734,7 +9734,7 @@
         "x": 11,
         "y": 25,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -9811,7 +9811,7 @@
         "x": 23,
         "y": 25,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -9825,7 +9825,7 @@
         "x": 11,
         "y": 26,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -9881,7 +9881,7 @@
         "x": 19,
         "y": 26,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -9902,7 +9902,7 @@
         "x": 22,
         "y": 26,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -9923,7 +9923,7 @@
         "x": 12,
         "y": 27,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -9972,7 +9972,7 @@
         "x": 19,
         "y": 27,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -10116,21 +10116,21 @@
         "x": 15,
         "y": 5,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 16,
         "y": 5,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 17,
         "y": 5,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -10172,14 +10172,14 @@
         "x": 16,
         "y": 6,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 17,
         "y": 6,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -10256,14 +10256,14 @@
         "x": 12,
         "y": 8,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 13,
         "y": 8,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -10291,7 +10291,7 @@
         "x": 17,
         "y": 8,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -10326,35 +10326,35 @@
         "x": 14,
         "y": 9,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 15,
         "y": 9,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 16,
         "y": 9,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 17,
         "y": 9,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 18,
         "y": 9,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -10417,14 +10417,14 @@
         "x": 17,
         "y": 10,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 18,
         "y": 10,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -10557,14 +10557,14 @@
         "x": 11,
         "y": 12,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 12,
         "y": 12,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -10620,7 +10620,7 @@
         "x": 20,
         "y": 12,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -10662,14 +10662,14 @@
         "x": 12,
         "y": 13,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 13,
         "y": 13,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -10683,14 +10683,14 @@
         "x": 15,
         "y": 13,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
         "x": 16,
         "y": 13,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -10704,21 +10704,21 @@
         "x": 18,
         "y": 13,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 19,
         "y": 13,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 20,
         "y": 13,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -10774,14 +10774,14 @@
         "x": 15,
         "y": 14,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
         "x": 16,
         "y": 14,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -10963,7 +10963,7 @@
         "x": 16,
         "y": 16,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -11047,14 +11047,14 @@
         "x": 15,
         "y": 17,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
         "x": 16,
         "y": 17,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -11138,7 +11138,7 @@
         "x": 16,
         "y": 18,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -11215,7 +11215,7 @@
         "x": 15,
         "y": 19,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -11299,14 +11299,14 @@
         "x": 15,
         "y": 20,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
         "x": 16,
         "y": 20,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -11376,14 +11376,14 @@
         "x": 16,
         "y": 21,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
         "x": 17,
         "y": 21,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -11530,14 +11530,14 @@
         "x": 13,
         "y": 24,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 14,
         "y": 24,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -11551,14 +11551,14 @@
         "x": 16,
         "y": 24,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
         "x": 17,
         "y": 24,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -11579,7 +11579,7 @@
         "x": 12,
         "y": 25,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -11600,7 +11600,7 @@
         "x": 15,
         "y": 25,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -11621,7 +11621,7 @@
         "x": 18,
         "y": 25,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -11642,7 +11642,7 @@
         "x": 12,
         "y": 26,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -11663,14 +11663,14 @@
         "x": 15,
         "y": 26,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
         "x": 16,
         "y": 26,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -11712,7 +11712,7 @@
         "x": 14,
         "y": 27,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -11726,7 +11726,7 @@
         "x": 16,
         "y": 27,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -11847,21 +11847,21 @@
         "x": 15,
         "y": 3,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 16,
         "y": 3,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 17,
         "y": 3,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -11903,14 +11903,14 @@
         "x": 16,
         "y": 4,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 17,
         "y": 4,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -11987,14 +11987,14 @@
         "x": 12,
         "y": 6,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 13,
         "y": 6,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -12022,7 +12022,7 @@
         "x": 17,
         "y": 6,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -12057,35 +12057,35 @@
         "x": 14,
         "y": 7,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 15,
         "y": 7,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 16,
         "y": 7,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 17,
         "y": 7,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 18,
         "y": 7,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -12148,14 +12148,14 @@
         "x": 17,
         "y": 8,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 18,
         "y": 8,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -12288,14 +12288,14 @@
         "x": 11,
         "y": 10,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 12,
         "y": 10,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -12351,7 +12351,7 @@
         "x": 20,
         "y": 10,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -12393,7 +12393,7 @@
         "x": 12,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -12407,14 +12407,14 @@
         "x": 14,
         "y": 11,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
         "x": 15,
         "y": 11,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -12428,28 +12428,28 @@
         "x": 17,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 18,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 19,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 20,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -12498,14 +12498,14 @@
         "x": 14,
         "y": 12,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
         "x": 15,
         "y": 12,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -12680,14 +12680,14 @@
         "x": 14,
         "y": 14,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
         "x": 15,
         "y": 14,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -12778,7 +12778,7 @@
         "x": 15,
         "y": 15,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -12855,7 +12855,7 @@
         "x": 14,
         "y": 16,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -12939,14 +12939,14 @@
         "x": 14,
         "y": 17,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
         "x": 15,
         "y": 17,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -13030,7 +13030,7 @@
         "x": 15,
         "y": 18,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -13107,7 +13107,7 @@
         "x": 14,
         "y": 19,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -13177,14 +13177,14 @@
         "x": 14,
         "y": 20,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
         "x": 15,
         "y": 20,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -13247,14 +13247,14 @@
         "x": 15,
         "y": 21,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
         "x": 16,
         "y": 21,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -13373,7 +13373,7 @@
         "x": 17,
         "y": 23,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -13394,7 +13394,7 @@
         "x": 13,
         "y": 24,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -13408,14 +13408,14 @@
         "x": 15,
         "y": 24,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
         "x": 16,
         "y": 24,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -13443,7 +13443,7 @@
         "x": 12,
         "y": 25,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -13457,7 +13457,7 @@
         "x": 14,
         "y": 25,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -13485,7 +13485,7 @@
         "x": 18,
         "y": 25,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -13506,7 +13506,7 @@
         "x": 12,
         "y": 26,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -13520,14 +13520,14 @@
         "x": 14,
         "y": 26,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
         "x": 15,
         "y": 26,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -13569,21 +13569,21 @@
         "x": 11,
         "y": 27,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 12,
         "y": 27,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 13,
         "y": 27,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -13597,7 +13597,7 @@
         "x": 15,
         "y": 27,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -13618,14 +13618,14 @@
         "x": 18,
         "y": 27,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 19,
         "y": 27,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -13660,7 +13660,7 @@
         "x": 14,
         "y": 28,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -13681,7 +13681,7 @@
         "x": 17,
         "y": 28,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -13802,21 +13802,21 @@
         "x": 15,
         "y": 3,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 16,
         "y": 3,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 17,
         "y": 3,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -13858,14 +13858,14 @@
         "x": 16,
         "y": 4,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 17,
         "y": 4,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -13942,14 +13942,14 @@
         "x": 12,
         "y": 6,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 13,
         "y": 6,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -13977,7 +13977,7 @@
         "x": 17,
         "y": 6,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -14012,35 +14012,35 @@
         "x": 14,
         "y": 7,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 15,
         "y": 7,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 16,
         "y": 7,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 17,
         "y": 7,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 18,
         "y": 7,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -14103,14 +14103,14 @@
         "x": 17,
         "y": 8,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 18,
         "y": 8,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -14243,14 +14243,14 @@
         "x": 11,
         "y": 10,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 12,
         "y": 10,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -14306,7 +14306,7 @@
         "x": 20,
         "y": 10,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -14348,63 +14348,63 @@
         "x": 12,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 13,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 14,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 15,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 16,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 17,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 18,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 19,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 20,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -14467,7 +14467,7 @@
         "x": 15,
         "y": 12,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -14523,14 +14523,14 @@
         "x": 8,
         "y": 13,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
         "x": 9,
         "y": 13,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -14628,14 +14628,14 @@
         "x": 8,
         "y": 14,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
         "x": 9,
         "y": 14,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -14817,7 +14817,7 @@
         "x": 9,
         "y": 16,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -14908,7 +14908,7 @@
         "x": 10,
         "y": 17,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -14999,7 +14999,7 @@
         "x": 10,
         "y": 18,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -15083,7 +15083,7 @@
         "x": 10,
         "y": 19,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -15167,7 +15167,7 @@
         "x": 11,
         "y": 20,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -15195,7 +15195,7 @@
         "x": 15,
         "y": 20,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -15237,7 +15237,7 @@
         "x": 11,
         "y": 21,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -15251,7 +15251,7 @@
         "x": 13,
         "y": 21,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -15342,7 +15342,7 @@
         "x": 16,
         "y": 22,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -15419,7 +15419,7 @@
         "x": 17,
         "y": 23,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -15433,14 +15433,14 @@
         "x": 11,
         "y": 24,
         "color": "#6b759d",
-        "type": "other",
+        "type": "outfit",
         "b": 119
       },
       {
         "x": 12,
         "y": 24,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -15461,14 +15461,14 @@
         "x": 15,
         "y": 24,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 16,
         "y": 24,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -15503,7 +15503,7 @@
         "x": 13,
         "y": 25,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -15531,7 +15531,7 @@
         "x": 17,
         "y": 25,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -15566,7 +15566,7 @@
         "x": 13,
         "y": 26,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -15594,7 +15594,7 @@
         "x": 17,
         "y": 26,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -15629,21 +15629,21 @@
         "x": 11,
         "y": 27,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 12,
         "y": 27,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 13,
         "y": 27,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -15678,14 +15678,14 @@
         "x": 18,
         "y": 27,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 19,
         "y": 27,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -15720,7 +15720,7 @@
         "x": 14,
         "y": 28,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -15741,7 +15741,7 @@
         "x": 17,
         "y": 28,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -15862,21 +15862,21 @@
         "x": 15,
         "y": 3,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 16,
         "y": 3,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 17,
         "y": 3,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -15918,14 +15918,14 @@
         "x": 16,
         "y": 4,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 17,
         "y": 4,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -16002,14 +16002,14 @@
         "x": 12,
         "y": 6,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 13,
         "y": 6,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -16037,7 +16037,7 @@
         "x": 17,
         "y": 6,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -16072,35 +16072,35 @@
         "x": 14,
         "y": 7,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 15,
         "y": 7,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 16,
         "y": 7,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 17,
         "y": 7,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 18,
         "y": 7,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -16163,14 +16163,14 @@
         "x": 17,
         "y": 8,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 18,
         "y": 8,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -16303,14 +16303,14 @@
         "x": 11,
         "y": 10,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 12,
         "y": 10,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -16366,7 +16366,7 @@
         "x": 20,
         "y": 10,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -16408,7 +16408,7 @@
         "x": 12,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -16422,14 +16422,14 @@
         "x": 14,
         "y": 11,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
         "x": 15,
         "y": 11,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -16443,28 +16443,28 @@
         "x": 17,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 18,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 19,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 20,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -16513,14 +16513,14 @@
         "x": 14,
         "y": 12,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
         "x": 15,
         "y": 12,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -16695,14 +16695,14 @@
         "x": 14,
         "y": 14,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
         "x": 15,
         "y": 14,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -16793,7 +16793,7 @@
         "x": 15,
         "y": 15,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -16870,7 +16870,7 @@
         "x": 14,
         "y": 16,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -16954,14 +16954,14 @@
         "x": 14,
         "y": 17,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
         "x": 15,
         "y": 17,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -17045,7 +17045,7 @@
         "x": 15,
         "y": 18,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -17122,7 +17122,7 @@
         "x": 14,
         "y": 19,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -17192,14 +17192,14 @@
         "x": 14,
         "y": 20,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
         "x": 15,
         "y": 20,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -17262,14 +17262,14 @@
         "x": 15,
         "y": 21,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
         "x": 16,
         "y": 21,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -17388,7 +17388,7 @@
         "x": 17,
         "y": 23,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -17409,7 +17409,7 @@
         "x": 13,
         "y": 24,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -17423,14 +17423,14 @@
         "x": 15,
         "y": 24,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
         "x": 16,
         "y": 24,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -17458,7 +17458,7 @@
         "x": 12,
         "y": 25,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -17472,7 +17472,7 @@
         "x": 14,
         "y": 25,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -17500,7 +17500,7 @@
         "x": 18,
         "y": 25,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -17521,7 +17521,7 @@
         "x": 12,
         "y": 26,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -17535,14 +17535,14 @@
         "x": 14,
         "y": 26,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
         "x": 15,
         "y": 26,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -17584,21 +17584,21 @@
         "x": 11,
         "y": 27,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 12,
         "y": 27,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 13,
         "y": 27,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -17612,7 +17612,7 @@
         "x": 15,
         "y": 27,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -17633,14 +17633,14 @@
         "x": 18,
         "y": 27,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 19,
         "y": 27,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -17675,7 +17675,7 @@
         "x": 14,
         "y": 28,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -17696,7 +17696,7 @@
         "x": 17,
         "y": 28,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -17812,35 +17812,35 @@
         "x": 10,
         "y": 3,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 11,
         "y": 3,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 12,
         "y": 3,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 13,
         "y": 3,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 14,
         "y": 3,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -17868,42 +17868,42 @@
         "x": 10,
         "y": 4,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 11,
         "y": 4,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 12,
         "y": 4,
         "color": "#32063d",
-        "type": "outfit",
+        "type": "other",
         "b": 25
       },
       {
         "x": 13,
         "y": 4,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 14,
         "y": 4,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 15,
         "y": 4,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -17938,21 +17938,21 @@
         "x": 12,
         "y": 5,
         "color": "#32063d",
-        "type": "outfit",
+        "type": "other",
         "b": 25
       },
       {
         "x": 13,
         "y": 5,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 14,
         "y": 5,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -17994,14 +17994,14 @@
         "x": 12,
         "y": 6,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 13,
         "y": 6,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -18057,14 +18057,14 @@
         "x": 11,
         "y": 7,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 12,
         "y": 7,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -18127,7 +18127,7 @@
         "x": 11,
         "y": 8,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -18295,7 +18295,7 @@
         "x": 10,
         "y": 10,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -18351,14 +18351,14 @@
         "x": 18,
         "y": 10,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 19,
         "y": 10,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -18393,63 +18393,63 @@
         "x": 10,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 11,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 12,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 13,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 14,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 15,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 16,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 17,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 18,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -18540,7 +18540,7 @@
         "x": 15,
         "y": 12,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -18589,7 +18589,7 @@
         "x": 22,
         "y": 12,
         "color": "#734221",
-        "type": "hair",
+        "type": "other",
         "b": 77
       },
       {
@@ -18603,14 +18603,14 @@
         "x": 7,
         "y": 13,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
         "x": 8,
         "y": 13,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -18722,14 +18722,14 @@
         "x": 7,
         "y": 14,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
         "x": 8,
         "y": 14,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -18939,7 +18939,7 @@
         "x": 7,
         "y": 16,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -19044,7 +19044,7 @@
         "x": 7,
         "y": 17,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -19149,7 +19149,7 @@
         "x": 7,
         "y": 18,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -19261,7 +19261,7 @@
         "x": 8,
         "y": 19,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -19345,7 +19345,7 @@
         "x": 8,
         "y": 20,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -19436,7 +19436,7 @@
         "x": 8,
         "y": 21,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -19464,7 +19464,7 @@
         "x": 12,
         "y": 21,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -19506,7 +19506,7 @@
         "x": 18,
         "y": 21,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -19534,7 +19534,7 @@
         "x": 8,
         "y": 22,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -19562,7 +19562,7 @@
         "x": 12,
         "y": 22,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -19611,7 +19611,7 @@
         "x": 19,
         "y": 22,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -19646,7 +19646,7 @@
         "x": 9,
         "y": 23,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -19660,7 +19660,7 @@
         "x": 11,
         "y": 23,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -19674,42 +19674,42 @@
         "x": 13,
         "y": 23,
         "color": "#32043e",
-        "type": "outfit",
+        "type": "other",
         "b": 24
       },
       {
         "x": 14,
         "y": 23,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 15,
         "y": 23,
         "color": "#32043e",
-        "type": "outfit",
+        "type": "other",
         "b": 24
       },
       {
         "x": 16,
         "y": 23,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 17,
         "y": 23,
         "color": "#32043e",
-        "type": "outfit",
+        "type": "other",
         "b": 24
       },
       {
         "x": 18,
         "y": 23,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -19744,7 +19744,7 @@
         "x": 9,
         "y": 24,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -19835,7 +19835,7 @@
         "x": 9,
         "y": 25,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -19856,7 +19856,7 @@
         "x": 12,
         "y": 25,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -19919,7 +19919,7 @@
         "x": 10,
         "y": 26,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -20040,35 +20040,35 @@
         "x": 10,
         "y": 3,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 11,
         "y": 3,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 12,
         "y": 3,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 13,
         "y": 3,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 14,
         "y": 3,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -20096,42 +20096,42 @@
         "x": 10,
         "y": 4,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 11,
         "y": 4,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 12,
         "y": 4,
         "color": "#32063d",
-        "type": "outfit",
+        "type": "other",
         "b": 25
       },
       {
         "x": 13,
         "y": 4,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 14,
         "y": 4,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 15,
         "y": 4,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -20166,21 +20166,21 @@
         "x": 12,
         "y": 5,
         "color": "#32063d",
-        "type": "outfit",
+        "type": "other",
         "b": 25
       },
       {
         "x": 13,
         "y": 5,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 14,
         "y": 5,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -20222,14 +20222,14 @@
         "x": 12,
         "y": 6,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 13,
         "y": 6,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -20285,14 +20285,14 @@
         "x": 12,
         "y": 7,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 13,
         "y": 7,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -20355,7 +20355,7 @@
         "x": 12,
         "y": 8,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -20537,7 +20537,7 @@
         "x": 11,
         "y": 10,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -20593,14 +20593,14 @@
         "x": 19,
         "y": 10,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 20,
         "y": 10,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -20635,14 +20635,14 @@
         "x": 4,
         "y": 11,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
         "x": 5,
         "y": 11,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -20663,63 +20663,63 @@
         "x": 11,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 12,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 13,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 14,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 15,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 16,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 17,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 18,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 19,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -20761,14 +20761,14 @@
         "x": 4,
         "y": 12,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
         "x": 5,
         "y": 12,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -20824,7 +20824,7 @@
         "x": 16,
         "y": 12,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -20873,7 +20873,7 @@
         "x": 23,
         "y": 12,
         "color": "#734221",
-        "type": "hair",
+        "type": "other",
         "b": 77
       },
       {
@@ -20999,7 +20999,7 @@
         "x": 5,
         "y": 14,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -21125,7 +21125,7 @@
         "x": 6,
         "y": 15,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -21244,7 +21244,7 @@
         "x": 6,
         "y": 16,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -21370,7 +21370,7 @@
         "x": 6,
         "y": 17,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -21503,7 +21503,7 @@
         "x": 7,
         "y": 18,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -21622,7 +21622,7 @@
         "x": 7,
         "y": 19,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -21741,7 +21741,7 @@
         "x": 7,
         "y": 20,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -21846,7 +21846,7 @@
         "x": 8,
         "y": 21,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -21874,7 +21874,7 @@
         "x": 13,
         "y": 21,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -21923,7 +21923,7 @@
         "x": 20,
         "y": 21,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -21958,7 +21958,7 @@
         "x": 8,
         "y": 22,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -21993,7 +21993,7 @@
         "x": 13,
         "y": 22,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -22042,7 +22042,7 @@
         "x": 20,
         "y": 22,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -22091,14 +22091,14 @@
         "x": 9,
         "y": 23,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
         "x": 10,
         "y": 23,
         "color": "#6b759d",
-        "type": "other",
+        "type": "outfit",
         "b": 119
       },
       {
@@ -22112,7 +22112,7 @@
         "x": 12,
         "y": 23,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -22126,42 +22126,42 @@
         "x": 14,
         "y": 23,
         "color": "#32043e",
-        "type": "outfit",
+        "type": "other",
         "b": 24
       },
       {
         "x": 15,
         "y": 23,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 16,
         "y": 23,
         "color": "#32043e",
-        "type": "outfit",
+        "type": "other",
         "b": 24
       },
       {
         "x": 17,
         "y": 23,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 18,
         "y": 23,
         "color": "#32043e",
-        "type": "outfit",
+        "type": "other",
         "b": 24
       },
       {
         "x": 19,
         "y": 23,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -22175,7 +22175,7 @@
         "x": 21,
         "y": 23,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -22210,7 +22210,7 @@
         "x": 9,
         "y": 24,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -22308,7 +22308,7 @@
         "x": 9,
         "y": 25,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -22385,7 +22385,7 @@
         "x": 21,
         "y": 25,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -22406,14 +22406,14 @@
         "x": 10,
         "y": 26,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
         "x": 11,
         "y": 26,
         "color": "#6b759d",
-        "type": "other",
+        "type": "outfit",
         "b": 119
       },
       {
@@ -22427,7 +22427,7 @@
         "x": 13,
         "y": 26,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -22483,7 +22483,7 @@
         "x": 21,
         "y": 26,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -22504,7 +22504,7 @@
         "x": 11,
         "y": 27,
         "color": "#6b759d",
-        "type": "other",
+        "type": "outfit",
         "b": 119
       },
       {
@@ -22518,7 +22518,7 @@
         "x": 14,
         "y": 27,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -22532,7 +22532,7 @@
         "x": 16,
         "y": 27,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -22560,7 +22560,7 @@
         "x": 20,
         "y": 27,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -22660,21 +22660,21 @@
         "x": 14,
         "y": 2,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 15,
         "y": 2,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 16,
         "y": 2,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -22702,28 +22702,28 @@
         "x": 14,
         "y": 3,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 15,
         "y": 3,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 16,
         "y": 3,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 17,
         "y": 3,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -22758,14 +22758,14 @@
         "x": 15,
         "y": 4,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 16,
         "y": 4,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -22807,14 +22807,14 @@
         "x": 14,
         "y": 5,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 15,
         "y": 5,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -22863,7 +22863,7 @@
         "x": 13,
         "y": 6,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -22926,7 +22926,7 @@
         "x": 12,
         "y": 7,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -23094,7 +23094,7 @@
         "x": 11,
         "y": 9,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -23150,14 +23150,14 @@
         "x": 19,
         "y": 9,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 20,
         "y": 9,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -23192,63 +23192,63 @@
         "x": 11,
         "y": 10,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 12,
         "y": 10,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 13,
         "y": 10,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 14,
         "y": 10,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 15,
         "y": 10,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 16,
         "y": 10,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 17,
         "y": 10,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 18,
         "y": 10,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 19,
         "y": 10,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -23325,7 +23325,7 @@
         "x": 16,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -23374,7 +23374,7 @@
         "x": 23,
         "y": 11,
         "color": "#734221",
-        "type": "hair",
+        "type": "other",
         "b": 77
       },
       {
@@ -23500,7 +23500,7 @@
         "x": 8,
         "y": 13,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -23619,7 +23619,7 @@
         "x": 8,
         "y": 14,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -23857,7 +23857,7 @@
         "x": 8,
         "y": 16,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -23976,7 +23976,7 @@
         "x": 8,
         "y": 17,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -24207,7 +24207,7 @@
         "x": 9,
         "y": 19,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -24298,7 +24298,7 @@
         "x": 9,
         "y": 20,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -24417,7 +24417,7 @@
         "x": 13,
         "y": 21,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -24480,7 +24480,7 @@
         "x": 10,
         "y": 22,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -24494,7 +24494,7 @@
         "x": 12,
         "y": 22,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -24508,35 +24508,35 @@
         "x": 14,
         "y": 22,
         "color": "#32043e",
-        "type": "outfit",
+        "type": "other",
         "b": 24
       },
       {
         "x": 15,
         "y": 22,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 16,
         "y": 22,
         "color": "#32043e",
-        "type": "outfit",
+        "type": "other",
         "b": 24
       },
       {
         "x": 17,
         "y": 22,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 18,
         "y": 22,
         "color": "#32043e",
-        "type": "outfit",
+        "type": "other",
         "b": 24
       },
       {
@@ -24571,7 +24571,7 @@
         "x": 10,
         "y": 23,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -24585,7 +24585,7 @@
         "x": 12,
         "y": 23,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -24886,7 +24886,7 @@
         "x": 13,
         "y": 27,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -24986,35 +24986,35 @@
         "x": 10,
         "y": 3,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 11,
         "y": 3,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 12,
         "y": 3,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 13,
         "y": 3,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 14,
         "y": 3,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -25042,42 +25042,42 @@
         "x": 10,
         "y": 4,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 11,
         "y": 4,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 12,
         "y": 4,
         "color": "#32063d",
-        "type": "outfit",
+        "type": "other",
         "b": 25
       },
       {
         "x": 13,
         "y": 4,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 14,
         "y": 4,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 15,
         "y": 4,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -25112,21 +25112,21 @@
         "x": 12,
         "y": 5,
         "color": "#32063d",
-        "type": "outfit",
+        "type": "other",
         "b": 25
       },
       {
         "x": 13,
         "y": 5,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 14,
         "y": 5,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -25168,14 +25168,14 @@
         "x": 12,
         "y": 6,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 13,
         "y": 6,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -25231,14 +25231,14 @@
         "x": 12,
         "y": 7,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 13,
         "y": 7,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -25301,7 +25301,7 @@
         "x": 12,
         "y": 8,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -25483,7 +25483,7 @@
         "x": 11,
         "y": 10,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -25539,14 +25539,14 @@
         "x": 19,
         "y": 10,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 20,
         "y": 10,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -25581,14 +25581,14 @@
         "x": 4,
         "y": 11,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
         "x": 5,
         "y": 11,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -25609,63 +25609,63 @@
         "x": 11,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 12,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 13,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 14,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 15,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 16,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 17,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 18,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 19,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -25707,14 +25707,14 @@
         "x": 4,
         "y": 12,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
         "x": 5,
         "y": 12,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -25770,7 +25770,7 @@
         "x": 16,
         "y": 12,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -25819,7 +25819,7 @@
         "x": 23,
         "y": 12,
         "color": "#734221",
-        "type": "hair",
+        "type": "other",
         "b": 77
       },
       {
@@ -25945,7 +25945,7 @@
         "x": 5,
         "y": 14,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -26071,7 +26071,7 @@
         "x": 6,
         "y": 15,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -26190,7 +26190,7 @@
         "x": 6,
         "y": 16,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -26316,7 +26316,7 @@
         "x": 6,
         "y": 17,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -26449,7 +26449,7 @@
         "x": 7,
         "y": 18,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -26568,7 +26568,7 @@
         "x": 7,
         "y": 19,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -26687,7 +26687,7 @@
         "x": 7,
         "y": 20,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -26792,7 +26792,7 @@
         "x": 8,
         "y": 21,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -26820,7 +26820,7 @@
         "x": 13,
         "y": 21,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -26869,7 +26869,7 @@
         "x": 20,
         "y": 21,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -26904,7 +26904,7 @@
         "x": 8,
         "y": 22,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -26939,7 +26939,7 @@
         "x": 13,
         "y": 22,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -26988,7 +26988,7 @@
         "x": 20,
         "y": 22,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -27037,14 +27037,14 @@
         "x": 9,
         "y": 23,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
         "x": 10,
         "y": 23,
         "color": "#6b759d",
-        "type": "other",
+        "type": "outfit",
         "b": 119
       },
       {
@@ -27058,7 +27058,7 @@
         "x": 12,
         "y": 23,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -27072,42 +27072,42 @@
         "x": 14,
         "y": 23,
         "color": "#32043e",
-        "type": "outfit",
+        "type": "other",
         "b": 24
       },
       {
         "x": 15,
         "y": 23,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 16,
         "y": 23,
         "color": "#32043e",
-        "type": "outfit",
+        "type": "other",
         "b": 24
       },
       {
         "x": 17,
         "y": 23,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 18,
         "y": 23,
         "color": "#32043e",
-        "type": "outfit",
+        "type": "other",
         "b": 24
       },
       {
         "x": 19,
         "y": 23,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -27121,7 +27121,7 @@
         "x": 21,
         "y": 23,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -27156,7 +27156,7 @@
         "x": 9,
         "y": 24,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -27254,7 +27254,7 @@
         "x": 9,
         "y": 25,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -27331,7 +27331,7 @@
         "x": 21,
         "y": 25,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -27352,14 +27352,14 @@
         "x": 10,
         "y": 26,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
         "x": 11,
         "y": 26,
         "color": "#6b759d",
-        "type": "other",
+        "type": "outfit",
         "b": 119
       },
       {
@@ -27373,7 +27373,7 @@
         "x": 13,
         "y": 26,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -27429,7 +27429,7 @@
         "x": 21,
         "y": 26,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -27450,7 +27450,7 @@
         "x": 11,
         "y": 27,
         "color": "#6b759d",
-        "type": "other",
+        "type": "outfit",
         "b": 119
       },
       {
@@ -27464,7 +27464,7 @@
         "x": 14,
         "y": 27,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -27478,7 +27478,7 @@
         "x": 16,
         "y": 27,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -27506,7 +27506,7 @@
         "x": 20,
         "y": 27,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -27615,21 +27615,21 @@
         "x": 14,
         "y": 5,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 15,
         "y": 5,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 16,
         "y": 5,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -27664,14 +27664,14 @@
         "x": 14,
         "y": 6,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 15,
         "y": 6,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -27769,7 +27769,7 @@
         "x": 14,
         "y": 8,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -27797,14 +27797,14 @@
         "x": 18,
         "y": 8,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 19,
         "y": 8,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -27825,35 +27825,35 @@
         "x": 13,
         "y": 9,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 14,
         "y": 9,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 15,
         "y": 9,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 16,
         "y": 9,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 17,
         "y": 9,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -27895,14 +27895,14 @@
         "x": 13,
         "y": 10,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 14,
         "y": 10,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -28056,7 +28056,7 @@
         "x": 11,
         "y": 12,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -28112,14 +28112,14 @@
         "x": 19,
         "y": 12,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 20,
         "y": 12,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -28154,63 +28154,63 @@
         "x": 11,
         "y": 13,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 12,
         "y": 13,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 13,
         "y": 13,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 14,
         "y": 13,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 15,
         "y": 13,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 16,
         "y": 13,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 17,
         "y": 13,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 18,
         "y": 13,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 19,
         "y": 13,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -28287,7 +28287,7 @@
         "x": 16,
         "y": 14,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -28868,7 +28868,7 @@
         "x": 14,
         "y": 21,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -28889,7 +28889,7 @@
         "x": 17,
         "y": 21,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -28938,14 +28938,14 @@
         "x": 15,
         "y": 22,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 16,
         "y": 22,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -29001,7 +29001,7 @@
         "x": 15,
         "y": 23,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -29057,21 +29057,21 @@
         "x": 16,
         "y": 24,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 17,
         "y": 24,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 18,
         "y": 24,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -29092,7 +29092,7 @@
         "x": 13,
         "y": 25,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -29106,7 +29106,7 @@
         "x": 15,
         "y": 25,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -29134,7 +29134,7 @@
         "x": 19,
         "y": 25,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -29169,14 +29169,14 @@
         "x": 15,
         "y": 26,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 16,
         "y": 26,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -29197,7 +29197,7 @@
         "x": 19,
         "y": 26,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -29246,7 +29246,7 @@
         "x": 17,
         "y": 27,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -29346,21 +29346,21 @@
         "x": 14,
         "y": 3,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 15,
         "y": 3,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 16,
         "y": 3,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -29395,14 +29395,14 @@
         "x": 14,
         "y": 4,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 15,
         "y": 4,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -29500,7 +29500,7 @@
         "x": 14,
         "y": 6,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -29528,14 +29528,14 @@
         "x": 18,
         "y": 6,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 19,
         "y": 6,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -29556,35 +29556,35 @@
         "x": 13,
         "y": 7,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 14,
         "y": 7,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 15,
         "y": 7,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 16,
         "y": 7,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 17,
         "y": 7,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -29626,14 +29626,14 @@
         "x": 13,
         "y": 8,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 14,
         "y": 8,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -29787,7 +29787,7 @@
         "x": 11,
         "y": 10,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -29843,14 +29843,14 @@
         "x": 19,
         "y": 10,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 20,
         "y": 10,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -29885,63 +29885,63 @@
         "x": 11,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 12,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 13,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 14,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 15,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 16,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 17,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 18,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 19,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -30025,7 +30025,7 @@
         "x": 17,
         "y": 12,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -30753,7 +30753,7 @@
         "x": 15,
         "y": 21,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -30774,7 +30774,7 @@
         "x": 18,
         "y": 21,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -30816,7 +30816,7 @@
         "x": 15,
         "y": 22,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -30830,7 +30830,7 @@
         "x": 17,
         "y": 22,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -30858,7 +30858,7 @@
         "x": 14,
         "y": 23,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -30879,7 +30879,7 @@
         "x": 17,
         "y": 23,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -30914,7 +30914,7 @@
         "x": 15,
         "y": 24,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -30935,7 +30935,7 @@
         "x": 18,
         "y": 24,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -30956,7 +30956,7 @@
         "x": 13,
         "y": 25,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -30998,7 +30998,7 @@
         "x": 19,
         "y": 25,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -31061,7 +31061,7 @@
         "x": 19,
         "y": 26,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -31082,14 +31082,14 @@
         "x": 12,
         "y": 27,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 13,
         "y": 27,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -31124,21 +31124,21 @@
         "x": 18,
         "y": 27,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 19,
         "y": 27,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 20,
         "y": 27,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -31173,7 +31173,7 @@
         "x": 14,
         "y": 28,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -31194,7 +31194,7 @@
         "x": 17,
         "y": 28,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -31301,21 +31301,21 @@
         "x": 14,
         "y": 3,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 15,
         "y": 3,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 16,
         "y": 3,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -31350,14 +31350,14 @@
         "x": 14,
         "y": 4,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 15,
         "y": 4,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -31455,7 +31455,7 @@
         "x": 14,
         "y": 6,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -31483,14 +31483,14 @@
         "x": 18,
         "y": 6,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 19,
         "y": 6,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -31511,35 +31511,35 @@
         "x": 13,
         "y": 7,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 14,
         "y": 7,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 15,
         "y": 7,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 16,
         "y": 7,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 17,
         "y": 7,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -31581,14 +31581,14 @@
         "x": 13,
         "y": 8,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 14,
         "y": 8,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -31742,7 +31742,7 @@
         "x": 11,
         "y": 10,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -31798,14 +31798,14 @@
         "x": 19,
         "y": 10,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 20,
         "y": 10,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -31840,63 +31840,63 @@
         "x": 11,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 12,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 13,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 14,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 15,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 16,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 17,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 18,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 19,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -31973,7 +31973,7 @@
         "x": 16,
         "y": 12,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -32120,7 +32120,7 @@
         "x": 23,
         "y": 13,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -32225,7 +32225,7 @@
         "x": 23,
         "y": 14,
         "color": "#1d359d",
-        "type": "other",
+        "type": "outfit",
         "b": 58
       },
       {
@@ -32701,7 +32701,7 @@
         "x": 16,
         "y": 20,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -32750,7 +32750,7 @@
         "x": 13,
         "y": 21,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -32771,7 +32771,7 @@
         "x": 16,
         "y": 21,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -32785,7 +32785,7 @@
         "x": 18,
         "y": 21,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -32834,7 +32834,7 @@
         "x": 15,
         "y": 22,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -32883,21 +32883,21 @@
         "x": 12,
         "y": 23,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 13,
         "y": 23,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 14,
         "y": 23,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -32974,14 +32974,14 @@
         "x": 15,
         "y": 24,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 16,
         "y": 24,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -32995,7 +32995,7 @@
         "x": 18,
         "y": 24,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -33023,7 +33023,7 @@
         "x": 14,
         "y": 25,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -33093,7 +33093,7 @@
         "x": 14,
         "y": 26,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -33149,14 +33149,14 @@
         "x": 12,
         "y": 27,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 13,
         "y": 27,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -33198,14 +33198,14 @@
         "x": 19,
         "y": 27,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 20,
         "y": 27,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -33233,7 +33233,7 @@
         "x": 14,
         "y": 28,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -33368,21 +33368,21 @@
         "x": 14,
         "y": 3,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 15,
         "y": 3,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 16,
         "y": 3,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -33417,14 +33417,14 @@
         "x": 14,
         "y": 4,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 15,
         "y": 4,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -33522,7 +33522,7 @@
         "x": 14,
         "y": 6,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -33550,14 +33550,14 @@
         "x": 18,
         "y": 6,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 19,
         "y": 6,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -33578,35 +33578,35 @@
         "x": 13,
         "y": 7,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 14,
         "y": 7,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 15,
         "y": 7,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 16,
         "y": 7,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 17,
         "y": 7,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -33648,14 +33648,14 @@
         "x": 13,
         "y": 8,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 14,
         "y": 8,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -33809,7 +33809,7 @@
         "x": 11,
         "y": 10,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -33865,14 +33865,14 @@
         "x": 19,
         "y": 10,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 20,
         "y": 10,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -33907,63 +33907,63 @@
         "x": 11,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 12,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 13,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 14,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 15,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 16,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 17,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 18,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 19,
         "y": 11,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -34047,7 +34047,7 @@
         "x": 17,
         "y": 12,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -34775,7 +34775,7 @@
         "x": 15,
         "y": 21,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -34796,7 +34796,7 @@
         "x": 18,
         "y": 21,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -34838,7 +34838,7 @@
         "x": 15,
         "y": 22,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -34852,7 +34852,7 @@
         "x": 17,
         "y": 22,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -34880,7 +34880,7 @@
         "x": 14,
         "y": 23,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -34901,7 +34901,7 @@
         "x": 17,
         "y": 23,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -34936,7 +34936,7 @@
         "x": 15,
         "y": 24,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -34957,7 +34957,7 @@
         "x": 18,
         "y": 24,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -34978,7 +34978,7 @@
         "x": 13,
         "y": 25,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -35020,7 +35020,7 @@
         "x": 19,
         "y": 25,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -35083,7 +35083,7 @@
         "x": 19,
         "y": 26,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -35104,14 +35104,14 @@
         "x": 12,
         "y": 27,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 13,
         "y": 27,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -35146,21 +35146,21 @@
         "x": 18,
         "y": 27,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 19,
         "y": 27,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
         "x": 20,
         "y": 27,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -35195,7 +35195,7 @@
         "x": 14,
         "y": 28,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {
@@ -35216,7 +35216,7 @@
         "x": 17,
         "y": 28,
         "color": "#4f0661",
-        "type": "outfit",
+        "type": "other",
         "b": 38
       },
       {

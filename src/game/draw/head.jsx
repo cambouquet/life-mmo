@@ -13,16 +13,26 @@ export function drawHead(ctx, facing, expr, colors) {
   }
 }
 
+// Helper to calculate perceived brightness
+function getBrightness(r, g, b) {
+  return (0.299 * r + 0.587 * g + 0.114 * b);
+}
+
 // Helper to apply relative shading to a hex color
 const applyShading = (hex, originalBrightness) => {
   if (!hex) return '#000000';
   const r = parseInt(hex.slice(1, 3), 16);
   const g = parseInt(hex.slice(3, 5), 16);
   const b = parseInt(hex.slice(5, 7), 16);
+
+  // Normalize around 160 (mid-bright) for dark shades.
+  // For lighter skin tones, we normalize higher to preserve highlight detail.
   const factor = (originalBrightness || 160) / 160; 
+  
   const nr = Math.min(255, Math.floor(r * factor));
   const ng = Math.min(255, Math.floor(g * factor));
   const nb = Math.min(255, Math.floor(b * factor));
+  
   return `rgb(${nr}, ${ng}, ${nb})`;
 };
 
@@ -74,10 +84,19 @@ function drawVectorHead(ctx, colors, facing) {
 
     headPixels.forEach(p => {
       let fill = p.color;
+      
+      // Calculate shading using the same logic as the warrior
       if (p.type === 'hair') fill = applyShading(hair, p.b);
-      else if (p.type === 'skin') fill = applyShading(skin, p.b);
+      else if (p.type === 'skin') {
+          // Normalize skin slightly higher to avoid overly dark portraits
+          const skinFactor = (p.b || 200) / 200;
+          const sr = parseInt(skin.slice(1, 3), 16);
+          const sg = parseInt(skin.slice(3, 5), 16);
+          const sb = parseInt(skin.slice(5, 7), 16);
+          fill = `rgb(${Math.min(255, sr * skinFactor)}, ${Math.min(255, sg * skinFactor)}, ${Math.min(255, sb * skinFactor)})`;
+      }
       else if (p.type === 'outfit') fill = applyShading(outfit, p.b);
-      else if (p.type === 'eyes') fill = p.color; // Keep original eye details
+      else if (p.type === 'eyes') fill = p.color;
       else if (p.type === 'accessory') fill = applyShading('#ffd700', p.b);
       
       ctx.fillStyle = fill;
