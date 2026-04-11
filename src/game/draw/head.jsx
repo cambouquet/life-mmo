@@ -1,72 +1,90 @@
 import sheetUrl from '../../assets/sprites/03000_magicienne.png'
 
-const FRAME_W = 32
-const FRAME_H = 32
-const ROW = { down: 0, right: 1, up: 2, left: 3 }
-// Source crop: 24×24 starting at x=4 of each frame (top of hat through collar)
-const CROP = { x: 4, y: 0, w: 24, h: 24 }
-// Canvas size (logical px, CSS doubles to 48×48)
-const CV = 24
+import pixelData from '../../components/CharacterEditor/pixel_data.json';
 
-const sheet = new Image()
-sheet.src = sheetUrl
+const CV = 32
 
 export function drawHead(ctx, facing, expr, colors) {
   ctx.clearRect(0, 0, CV, CV)
 
   if (colors) {
-    drawVectorHead(ctx, colors)
+    drawVectorHead(ctx, colors, facing);
     return
   }
-
-  if (!sheet.complete || sheet.naturalWidth === 0) return
-
-  const row = ROW[facing] ?? ROW.down
-  const col = expr === 'blink' ? 1 : 0
-  
-  // ... (rest of old code remains as fallback)
-  ctx.save()
-  ctx.imageSmoothingEnabled = false
-  ctx.beginPath()
-  ctx.arc(12, 10, 12, 0, Math.PI * 2)
-  ctx.clip()
-  ctx.drawImage(
-    sheet,
-    col * FRAME_W + CROP.x, row * FRAME_H + CROP.y, CROP.w, CROP.h,
-    0, 0, CROP.w, CROP.h
-  )
-  ctx.restore()
 }
 
-function drawVectorHead(ctx, colors) {
-  const { hair, skin, eyes } = colors
-  ctx.save()
+// Helper to apply relative shading to a hex color
+const applyShading = (hex, originalBrightness) => {
+  if (!hex) return '#000000';
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  const factor = (originalBrightness || 160) / 160; 
+  const nr = Math.min(255, Math.floor(r * factor));
+  const ng = Math.min(255, Math.floor(g * factor));
+  const nb = Math.min(255, Math.floor(b * factor));
+  return `rgb(${nr}, ${ng}, ${nb})`;
+};
+
+/**
+ * Pixel-accurate Head drawing function for the HUD
+ * Uses the same pixelData extraction logic as the warrior
+ */
+function drawVectorHead(ctx, colors, facing) {
+  const { hair, skin, outfit } = colors;
   
-  // Hair back
-  ctx.fillStyle = hair
-  ctx.beginPath()
-  ctx.arc(12, 9, 8, 0, Math.PI * 2)
-  ctx.fill()
-  
-  // Face
-  ctx.fillStyle = skin
-  ctx.beginPath()
-  ctx.arc(12, 11, 7, 0, Math.PI * 2)
-  ctx.fill()
-  
-  // Eyes
-  ctx.fillStyle = eyes
-  ctx.fillRect(8, 10, 2, 2)
-  ctx.fillRect(14, 10, 2, 2)
-  
-  // Bangs
-  ctx.fillStyle = hair
-  ctx.beginPath()
-  ctx.arc(12, 7, 8, 0.8 * Math.PI, 0.2 * Math.PI, true)
-  ctx.lineTo(12, 9)
-  ctx.closePath()
-  ctx.fill()
-  
-  ctx.restore()
+  const dirFrames = pixelData[facing] || pixelData.down;
+  const standFrame = dirFrames[1];
+
+  ctx.save();
+  ctx.imageSmoothingEnabled = false;
+
+  // 1. Isolate Core Character Head Pixels (Pure Character, No Accessories)
+  let headPixels = standFrame.filter(p => {
+    // Only look at the top part of the sprite (head region + hat)
+    if (p.y > 22) return false;
+
+    // RULE 1: Remove accessory (The staff/weapon)
+    if (p.type === 'accessory') return false;
+
+    // RULE 2: Specific cleaning for the staff's trail in rotations
+    // Even if tagged, let's keep the head centered around x=11..21
+    if (facing === 'right' && p.x > 21) return false; 
+    if (facing === 'left' && p.x < 11) return false;
+    
+    return true;
+  });
+
+  if (headPixels.length > 0) {
+    // 2. Exact Bounding Box for centering
+    const minX = Math.min(...headPixels.map(p => p.x));
+    const maxX = Math.max(...headPixels.map(p => p.x));
+    const minY = Math.min(...headPixels.map(p => p.y));
+    const maxY = Math.max(...headPixels.map(p => p.y));
+    
+    const headW = maxX - minX + 1;
+    const headH = maxY - minY + 1;
+    
+    // 3. Center it in the 32x32 HUD window
+    const targetCenterX = 16;
+    const targetCenterY = 16;
+    
+    const offsetX = targetCenterX - Math.floor(minX + headW / 2);
+    const offsetY = targetCenterY - Math.floor(minY + headH / 2);
+
+    headPixels.forEach(p => {
+      let fill = p.color;
+      if (p.type === 'hair') fill = applyShading(hair, p.b);
+      else if (p.type === 'skin') fill = applyShading(skin, p.b);
+      else if (p.type === 'outfit') fill = applyShading(outfit, p.b);
+      else if (p.type === 'eyes') fill = p.color; // Keep original eye details
+      else if (p.type === 'accessory') fill = applyShading('#ffd700', p.b);
+      
+      ctx.fillStyle = fill;
+      ctx.fillRect(p.x + offsetX, p.y + offsetY, 1, 1);
+    });
+  }
+
+  ctx.restore();
 }
 

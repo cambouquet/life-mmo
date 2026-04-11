@@ -62,6 +62,24 @@ let offscreenPlayerCanvas = null;
 let offscreenPlayerCtx = null;
 let lastRenderState = "";
 
+// Helper to apply relative shading to a hex color
+const applyShading = (hex, originalBrightness) => {
+  if (!hex) return '#000000';
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  
+  // Normalize brightness around 160. 
+  // If original was 80, factor is 0.5 (darker). If original was 200, factor is 1.25 (lighter).
+  const factor = (originalBrightness || 160) / 160; 
+  
+  const nr = Math.min(255, Math.floor(r * factor));
+  const ng = Math.min(255, Math.floor(g * factor));
+  const nb = Math.min(255, Math.floor(b * factor));
+  
+  return `rgb(${nr}, ${ng}, ${nb})`;
+};
+
 function drawVectorWarrior(ctx, x, y, facing, frame, colors, moving) {
   const { hair, skin, outfit } = colors;
   
@@ -98,9 +116,13 @@ function drawVectorWarrior(ctx, x, y, facing, frame, colors, moving) {
     for (let i = 0; i < len; i++) {
       const p = currentFrame[i];
       let fill = p.color;
-      if (p.type === 'hair') fill = hair;
-      else if (p.type === 'skin') fill = skin;
-      else if (p.type === 'outfit') fill = outfit;
+      
+      // APPLY SHADING: Instead of flat color, we scale the selected color by the pixel's original brightness
+      if (p.type === 'hair') fill = applyShading(hair, p.b);
+      else if (p.type === 'skin') fill = applyShading(skin, p.b);
+      else if (p.type === 'outfit') fill = applyShading(outfit, p.b);
+      else if (p.type === 'eyes') fill = p.color; // Keep original green detailing for eyes
+      else if (p.type === 'accessory') fill = applyShading('#ffd700', p.b); // Shade the gold staff
       
       offscreenPlayerCtx.fillStyle = fill;
       offscreenPlayerCtx.fillRect(p.x, p.y, 1, 1);
