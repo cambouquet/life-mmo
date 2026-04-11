@@ -33,17 +33,24 @@ export function drawWarriorSprite(ctx, x, y, facing, frame, phase, colors, movin
 
   // Wave ring: 1 per second. phase increments at 4.5/s → divide by 4.5
   const t = (phase / 4.5) % 1
-  const brightness = (1 - t) * 0.9
+  const ringBrightness = (1 - t) * 0.9
   const inner = Math.max(0, t - 0.22)
   const outer = Math.min(1, t + 0.08)
   const cx = Math.floor(x) + 8
   const cy = Math.floor(y) + 8
+
+  // Use the outfit color for the halo/ring
+  const haloColor = colors?.outfit || '#c040ff';
+  const r = parseInt(haloColor.slice(1, 3), 16);
+  const g = parseInt(haloColor.slice(3, 5), 16);
+  const b = parseInt(haloColor.slice(5, 7), 16);
+
   const grd = ctx.createRadialGradient(cx, cy, 0, cx, cy, 13)
-  grd.addColorStop(0,      'rgba(192,64,255,0)')
-  grd.addColorStop(inner,  'rgba(192,64,255,0)')
-  grd.addColorStop(t,      `rgba(192,64,255,${brightness.toFixed(2)})`)
-  grd.addColorStop(outer,  'rgba(192,64,255,0)')
-  grd.addColorStop(1,      'rgba(192,64,255,0)')
+  grd.addColorStop(0,      `rgba(${r},${g},${b},0)`)
+  grd.addColorStop(inner,  `rgba(${r},${g},${b},0)`)
+  grd.addColorStop(t,      `rgba(${r},${g},${b},${ringBrightness.toFixed(2)})`)
+  grd.addColorStop(outer,  `rgba(${r},${g},${b},0)`)
+  grd.addColorStop(1,      `rgba(${r},${g},${b},0)`)
   ctx.save()
   ctx.fillStyle = grd
   ctx.beginPath()
