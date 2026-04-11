@@ -43,15 +43,7 @@ export function drawRoom(ctx, map) {
       const py = r * TILE
 
       if (t === 1) {
-        // Wall tile — stone
-        ctx.fillStyle = '#1a1530'
-        ctx.fillRect(px, py, TILE, TILE)
-        // Top highlight edge
-        ctx.fillStyle = '#28243c'
-        ctx.fillRect(px, py, TILE, 1)
-        // Right shadow edge
-        ctx.fillStyle = '#100d20'
-        ctx.fillRect(px + TILE - 1, py, 1, TILE)
+        // Wall tile — no explicit tiles drawn, handled by drawBoundsOfLight
       } else if (t === 4) {
         // Mirror - Blue-ish glowing surface
         ctx.fillStyle = '#2d2550'
