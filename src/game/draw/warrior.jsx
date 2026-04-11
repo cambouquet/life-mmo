@@ -81,7 +81,7 @@ const applyShading = (hex, originalBrightness) => {
 };
 
 function drawVectorWarrior(ctx, x, y, facing, frame, colors, moving) {
-  const { hair, skin, outfit } = colors;
+  const { hair, skin, outfit, eyes } = colors;
   
   // Create or resize offscreen canvas if needed (1:1 scale)
   if (!offscreenPlayerCanvas) {
@@ -96,7 +96,7 @@ function drawVectorWarrior(ctx, x, y, facing, frame, colors, moving) {
   // This prevents the "blank frame" flicker that happens when clearRect and drawing
   // occur at precisely the wrong time relative to the main canvas draw.
   const currentFrameIndex = moving ? (frame % 4) : 0;
-  const stateKey = `${facing}-${currentFrameIndex}-${hair}-${skin}-${outfit}`;
+  const stateKey = `${facing}-${currentFrameIndex}-${hair}-${skin}-${outfit}-${eyes}`;
   
   if (stateKey !== lastRenderState) {
     // Only update the offscreen buffer if the character state (frame/direction/color) changed
@@ -121,7 +121,7 @@ function drawVectorWarrior(ctx, x, y, facing, frame, colors, moving) {
       if (p.type === 'hair') fill = applyShading(hair, p.b);
       else if (p.type === 'skin') fill = applyShading(skin, p.b);
       else if (p.type === 'outfit') fill = applyShading(outfit, p.b);
-      else if (p.type === 'eyes') fill = p.color; // Keep original green detailing for eyes
+      else if (p.type === 'eyes') fill = applyShading(eyes, p.b); 
       else if (p.type === 'accessory') fill = applyShading('#ffd700', p.b); // Shade the gold staff
       
       offscreenPlayerCtx.fillStyle = fill;
