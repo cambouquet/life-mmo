@@ -12,26 +12,7 @@ const sheet = new Image()
 sheet.src = sheetUrl
 
 export function drawWarriorSprite(ctx, x, y, facing, frame, phase, colors, moving) {
-  // Use vector character if colors are provided (custom character)
-  if (colors) {
-    drawVectorWarrior(ctx, x, y, facing, frame, colors, moving)
-  } else {
-    if (!sheet.complete || sheet.naturalWidth === 0) return
-    const row = ROW[facing] ?? ROW.down
-    const col = WALK_COLS[frame & 1]
-    const bob = (frame & 1) ? 1 : 0
-
-    ctx.save()
-    ctx.imageSmoothingEnabled = false
-    ctx.drawImage(
-      sheet,
-      col * FRAME_W, row * FRAME_H, FRAME_W, FRAME_H,
-      Math.floor(x) - 8, Math.floor(y) + bob - 16, FRAME_W, FRAME_H
-    )
-    ctx.restore()
-  }
-
-  // Wave ring: 1 per second. phase increments at 4.5/s → divide by 4.5
+  // 1. Draw Halo FIRST (so it appears BELOW the character)
   const t = (phase / 4.5) % 1
   const ringBrightness = (1 - t) * 0.9
   const inner = Math.max(0, t - 0.22)
@@ -51,12 +32,32 @@ export function drawWarriorSprite(ctx, x, y, facing, frame, phase, colors, movin
   grd.addColorStop(t,      `rgba(${r},${g},${b},${ringBrightness.toFixed(2)})`)
   grd.addColorStop(outer,  `rgba(${r},${g},${b},0)`)
   grd.addColorStop(1,      `rgba(${r},${g},${b},0)`)
+  
   ctx.save()
   ctx.fillStyle = grd
   ctx.beginPath()
   ctx.arc(cx, cy, 13, 0, Math.PI * 2)
   ctx.fill()
   ctx.restore()
+
+  // 2. Draw Character (so it appears ABOVE the halo)
+  if (colors) {
+    drawVectorWarrior(ctx, x, y, facing, frame, colors, moving)
+  } else {
+    if (!sheet.complete || sheet.naturalWidth === 0) return
+    const row = ROW[facing] ?? ROW.down
+    const col = WALK_COLS[frame & 1]
+    const bob = (frame & 1) ? 1 : 0
+
+    ctx.save()
+    ctx.imageSmoothingEnabled = false
+    ctx.drawImage(
+      sheet,
+      col * FRAME_W, row * FRAME_H, FRAME_W, FRAME_H,
+      Math.floor(x) - 8, Math.floor(y) + bob - 16, FRAME_W, FRAME_H
+    )
+    ctx.restore()
+  }
 }
 
 import pixelData from '../../components/CharacterEditor/pixel_data.json';
