@@ -41,7 +41,7 @@ const applyShading = (hex, originalBrightness) => {
  * Uses the same pixelData extraction logic as the warrior
  */
 function drawVectorHead(ctx, colors, facing) {
-  const { hair, skin, outfit, eyes } = colors;
+  const { hair, skin, outfit, eyes, secondary } = colors;
   
   const dirFrames = pixelData[facing] || pixelData.down;
   const standFrame = dirFrames[1];
@@ -97,6 +97,7 @@ function drawVectorHead(ctx, colors, facing) {
       }
       else if (p.type === 'outfit') fill = applyShading(outfit, p.b);
       else if (p.type === 'eyes') fill = applyShading(eyes, p.b); // Apply personalized eye color
+      else if (p.type === 'secondary') fill = applyShading(secondary, p.b); // Apply personalized secondary color
       else if (p.type === 'accessory') fill = applyShading('#ffd700', p.b);
       
       ctx.fillStyle = fill;

@@ -23,7 +23,7 @@ export const CharacterTemplate = ({
   scale = 4,
   className = "" 
 }) => {
-  const { hair, skin, outfit, eyes } = colors;
+  const { hair, skin, outfit, eyes, secondary } = colors;
 
   // Render to a tiny hidden canvas and export as DataURL to ensure solid pixels
   const imageDataUrl = useMemo(() => {
@@ -40,6 +40,7 @@ export const CharacterTemplate = ({
       else if (p.type === 'skin') fill = applyShading(skin, p.b);
       else if (p.type === 'outfit') fill = applyShading(outfit, p.b);
       else if (p.type === 'eyes') fill = applyShading(eyes, p.b);
+      else if (p.type === 'secondary') fill = applyShading(secondary, p.b);
       else if (p.type === 'accessory') fill = applyShading('#ffd700', p.b);
       
       ctx.fillStyle = fill;
@@ -48,7 +49,7 @@ export const CharacterTemplate = ({
     });
     
     return canvas.toDataURL();
-  }, [hair, skin, outfit, eyes]);
+  }, [hair, skin, outfit, eyes, secondary]);
 
   return (
     <img 
