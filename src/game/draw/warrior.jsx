@@ -20,11 +20,8 @@ export function drawWarriorSprite(ctx, x, y, facing, frame, phase, colors, movin
   const cx = Math.floor(x) + 8
   const cy = Math.floor(y) + 8
 
-  // Use the outfit color for the halo/ring
-  const haloColor = colors?.outfit || '#c040ff';
-  const r = parseInt(haloColor.slice(1, 3), 16);
-  const g = parseInt(haloColor.slice(3, 5), 16);
-  const b = parseInt(haloColor.slice(5, 7), 16);
+  // Fixed white color for the wave halo
+  const r = 255, g = 255, b = 255;
 
   const grd = ctx.createRadialGradient(cx, cy, 0, cx, cy, 13)
   grd.addColorStop(0,      `rgba(${r},${g},${b},0)`)
