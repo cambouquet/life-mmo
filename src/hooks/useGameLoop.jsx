@@ -187,10 +187,10 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
           movePlayer(player, map, dx, dy, dt, SPEED)
 
           player.frameTick += dt
-          // Cycle 0, 1, 2, 3
+          // Relaxed walk cycle (0.12s per frame) through all 8 unique positions
           if (player.frameTick >= 0.12) {
             player.frameTick = 0
-            player.frame = (player.frame + 1) % 4
+            player.frame = (player.frame + 1) % 8
           }
         } else {
           // Idle frame logic: if not moving, we reset frame to 0
