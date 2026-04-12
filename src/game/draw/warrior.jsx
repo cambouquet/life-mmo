@@ -86,7 +86,7 @@ const applyShading = (hex, originalBrightness) => {
 };
 
 function drawVectorWarrior(ctx, x, y, facing, frame, colors, moving) {
-  const { hair, skin, outfit, eyes, secondary } = colors;
+  const { hair, skin, outfit, eyes, secondary, stick } = colors;
   
   // Create or resize offscreen canvas if needed (1:1 scale)
   if (!offscreenPlayerCanvas) {
@@ -100,8 +100,8 @@ function drawVectorWarrior(ctx, x, y, facing, frame, colors, moving) {
   // Generate a key for the current state to see if we actually need to redraw the buffer
   // This prevents the "blank frame" flicker that happens when clearRect and drawing
   // occur at precisely the wrong time relative to the main canvas draw.
-  const currentFrameIndex = moving ? (frame % 4) : 0;
-  const stateKey = `${facing}-${currentFrameIndex}-${hair}-${skin}-${outfit}-${eyes}-${secondary}`;
+  const currentFrameIndex = moving ? (frame % 8) : 0;
+  const stateKey = `${facing}-${currentFrameIndex}-${hair}-${skin}-${outfit}-${eyes}-${secondary}-${stick}`;
   
   if (stateKey !== lastRenderState) {
     // Only update the offscreen buffer if the character state (frame/direction/color) changed
@@ -112,8 +112,8 @@ function drawVectorWarrior(ctx, x, y, facing, frame, colors, moving) {
     // Walk cycle usually starts: 0=LeftStep, 1=Standing, 2=RightStep, 3=Standing
     // So if frame 3 is empty, we fall back to frame 1.
     let currentFrame = dirFrames[currentFrameIndex];
-    if (!currentFrame || currentFrame.length < 10) {
-      currentFrame = dirFrames[1] || dirFrames[0];
+    if (!currentFrame || currentFrame.length < 5) {
+      currentFrame = dirFrames[0];
     }
 
     // Draw pixels 1:1 to offscreen buffer
@@ -128,6 +128,7 @@ function drawVectorWarrior(ctx, x, y, facing, frame, colors, moving) {
       else if (p.type === 'outfit') fill = applyShading(outfit, p.b);
       else if (p.type === 'eyes') fill = applyShading(eyes, p.b); 
       else if (p.type === 'secondary') fill = applyShading(secondary, p.b); 
+      else if (p.type === 'stick') fill = applyShading(stick, p.b);
       else if (p.type === 'accessory') fill = applyShading('#ffd700', p.b); // Shade the gold staff
       
       offscreenPlayerCtx.fillStyle = fill;
