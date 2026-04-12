@@ -6,7 +6,7 @@ export default function DialogModal({ onClose, onHoroscope }) {
   const [focused,  setFocused]  = useState(0)
   const portraitRef    = useRef(null)
   const choiceRefs     = useRef([])
-  const ignoreShiftRef = useRef(true)   // swallow the keyup that opened the dialog
+  const ignoreInputRef = useRef(true)   // swallow the key that opened the dialog
   const node = DIALOG[nodeKey]
 
   // Reset focus to first choice when node changes
@@ -47,8 +47,8 @@ export default function DialogModal({ onClose, onHoroscope }) {
   useEffect(() => {
     const onKey = (e) => {
       if (e.key === 'Escape') { onClose(); return }
-      if (e.key === 'Shift') {
-        if (ignoreShiftRef.current) { ignoreShiftRef.current = false; return }
+      if (e.key === 'Shift' || e.key === ' ') {
+        if (ignoreInputRef.current) { ignoreInputRef.current = false; return }
       }
       const len = node.choices.length
       if (e.key === 'ArrowDown' || e.key === 's') {
@@ -57,7 +57,7 @@ export default function DialogModal({ onClose, onHoroscope }) {
       } else if (e.key === 'ArrowUp' || e.key === 'w') {
         e.preventDefault()
         setFocused(f => (f - 1 + len) % len)
-      } else if (e.key === 'Enter' || e.key === 'Shift') {
+      } else if (e.code === 'Enter' || e.key === ' ' || e.key === 'Shift') {
         e.preventDefault()
         handleChoice(node.choices[focused])
       }

@@ -117,15 +117,15 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
       return dx * dx + dy * dy < 24 * 24
     }
 
-    function badge(bx, by, label = '[SHF]') {
+    function badge(bx, by, label = '[SPC]') {
       const pulse = Math.sin(torchPhase * 2.5) * 0.18 + 0.82
       ctx.save()
       ctx.globalAlpha  = pulse
       ctx.fillStyle    = 'rgba(10,6,22,0.78)'
-      ctx.fillRect(bx - 14, by - 4, 28, 8)
+      ctx.fillRect(bx - 14, by - 4, 32, 8)
       ctx.strokeStyle  = '#4a2878'
       ctx.lineWidth    = 0.5
-      ctx.strokeRect(bx - 14, by - 4, 28, 8)
+      ctx.strokeRect(bx - 14, by - 4, 32, 8)
       ctx.font         = '6px "Courier New"'
       ctx.textAlign    = 'center'
       ctx.textBaseline = 'middle'
@@ -199,12 +199,12 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
         }
 
         // Jump
-        const spaceNow = isKeyDown('Space')
-        if (spaceNow && !prevSpace && !player.jumping) {
+        const shiftNow = isKeyDown('ShiftLeft') || isKeyDown('ShiftRight')
+        if (shiftNow && !prevShift && !player.jumping) {
           player.jumping = true
           player.jumpVel = JUMP_VEL
         }
-        prevSpace = spaceNow
+        prevShift = shiftNow
         if (player.jumping) {
           player.jumpVel    -= GRAVITY * dt
           player.jumpHeight += player.jumpVel * dt
@@ -233,8 +233,8 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
         }
 
         // Interact
-        const shiftNow = isKeyDown('ShiftLeft') || isKeyDown('ShiftRight')
-        if (shiftNow && !prevShift && (npcNear || mirrorNear)) {
+        const spaceNow = isKeyDown('Space')
+        if (spaceNow && !prevSpace && (npcNear || mirrorNear)) {
           if (mirrorNear) {
             log = ['<em>Kami</em> looks into the mirror.', ...log].slice(0, LOG_MAX)
             onInteractRef.current?.('mirror')
@@ -243,13 +243,12 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
             onInteractRef.current?.('npc')
           }
         }
-        prevShift = shiftNow
+        prevSpace = spaceNow
         onStateRef.current?.({ facing: player.facing, moving: player.moving, log, guidance })
       } else {
-        const shiftNow = isKeyDown('ShiftLeft') || isKeyDown('ShiftRight')
-        if (shiftNow && !prevShift) onInteractRef.current?.()
-        prevShift = shiftNow
-        prevSpace = isKeyDown('Space')
+        const spaceNow = isKeyDown('Space')
+        if (spaceNow && !prevSpace) onInteractRef.current?.()
+        prevSpace = spaceNow
       }
 
       render(npcNear, mirrorNear)
