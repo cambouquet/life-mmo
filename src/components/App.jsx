@@ -24,7 +24,7 @@ export default function App() {
     skin: '#f8c898',
     eyes: '#8040e8',
     outfit: '#4a1090',
-    secondary: '#201040'
+    stick: '#60a8ff'
   })
 
   const wrapRef = useViewportScale()

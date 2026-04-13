@@ -8,8 +8,7 @@ export default function CharacterEditor({ initialColors, onSave, onClose }) {
     skin: '#f8c898',
     eyes: '#8040e8',
     outfit: '#4a1090',
-    stick: '#60a8ff',
-    secondary: '#201040'
+    stick: '#60a8ff'
   });
 
   const updateColor = (key, val) => setColors(prev => ({ ...prev, [key]: val }));
@@ -48,11 +47,6 @@ export default function CharacterEditor({ initialColors, onSave, onClose }) {
           <div className="control-group">
             <label>Wand</label>
             <input type="color" value={colors.stick} onChange={e => updateColor('stick', e.target.value)} />
-          </div>
-
-          <div className="control-group">
-            <label>Details</label>
-            <input type="color" value={colors.secondary} onChange={e => updateColor('secondary', e.target.value)} />
           </div>
 
           <div className="char-editor-actions">
