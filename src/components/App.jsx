@@ -60,6 +60,7 @@ export default function App() {
         <CharacterEditor
           initialColors={charColors}
           onClose={() => setShowEditor(false)}
+          onChange={setCharColors}
           onSave={(colors) => {
             setCharColors(colors)
             setShowEditor(false)

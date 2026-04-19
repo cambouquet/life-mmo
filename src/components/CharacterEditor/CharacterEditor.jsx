@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { CharacterTemplate } from './CharacterTemplate';
 import './CharacterEditor.scss';
 
-export default function CharacterEditor({ initialColors, onSave, onClose }) {
+export default function CharacterEditor({ initialColors, onSave, onClose, onChange }) {
   const [colors, setColors] = useState(initialColors || {
     hair: '#6030d0',
     skin: '#f8c898',
@@ -11,7 +11,11 @@ export default function CharacterEditor({ initialColors, onSave, onClose }) {
     stick: '#60a8ff'
   });
 
-  const updateColor = (key, val) => setColors(prev => ({ ...prev, [key]: val }));
+  const updateColor = (key, val) => {
+    const next = { ...colors, [key]: val };
+    setColors(next);
+    if (onChange) onChange(next);
+  };
 
   return (
     <div className="char-editor-modal">
