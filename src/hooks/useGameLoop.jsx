@@ -152,7 +152,7 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
 
       drawRoom(ctx, map, torchPhase)
 
-      // 1. Mirror - reflection and aura
+      // 1. Mirror - reflection data calculation
       const mirrorDist  = Math.hypot(pcx - MIRROR_CX, pcy - MIRROR_CY)
       const reflAlpha   = Math.max(0, Math.min(1, (64 - mirrorDist) / 44))
       const reflection  = reflAlpha > 0.02 ? {
@@ -162,15 +162,33 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
         x: player.x, 
         y: player.y, 
       } : null
-      drawMirror(ctx, MIRROR_TX, MIRROR_TY, torchPhase, reflection)
 
-      // 2. Table - proximity glow (removed pulsating oscillation)
-      const tableDist = Math.hypot(pcx - TABLE_CX, pcy - TABLE_CY)
-      const tableAlpha = Math.max(0, Math.min(1, (48 - tableDist) / 36))
-      drawTable(ctx, torchPhase, TABLE_X, TABLE_Y, tableAlpha)
-      
+      // 2. Depth Sort: Draw objects whose base is behind the player
+      // Mirror base is roughly at Y=32 within its tile
+      if (MIRROR_TY + 32 < player.y + 8) {
+        drawMirror(ctx, MIRROR_TX, MIRROR_TY, torchPhase, reflection)
+      }
+      // Table base is roughly at Y=12 within its tile
+      if (TABLE_Y + 12 < player.y + 8) {
+        const tableDist = Math.hypot(pcx - TABLE_CX, pcy - TABLE_CY)
+        const tableAlpha = Math.max(0, Math.min(1, (48 - tableDist) / 36))
+        drawTable(ctx, torchPhase, TABLE_X, TABLE_Y, tableAlpha)
+      }
+
       drawNpc(ctx, NPC_X, NPC_Y, torchPhase)
+      
+      // 3. Player
       drawWarriorSprite(ctx, player.x, player.y - player.jumpHeight, player.facing, player.frame, torchPhase, charColorsRef.current, player.moving)
+
+      // 4. Foregrounds: Draw objects whose base is in front of the player
+      if (MIRROR_TY + 32 >= player.y + 8) {
+        drawMirror(ctx, MIRROR_TX, MIRROR_TY, torchPhase, reflection)
+      }
+      if (TABLE_Y + 12 >= player.y + 8) {
+        const tableDist = Math.hypot(pcx - TABLE_CX, pcy - TABLE_CY)
+        const tableAlpha = Math.max(0, Math.min(1, (48 - tableDist) / 36))
+        drawTable(ctx, torchPhase, TABLE_X, TABLE_Y, tableAlpha)
+      }
 
       if (!pausedRef.current) {
         if (npcNear) badge(NPC_CX, NPC_Y - 2)
