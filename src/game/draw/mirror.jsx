@@ -53,37 +53,32 @@ export function drawMirror(ctx, x, y, phase, reflection) {
     else if (reflection.facing === 'right') reflFacing = 'left'
 
     // 2. POSITIONING & SYMMETRY PIVOT
-    // mirrorWorldWallLine is the Y where floor meets wall in world coordinates.
-    // In our tile layout, x,y is the top-left of the 2-tile mirror area.
     const mirrorWorldWallLine = y + 32 
     const glassBottom = drawY + H
     
-    // playerFeetLine = ground level where the player stands.
     const playerFeetLine = reflection.y + 8 
+    const distFromMirror  = playerFeetLine - mirrorWorldWallLine
     
-    // distFromMirror determines how deep the reflection 'feet' are in the glass.
-    const distFromMirror = playerFeetLine - mirrorWorldWallLine
-    
-    // Horizontal: The reflection's X is simply the same as the player's X 
-    // relative to the glass box origin.
-    // player.x is the center of the sprite. We subtract 8 to get the top-left for drawWarriorSprite.
-    // Plus 4 because drawX = x + 4 (the glass offset).
-    const reflX = (drawX - 4) + (reflection.x - x) - 8
-    
-    // Vertical: The reflection starts at the glass base and goes UP by the distance.
+    // VERTICAL: Waist position in the glass relative to depth.
     const reflY = glassBottom - distFromMirror - 8
 
+    // HORIZONTAL: Fixed alignment with the player center.
+    // The player's screen center is reflection.x.
+    // We added 12 before but it was still too far left. Let's try 16, 
+    // which is exactly half of the 32px (2-tile) block width.
+    const reflX = reflection.x + 16
+
     // 3. HORIZONTAL LINEAR SYMMETRY (The Flip)
-    // We flip the entire context horizontally around the reflection's center.
-    // This ensures if the stick is in your left hand, it appears in your reflection's "left" hand 
-    // (which is the right side of the screen image).
     if (isFinite(reflX) && isFinite(reflY)) {
       ctx.save()
-      ctx.translate(reflX + 8, 0)
-      ctx.scale(-1, 1)
-      ctx.translate(-(reflX + 8), 0)
       
-      drawWarriorSprite(ctx, Math.round(reflX), Math.round(reflY), reflFacing, reflection.frame, phase, reflection.colors, reflection.moving)
+      // Pivot around the shifted horizontal center.
+      ctx.translate(reflX, 0)
+      ctx.scale(-1, 1)
+      ctx.translate(-reflX, 0)
+      
+      drawWarriorSprite(ctx, reflX, reflY, reflFacing, reflection.frame, phase, reflection.colors, reflection.moving)
+      
       ctx.restore()
     }
     
