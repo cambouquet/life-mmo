@@ -1,18 +1,23 @@
-export function drawTable(ctx, phase, tx, ty) {
+// tx, ty = top-left of the table (TABLE_X, TABLE_Y)
+// auraAlpha = 0-1 brightness based on proximity (like mirror)
+export function drawTable(ctx, phase, tx, ty, auraAlpha = 0) {
   const TX = tx, TY = ty
   const b = (ox, oy, w, h, c) => { ctx.fillStyle = c; ctx.fillRect(TX+ox, TY+oy, w, h) }
   const p = (ox, oy, c)       => { ctx.fillStyle = c; ctx.fillRect(TX+ox, TY+oy, 1, 1) }
 
-  const slabGlow = 0.18 + Math.sin(phase * 0.9) * 0.10
-  ctx.save()
-  ctx.globalAlpha = slabGlow
-  const ug = ctx.createRadialGradient(TX+16, TY+14, 0, TX+16, TY+14, 22)
-  ug.addColorStop(0,   'rgba(80,40,255,1)')
-  ug.addColorStop(0.5, 'rgba(40,10,220,0.5)')
-  ug.addColorStop(1,   'rgba(0,0,0,0)')
-  ctx.fillStyle = ug
-  ctx.fillRect(TX-6, TY+4, 44, 28)
-  ctx.restore()
+  // 1. Static Glow that grows when player is near (removed Sine oscillation)
+  if (auraAlpha > 0.01) {
+    ctx.save()
+    ctx.globalAlpha = auraAlpha * 0.45
+    // Gradient is slightly larger and "heavier" than the mirror's
+    const ug = ctx.createRadialGradient(TX+16, TY+14, 0, TX+16, TY+14, 24)
+    ug.addColorStop(0,   'rgba(110,60,255,1)')
+    ug.addColorStop(0.5, 'rgba(60,20,180,0.6)')
+    ug.addColorStop(1,   'rgba(0,0,0,0)')
+    ctx.fillStyle = ug
+    ctx.fillRect(TX-14, TY-10, 60, 48)
+    ctx.restore()
+  }
 
   b(0,  6, 32, 8, '#0a0812')
   b(0,  6, 32, 1, '#2a2040')

@@ -148,22 +148,27 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
 
       drawProximityAura(ctx, NPC_CX,    NPC_CY,    pcx, pcy, 64, '96,232,255')   // NPC — cyan
       drawProximityAura(ctx, MIRROR_CX, MIRROR_CY, pcx, pcy, 56, '168,85,247')  // Mirror — purple
+      drawProximityAura(ctx, TABLE_CX,  TABLE_CY,  pcx, pcy, 40, '140,80,255')  // Table — indigo/violet
 
       drawRoom(ctx, map, torchPhase)
 
-      // Mirror — reflection fades in as player approaches
+      // 1. Mirror - reflection and aura
       const mirrorDist  = Math.hypot(pcx - MIRROR_CX, pcy - MIRROR_CY)
       const reflAlpha   = Math.max(0, Math.min(1, (64 - mirrorDist) / 44))
       const reflection  = reflAlpha > 0.02 ? {
         facing: player.facing, frame: player.frame,
         colors: charColorsRef.current, moving: player.moving,
         alpha:  reflAlpha,
-        x: player.x, // Pass player X for horizontal mirroring
-        y: player.y, // Pass player Y for mirror reflection height logic
+        x: player.x, 
+        y: player.y, 
       } : null
       drawMirror(ctx, MIRROR_TX, MIRROR_TY, torchPhase, reflection)
 
-      drawTable(ctx, torchPhase, TABLE_X, TABLE_Y)
+      // 2. Table - proximity glow (removed pulsating oscillation)
+      const tableDist = Math.hypot(pcx - TABLE_CX, pcy - TABLE_CY)
+      const tableAlpha = Math.max(0, Math.min(1, (48 - tableDist) / 36))
+      drawTable(ctx, torchPhase, TABLE_X, TABLE_Y, tableAlpha)
+      
       drawNpc(ctx, NPC_X, NPC_Y, torchPhase)
       drawWarriorSprite(ctx, player.x, player.y - player.jumpHeight, player.facing, player.frame, torchPhase, charColorsRef.current, player.moving)
 
