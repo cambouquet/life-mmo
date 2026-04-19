@@ -20,6 +20,11 @@ export function drawWarriorSprite(ctx, x, y, facing, frame, phase, colors, movin
   const cx = Math.floor(x) + 8
   const cy = Math.floor(y) + 8
 
+  // Safety check for Gradient
+  if (isNaN(cx) || isNaN(cy) || !isFinite(cx) || !isFinite(cy)) {
+    return;
+  }
+
   // Fixed white color for the wave halo
   const r = 255, g = 255, b = 255;
 

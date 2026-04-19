@@ -41,28 +41,39 @@ const applyShading = (hex, originalBrightness) => {
  * Uses the same pixelData extraction logic as the warrior
  */
 function drawVectorHead(ctx, colors, facing) {
-  const { hair, skin, outfit, eyes, secondary } = colors;
+  const { hair, skin, outfit, eyes, stick } = colors;
   
   const dirFrames = pixelData[facing] || pixelData.down;
-  const standFrame = dirFrames[1];
+  const standFrame = dirFrames[0] || dirFrames; 
 
   ctx.save();
   ctx.imageSmoothingEnabled = false;
 
-  // 1. Isolate Core Character Head Pixels (Pure Character, No Accessories)
+  // 1. Isolate Core Character Head Pixels (Hat, Hair, Skin, Eyes only)
   let headPixels = standFrame.filter(p => {
-    // Only look at the top part of the sprite (head region + hat)
-    if (p.y > 22) return false;
-
-    // RULE 1: Remove accessory (The staff/weapon)
-    if (p.type === 'accessory') return false;
-
-    // RULE 2: Specific cleaning for the staff's trail in rotations
-    // Even if tagged, let's keep the head centered around x=11..21
-    if (facing === 'right' && p.x > 21) return false; 
-    if (facing === 'left' && p.x < 11) return false;
+    // Only keep colors that belong to the head area
+    // This explicitly REMOVES 'stick' (wand) and 'outfit' (body/dress)
+    // EXCEPT we want the hat (which is typed as outfit currently)
     
-    return true;
+    // REMOVE WAND
+    if (p.type === 'stick') return false;
+
+    // KEEP SKIN, HAIR, EYES
+    if (p.type === 'hair' || p.type === 'eyes') return true;
+    
+    // FOR SKIN: Remove hands (which are further down or at the sides)
+    // The face/neck is usually above the dress line (around y=22)
+    if (p.type === 'skin') {
+        return p.y <= 22; 
+    }
+
+    // FOR OUTFIT: Only keep the Top Part (The Hat)
+    // The hat on this sprite is tall and goes down near the eyes/ears level (around y=16-17)
+    if (p.type === 'outfit') {
+        return p.y <= 17; 
+    }
+
+    return false;
   });
 
   if (headPixels.length > 0) {
@@ -97,7 +108,7 @@ function drawVectorHead(ctx, colors, facing) {
       }
       else if (p.type === 'outfit') fill = applyShading(outfit, p.b);
       else if (p.type === 'eyes') fill = applyShading(eyes, p.b); // Apply personalized eye color
-      else if (p.type === 'secondary') fill = applyShading(secondary, p.b); // Apply personalized secondary color
+      // Stick is explicitly skipped in the filter above
       else if (p.type === 'accessory') fill = applyShading('#ffd700', p.b);
       
       ctx.fillStyle = fill;

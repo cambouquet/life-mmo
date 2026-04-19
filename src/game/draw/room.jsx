@@ -32,7 +32,7 @@ export function drawShadow(ctx, x, y, jumpFactor = 0) {
 const TILE = 16
 
 // Draws the full room tile-by-tile from the map array
-export function drawRoom(ctx, map) {
+export function drawRoom(ctx, map, phase = 0) {
   const rows = map.length
   const cols = map[0]?.length ?? 0
 
@@ -45,19 +45,9 @@ export function drawRoom(ctx, map) {
       if (t === 1) {
         // Wall tile — no explicit tiles drawn, handled by drawBoundsOfLight
       } else if (t === 4) {
-        // Mirror - Blue-ish glowing surface
-        ctx.fillStyle = '#2d2550'
+        // Mirror backing — drawMirror() in the game loop paints the full 32×32 visual on top
+        ctx.fillStyle = '#07060e'
         ctx.fillRect(px, py, TILE, TILE)
-        ctx.fillStyle = '#5c4885'
-        ctx.fillRect(px + 2, py + 2, TILE - 4, TILE - 4)
-        ctx.fillStyle = '#a8bfff'
-        ctx.save()
-        ctx.globalAlpha = 0.6
-        ctx.fillRect(px + 3, py + 3, TILE - 6, TILE - 6)
-        ctx.restore()
-        // Shine
-        ctx.fillStyle = '#fff'
-        ctx.fillRect(px + 4, py + 4, 1, 1)
       } else if (t === 3) {
         // Table tile (already handled by drawTable in game loop, but needs background here)
         ctx.fillStyle = c % 2 === r % 2 ? '#0e0b1a' : '#0b0917'

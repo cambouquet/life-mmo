@@ -9,7 +9,7 @@ export function tileAt(map, px, py) {
 
 export function solidAt(map, px, py) {
   const t = tileAt(map, px, py)
-  return t === 1 || t === 3
+  return t === 1 || t === 3 || t === 4
 }
 
 /** Mutates player; returns the new facing string (or null if unchanged). */

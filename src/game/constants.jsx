@@ -21,11 +21,14 @@ export function buildMap(cols = COLS, rows = ROWS, mirrorC, mirrorR, tableC, tab
   map[rows - 1][Math.floor(cols / 2)]     = 2
   map[rows - 1][Math.floor(cols / 2) + 1] = 2
 
-  // Mirror tile type 4
+  // Mirror — 2×4 tiles portrait (type 4 = solid + mirror visual)
   const mc = mirrorC ?? Math.floor(cols / 2)
-  const mr = mirrorR ?? 0
-  if (mr >= 0 && mr < rows && mc >= 0 && mc < cols) {
-    map[mr][mc] = 4
+  const mr = mirrorR ?? 3
+  for (let dr = -3; dr <= 0; dr++) {
+    for (let dc = 0; dc <= 1; dc++) {
+      const rr = mr + dr, cc = mc + dc
+      if (rr >= 0 && rr < rows && cc >= 0 && cc < cols) map[rr][cc] = 4
+    }
   }
 
   // Furniture — use provided coords or default to fixed position

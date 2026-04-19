@@ -8,6 +8,7 @@ import { drawWarriorSprite }         from '../game/draw/warrior.jsx'
 import { drawNpc }                   from '../game/draw/npc.jsx'
 import { drawBoundsOfLight }         from '../game/draw/bounds.jsx'
 import { drawProximityAura }         from '../game/draw/proximityAura.jsx'
+import { drawMirror }               from '../game/draw/mirror.jsx'
 
 const LOG_MAX         = 3
 const NPC_INTERACT_R2 = 28 * 28
@@ -70,13 +71,13 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
     const NPC_CX   = NPC_X + 8
     const NPC_CY   = NPC_Y + 8
 
-    // Mirror position - moved far away from NPC/Table
-    // pcStartC is 30, pcStartR is 20. Table is at 28.
-    // Let's put Mirror to the left of the player (pcStartC - 5)
-    const MIRROR_C = pcStartC - 5
-    const MIRROR_R = pcStartR
-    const MIRROR_X = MIRROR_C * TILE + 8
-    const MIRROR_Y = MIRROR_R * TILE + 8
+    // Mirror — 2×2 tiles; top-left at (MIRROR_C, MIRROR_R - 1)
+    const MIRROR_C  = pcStartC - 5
+    const MIRROR_R  = pcStartR
+    const MIRROR_TX = MIRROR_C * TILE                // top-left x of 32×32 sprite
+    const MIRROR_TY = (MIRROR_R - 1) * TILE          // top-left y
+    const MIRROR_CX = MIRROR_TX + 16                 // centre x (for aura / near-check)
+    const MIRROR_CY = MIRROR_TY + 16                 // centre y
 
     const map    = buildMap(WORLD_COLS, WORLD_ROWS, MIRROR_C, MIRROR_R, tableC, tableR)
     const player = {
@@ -111,10 +112,8 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
 
     function nearMirror() {
       const px = player.x + TILE / 2, py = player.y + TILE / 2
-      const mirrorX = MIRROR_C * TILE + TILE / 2
-      const mirrorY = MIRROR_R * TILE + TILE / 2
-      const dx = px - mirrorX, dy = py - mirrorY
-      return dx * dx + dy * dy < 24 * 24
+      const dx = px - MIRROR_CX, dy = py - MIRROR_CY
+      return dx * dx + dy * dy < 32 * 32
     }
 
     function badge(bx, by, label = '[SPC]') {
@@ -147,17 +146,30 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
       ctx.scale(DRAW_SCALE, DRAW_SCALE)
       ctx.translate(-pcx, -pcy)
 
-      drawProximityAura(ctx, NPC_CX,   NPC_CY,   pcx, pcy, 64, '96,232,255')  // NPC — cyan
-      drawProximityAura(ctx, MIRROR_C * TILE + 8, MIRROR_R * TILE + 8, pcx, pcy, 48, '168,85,247') // Mirror — purple
+      drawProximityAura(ctx, NPC_CX,    NPC_CY,    pcx, pcy, 64, '96,232,255')   // NPC — cyan
+      drawProximityAura(ctx, MIRROR_CX, MIRROR_CY, pcx, pcy, 56, '168,85,247')  // Mirror — purple
 
-      drawRoom(ctx, map)
+      drawRoom(ctx, map, torchPhase)
+
+      // Mirror — reflection fades in as player approaches
+      const mirrorDist  = Math.hypot(pcx - MIRROR_CX, pcy - MIRROR_CY)
+      const reflAlpha   = Math.max(0, Math.min(1, (64 - mirrorDist) / 44))
+      const reflection  = reflAlpha > 0.02 ? {
+        facing: player.facing, frame: player.frame,
+        colors: charColorsRef.current, moving: player.moving,
+        alpha:  reflAlpha,
+        x: player.x, // Pass player X for horizontal mirroring
+        y: player.y, // Pass player Y for mirror reflection height logic
+      } : null
+      drawMirror(ctx, MIRROR_TX, MIRROR_TY, torchPhase, reflection)
+
       drawTable(ctx, torchPhase, TABLE_X, TABLE_Y)
       drawNpc(ctx, NPC_X, NPC_Y, torchPhase)
       drawWarriorSprite(ctx, player.x, player.y - player.jumpHeight, player.facing, player.frame, torchPhase, charColorsRef.current, player.moving)
 
       if (!pausedRef.current) {
         if (npcNear) badge(NPC_CX, NPC_Y - 2)
-        if (mirrorNear) badge(MIRROR_C * TILE + 8, MIRROR_R * TILE - 4, '[MIR]')
+        if (mirrorNear) badge(MIRROR_CX, MIRROR_TY - 4, '[MIR]')
       }
 
       drawBoundsOfLight(ctx, W, H, torchPhase, pcx, pcy)
