@@ -7,6 +7,16 @@ import DialogModal           from './DialogModal/DialogModal.jsx'
 import GuidanceVoice         from './GuidanceVoice/GuidanceVoice.jsx'
 import CharacterEditor       from './CharacterEditor/CharacterEditor.jsx'
 
+const LS_COLORS = 'life-mmo-colors'
+const LS_BIRTH  = 'life-mmo-birth'
+
+const DEFAULT_COLORS = { hair: '#6030d0', skin: '#f8c898', eyes: '#8040e8', outfit: '#4a1090', stick: '#60a8ff' }
+const DEFAULT_BIRTH  = { date: '1988-01-27', time: '03:55', city: { name: 'Paris XIII', country: 'FR', lat: 48.83, lng: 2.36, tz: 1 } }
+
+function load(key, fallback) {
+  try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback } catch { return fallback }
+}
+
 export default function App() {
   const [facing,        setFacing]        = useState('down')
   const [moving,        setMoving]        = useState(false)
@@ -19,13 +29,8 @@ export default function App() {
   const [showDialog,    setShowDialog]    = useState(false)
   const [showHoroscope, setShowHoroscope] = useState(false)
   const [showEditor,    setShowEditor]    = useState(false)
-  const [charColors,    setCharColors]    = useState({
-    hair: '#6030d0',
-    skin: '#f8c898',
-    eyes: '#8040e8',
-    outfit: '#4a1090',
-    stick: '#60a8ff'
-  })
+  const [charColors,    setCharColors]    = useState(() => load(LS_COLORS, DEFAULT_COLORS))
+  const [birthData,     setBirthData]     = useState(() => load(LS_BIRTH,  DEFAULT_BIRTH))
 
   const wrapRef = useViewportScale()
 
@@ -59,10 +64,14 @@ export default function App() {
       {showEditor && (
         <CharacterEditor
           initialColors={charColors}
+          initialBirthData={birthData}
           onClose={() => setShowEditor(false)}
           onChange={setCharColors}
-          onSave={(colors) => {
+          onSave={(colors, data) => {
             setCharColors(colors)
+            setBirthData(data)
+            try { localStorage.setItem(LS_COLORS, JSON.stringify(colors)) } catch {}
+            try { if (data) localStorage.setItem(LS_BIRTH, JSON.stringify(data)) } catch {}
             setShowEditor(false)
           }}
         />
@@ -73,7 +82,7 @@ export default function App() {
           onHoroscope={() => { setShowDialog(false); setShowHoroscope(true) }}
         />
       )}
-      {showHoroscope && <HoroscopeModal onClose={() => setShowHoroscope(false)} />}
+      {showHoroscope && <HoroscopeModal birthData={birthData} onClose={() => setShowHoroscope(false)} />}
     </div>
   )
 }

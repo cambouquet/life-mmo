@@ -101,6 +101,139 @@
   }
 }
 
+// ── Birth Chart section ───────────────────────────────────────────────────────
+
+.birth-section {
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+
+  &__title {
+    font-family: $font-ui;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: rgba(168, 85, 247, 0.5);
+  }
+}
+
+.birth-datetime {
+  display: flex;
+  gap: 12px;
+}
+
+.birth-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+
+  &--time { flex: 0 0 120px; }
+}
+
+.birth-label {
+  font-family: $font-ui;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.input-birth {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 100%;
+  box-sizing: border-box;
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.85);
+  border: 1.5px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 9px 12px;
+  font-family: $font-ui;
+  font-size: 14px;
+  transition: border-color 0.2s, background 0.2s;
+
+  &:hover {
+    border-color: rgba(168, 85, 247, 0.3);
+    background: rgba(168, 85, 247, 0.06);
+  }
+
+  &:focus {
+    outline: none;
+    border-color: rgba(168, 85, 247, 0.6);
+    background: rgba(168, 85, 247, 0.08);
+  }
+
+  &::-webkit-calendar-picker-indicator {
+    filter: invert(0.5) sepia(1) saturate(4) hue-rotate(220deg);
+    opacity: 0.6;
+    cursor: pointer;
+  }
+
+  &::placeholder { color: rgba(255, 255, 255, 0.2); }
+}
+
+// City search
+.city-search {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.input-city {
+  padding-right: 12px;
+}
+
+.city-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 10;
+  background: #150f28;
+  border: 1.5px solid rgba(168, 85, 247, 0.25);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+}
+
+.city-option {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: background 0.15s;
+
+  &:hover { background: rgba(168, 85, 247, 0.12); }
+  & + & { border-top: 1px solid rgba(255, 255, 255, 0.04); }
+
+  &__name {
+    font-family: $font-ui;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.85);
+  }
+
+  &__meta {
+    font-family: $font-mono;
+    font-size: 10px;
+    color: rgba(168, 85, 247, 0.6);
+  }
+}
+
+.city-coords {
+  font-family: $font-mono;
+  font-size: 10px;
+  color: rgba(168, 85, 247, 0.45);
+  padding: 0 2px;
+  letter-spacing: 0.5px;
+}
+
 .char-editor-actions {
   display: flex;
   gap: 16px;
