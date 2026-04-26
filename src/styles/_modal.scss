@@ -21,6 +21,13 @@
   color: $text-primary;
   animation: modalIn 0.22s ease;
 
+  // Hide scrollbar globally for the modal container
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
   &__header {
     display: flex;
     align-items: center;
@@ -56,6 +63,13 @@
     display: flex;
     flex-direction: column;
     gap: 16px;
+
+    // Hide scrollbar but keep functionality
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;     /* Firefox */
+    &::-webkit-scrollbar {
+      display: none;           /* Chrome, Safari and Opera */
+    }
   }
 
   &__section {
@@ -109,6 +123,178 @@
       border-color: $text-primary;
       color: $text-primary;
     }
+  }
+}
+
+// ── Birth Chart Styling ──────────────────────────────────────────────────────
+.birth-chart {
+  &__header {
+    color: $text-date;
+    font-size: 11px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    text-align: center;
+    border-bottom: 1px solid $border-dim;
+    padding-bottom: 12px;
+  }
+
+  &__table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 24px;
+    font-size: 13px;
+  }
+
+  &__row {
+    border-bottom: 1px solid #ffffff04;
+    transition: background 0.2s;
+    
+    &:hover {
+      background: #ffffff02;
+    }
+
+    &--asc {
+      background: #ffffff02;
+      border-top: 1px solid #ffffff06;
+      border-bottom: 1px solid #ffffff06;
+    }
+  }
+
+  &__glyph {
+    padding: 10px 8px;
+    font-size: 18px;
+    width: 32px;
+    text-align: center;
+  }
+
+  &__planet {
+    color: $text-primary;
+    font-weight: 500;
+  }
+
+  &__sign {
+    font-family: $font-ui;
+    font-weight: 400;
+    font-size: 13px;
+    opacity: 0.9;
+  }
+
+  &__deg {
+    text-align: right;
+    padding-right: 12px;
+  }
+
+  &__element {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    opacity: 0.6;
+    text-align: right;
+    padding-right: 4px;
+  }
+
+  &__summary {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 32px;
+    padding: 20px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.02) 0%, rgba(255, 255, 255, 0) 100%);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.04);
+
+    &-column {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    &-title {
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: $text-muted;
+      margin-bottom: 4px;
+      font-weight: 600;
+    }
+
+    &-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    &-item {
+      display: grid;
+      grid-template-columns: 1fr 32px;
+      align-items: center;
+      padding: 6px 10px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.03);
+      border-radius: 6px;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.05);
+        border-color: rgba(255, 255, 255, 0.08);
+        transform: translateX(2px);
+      }
+    }
+
+    &-label {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.3px;
+    }
+
+    &-bar-container {
+      grid-column: 1 / -1;
+      height: 2px;
+      background: rgba(255, 255, 255, 0.05);
+      margin-top: 4px;
+      border-radius: 1px;
+      overflow: hidden;
+    }
+
+    &-bar {
+      height: 100%;
+      border-radius: 1px;
+      transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    &-count {
+      justify-self: end;
+      font-family: $font-mono;
+      font-size: 12px;
+      font-weight: 600;
+    }
+  }
+}
+
+// ── Coordinate Formatting ────────────────────────────────────────────────────
+.coord {
+  display: inline-flex;
+  align-items: baseline;
+  font-family: $font-mono;
+  font-size: 13px;
+  color: $text-primary;
+
+  &__deg {
+    font-weight: 600;
+    min-width: 1.2ch;
+    text-align: right;
+  }
+
+  &__val {
+    opacity: 0.9;
+  }
+
+  &__unit {
+    color: $text-muted;
+    font-size: 10px;
+    margin: 0 1px;
+    font-family: $font-ui;
   }
 }
 

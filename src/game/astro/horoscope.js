@@ -144,9 +144,12 @@ export function generateHoroscope(transitDate = new Date(), birthData = null) {
 
   // Build exact birth UTC Date from date + time + timezone
   const [yr, mo, dy] = birthData.date.split('-').map(Number)
-  const [bh, bm]     = (birthData.time || '12:00').split(':').map(Number)
+  const timeSplit    = (birthData.time || '12:00').split(':').map(Number)
+  const bh = timeSplit[0] || 0
+  const bm = timeSplit[1] || 0
+  const bs = timeSplit[2] || 0
   const tzOffset     = birthData.city?.tz ?? 0
-  const birthUTC     = new Date(Date.UTC(yr, mo - 1, dy, bh - tzOffset, bm))
+  const birthUTC     = new Date(Date.UTC(yr, mo - 1, dy, bh - tzOffset, bm, bs))
 
   const location = birthData.city ? { lat: birthData.city.lat, lng: birthData.city.lng } : null
   const rawNatal = getAllPositions(birthUTC, location)

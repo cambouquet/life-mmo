@@ -6,7 +6,12 @@ const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov
 const PLANET_GLYPHS = { Sun:'☉', Moon:'☽', Mercury:'☿', Venus:'♀', Mars:'♂', Jupiter:'♃', Saturn:'♄', Ascendant:'↑' }
 const PLANET_ORDER  = ['Sun','Moon','Mercury','Venus','Mars','Jupiter','Saturn','Ascendant']
 
-const ELEMENT_COLOR = { Fire:'#fb923c', Earth:'#86efac', Air:'#7dd3fc', Water:'#a78bfa' }
+const ELEMENT_COLOR = { 
+  Fire:  '#fb923c', // Orange
+  Earth: '#86efac', // Green
+  Air:   '#fef08a', // Yellow (Sunlight/Air)
+  Water: '#60a5fa'  // Deep Blue
+}
 
 function toInputDate(d) {
   return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`
@@ -15,11 +20,21 @@ function toInputDate(d) {
 function fmtDeg(decimal) {
   const d = Math.floor(decimal)
   const m = Math.floor((decimal - d) * 60)
-  return `${d}°${String(m).padStart(2, '0')}'`
+  const s = Math.floor(((decimal - d) * 60 - m) * 60)
+  return (
+    <span className="coord">
+      <span className="coord__deg">{d}</span>
+      <span className="coord__unit">°</span>
+      <span className="coord__val">{String(m).padStart(2, '0')}</span>
+      <span className="coord__unit">'</span>
+      <span className="coord__val">{String(s).padStart(2, '0')}</span>
+      <span className="coord__unit">"</span>
+    </span>
+  )
 }
 
 // ── Birth Chart view ──────────────────────────────────────────────────────────
-function BirthChart({ placements, birthData }) {
+function BirthChart({ placements, birthData, reading, mode }) {
   if (!placements) {
     return (
       <div style={{ color:'#5a3870', fontSize:12, fontStyle:'italic', padding:'8px 0' }}>
@@ -30,15 +45,18 @@ function BirthChart({ placements, birthData }) {
 
   const tally = { Fire: 0, Earth: 0, Air: 0, Water: 0 }
   const modeTally = { Cardinal: 0, Fixed: 0, Mutable: 0 }
-  const rows = PLANET_ORDER.filter(p => placements[p])
+
+  const displayPlacements = mode === 'chart' ? placements : (reading?._debug?.transitPlacements || placements)
+  const rows = PLANET_ORDER.filter(p => displayPlacements[p])
 
   for (const p of rows) {
-    const meta = SIGN_META[placements[p].sign]
+    const meta = SIGN_META[displayPlacements[p].sign]
     if (meta) { tally[meta.element]++; modeTally[meta.mode]++ }
   }
 
+  const dateObj = birthData?.date ? new Date(birthData.date + 'T' + (birthData.time || '12:00')) : null
   const birthLine = [
-    birthData?.date ? new Date(birthData.date + 'T12:00:00').toLocaleDateString('en-GB', { day:'numeric', month:'long', year:'numeric' }) : null,
+    dateObj ? dateObj.toLocaleDateString('en-GB', { day:'numeric', month:'long', year:'numeric' }) : null,
     birthData?.time || null,
     birthData?.city?.name || null,
   ].filter(Boolean).join(' · ')
@@ -52,7 +70,7 @@ function BirthChart({ placements, birthData }) {
       <table className="birth-chart__table">
         <tbody>
           {rows.map(planet => {
-            const p    = placements[planet]
+            const p    = displayPlacements[planet]
             const meta = SIGN_META[p.sign]
             const col  = ELEMENT_COLOR[meta?.element] ?? '#c8a8f0'
             const isAsc = planet === 'Ascendant'
@@ -76,13 +94,41 @@ function BirthChart({ placements, birthData }) {
       </table>
 
       <div className="birth-chart__summary">
-        {Object.entries(tally).filter(([,n]) => n > 0).map(([el, n]) => (
-          <span key={el} style={{ color: ELEMENT_COLOR[el] }}>{el} {n}</span>
-        ))}
-        <span className="birth-chart__summary-sep">·</span>
-        {Object.entries(modeTally).filter(([,n]) => n > 0).map(([mode, n]) => (
-          <span key={mode} style={{ color:'#7a5898' }}>{mode} {n}</span>
-        ))}
+        <div className="birth-chart__summary-column">
+          <div className="birth-chart__summary-title">Elements</div>
+          <div className="birth-chart__summary-group">
+            {Object.entries(tally).map(([el, n]) => (
+              <div key={el} className="birth-chart__summary-item" style={{ opacity: n > 0 ? 1 : 0.3 }}>
+                <span className="birth-chart__summary-label" style={{ color: ELEMENT_COLOR[el] }}>{el}</span>
+                <span className="birth-chart__summary-count" style={{ color: ELEMENT_COLOR[el] }}>{n}</span>
+                <div className="birth-chart__summary-bar-container">
+                  <div className="birth-chart__summary-bar" style={{ 
+                    width: `${(n / rows.length) * 100}%`, 
+                    backgroundColor: ELEMENT_COLOR[el] 
+                  }} />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="birth-chart__summary-column">
+          <div className="birth-chart__summary-title">Modalities</div>
+          <div className="birth-chart__summary-group">
+            {Object.entries(modeTally).map(([mode, n]) => (
+              <div key={mode} className="birth-chart__summary-item" style={{ opacity: n > 0 ? 1 : 0.3 }}>
+                <span className="birth-chart__summary-label" style={{ color: '#9a78c0' }}>{mode}</span>
+                <span className="birth-chart__summary-count" style={{ color: '#9a78c0' }}>{n}</span>
+                <div className="birth-chart__summary-bar-container">
+                  <div className="birth-chart__summary-bar" style={{ 
+                    width: `${(n / rows.length) * 100}%`, 
+                    backgroundColor: '#9a78c0' 
+                  }} />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   )
@@ -204,7 +250,7 @@ export default function HoroscopeModal({ birthData, onClose }) {
           {/* ── Birth Chart ── */}
           {mode === 'chart' && (
             <div className="modal__section">
-              <BirthChart placements={_debug.natalPlacements} birthData={birthData} />
+              <BirthChart placements={_debug.natalPlacements} birthData={birthData} reading={reading} mode={mode} />
             </div>
           )}
 
