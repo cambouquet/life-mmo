@@ -65,8 +65,8 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
     const TABLE_Y  = tableR * TILE
     const TABLE_CX = TABLE_X + 16
     const TABLE_CY = TABLE_Y + 8
-    // NPC stands 2 tiles to the right of the table
-    const NPC_X    = (tableC + 3) * TILE
+    // NPC stands directly next to the table (right edge at tableC+1, NPC at tableC+2)
+    const NPC_X    = (tableC + 2) * TILE
     const NPC_Y    = tableR * TILE
     const NPC_CX   = NPC_X + 8
     const NPC_CY   = NPC_Y + 8
@@ -148,7 +148,6 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
 
       drawProximityAura(ctx, NPC_CX,    NPC_CY,    pcx, pcy, 64, '96,232,255')   // NPC — cyan
       drawProximityAura(ctx, MIRROR_CX, MIRROR_CY, pcx, pcy, 56, '168,85,247')  // Mirror — purple
-      drawProximityAura(ctx, TABLE_CX,  TABLE_CY,  pcx, pcy, 40, '140,80,255')  // Table — indigo/violet
 
       drawRoom(ctx, map, torchPhase)
 
