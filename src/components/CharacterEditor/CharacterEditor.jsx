@@ -314,14 +314,14 @@ export default function CharacterEditor({ initialColors, initialBirthData, onSav
                 return (
                   <div style={{ 
                     fontSize: '10px', 
-                    color: '#ff9800', 
-                    opacity: 0.45, 
+                    color: '#fff', 
+                    opacity: 0.65, 
                     fontStyle: 'italic', 
                     marginTop: '5px',
                     fontFamily: "'JetBrains Mono', monospace",
                     letterSpacing: '0.5px'
                   }}>
-                    {maxH[1] >= 3 ? 'Stellium' : 'Focus'} in H{maxH[0]} ({SIGN_META[Object.values(natalPlacements).find(p=>p.house==maxH[0])?.sign]?.element || ''}) — {maxH[1]} placements.
+                    {maxH[1] >= 3 ? 'Stellium' : 'Focus'} in H{maxH[0]} ({HOUSE_THEMES[maxH[0]] || ''}) — {maxH[1]} placements.
                   </div>
                 )
               })()}
