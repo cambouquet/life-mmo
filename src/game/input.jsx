@@ -1,8 +1,27 @@
 const KEYS = {}
 
 export function initInput() {
-  const onDown = e => { KEYS[e.code] = true;  e.preventDefault() }
-  const onUp   = e => { KEYS[e.code] = false }
+  const onDown = e => { 
+    // Ignore input if user is typing in a text field or if focus is inside the debug panel
+    const target = e.target;
+    const isInput = target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable;
+    const isDebugPanel = target.closest('.debug-panel');
+    
+    if (isInput || isDebugPanel) return;
+
+    KEYS[e.code] = true;
+    
+    // Allow common system shortcuts (Ctrl+C, Ctrl+V, etc.)
+    const isControlAction = e.ctrlKey || e.metaKey;
+    if (!isControlAction) {
+      e.preventDefault();
+    }
+  }
+  const onUp   = e => { 
+    if (!e.target.closest('.debug-panel')) {
+      KEYS[e.code] = false;
+    }
+  }
   window.addEventListener('keydown', onDown)
   window.addEventListener('keyup',   onUp)
   return () => {
@@ -13,6 +32,10 @@ export function initInput() {
 
 export function isKeyDown(code) {
   return !!KEYS[code]
+}
+
+export function simulateKey(code, isDown) {
+  KEYS[code] = isDown
 }
 
 export function inputDir() {

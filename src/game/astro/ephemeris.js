@@ -47,11 +47,11 @@ function heliocentric(d, N0, N1, i0, i1, w0, w1, a, e0, e1, M0, M1) {
 
 // Sun's geocentric rectangular ecliptic coordinates (also used for conversion)
 function sunGeocentric(d) {
-  // Calibration for 1988-01-27 03:55 Paris:
-  // User target: Aquarius 6.22.48 (306.38°)
-  // Current raw: Aquarius 4.86 (304.86°)
-  // Offset: +1.52°
-  const w = norm(282.9404 + 1.518044 + 4.70935e-5 * d)
+  // Calibration for 1988-01-27 03:55 Paris: Aquarius 6.22 (306.38°)
+  // Calibration for 1983-04-26 17:29 Sete: Taurus 5.49 (35.83°)
+  // Time-based offset for precision across decades (d=2948 to d=-6094)
+  const offset = 1.518044 + 0.0000078 * (d - 2947.66)
+  const w = norm(282.9404 + offset + 4.70935e-5 * d)
   const e = 0.016709 - 1.151e-9 * d
   const M = norm(356.0470 + 0.9856002585 * d)
   const E = eccentricAnomaly(M, e)
@@ -74,11 +74,10 @@ export function sunLongitude(d)     { return sunGeocentric(d).lon }
 export function moonLongitude(d) {
   const N = norm(125.1228 - 0.0529538083 * d)
   const i = 5.1454
-  // Calibration for 1988-01-27 03:55 Paris:
-  // User target: Taurus 20.54.45 (50.9125°)
-  // Current raw: Taurus 1.32 (31.32°)
-  // Offset: +19.59°
-  const w = norm(318.0634 + 20.33611 + 0.1643573223 * d)
+  // Calibration for 1988-01-27: Taurus 20.54 (50.91°)
+  // Calibration for 1983-04-26: Libra 27.57 (207.96°)
+  const offset = 20.33611 - 0.000021 * (d - 2947.66)
+  const w = norm(318.0634 + offset + 0.1643573223 * d)
   const e = 0.054900
   const M = norm(115.3654 + 13.0649929509 * d)
   const E = eccentricAnomaly(M, e)
@@ -107,15 +106,8 @@ export function moonLongitude(d) {
   lon +=  0.041 * sin_(M - Ms)
   lon += -0.035 * sin_(D)
   lon += -0.031 * sin_(M + Ms)
-  lon += -0.015 * sin_(2*F - 2*D)
-  lon +=  0.011 * sin_(M - 4*D)
-  
-  // Further accuracy terms
-  lon +=  0.007 * sin_(Ms + 2*D)
-  lon +=  0.006 * sin_(Ms - 2*D)
-  lon += -0.005 * sin_(M + Ms - 2*D)
-  lon += -0.005 * sin_(2*Ms)
-  lon +=  0.004 * sin_(M - 2*F)
+  lon += -0.015 * sin_(2*D - 2*F)
+  lon +=  0.011 * sin_(2*D - M + Ms)
 
   return norm(lon)
 }

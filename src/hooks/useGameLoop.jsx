@@ -36,7 +36,7 @@ const GUIDANCE_IDLE = [
 
 function pick(arr) { return arr[Math.floor(Math.random() * arr.length)] }
 
-export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, charColors }) {
+export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, charColors, playerRef }) {
   const pausedRef     = useRef(paused)
   const onInteractRef = useRef(onInteract)
   const onStateRef    = useRef(onStateChange)
@@ -203,6 +203,7 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
       const dt = Math.min((ts - last) / 1000, 0.05)
       last = ts
       torchPhase += dt * 4.5
+      if (playerRef) playerRef.current = player
 
       const npcNear    = nearNpc()
       const mirrorNear = nearMirror()

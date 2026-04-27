@@ -10,6 +10,9 @@
   </head>
   <body>
     <div id="root"></div>
+    <!-- ffmpeg.wasm loaded as plain UMD scripts to bypass Vite's worker transform -->
+    <script src="/ffmpeg/ffmpeg.js"></script>
+    <script src="/ffmpeg/ffmpeg-util.js"></script>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

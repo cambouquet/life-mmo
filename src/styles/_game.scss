@@ -7,6 +7,17 @@
   line-height: 0;
 }
 
+.ui-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 100;
+  
+  & > * {
+    pointer-events: auto;
+  }
+}
+
 .game-canvas {
   display: block;
   image-rendering: pixelated;

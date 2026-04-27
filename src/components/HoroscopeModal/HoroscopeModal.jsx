@@ -318,6 +318,12 @@ function BirthChart({ placements, birthData, reading, mode, houseCusps }) {
         const maxHCount = maxH ? maxH[1] : 0
         const hId = maxH ? maxH[0] : null
         
+        const HOUSE_THEMES_FIXED = {
+          1: 'self', 2: 'resources', 3: 'mind', 4: 'home', 5: 'pleasure',
+          6: 'service', 7: 'partnership', 8: 'transformation', 9: 'expansion',
+          10: 'career', 11: 'community', 12: 'hidden'
+        }
+
         const stelliumText = hId ? (
           <div style={{ 
             width: '100%', 
@@ -332,7 +338,7 @@ function BirthChart({ placements, birthData, reading, mode, houseCusps }) {
             borderTop: '1px solid rgba(255,255,255,0.03)',
             borderBottom: '1px solid rgba(255,255,255,0.03)'
           }}>
-            {maxHCount >= 3 ? 'STELLIUM' : 'FOCUS'} IN HOUSE {hId} ({HOUSE_DESC_LOCAL[hId]?.name.toUpperCase() || '?'}) — {maxHCount} PLACEMENTS
+            {maxHCount >= 3 ? 'STELLIUM' : 'FOCUS'} IN HOUSE {hId} ({HOUSE_DESC[hId]?.name.toUpperCase() || HOUSE_THEMES_FIXED[hId]?.toUpperCase() || '?'}) — {maxHCount} PLACEMENTS
           </div>
         ) : null
 
@@ -351,6 +357,7 @@ function BirthChart({ placements, birthData, reading, mode, houseCusps }) {
             <div style={{ display: 'flex', flexWrap: 'wrap', columnGap: '24px', rowGap: '12px', justifyContent: 'center', fontSize: '13px' }}>
               {big3.reduce((prev, curr, i) => i === 0 ? [curr] : [...prev, <span key={`sep-${i}`} style={{ opacity: 0.2 }}>•</span>, curr], [])}
             </div>
+            {stelliumText}
           </div>
         )
       })()}

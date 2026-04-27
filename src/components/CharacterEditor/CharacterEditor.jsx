@@ -160,6 +160,11 @@ export default function CharacterEditor({ initialColors, initialBirthData, onSav
     outfit: '#4a1090',
     stick:  '#60a8ff',
   })
+
+  // Sync when parent pushes new colors (e.g. playback engine changing colors)
+  useEffect(() => {
+    if (initialColors) setColors(initialColors)
+  }, [initialColors])
   const parsedDate = initialBirthData?.date
     ? { year: +initialBirthData.date.slice(0,4), month: +initialBirthData.date.slice(5,7), day: +initialBirthData.date.slice(8,10) }
     : { year: 1990, month: 1, day: 1 }

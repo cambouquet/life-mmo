@@ -1,7 +1,7 @@
 @use '../../styles/variables' as *;
 
 .char-editor-modal {
-  position: fixed;
+  position: absolute;
   inset: 0;
   z-index: 2000;
   display: flex;
@@ -33,15 +33,19 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
-  width: 240px;
+  gap: 20px;
+  width: 280px;
+  padding: 24px;
+  background: rgba(255, 255, 255, 0.01);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.03);
 
   &-label {
-    font-family: $font-ui;
-    font-size: 14px;
-    font-weight: 500;
-    color: rgba(255, 255, 255, 0.4);
-    letter-spacing: 2px;
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    color: rgba(255, 255, 255, 0.6);
+    letter-spacing: 4px;
     text-transform: uppercase;
   }
 }
@@ -65,47 +69,66 @@
 
 .color-row {
   display: flex;
-  gap: 10px;
+  gap: 12px;
   align-items: flex-end;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  margin-top: 8px;
 }
 
 .control-group {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
+  gap: 8px;
 
   label {
-    font-family: $font-ui;
-    font-size: 9px;
-    font-weight: 600;
-    letter-spacing: 1px;
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
     text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.35);
+    color: rgba(255, 255, 255, 0.4);
+    transition: color 0.2s;
   }
 
   input[type="color"] {
     appearance: none;
     -webkit-appearance: none;
-    width: 32px;
-    height: 32px;
+    width: 38px;
+    height: 38px;
     padding: 0;
-    border: 2px solid rgba(255, 255, 255, 0.1);
-    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50%; /* Circle looks more modern for pickers */
     background: none;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    background-color: transparent;
 
-    &:hover {
-      transform: scale(1.12);
-      border-color: rgba(255, 255, 255, 0.25);
+    &::-webkit-color-swatch-wrapper {
+      padding: 3px;
     }
-
-    &::-webkit-color-swatch-wrapper { padding: 0; }
     &::-webkit-color-swatch {
       border: none;
-      border-radius: 6px;
+      border-radius: 50%;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
     }
+
+    &:hover {
+      transform: scale(1.1);
+      border-color: rgba(255, 255, 255, 0.3);
+      box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+    }
+
+    &:active {
+      transform: scale(0.95);
+    }
+  }
+
+  &:hover label {
+    color: rgba(255, 255, 255, 0.8);
   }
 }
 
