@@ -298,16 +298,16 @@ function BirthChart({ placements, birthData, reading, mode, houseCusps }) {
           </div>
 
           {maxHouse && (() => {
-            const cx = 120, cy = 120, size = 240
-            const RING_RADII = { Fire: [84, 100], Earth: [66, 82], Air: [48, 64], Water: [30, 46] }
-            const BASE_R  = 100  // outer edge of element rings
-            const SIGN_R1 = 102  // sign symbol ring inner
-            const SIGN_R2 = 118  // sign symbol ring outer
-            const OUTER_R = 118
-            const INNER_R = 18
-            const GAP_DEG = 1.5
+            const cx = 150, cy = 150, size = 300
+            const BASE_R  = 124
+            const HOUSE_R1 = 126
+            const HOUSE_R2 = 140
+            const SIGN_R1  = 142
+            const SIGN_R2  = 160
+            const INNER_R = 20
+            const GAP_DEG = 1.0
 
-            const SIGN_SYMBOLS = ['♈','♉','♊','♋','♌','♍','♎','♏','♐','♑','♒','♓']
+            const SIGN_NAMES = ['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces']
 
             function polarToXY(angleDeg, r) {
               const a = (angleDeg - 90) * Math.PI / 180
@@ -317,85 +317,122 @@ function BirthChart({ placements, birthData, reading, mode, houseCusps }) {
             function arc(startDeg, endDeg, r1, r2) {
               const s1 = polarToXY(startDeg, r1), e1 = polarToXY(endDeg, r1)
               const s2 = polarToXY(startDeg, r2), e2 = polarToXY(endDeg, r2)
-              const large = endDeg - startDeg > 180 ? 1 : 0
+              // Handle arcs larger than 180 degrees correctly
+              const delta = (endDeg - startDeg + 360) % 360
+              const large = delta > 180 ? 1 : 0
               return `M ${s1[0]} ${s1[1]} A ${r1} ${r1} 0 ${large} 1 ${e1[0]} ${e1[1]} L ${e2[0]} ${e2[1]} A ${r2} ${r2} 0 ${large} 0 ${s2[0]} ${s2[1]} Z`
             }
 
-            // Get sign index for each house cusp
-            function cuspSignIdx(h) {
-              if (!houseCusps) return (h - 1) % 12
-              const lon = houseCusps[h - 1]
-              return Math.floor(((lon % 360) + 360) % 360 / 30)
+            // Map specific planets to concentric rings
+            const PLANET_RINGS = {
+              Sun: 110, Moon: 100, Mercury: 90, Venus: 80, Mars: 70, 
+              Jupiter: 60, Saturn: 50, Uranus: 40, Neptune: 30, Pluto: 20
             }
 
             return (
               <div style={{ marginTop: 16 }}>
-                <div className="birth-chart__summary-title" style={{ marginBottom: 8 }}>Houses</div>
-                <svg width={size} height={size} style={{ display: 'block', margin: '0 auto' }}>
+                <div className="birth-chart__summary-title" style={{ marginBottom: 8, textAlign: 'center' }}>House Analysis</div>
+                <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ display: 'block', margin: '0 auto', overflow: 'visible' }}>
 
+                  {/* 1. Underlying Sign Rings (Continuous portions) */}
+                  {SIGN_NAMES.map((signName, sigIdx) => {
+                    const signCol = ELEMENT_COLOR[SIGN_META[signName]?.element] ?? '#fff'
+                    
+                    // ALIGNMENT FIX: 
+                    // To make the signs match the house locations, we must align 
+                    // the 0° point of the zodiac with the actual degree of the Ascendant cusp.
+                    
+                    const ascDeg = houseCusps ? houseCusps[0] : 0
+                    const signStartRaw = (sigIdx * 30) - ascDeg
+                    const sStart = ((signStartRaw + 360) % 360) + GAP_DEG/2
+                    const sEnd   = sStart + 30 - GAP_DEG
+                    const sMid   = sStart + 15
+                    
+                    const [sx, sy] = polarToXY(sMid, (SIGN_R1 + SIGN_R2) / 2)
+
+                    return (
+                      <g key={signName}>
+                        <path d={arc(sStart, sEnd, SIGN_R1, SIGN_R2)}
+                          fill={`${signCol}33`} stroke={`${signCol}66`} strokeWidth="1" />
+                        <text x={sx} y={sy} textAnchor="middle" dominantBaseline="middle"
+                          fontSize="6.5" 
+                          fill="rgba(255,255,255,0.9)" fontWeight="800" textTransform="uppercase" letterSpacing="0.8"
+                          style={{ transform: `rotate(${sMid}deg)`, transformOrigin: `${sx}px ${sy}px` }}>
+                          {signName}
+                        </text>
+                      </g>
+                    )
+                  })}
+
+                  {/* 2. House Structure & Interactivity */}
                   {Array.from({length: 12}, (_, i) => {
                     const h = i + 1
-                    const startDeg = i * 30 + GAP_DEG / 2
-                    const endDeg   = (i + 1) * 30 - GAP_DEG / 2
-                    const midDeg   = i * 30 + 15
-                    const elCounts = houseTally[h] || {}
-                    const n        = houseTotal(h)
-                    const signIdx  = cuspSignIdx(h)
-                    const signEl   = SIGN_META[['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'][signIdx]]?.element ?? 'Air'
-                    const signCol  = ELEMENT_COLOR[signEl]
+                    
+                    // Actual astronomical degrees (0-360) relative to House 1 Cusp
+                    const ascLong = houseCusps ? houseCusps[0] : 0
+                    const hStartRaw = houseCusps ? (houseCusps[i] - ascLong) : (i * 30)
+                    const hEndRaw   = houseCusps ? (houseCusps[i === 11 ? 0 : i + 1] - ascLong) : ((i + 1) * 30)
+                    
+                    const startDeg = ((hStartRaw + 360) % 360) + GAP_DEG/2
+                    const endDeg   = ((hEndRaw < hStartRaw ? hEndRaw + 360 : hEndRaw) % 720) - GAP_DEG/2
+                    const midDeg   = (startDeg + (endDeg < startDeg ? endDeg + 360 : endDeg)) / 2
 
-                    const [lx, ly]   = polarToXY(midDeg, 24)
-                    const [sx, sy]   = polarToXY(midDeg, 110)
+                    const n = houseTotal(h)
+                    const housePlanets = rows.filter(pName => displayPlacements[pName].house === h)
 
                     return (
                       <g key={h}>
-                        {/* base segment */}
+                        {/* House base slice */}
                         <path d={arc(startDeg, endDeg, INNER_R, BASE_R)}
-                          fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.07)" strokeWidth="0.5" />
+                          fill="rgba(255,255,255,0.01)" 
+                          stroke="rgba(255,255,255,0.03)" strokeWidth="0.5" />
 
-                        {/* sign band */}
-                        <path d={arc(startDeg, endDeg, SIGN_R1, SIGN_R2)}
-                          fill={`${signCol}22`} stroke="rgba(255,255,255,0.07)" strokeWidth="0.5" />
+                        {/* House number band with obviously highlighted borders */}
+                        <path d={arc(startDeg, endDeg, HOUSE_R1, HOUSE_R2)}
+                          fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.6)" strokeWidth="1.2" />
 
-                        {/* element rings */}
-                        {n > 0 && ELEMENTS_ORDER.filter(el => elCounts[el] > 0).map(el => {
-                          const [r1, r2] = RING_RADII[el]
+                        {/* Planets in Concentric Rings */}
+                        {housePlanets.map((pName) => {
+                          const pData = displayPlacements[pName]
+                          const pMeta = SIGN_META[pData.sign]
+                          const pCol  = ELEMENT_COLOR[pMeta?.element] ?? '#fff'
+                          const ringR = PLANET_RINGS[pName] || 50
+                          
+                          // Convert the planet's sign longitude to the 0-360 degree space of the wheel
+                          // (Long - Ascendant)
+                          const planetAbsLong = pData.longitude
+                          const ascLong = houseCusps ? houseCusps[0] : 0
+                          const pDegOnWheel = (planetAbsLong - ascLong + 360) % 360
+                          
+                          const [px, py] = polarToXY(pDegOnWheel, ringR)
+                          
                           return (
-                            <path key={el} d={arc(startDeg, endDeg, r1, r2)}
-                              fill={ELEMENT_COLOR[el]} opacity={0.7 + elCounts[el] * 0.08}
-                              stroke="rgba(0,0,0,0.4)" strokeWidth="0.5" />
+                            <g key={pName}>
+                              <circle cx={px} cy={py} r="5" fill={`${pCol}15`} stroke={`${pCol}33`} strokeWidth="0.5" />
+                              <text x={px} y={py} textAnchor="middle" dominantBaseline="middle"
+                                fontSize="8" fill={pCol} fontWeight="900" style={{ pointerEvents: 'none' }}>
+                                {PLANET_GLYPHS[pName]}
+                              </text>
+                            </g>
                           )
                         })}
 
-                        {/* house number in centre zone */}
-                        <text x={lx} y={ly} textAnchor="middle" dominantBaseline="middle"
-                          fontSize={h === 1 ? '8' : '7'} fontFamily="monospace" fontWeight={h === 1 ? '900' : '600'}
-                          fill={h === 1 ? 'rgba(255,255,255,1)' : n > 0 ? 'rgba(255,255,255,0.8)' : 'rgba(255,255,255,0.25)'}>
-                          {h}
-                        </text>
-
-                        {/* sign symbol in outer band */}
-                        <text x={sx} y={sy} textAnchor="middle" dominantBaseline="middle"
-                          fontSize="10" fill={signCol} opacity="0.9">
-                          {SIGN_SYMBOLS[signIdx]}
-                        </text>
-
-                        {/* planet count — small, between sign band and element rings */}
-                        {n > 0 && (() => {
-                          const [px, py] = polarToXY(midDeg, 92)
+                        {/* House number text */}
+                        {(() => {
+                          const [hx, hy] = polarToXY(midDeg, (HOUSE_R1 + HOUSE_R2) / 2)
                           return (
-                            <text x={px} y={py} textAnchor="middle" dominantBaseline="middle"
-                              fontSize="7" fontFamily="monospace" fontWeight="700"
-                              fill="rgba(255,255,255,0.6)">
-                              {n}
+                            <text x={hx} y={hy} textAnchor="middle" dominantBaseline="middle"
+                              fontSize="7" fontFamily="monospace" fontWeight="800"
+                              fill={n > 0 ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.4)'}>
+                              {h}
                             </text>
                           )
                         })()}
 
-                        {/* H1 top marker */}
+                        {/* H1 marker */}
                         {h === 1 && (() => {
-                          const [mx, my] = polarToXY(0, OUTER_R + 6)
-                          return <circle cx={mx} cy={my} r="2.5" fill="rgba(255,255,255,0.7)" />
+                          const [mx, my] = polarToXY(0, SIGN_R2 + 4)
+                          return <circle cx={mx} cy={my} r="2.5" fill="rgba(255,255,255,0.5)" />
                         })()}
                       </g>
                     )
@@ -451,6 +488,7 @@ export default function HoroscopeModal({ birthData, onClose }) {
   const [mode,       setMode]       = useState('reading')
   const [transitStr, setTransitStr] = useState(() => toInputDate(new Date()))
   const [reading,    setReading]    = useState(() => generateHoroscope(new Date(), birthData))
+  const scrollRef = React.useRef(null)
 
   useEffect(() => {
     try {
@@ -464,6 +502,14 @@ export default function HoroscopeModal({ birthData, onClose }) {
       if (e.code === 'Escape') onClose()
       if (e.code === 'F1')    setMode(m => m === 'debug' ? 'reading' : 'debug')
       if (e.code === 'KeyC' && e.altKey) setMode(m => m === 'chart' ? 'reading' : 'chart')
+
+      // Scroll behavior for Arrow keys
+      if (scrollRef.current && (e.code === 'ArrowDown' || e.code === 'ArrowUp' || e.code === 'KeyW' || e.code === 'KeyS')) {
+        const isUp = e.code === 'ArrowUp' || e.code === 'KeyW'
+        const amount = isUp ? -40 : 40
+        scrollRef.current.scrollBy({ top: amount, behavior: 'smooth' })
+        e.preventDefault()
+      }
     }
     window.addEventListener('keydown', handler)
     return () => window.removeEventListener('keydown', handler)
@@ -478,8 +524,8 @@ export default function HoroscopeModal({ birthData, onClose }) {
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal" onClick={e => e.stopPropagation()}
-           style={wide ? { maxWidth: 520, maxHeight: '90vh', overflowY: 'auto' } : undefined}>
+      <div className="modal" onClick={e => e.stopPropagation()} ref={scrollRef}
+           style={{ ...wide ? { maxWidth: 520 } : {}, maxHeight: '90vh', overflowY: 'auto' }}>
 
         <div className="modal__header">
           <span className="modal__zodiac">{zodiac.symbol}</span>
