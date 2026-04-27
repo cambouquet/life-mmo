@@ -1,4 +1,4 @@
-import { getAllPositions, longitudeToSign, longitudeToSymbol, degreesInSign } from './ephemeris.js'
+import { getAllPositions, getPlacidusHouses, getHouseNumber, longitudeToSign, longitudeToSymbol, degreesInSign, daysSinceJ2000 } from './ephemeris.js'
 import { findAspects, findTransitToNatal } from './aspects.js'
 
 export const SIGN_META = {
@@ -82,7 +82,7 @@ const LUCKY_BY_ELEMENT = {
   Water: { element: 'Stone',  value: 'Moonstone'                    },
 }
 
-function enrichPlacements(rawPositions) {
+function enrichPlacements(rawPositions, houseCusps = null) {
   const placements = {}
   for (const [planet, lon] of Object.entries(rawPositions)) {
     const sign = longitudeToSign(lon)
@@ -92,6 +92,7 @@ function enrichPlacements(rawPositions) {
       symbol:    longitudeToSymbol(lon),
       degrees:   degreesInSign(lon),
       element:   SIGN_META[sign]?.element ?? '?',
+      house:     houseCusps ? getHouseNumber(lon, houseCusps) : null,
     }
   }
   return placements
@@ -153,7 +154,8 @@ export function generateHoroscope(transitDate = new Date(), birthData = null) {
 
   const location = birthData.city ? { lat: birthData.city.lat, lng: birthData.city.lng } : null
   const rawNatal = getAllPositions(birthUTC, location)
-  const natalPlacements = enrichPlacements(rawNatal)
+  const natalHouses = location ? getPlacidusHouses(daysSinceJ2000(birthUTC), location.lat, location.lng) : null
+  const natalPlacements = enrichPlacements(rawNatal, natalHouses)
 
   const transitNatalAspects = findTransitToNatal(rawTransits, rawNatal)
   const skyAspects          = findAspects(rawTransits)
@@ -199,6 +201,7 @@ export function generateHoroscope(transitDate = new Date(), birthData = null) {
     _debug: {
       transitPlacements,
       natalPlacements,
+      natalHouses,
       transitNatalAspects,
       skyAspects,
       dominantElement: dominantElement(transitPlacements),

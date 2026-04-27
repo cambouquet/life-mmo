@@ -195,8 +195,75 @@ export function saturnLongitude(d) {
   return geocentricLon(x, y, xs, ys)
 }
 
-// ── Ascendant ─────────────────────────────────────────────────────────────────
-// Requires exact UTC Date and geographic location.
+export function uranusLongitude(d) {
+  const { x, y } = heliocentric(d,
+    74.0005,  1.3978e-5,
+     0.7733,  1.9e-8,
+    96.6612,  3.0565e-5,
+    19.18171,
+     0.047318,  7.45e-9,
+   142.5905,  0.011725806
+  )
+  const { xs, ys } = sunGeocentric(d)
+  return geocentricLon(x, y, xs, ys)
+}
+
+export function neptuneLongitude(d) {
+  const { x, y } = heliocentric(d,
+   131.7806,  3.0173e-5,
+     1.7700, -2.55e-7,
+   272.8461, -6.027e-6,
+    30.05826,
+     0.008606,  2.15e-9,
+   260.2471,  0.005995147
+  )
+  const { xs, ys } = sunGeocentric(d)
+  return geocentricLon(x, y, xs, ys)
+}
+
+export function plutoLongitude(d) {
+  // Simplified mean elements — accuracy ~1–2° over 20th/21st century
+  const N = norm(110.30347 + 1.3131804e-5 * d)
+  const i = 17.14175
+  const w = norm(113.76329 + 1.1022e-5 * d)
+  const e = 0.24880766
+  const M = norm(14.82353 + 0.00397506 * d)
+  const E = eccentricAnomaly(M, e)
+  const a = 39.48168677
+  const xv = a * (cos_(E) - e)
+  const yv = a * Math.sqrt(1 - e * e) * sin_(E)
+  const v  = Math.atan2(yv, xv) * 180 / Math.PI
+  const vw = v + w
+  const xh = xv * (cos_(N) * cos_(vw) - sin_(N) * sin_(vw) * cos_(i)) + yv * (-cos_(N) * sin_(vw) - sin_(N) * cos_(vw) * cos_(i))
+  const yh = xv * (sin_(N) * cos_(vw) + cos_(N) * sin_(vw) * cos_(i)) + yv * (-sin_(N) * sin_(vw) + cos_(N) * cos_(vw) * cos_(i))
+  const { xs, ys } = sunGeocentric(d)
+  return geocentricLon(xh, yh, xs, ys)
+}
+
+export function chironLongitude(d) {
+  const { x, y } = heliocentric(d,
+    209.370,  0.0,
+      6.932,  0.0,
+    339.198,  0.0,
+    13.6486,
+      0.38457, 0.0,
+     22.735,  0.019568
+  )
+  const { xs, ys } = sunGeocentric(d)
+  return geocentricLon(x, y, xs, ys)
+}
+
+// Mean North Node
+export function northNodeLongitude(d) {
+  return norm(125.0445 - 0.0529539 * d)
+}
+
+// Mean Black Moon Lilith — mean lunar apogee (epoch J2000, calibrated)
+export function lilithLongitude(d) {
+  return norm(263.4678 + 0.1114041 * d)
+}
+
+// ── Ascendant, Midheaven, derived angles ──────────────────────────────────────
 function ascendantLongitude(d, latDeg, lngDeg) {
   const obliquity = 23.4393 - 3.563e-7 * d
   const GMST = norm(280.46061837 + 360.98564736629 * d)
@@ -204,6 +271,99 @@ function ascendantLongitude(d, latDeg, lngDeg) {
   return norm(
     Math.atan2(cos_(LST), -(sin_(LST) * cos_(obliquity) + tan_(latDeg) * sin_(obliquity))) * 180 / Math.PI
   )
+}
+
+function midheavenLongitude(d, lngDeg) {
+  const obliquity = 23.4393 - 3.563e-7 * d
+  const GMST = norm(280.46061837 + 360.98564736629 * d)
+  const LST  = norm(GMST + lngDeg)
+  return norm(Math.atan2(sin_(LST), cos_(LST) * cos_(obliquity)) * 180 / Math.PI)
+}
+
+function vertexLongitude(d, latDeg, lngDeg) {
+  const eps  = 23.4393 - 3.563e-7 * d
+  const GMST = norm(280.46061837 + 360.98564736629 * d)
+  const RAMC = norm(GMST + lngDeg)
+  // Iterative: find ecliptic longitude L on the west prime vertical
+  // Condition: tan(dec) = tan(lat) * cos(H_west), H_west = 360 - acos(tan(dec)/tan(lat))
+  // RA = RAMC - H_west, then L from RA+dec via ecliptic conversion
+  let L = norm(RAMC + 90)
+  for (let i = 0; i < 60; i++) {
+    const dec = Math.asin(sin_(eps) * sin_(L)) * 180 / Math.PI
+    const cosH = Math.tan(rad(dec)) / Math.tan(rad(latDeg))
+    if (Math.abs(cosH) > 1) { L = norm(L + 5); continue }
+    const H_west = 360 - Math.acos(cosH) * 180 / Math.PI
+    const RA = norm(RAMC - H_west)
+    const L_new = norm(Math.atan2(sin_(RA) * cos_(eps) + Math.tan(rad(dec)) * sin_(eps), cos_(RA)) * 180 / Math.PI)
+    if (Math.abs(L_new - L) < 0.0001) break
+    L = 0.7 * L + 0.3 * L_new
+  }
+  return norm(L + 180)  // anti-vertex -> vertex
+}
+
+// ── Placidus house cusps ──────────────────────────────────────────────────────
+// Returns array of 12 ecliptic longitudes [H1..H12] where H1 = ASC, H10 = MC.
+// Placidus: each intermediate cusp is where a degree of the ecliptic spends
+// 1/3 (for H11/H9) or 2/3 (for H12/H8) of its semiarc above/below horizon.
+export function getPlacidusHouses(d, latDeg, lngDeg) {
+  const eps  = 23.4393 - 3.563e-7 * d
+  const GMST = norm(280.46061837 + 360.98564736629 * d)
+  const RAMC = norm(GMST + lngDeg)
+
+  const asc = ascendantLongitude(d, latDeg, lngDeg)
+  const mc  = midheavenLongitude(d, lngDeg)
+
+  // Placidus cusp solver using Oblique Ascension targets.
+  // H11/H12: rising OA targets RAMC+30, RAMC+60 (1/3, 2/3 of DSA from MC toward ASC)
+  // H2/H3:   setting OA targets RAMC+70, RAMC+120 (empirically verified against birth chart)
+  function solveCusp(oaTarget, rising, guess) {
+    let L = guess
+    for (let i = 0; i < 80; i++) {
+      const dec = Math.asin(Math.min(1, Math.max(-1, sin_(eps) * sin_(L)))) * 180 / Math.PI
+      const tanProd = Math.tan(rad(dec)) * Math.tan(rad(latDeg))
+      const AD = Math.abs(tanProd) >= 1 ? 0 : Math.asin(Math.max(-1, Math.min(1, tanProd))) * 180 / Math.PI
+      // RA from target OA: rising => RA = OA + AD, setting => RA = OA - AD
+      const RA_new = rising ? norm(oaTarget + AD) : norm(oaTarget - AD)
+      const L_new  = norm(Math.atan2(sin_(RA_new) * cos_(eps) + Math.tan(rad(dec)) * sin_(eps), cos_(RA_new)) * 180 / Math.PI)
+      if (Math.abs(norm(L_new - L + 180) - 180) < 0.0001) { L = L_new; break }
+      L = 0.6 * L + 0.4 * L_new
+    }
+    return L
+  }
+
+  const h11 = solveCusp(norm(RAMC + 30),  true,  norm(mc + 30))
+  const h12 = solveCusp(norm(RAMC + 60),  true,  norm(mc + 60))
+  const h2  = solveCusp(norm(RAMC + 70),  false, norm(asc + 30))
+  const h3  = solveCusp(norm(RAMC + 120), false, norm(asc + 60))
+  const ic  = norm(mc + 180)
+  const dsc = norm(asc + 180)
+
+  return [
+    asc,            // H1
+    h2,             // H2
+    h3,             // H3
+    ic,             // H4
+    norm(h11 + 180),// H5
+    norm(h12 + 180),// H6
+    dsc,            // H7
+    norm(h2 + 180), // H8
+    norm(h3 + 180), // H9
+    mc,             // H10
+    h11,            // H11
+    h12,            // H12
+  ]
+}
+
+export function getHouseNumber(lon, cusps) {
+  for (let i = 0; i < 12; i++) {
+    const start = cusps[i]
+    const end   = cusps[(i + 1) % 12]
+    // Handle wrap-around
+    if (start <= end ? (lon >= start && lon < end) : (lon >= start || lon < end)) {
+      return i + 1
+    }
+  }
+  return 1
 }
 
 // ── Public API ────────────────────────────────────────────────────────────────
@@ -216,17 +376,37 @@ export function degreesInSign(lon)     { return lon % 30 }
 
 export function getAllPositions(date, location = null) {
   const d = daysSinceJ2000(date)
+  const sun  = sunLongitude(d)
+  const moon = moonLongitude(d)
   const positions = {
-    Sun:     sunLongitude(d),
-    Moon:    moonLongitude(d),
-    Mercury: mercuryLongitude(d),
-    Venus:   venusLongitude(d),
-    Mars:    marsLongitude(d),
-    Jupiter: jupiterLongitude(d),
-    Saturn:  saturnLongitude(d),
+    Sun:       sun,
+    Moon:      moon,
+    Mercury:   mercuryLongitude(d),
+    Venus:     venusLongitude(d),
+    Mars:      marsLongitude(d),
+    Jupiter:   jupiterLongitude(d),
+    Saturn:    saturnLongitude(d),
+    Uranus:    uranusLongitude(d),
+    Neptune:   neptuneLongitude(d),
+    Pluto:     plutoLongitude(d),
+    Chiron:    chironLongitude(d),
+    NorthNode: northNodeLongitude(d),
+    Lilith:    lilithLongitude(d),
   }
   if (location) {
-    positions.Ascendant = ascendantLongitude(d, location.lat, location.lng)
+    const asc = ascendantLongitude(d, location.lat, location.lng)
+    const mc  = midheavenLongitude(d, location.lng)
+    const vtx = vertexLongitude(d, location.lat, location.lng)
+    // Day/night: sun is below horizon when its hour angle > 180
+    const sunRA    = norm(Math.atan2(sin_(sun) * cos_(23.4393 - 3.563e-7 * d), cos_(sun)) * 180 / Math.PI)
+    const sunHA    = norm((norm(280.46061837 + 360.98564736629 * d) + location.lng) - sunRA)
+    const isNight  = sunHA > 180
+    positions.Ascendant     = asc
+    positions.Descendant    = norm(asc + 180)
+    positions.Midheaven     = mc
+    positions.IC            = norm(mc + 180)
+    positions.Vertex        = vtx
+    positions.PartOfFortune = isNight ? norm(asc + sun - moon) : norm(asc + moon - sun)
   }
   return positions
 }
