@@ -95,6 +95,21 @@ function enrichPlacements(rawPositions, houseCusps = null) {
       house:     houseCusps ? getHouseNumber(lon, houseCusps) : null,
     }
   }
+
+  // Add South Node (directly opposite North Node)
+  if (placements.NorthNode) {
+    const snLon = (placements.NorthNode.longitude + 180) % 360
+    const snSign = longitudeToSign(snLon)
+    placements.SouthNode = {
+      longitude: snLon,
+      sign: snSign,
+      symbol: longitudeToSymbol(snLon),
+      degrees: degreesInSign(snLon),
+      element: SIGN_META[snSign]?.element ?? '?',
+      house: houseCusps ? getHouseNumber(snLon, houseCusps) : null,
+    }
+  }
+
   return placements
 }
 

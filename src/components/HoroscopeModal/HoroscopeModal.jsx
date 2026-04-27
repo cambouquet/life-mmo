@@ -3,12 +3,13 @@ import { generateHoroscope, SIGN_META } from '../../game/astro/horoscope.js'
 
 const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
 
-const PLANET_GLYPHS = { Sun:'☉', Moon:'☽', Mercury:'☿', Venus:'♀', Mars:'♂', Jupiter:'♃', Saturn:'♄', Uranus:'♅', Neptune:'♆', Pluto:'♇', Chiron:'⚷', NorthNode:'☊', Lilith:'⚸', Ascendant:'ASC', Descendant:'DSC', Midheaven:'MC', IC:'IC', Vertex:'Vx', PartOfFortune:'⊕' }
-const PLANET_NAMES  = { NorthNode:'North Node', PartOfFortune:'Part of Fortune' }
-const PLANET_ORDER  = ['Sun','Moon','Mercury','Venus','Mars','Jupiter','Saturn','Uranus','Neptune','Pluto','Chiron','NorthNode','Lilith','Ascendant','Descendant','Midheaven','IC','Vertex','PartOfFortune']
+const PLANET_GLYPHS = { Sun:'☉', Moon:'☽', Mercury:'☿', Venus:'♀', Mars:'♂', Jupiter:'♃', Saturn:'♄', Uranus:'♅', Neptune:'♆', Pluto:'♇', Chiron:'⚷', NorthNode:'☊', SouthNode:'☋', Lilith:'⚸', Ascendant:'ASC', Descendant:'DSC', Midheaven:'MC', IC:'IC', Vertex:'Vx', PartOfFortune:'⊕' }
+const PLANET_NAMES  = { NorthNode:'North Node', SouthNode:'South Node', PartOfFortune:'Part of Fortune' }
+const PLANET_ORDER  = ['Sun', 'Ascendant', 'Moon', 'Mercury', 'Venus', 'Mars', 'Jupiter', 'Saturn', 'Uranus', 'Neptune', 'Pluto', 'Chiron', 'NorthNode', 'SouthNode', 'Lilith', 'Descendant', 'Midheaven', 'IC', 'Vertex', 'PartOfFortune']
 
 const PLANET_DESC = {
   Sun:       { summary: "Your core self — who you are becoming.", detail: "The Sun is your conscious identity, the ego you build across a lifetime. It shows what you are here to master and express." },
+  Ascendant:     { summary: "Your mask — how others first see you.", detail: "The Ascendant is the zodiac sign rising on the eastern horizon at your birth. It colours your appearance, demeanour, and the instinctive role you play in new situations." },
   Moon:      { summary: "Your inner world — how you feel and need.", detail: "The Moon governs your emotional instincts, memory, and what makes you feel safe. It is the part of you that reacts before thinking." },
   Mercury:   { summary: "Your mind — how you think and speak.", detail: "Mercury rules your perception, reasoning, and communication style. It shapes how fast you process ideas and how you express them to others." },
   Venus:     { summary: "Your heart — what you love and desire.", detail: "Venus governs attraction, beauty, and values. It reveals what draws you in and how you behave in close relationships." },
@@ -20,14 +21,12 @@ const PLANET_DESC = {
   Pluto:     { summary: "Your transformation — where you die and are reborn.", detail: "Pluto moves over decades. Its sign colours generational power. Its degree in your chart marks where deep, irreversible change operates on your soul." },
   Chiron:        { summary: "Your wound — and your path to healing it.", detail: "Chiron marks where you carry a deep, formative wound — one that never fully closes, but which, through working with it, becomes your greatest source of wisdom and healing for others." },
   NorthNode:     { summary: "Your destiny — the direction your soul is growing toward.", detail: "The North Node is not a planet but a point of karmic direction. It shows the unfamiliar territory you are here to grow into, even if it feels uncomfortable." },
+  SouthNode:     { summary: "Your past — the talents and karma you were born with.", detail: "The South Node (directly opposite the North Node) represents your past-life comfort zone, innate talents, and habits you are moving away from to achieve balance." },
   Lilith:        { summary: "Your shadow — raw, undomesticated instinct.", detail: "Black Moon Lilith is the lunar apogee, the Moon's farthest point. It marks where you refuse to submit, where primal energy operates outside social rules — powerful but easily suppressed or over-expressed." },
-  Ascendant:     { summary: "Your mask — how others first see you.", detail: "The Ascendant is the zodiac sign rising on the eastern horizon at your birth. It colours your appearance, demeanour, and the instinctive role you play in new situations." },
-  Descendant:    { summary: "Your mirror — what you seek in others.", detail: "The Descendant is directly opposite the Ascendant. It describes the qualities you are drawn to in partners and close relationships — often traits you have not yet owned in yourself." },
   Midheaven:     { summary: "Your calling — how you are seen in the world.", detail: "The Midheaven (MC) is the highest point of the chart. It represents your public role, vocation, and the legacy you are building in the eyes of others." },
   IC:            { summary: "Your roots — where you come from and what sustains you.", detail: "The IC (Imum Coeli) is the lowest point of the chart, directly opposite the Midheaven. It speaks of home, ancestry, private foundations, and the psychological bedrock beneath your public life." },
   Vertex:        { summary: "Your fate point — encounters that feel destined.", detail: "The Vertex is a sensitive point on the prime vertical. It marks the kind of people and events that enter your life as if fated — encounters that feel larger than coincidence and tend to change you." },
-  AntiVertex:    { summary: "What you bring to fated encounters.", detail: "The Anti-Vertex is directly opposite the Vertex. Where the Vertex describes what arrives from outside, the Anti-Vertex shows the energy and qualities you bring into those destined meetings." },
-  PartOfFortune: { summary: "Your joy — where body, soul, and circumstance align.", detail: "The Part of Fortune is an Arabic lot derived from Sun, Moon, and Ascendant. It marks the area of life where you are most naturally lucky and where effort feels effortless." },
+  PartOfFortune: { summary: "Your joy — where body, soul, and circumstance align.", detail: "The Part of Fortune is an Arabic lot derived from Sun, Moon, and Ascendant. It marks the area of life where you are most naturally lucky and where effort feels effortlessly." },
 }
 
 const SIGN_DESC = {
