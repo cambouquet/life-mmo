@@ -5,7 +5,7 @@ import { HouseWheel, HOUSE_THEMES }      from '../HouseWheel/HouseWheel.jsx'
 import { DateWheel, TimeWheel } from './CirclePicker.jsx'
 import { getAllPositions, getPlacidusHouses, getHouseNumber, longitudeToSign, longitudeToSymbol, degreesInSign, daysSinceJ2000 } from '../../game/astro/ephemeris.js'
 import { SIGN_META }         from '../../game/astro/horoscope.js'
-import { PLANET_GLYPHS, SIGN_GLYPHS, ELEMENT_COLOR } from '../HoroscopeModal/HoroscopeModal.jsx'
+import { PLANET_GLYPHS, SIGN_GLYPHS, ELEMENT_COLOR, PLANET_NAMES } from '../HoroscopeModal/HoroscopeModal.jsx'
 import './CharacterEditor.scss'
 
 // Projects lat/lng onto a sphere SVG (orthographic-like, front hemisphere only)

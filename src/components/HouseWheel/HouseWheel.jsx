@@ -3,8 +3,8 @@ import { SIGN_META } from '../../game/astro/horoscope.js'
 
 const ELEMENT_COLOR = { Fire: '#fb923c', Earth: '#86efac', Air: '#fef08a', Water: '#60a5fa' }
 
-const PLANET_GLYPHS = { Sun:'☉', Moon:'☽', Mercury:'☿', Venus:'♀', Mars:'♂', Jupiter:'♃', Saturn:'♄', Uranus:'♅', Neptune:'♆', Pluto:'♇', Chiron:'⚷', NorthNode:'☊', SouthNode:'☋', Lilith:'⚸', Ascendant:'ASC', Descendant:'DSC', Midheaven:'MC', IC:'IC', Vertex:'Vx', PartOfFortune:'⊕' }
-const PLANET_NAMES  = { NorthNode:'North Node', SouthNode:'South Node', PartOfFortune:'Part of Fortune' }
+const PLANET_GLYPHS = { Sun:'☉', Moon:'☽', Mercury:'☿', Venus:'♀', Mars:'♂', Jupiter:'♃', Saturn:'♄', Uranus:'♅', Neptune:'♆', Pluto:'♇', Chiron:'⚷', NorthNode:'☊', SouthNode:'☋', Lilith:'⚸', Ascendant:'Asc', Descendant:'Dsc', Midheaven:'MC', IC:'IC', Vertex:'Vx', PartOfFortune:'⊕' }
+const PLANET_NAMES  = { NorthNode:'North Node', SouthNode:'South Node', PartOfFortune:'Part of Fortune', IC: 'Imum Coeli', Ascendant: 'Ascendant', Midheaven: 'Midheaven' }
 const PLANET_ORDER  = ['Sun','Ascendant','Moon','Mercury','Venus','Mars','Jupiter','Saturn','Uranus','Neptune','Pluto','Chiron','NorthNode','SouthNode','Lilith','Descendant','Midheaven','IC','Vertex','PartOfFortune']
 
 const SIGN_NAMES = ['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces']
@@ -234,7 +234,7 @@ export function HouseWheel({ placements, houseCusps, size = 300, hideStellium })
                 const isPHov = hovered?.type === 'planet' && hovered.id === pName
                 return (
                   <g key={pName}
-                     onMouseEnter={e => { e.stopPropagation(); setHovered({ type:'planet', id:pName, label:pName, summary:PLANET_SUMMARY[pName], glyph:PLANET_GLYPHS[pName], color:col }) }}
+                     onMouseEnter={e => { e.stopPropagation(); setHovered({ type:'planet', id:pName, label:PLANET_NAMES[pName] ?? pName, summary:PLANET_SUMMARY[pName], glyph:PLANET_GLYPHS[pName], color:col }) }}
                      onMouseLeave={() => setHovered(null)}
                      onClick={e => { e.stopPropagation(); setLockedPoint(lockedPoint === pName ? null : pName) }}
                      style={{ cursor:'pointer' }}>
@@ -276,7 +276,7 @@ export function HouseWheel({ placements, houseCusps, size = 300, hideStellium })
       <div style={{ position:'relative', height: 110, marginTop: 10 }}>
         {(lockedPoint || hovered) && (() => {
           const active = lockedPoint
-            ? { type:'planet', id:lockedPoint, label:lockedPoint, glyph:PLANET_GLYPHS[lockedPoint],
+            ? { type:'planet', id:lockedPoint, label:PLANET_NAMES[lockedPoint] ?? lockedPoint, glyph:PLANET_GLYPHS[lockedPoint],
                 color: ELEMENT_COLOR[SIGN_META[placements[lockedPoint]?.sign]?.element] ?? '#fff',
                 desc: getInterpretation(lockedPoint), locked:true }
             : hovered

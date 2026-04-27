@@ -4,12 +4,12 @@ import { HouseWheel } from '../HouseWheel/HouseWheel.jsx'
 
 const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
 
-export const PLANET_GLYPHS = { Sun:'☉', Moon:'☽', Mercury:'☿', Venus:'♀', Mars:'♂', Jupiter:'♃', Saturn:'♄', Uranus:'♅', Neptune:'♆', Pluto:'♇', Chiron:'⚷', NorthNode:'☊', SouthNode:'☋', Lilith:'⚸', Ascendant:'ASC', Descendant:'DSC', Midheaven:'MC', IC:'IC', Vertex:'Vx', PartOfFortune:'⊕' }
+export const PLANET_GLYPHS = { Sun:'☉', Moon:'☽', Mercury:'☿', Venus:'♀', Mars:'♂', Jupiter:'♃', Saturn:'♄', Uranus:'♅', Neptune:'♆', Pluto:'♇', Chiron:'⚷', NorthNode:'☊', SouthNode:'☋', Lilith:'⚸', Ascendant:'Asc', Descendant:'Dsc', Midheaven:'MC', IC:'IC', Vertex:'Vx', PartOfFortune:'⊕' }
 export const SIGN_GLYPHS = {
   Aries: '♈', Taurus: '♉', Gemini: '♊', Cancer: '♋', Leo: '♌', Virgo: '♍',
   Libra: '♎', Scorpio: '♏', Sagittarius: '♐', Capricorn: '♑', Aquarius: '♒', Pisces: '♓'
 }
-export const PLANET_NAMES  = { NorthNode:'North Node', SouthNode:'South Node', PartOfFortune:'Part of Fortune' }
+export const PLANET_NAMES  = { NorthNode:'North Node', SouthNode:'South Node', PartOfFortune:'Part of Fortune', IC: 'Imum Coeli', Ascendant: 'Ascendant', Midheaven: 'Midheaven' }
 const PLANET_ORDER  = ['Sun', 'Ascendant', 'Moon', 'Mercury', 'Venus', 'Mars', 'Jupiter', 'Saturn', 'Uranus', 'Neptune', 'Pluto', 'Chiron', 'NorthNode', 'SouthNode', 'Lilith', 'Descendant', 'Midheaven', 'IC', 'Vertex', 'PartOfFortune']
 
 const PLANET_DESC = {
