@@ -169,6 +169,12 @@ export default function CharacterEditor({ initialColors, initialBirthData, onSav
   const [birthTime, setBirthTime] = useState(parsedTime)
   const [hasDate,   setHasDate]   = useState(!!initialBirthData?.date)
   const [birthCity, setBirthCity] = useState(initialBirthData?.city ?? null)
+  const [previewDate, setPreviewDate] = useState(null)
+  const [previewTime, setPreviewTime] = useState(null)
+
+  // Use preview values for chart if hovering, else committed values
+  const chartDate = previewDate ?? birthDate
+  const chartTime = previewTime ?? birthTime
 
   const updateColor = (key, val) => {
     const next = { ...colors, [key]: val }
@@ -182,12 +188,12 @@ export default function CharacterEditor({ initialColors, initialBirthData, onSav
   const buildBirthData = () =>
     hasDate ? { date: dateStr, time: timeStr, city: birthCity } : null
 
-  // Live natal chart computation
+  // Live natal chart computation — uses preview values while hovering
   const { natalPlacements, houseCusps } = useMemo(() => {
     if (!hasDate) return { natalPlacements: null, houseCusps: null }
     try {
-      const yr = birthDate.year, mo = birthDate.month, dy = birthDate.day
-      const bh = birthTime.hour, bm = birthTime.minute
+      const yr = chartDate.year, mo = chartDate.month, dy = chartDate.day
+      const bh = chartTime.hour, bm = chartTime.minute
       const tz           = birthCity?.tz ?? 0
       const birthUTC     = new Date(Date.UTC(yr, mo - 1, dy, bh - tz, bm, 0))
       const d            = daysSinceJ2000(birthUTC)
@@ -210,7 +216,7 @@ export default function CharacterEditor({ initialColors, initialBirthData, onSav
     } catch {
       return { natalPlacements: null, houseCusps: null }
     }
-  }, [hasDate, birthDate, birthTime, birthCity])
+  }, [hasDate, chartDate, chartTime, birthCity])
 
   return (
     <div className="char-editor-modal">
@@ -250,10 +256,18 @@ export default function CharacterEditor({ initialColors, initialBirthData, onSav
           <div className="birth-section">
             <div className="birth-wheels">
               <div className="birth-wheels__date">
-                <DateWheel value={birthDate} onChange={v => { setBirthDate(v); setHasDate(true) }} size={240} />
+                <DateWheel
+                  value={birthDate}
+                  onChange={v => { setBirthDate(v); setHasDate(true); setPreviewDate(null) }}
+                  onPreview={v => setPreviewDate(v)}
+                  size={240} />
               </div>
               <div className="birth-wheels__time">
-                <TimeWheel value={birthTime} onChange={setBirthTime} size={190} />
+                <TimeWheel
+                  value={birthTime}
+                  onChange={v => { setBirthTime(v); setPreviewTime(null) }}
+                  onPreview={v => setPreviewTime(v)}
+                  size={190} />
               </div>
             </div>
           </div>

@@ -182,7 +182,7 @@ export function HouseWheel({ placements, houseCusps, size = 300 }) {
                 fill={isHov ? `${signCol}66` : `${signCol}33`}
                 stroke={isHov ? `${signCol}ff` : `${signCol}66`}
                 strokeWidth={isHov ? '1.5' : '1'}
-                style={{ transition:'all 0.2s ease' }} />
+ />
               <text x={sx} y={sy} textAnchor="middle" dominantBaseline="middle"
                 fontSize="6.5" fill="rgba(255,255,255,0.9)" fontWeight="800">
                 {signName}
