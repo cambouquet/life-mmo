@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { generateHoroscope, SIGN_META } from '../../game/astro/horoscope.js'
+import { HouseWheel } from '../HouseWheel/HouseWheel.jsx'
 
 const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
 
@@ -307,7 +308,11 @@ function BirthChart({ placements, birthData, reading, mode, houseCusps }) {
             </div>
           </div>
 
-          {(() => {
+          {placements && houseCusps && (
+            <HouseWheel placements={displayPlacements} houseCusps={houseCusps} size={300} />
+          )}
+
+          {false /* legacy wheel removed */ && (() => {
             const cx = 150, cy = 150, size = 300
             const BASE_R  = 124
             const HOUSE_R1 = 126
