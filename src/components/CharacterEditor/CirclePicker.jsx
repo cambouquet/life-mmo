@@ -37,16 +37,16 @@ function hoveredIndexFromAngle(angle, rotRef, total) {
   return indexFromRotation(rotRef.current - (angle + 90), total)
 }
 
-// Needle hook: spins freely, accumulates full turns, calls onTurn(n) each full revolution
-function useNeedle(svgRef, cx, cy, needleRef, onTurn) {
+// Needle hook: spins freely, calls onDelta(degrees) continuously
+function useNeedle(svgRef, cx, cy, needleRef, onDelta) {
   const prevAngle  = useRef(null)
-  const accumRef   = useRef(0)   // total degrees spun
-  const onTurnRef  = useRef(onTurn)
-  useEffect(() => { onTurnRef.current = onTurn }, [onTurn])
+  const angleRef   = useRef(0)
+  const onDeltaRef = useRef(onDelta)
+  useEffect(() => { onDeltaRef.current = onDelta }, [onDelta])
 
   const applyTransform = useCallback(() => {
     if (needleRef.current)
-      needleRef.current.setAttribute('transform', `rotate(${accumRef.current % 360} ${cx} ${cy})`)
+      needleRef.current.setAttribute('transform', `rotate(${angleRef.current} ${cx} ${cy})`)
   }, [needleRef, cx, cy])
 
   useEffect(() => { applyTransform() })
@@ -63,12 +63,10 @@ function useNeedle(svgRef, cx, cy, needleRef, onTurn) {
     let delta = angle - prevAngle.current
     if (delta > 180)  delta -= 360
     if (delta < -180) delta += 360
-    const before = Math.floor(accumRef.current / 360)
-    accumRef.current += delta
-    const after = Math.floor(accumRef.current / 360)
-    if (after !== before) onTurnRef.current(after - before)
+    angleRef.current += delta
     prevAngle.current = angle
     applyTransform()
+    onDeltaRef.current(delta)
   }, [svgRef, cx, cy, applyTransform])
 
   const onPointerUp = useCallback(e => {
@@ -159,11 +157,21 @@ export function DateWheel({ value, onChange, onPreview, size = 220 }) {
   const [hovDay,  setHovDay]  = useState(null)
   const [hovMon,  setHovMon]  = useState(null)
   const [hovYear, setHovYear] = useState(null)
-  const needleRef = useRef(null)
-  const yearNeedle = useNeedle(svgRef, cx, cy, needleRef, turns => {
-    const idx = YEARS.indexOf(year)
-    const next = Math.max(0, Math.min(YEARS.length - 1, idx + turns))
-    onChange({ day, month, year: YEARS[next] })
+  const needleRef    = useRef(null)
+  const needleAccum  = useRef(0)  // fractional day accumulator
+  const yearNeedle = useNeedle(svgRef, cx, cy, needleRef, delta => {
+    // 360° = 365 days (1 year scroll)
+    needleAccum.current += delta * (365 / 360)
+    const steps = Math.trunc(needleAccum.current)
+    if (steps === 0) return
+    needleAccum.current -= steps
+    // convert current date to total days since epoch, shift, convert back
+    const d = new Date(year, month - 1, day)
+    d.setDate(d.getDate() + steps)
+    const minDate = new Date(1930, 0, 1)
+    const maxDate = new Date(2030, 11, 31)
+    if (d < minDate || d > maxDate) return
+    onChange({ day: d.getDate(), month: d.getMonth() + 1, year: d.getFullYear() })
   })
 
   const dayRing = useImperativeRing(svgRef, cx, cy, maxDay,
@@ -180,6 +188,11 @@ export function DateWheel({ value, onChange, onPreview, size = 220 }) {
   )
 
   const yearIdx = YEARS.indexOf(year)
+
+  // Display values (preview on hover)
+  const dDisp = hovDay !== null ? hovDay + 1 : day
+  const mDisp = hovMon !== null ? hovMon + 1 : month
+  const yDisp = hovYear !== null ? YEARS[hovYear] : year
 
   return (
     <svg ref={svgRef} width={size} height={size} viewBox={`0 0 ${VB} ${VB}`}
@@ -274,24 +287,24 @@ export function DateWheel({ value, onChange, onPreview, size = 220 }) {
       {/* ── Year needle (spin freely, 1 turn = 1 year) ── */}
       <g onPointerDown={yearNeedle.onPointerDown} onPointerMove={yearNeedle.onPointerMove}
          onPointerUp={yearNeedle.onPointerUp} style={{ cursor:'grab' }}>
-        {/* invisible fat hit area */}
-        <circle cx={cx} cy={cy} r={NEEDLE_R2 + 2} fill="none" stroke="transparent" strokeWidth="10" />
+        {/* invisible fat hit area — full donut around needle track */}
+        <circle cx={cx} cy={cy} r={NEEDLE_R2 + 4} fill="none" stroke="transparent" strokeWidth="22" />
         <g ref={needleRef}>
           <line x1={cx} y1={cy - NEEDLE_R1} x2={cx} y2={cy - NEEDLE_R2}
-            stroke="rgba(232,212,255,0.9)" strokeWidth="2" strokeLinecap="round" />
-          <circle cx={cx} cy={cy - NEEDLE_R2} r="3"
-            fill="#e8d4ff" stroke="rgba(168,85,247,0.8)" strokeWidth="1" />
+            stroke="rgba(168,85,247,0.35)" strokeWidth="10" strokeLinecap="round" />
+          <line x1={cx} y1={cy - NEEDLE_R1} x2={cx} y2={cy - NEEDLE_R2}
+            stroke="rgba(232,212,255,0.95)" strokeWidth="2" strokeLinecap="round" />
         </g>
       </g>
 
       {/* centre readout */}
       <text x={cx} y={cy - 7} textAnchor="middle" dominantBaseline="middle"
         fontSize="13" fontFamily="monospace" fontWeight="700" fill="#e8d4ff">
-        {String(day).padStart(2,'0')} {MONTHS_SHORT[month-1]}
+        {String(dDisp).padStart(2,'0')} {MONTHS_SHORT[mDisp-1]}
       </text>
       <text x={cx} y={cy + 9} textAnchor="middle" dominantBaseline="middle"
         fontSize="11" fontFamily="monospace" fontWeight="500" fill="rgba(200,168,240,0.7)">
-        {year}
+        {yDisp}
       </text>
 
       {/* 12-o'clock selector tick */}
@@ -310,16 +323,23 @@ export function TimeWheel({ value, onChange, onPreview, size = 180 }) {
   const svgRef = useRef(null)
   const VB = 180, cx = 90, cy = 90
 
-  const HR_R1 = 28, HR_R2 = 52
-  const MN_R1 = 56, MN_R2 = 80
+  const MN_R1 = 28, MN_R2 = 52
+  const HR_R1 = 56, HR_R2 = 80
 
-  const HR_NEEDLE_R1 = 84, HR_NEEDLE_R2 = 94
+  const HR_NEEDLE_R1 = 82, HR_NEEDLE_R2 = 92
 
   const [hovHour, setHovHour] = useState(null)
   const [hovMin,  setHovMin]  = useState(null)
-  const timeNeedleRef = useRef(null)
-  const timeNeedle = useNeedle(svgRef, cx, cy, timeNeedleRef, turns => {
-    onChange({ hour: ((hour + turns) % 24 + 24) % 24, minute })
+  const timeNeedleRef  = useRef(null)
+  const timeNeedleAccum = useRef(0)
+  const timeNeedle = useNeedle(svgRef, cx, cy, timeNeedleRef, delta => {
+    // 360° = 60 minutes (1 hour scroll)
+    timeNeedleAccum.current += delta * (60 / 360)
+    const steps = Math.trunc(timeNeedleAccum.current)
+    if (steps === 0) return
+    timeNeedleAccum.current -= steps
+    const totalMin = ((hour * 60 + minute + steps) % 1440 + 1440) % 1440
+    onChange({ hour: Math.floor(totalMin / 60), minute: totalMin % 60 })
   })
 
   const hourRing = useImperativeRing(svgRef, cx, cy, 24,
@@ -397,19 +417,19 @@ export function TimeWheel({ value, onChange, onPreview, size = 180 }) {
       {/* ── Hour needle (spin freely, 1 turn = 1 hour) ── */}
       <g onPointerDown={timeNeedle.onPointerDown} onPointerMove={timeNeedle.onPointerMove}
          onPointerUp={timeNeedle.onPointerUp} style={{ cursor:'grab' }}>
-        <circle cx={cx} cy={cy} r={HR_NEEDLE_R2 + 2} fill="none" stroke="transparent" strokeWidth="10" />
+        <circle cx={cx} cy={cy} r={HR_NEEDLE_R2 + 4} fill="none" stroke="transparent" strokeWidth="22" />
         <g ref={timeNeedleRef}>
-          <line x1={cx} y1={cy - HR_NEEDLE_R1} x2={cx} y2={cy - HR_NEEDLE_R2}
-            stroke="rgba(232,212,255,0.9)" strokeWidth="2" strokeLinecap="round" />
-          <circle cx={cx} cy={cy - HR_NEEDLE_R2} r="3"
-            fill="#e8d4ff" stroke="rgba(168,85,247,0.8)" strokeWidth="1" />
+          <line x1={cx} y1={cy - HR_NEEDLE_R1 + 4} x2={cx} y2={cy - HR_NEEDLE_R2 - 4}
+            stroke="rgba(168,85,247,0.35)" strokeWidth="10" strokeLinecap="round" />
+          <line x1={cx} y1={cy - HR_NEEDLE_R1 + 4} x2={cx} y2={cy - HR_NEEDLE_R2 - 4}
+            stroke="rgba(232,212,255,0.95)" strokeWidth="2" strokeLinecap="round" />
         </g>
       </g>
 
       {/* centre readout */}
       <text x={cx} y={cy} textAnchor="middle" dominantBaseline="middle"
         fontSize="14" fontFamily="monospace" fontWeight="700" fill="#e8d4ff">
-        {String(hour).padStart(2,'0')}:{String(minute).padStart(2,'0')}
+        {String(hovHour !== null ? hovHour : hour).padStart(2,'0')}:{String(hovMin !== null ? hovMin : minute).padStart(2,'0')}
       </text>
 
       {/* 12-o'clock tick */}

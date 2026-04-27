@@ -109,7 +109,9 @@ export function HouseWheel({ placements, houseCusps, size = 300 }) {
     if ([startDeg, endDeg, r1, r2].some(isNaN)) return ''
     const s1 = polarToXY(startDeg, r1), e1 = polarToXY(endDeg, r1)
     const s2 = polarToXY(startDeg, r2), e2 = polarToXY(endDeg, r2)
-    const large = ((endDeg - startDeg + 360) % 360) > 180 ? 1 : 0
+    // Handle arcs that cross the 0 line or are near it
+    const delta = (endDeg - startDeg + 360) % 360
+    const large = delta > 180 ? 1 : 0
     return `M ${s1[0]} ${s1[1]} A ${r1} ${r1} 0 ${large} 1 ${e1[0]} ${e1[1]} L ${e2[0]} ${e2[1]} A ${r2} ${r2} 0 ${large} 0 ${s2[0]} ${s2[1]} Z`
   }
 
@@ -149,7 +151,12 @@ export function HouseWheel({ placements, houseCusps, size = 300 }) {
   }
 
   return (
-    <div style={{ position:'relative' }}>
+    <div className="house-wheel-container" style={{ 
+      position: 'relative', 
+      padding: '20px', 
+      margin: '0 auto',
+      width: 'fit-content'
+    }}>
       <svg width={size} height={size} viewBox="0 0 300 300"
            style={{ display:'block', margin:'0 auto', overflow:'visible' }}>
 
