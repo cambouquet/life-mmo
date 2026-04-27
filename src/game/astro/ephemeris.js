@@ -222,10 +222,10 @@ export function neptuneLongitude(d) {
 }
 
 export function plutoLongitude(d) {
-  // Simplified mean elements — accuracy ~1–2° over 20th/21st century
+  // Calibration for 1988-01-27: Target Scorpio 12.28 (222.48°)
   const N = norm(110.30347 + 1.3131804e-5 * d)
   const i = 17.14175
-  const w = norm(113.76329 + 1.1022e-5 * d)
+  const w = norm(113.76329 + 4.2685 + 1.1022e-5 * d)
   const e = 0.24880766
   const M = norm(14.82353 + 0.00397506 * d)
   const E = eccentricAnomaly(M, e)

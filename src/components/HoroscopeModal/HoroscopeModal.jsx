@@ -7,6 +7,59 @@ const PLANET_GLYPHS = { Sun:'☉', Moon:'☽', Mercury:'☿', Venus:'♀', Mars:
 const PLANET_NAMES  = { NorthNode:'North Node', PartOfFortune:'Part of Fortune' }
 const PLANET_ORDER  = ['Sun','Moon','Mercury','Venus','Mars','Jupiter','Saturn','Uranus','Neptune','Pluto','Chiron','NorthNode','Lilith','Ascendant','Descendant','Midheaven','IC','Vertex','PartOfFortune']
 
+const PLANET_DESC = {
+  Sun:       { summary: "Your core self — who you are becoming.", detail: "The Sun is your conscious identity, the ego you build across a lifetime. It shows what you are here to master and express." },
+  Moon:      { summary: "Your inner world — how you feel and need.", detail: "The Moon governs your emotional instincts, memory, and what makes you feel safe. It is the part of you that reacts before thinking." },
+  Mercury:   { summary: "Your mind — how you think and speak.", detail: "Mercury rules your perception, reasoning, and communication style. It shapes how fast you process ideas and how you express them to others." },
+  Venus:     { summary: "Your heart — what you love and desire.", detail: "Venus governs attraction, beauty, and values. It reveals what draws you in and how you behave in close relationships." },
+  Mars:      { summary: "Your drive — how you act and fight.", detail: "Mars is raw energy and will. It shows how you pursue goals, handle conflict, and assert yourself when something matters." },
+  Jupiter:   { summary: "Your growth — where life opens up for you.", detail: "Jupiter expands whatever it touches. It points to the area of life where you find abundance, optimism, and the urge to seek meaning." },
+  Saturn:    { summary: "Your discipline — where you are tested.", detail: "Saturn brings structure through challenge. The sign it occupies reveals where you must work hardest — and where mastery is most rewarding." },
+  Uranus:    { summary: "Your rebellion — where you break the mould.", detail: "Uranus moves slowly and shapes a generation. In your chart it marks the area where you hunger for freedom, disruption, and original thought." },
+  Neptune:   { summary: "Your dissolution — where you dream and dissolve.", detail: "Neptune blurs boundaries and heightens sensitivity. It shows where you seek transcendence — and where you are most susceptible to illusion." },
+  Pluto:     { summary: "Your transformation — where you die and are reborn.", detail: "Pluto moves over decades. Its sign colours generational power. Its degree in your chart marks where deep, irreversible change operates on your soul." },
+  Chiron:        { summary: "Your wound — and your path to healing it.", detail: "Chiron marks where you carry a deep, formative wound — one that never fully closes, but which, through working with it, becomes your greatest source of wisdom and healing for others." },
+  NorthNode:     { summary: "Your destiny — the direction your soul is growing toward.", detail: "The North Node is not a planet but a point of karmic direction. It shows the unfamiliar territory you are here to grow into, even if it feels uncomfortable." },
+  Lilith:        { summary: "Your shadow — raw, undomesticated instinct.", detail: "Black Moon Lilith is the lunar apogee, the Moon's farthest point. It marks where you refuse to submit, where primal energy operates outside social rules — powerful but easily suppressed or over-expressed." },
+  Ascendant:     { summary: "Your mask — how others first see you.", detail: "The Ascendant is the zodiac sign rising on the eastern horizon at your birth. It colours your appearance, demeanour, and the instinctive role you play in new situations." },
+  Descendant:    { summary: "Your mirror — what you seek in others.", detail: "The Descendant is directly opposite the Ascendant. It describes the qualities you are drawn to in partners and close relationships — often traits you have not yet owned in yourself." },
+  Midheaven:     { summary: "Your calling — how you are seen in the world.", detail: "The Midheaven (MC) is the highest point of the chart. It represents your public role, vocation, and the legacy you are building in the eyes of others." },
+  IC:            { summary: "Your roots — where you come from and what sustains you.", detail: "The IC (Imum Coeli) is the lowest point of the chart, directly opposite the Midheaven. It speaks of home, ancestry, private foundations, and the psychological bedrock beneath your public life." },
+  Vertex:        { summary: "Your fate point — encounters that feel destined.", detail: "The Vertex is a sensitive point on the prime vertical. It marks the kind of people and events that enter your life as if fated — encounters that feel larger than coincidence and tend to change you." },
+  AntiVertex:    { summary: "What you bring to fated encounters.", detail: "The Anti-Vertex is directly opposite the Vertex. Where the Vertex describes what arrives from outside, the Anti-Vertex shows the energy and qualities you bring into those destined meetings." },
+  PartOfFortune: { summary: "Your joy — where body, soul, and circumstance align.", detail: "The Part of Fortune is an Arabic lot derived from Sun, Moon, and Ascendant. It marks the area of life where you are most naturally lucky and where effort feels effortless." },
+}
+
+const SIGN_DESC = {
+  Aries:       { short: "expressed with boldness and urgency",        long: "Aries sharpens energy into impulse and initiative. There is speed, directness, and a need to be first." },
+  Taurus:      { short: "expressed with patience and groundedness",    long: "Taurus slows energy into something steady and embodied. There is persistence, sensuality, and a need for security." },
+  Gemini:      { short: "expressed with curiosity and versatility",    long: "Gemini disperses energy across ideas and connections. There is wit, restlessness, and a need to communicate." },
+  Cancer:      { short: "expressed through feeling and instinct",      long: "Cancer turns energy inward and protective. There is empathy, memory, and a need to belong and nurture." },
+  Leo:         { short: "expressed with warmth and self-assurance",    long: "Leo channels energy into self-expression and generosity. There is pride, creativity, and a need to be seen." },
+  Virgo:       { short: "expressed through precision and service",     long: "Virgo focuses energy into analysis and refinement. There is discernment, humility, and a need to be useful." },
+  Libra:       { short: "expressed through harmony and relationship",  long: "Libra distributes energy between self and other. There is grace, indecision, and a need for fairness." },
+  Scorpio:     { short: "expressed with intensity and depth",          long: "Scorpio concentrates energy into transformation. There is power, suspicion, and a need to uncover what is hidden." },
+  Sagittarius: { short: "expressed with freedom and vision",           long: "Sagittarius expands energy toward meaning and horizon. There is optimism, excess, and a need for truth." },
+  Capricorn:   { short: "expressed with discipline and ambition",      long: "Capricorn structures energy into long-term achievement. There is patience, control, and a need to build something lasting." },
+  Aquarius:    { short: "expressed through originality and detachment",long: "Aquarius breaks energy away from convention. There is brilliance, coldness, and a need to serve a larger idea." },
+  Pisces:      { short: "expressed with sensitivity and imagination",  long: "Pisces dissolves energy into the boundless. There is compassion, escapism, and a need to transcend the ordinary." },
+}
+
+const HOUSE_DESC = {
+  1:  { name: "House of Self",          short: "identity, appearance, how you begin things" },
+  2:  { name: "House of Resources",     short: "money, possessions, self-worth" },
+  3:  { name: "House of Mind",          short: "communication, siblings, short journeys" },
+  4:  { name: "House of Home",          short: "roots, family, private foundations" },
+  5:  { name: "House of Pleasure",      short: "creativity, romance, play, children" },
+  6:  { name: "House of Service",       short: "daily work, health, routines, duty" },
+  7:  { name: "House of Partnership",   short: "marriage, close relationships, open enemies" },
+  8:  { name: "House of Transformation",short: "death, rebirth, shared resources, the occult" },
+  9:  { name: "House of Expansion",     short: "philosophy, travel, higher learning, beliefs" },
+  10: { name: "House of Career",        short: "vocation, public reputation, authority" },
+  11: { name: "House of Community",     short: "friends, groups, hopes, collective ideals" },
+  12: { name: "House of the Hidden",    short: "the unconscious, isolation, karma, undoing" },
+}
+
 const ELEMENT_COLOR = { 
   Fire:  '#fb923c', // Orange
   Earth: '#86efac', // Green
@@ -37,6 +90,8 @@ function fmtDeg(decimal) {
 // ── Birth Chart view ──────────────────────────────────────────────────────────
 function BirthChart({ placements, birthData, reading, mode, houseCusps }) {
   const [selected, setSelected] = useState(null)
+  const [hovered,  setHovered]  = useState(null)
+  const [lockedPoint, setLockedPoint] = useState(null)
   
   if (!placements) {
     return (
@@ -52,15 +107,22 @@ function BirthChart({ placements, birthData, reading, mode, houseCusps }) {
   const houseTally = {}
 
   const displayPlacements = mode === 'chart' ? placements : (reading?._debug?.transitPlacements || placements)
+  if (!displayPlacements) return null
+
   const rows = PLANET_ORDER.filter(p => displayPlacements[p])
 
   for (const p of rows) {
-    const meta = SIGN_META[displayPlacements[p].sign]
-    if (meta) { tally[meta.element]++; modeTally[meta.mode]++ }
-    if (displayPlacements[p].house) {
-      const h = displayPlacements[p].house
+    const pData = displayPlacements[p]
+    if (!pData) continue
+    const meta = SIGN_META[pData.sign]
+    if (meta) { 
+      tally[meta.element] = (tally[meta.element] || 0) + 1
+      modeTally[meta.mode] = (modeTally[meta.mode] || 0) + 1
+    }
+    if (pData.house) {
+      const h = pData.house
       if (!houseTally[h]) houseTally[h] = { Fire: 0, Earth: 0, Air: 0, Water: 0 }
-      if (meta) houseTally[h][meta.element]++
+      if (meta) houseTally[h][meta.element] = (houseTally[h][meta.element] || 0) + 1
     }
   }
 
@@ -85,59 +147,6 @@ function BirthChart({ placements, birthData, reading, mode, houseCusps }) {
             const col  = ELEMENT_COLOR[meta?.element] ?? '#c8a8f0'
             const isAsc = planet === 'Ascendant'
             const isSelected = selected === planet
-
-            const PLANET_DESC = {
-              Sun:       { summary: "Your core self — who you are becoming.", detail: "The Sun is your conscious identity, the ego you build across a lifetime. It shows what you are here to master and express." },
-              Moon:      { summary: "Your inner world — how you feel and need.", detail: "The Moon governs your emotional instincts, memory, and what makes you feel safe. It is the part of you that reacts before thinking." },
-              Mercury:   { summary: "Your mind — how you think and speak.", detail: "Mercury rules your perception, reasoning, and communication style. It shapes how fast you process ideas and how you express them to others." },
-              Venus:     { summary: "Your heart — what you love and desire.", detail: "Venus governs attraction, beauty, and values. It reveals what draws you in and how you behave in close relationships." },
-              Mars:      { summary: "Your drive — how you act and fight.", detail: "Mars is raw energy and will. It shows how you pursue goals, handle conflict, and assert yourself when something matters." },
-              Jupiter:   { summary: "Your growth — where life opens up for you.", detail: "Jupiter expands whatever it touches. It points to the area of life where you find abundance, optimism, and the urge to seek meaning." },
-              Saturn:    { summary: "Your discipline — where you are tested.", detail: "Saturn brings structure through challenge. The sign it occupies reveals where you must work hardest — and where mastery is most rewarding." },
-              Uranus:    { summary: "Your rebellion — where you break the mould.", detail: "Uranus moves slowly and shapes a generation. In your chart it marks the area where you hunger for freedom, disruption, and original thought." },
-              Neptune:   { summary: "Your dissolution — where you dream and dissolve.", detail: "Neptune blurs boundaries and heightens sensitivity. It shows where you seek transcendence — and where you are most susceptible to illusion." },
-              Pluto:     { summary: "Your transformation — where you die and are reborn.", detail: "Pluto moves over decades. Its sign colours generational power. Its degree in your chart marks where deep, irreversible change operates on your soul." },
-              Chiron:        { summary: "Your wound — and your path to healing it.", detail: "Chiron marks where you carry a deep, formative wound — one that never fully closes, but which, through working with it, becomes your greatest source of wisdom and healing for others." },
-              NorthNode:     { summary: "Your destiny — the direction your soul is growing toward.", detail: "The North Node is not a planet but a point of karmic direction. It shows the unfamiliar territory you are here to grow into, even if it feels uncomfortable." },
-              Lilith:        { summary: "Your shadow — raw, undomesticated instinct.", detail: "Black Moon Lilith is the lunar apogee, the Moon's farthest point. It marks where you refuse to submit, where primal energy operates outside social rules — powerful but easily suppressed or over-expressed." },
-              Ascendant:     { summary: "Your mask — how others first see you.", detail: "The Ascendant is the zodiac sign rising on the eastern horizon at your birth. It colours your appearance, demeanour, and the instinctive role you play in new situations." },
-              Descendant:    { summary: "Your mirror — what you seek in others.", detail: "The Descendant is directly opposite the Ascendant. It describes the qualities you are drawn to in partners and close relationships — often traits you have not yet owned in yourself." },
-              Midheaven:     { summary: "Your calling — how you are seen in the world.", detail: "The Midheaven (MC) is the highest point of the chart. It represents your public role, vocation, and the legacy you are building in the eyes of others." },
-              IC:            { summary: "Your roots — where you come from and what sustains you.", detail: "The IC (Imum Coeli) is the lowest point of the chart, directly opposite the Midheaven. It speaks of home, ancestry, private foundations, and the psychological bedrock beneath your public life." },
-              Vertex:        { summary: "Your fate point — encounters that feel destined.", detail: "The Vertex is a sensitive point on the prime vertical. It marks the kind of people and events that enter your life as if fated — encounters that feel larger than coincidence and tend to change you." },
-              AntiVertex:    { summary: "What you bring to fated encounters.", detail: "The Anti-Vertex is directly opposite the Vertex. Where the Vertex describes what arrives from outside, the Anti-Vertex shows the energy and qualities you bring into those destined meetings." },
-              PartOfFortune: { summary: "Your joy — where body, soul, and circumstance align.", detail: "The Part of Fortune is an Arabic lot derived from Sun, Moon, and Ascendant. It marks the area of life where you are most naturally lucky and where effort feels effortless." },
-            }
-
-            const SIGN_DESC = {
-              Aries:       { short: "expressed with boldness and urgency",        long: "Aries sharpens energy into impulse and initiative. There is speed, directness, and a need to be first." },
-              Taurus:      { short: "expressed with patience and groundedness",    long: "Taurus slows energy into something steady and embodied. There is persistence, sensuality, and a need for security." },
-              Gemini:      { short: "expressed with curiosity and versatility",    long: "Gemini disperses energy across ideas and connections. There is wit, restlessness, and a need to communicate." },
-              Cancer:      { short: "expressed through feeling and instinct",      long: "Cancer turns energy inward and protective. There is empathy, memory, and a need to belong and nurture." },
-              Leo:         { short: "expressed with warmth and self-assurance",    long: "Leo channels energy into self-expression and generosity. There is pride, creativity, and a need to be seen." },
-              Virgo:       { short: "expressed through precision and service",     long: "Virgo focuses energy into analysis and refinement. There is discernment, humility, and a need to be useful." },
-              Libra:       { short: "expressed through harmony and relationship",  long: "Libra distributes energy between self and other. There is grace, indecision, and a need for fairness." },
-              Scorpio:     { short: "expressed with intensity and depth",          long: "Scorpio concentrates energy into transformation. There is power, suspicion, and a need to uncover what is hidden." },
-              Sagittarius: { short: "expressed with freedom and vision",           long: "Sagittarius expands energy toward meaning and horizon. There is optimism, excess, and a need for truth." },
-              Capricorn:   { short: "expressed with discipline and ambition",      long: "Capricorn structures energy into long-term achievement. There is patience, control, and a need to build something lasting." },
-              Aquarius:    { short: "expressed through originality and detachment",long: "Aquarius breaks energy away from convention. There is brilliance, coldness, and a need to serve a larger idea." },
-              Pisces:      { short: "expressed with sensitivity and imagination",  long: "Pisces dissolves energy into the boundless. There is compassion, escapism, and a need to transcend the ordinary." },
-            }
-
-            const HOUSE_DESC = {
-              1:  { name: "House of Self",          short: "identity, appearance, how you begin things" },
-              2:  { name: "House of Resources",     short: "money, possessions, self-worth" },
-              3:  { name: "House of Mind",          short: "communication, siblings, short journeys" },
-              4:  { name: "House of Home",          short: "roots, family, private foundations" },
-              5:  { name: "House of Pleasure",      short: "creativity, romance, play, children" },
-              6:  { name: "House of Service",       short: "daily work, health, routines, duty" },
-              7:  { name: "House of Partnership",   short: "marriage, close relationships, open enemies" },
-              8:  { name: "House of Transformation",short: "death, rebirth, shared resources, the occult" },
-              9:  { name: "House of Expansion",     short: "philosophy, travel, higher learning, beliefs" },
-              10: { name: "House of Career",        short: "vocation, public reputation, authority" },
-              11: { name: "House of Community",     short: "friends, groups, hopes, collective ideals" },
-              12: { name: "House of the Hidden",    short: "the unconscious, isolation, karma, undoing" },
-            }
 
             const pd = PLANET_DESC[planet]
             const sd = SIGN_DESC[p.sign]
@@ -215,8 +224,8 @@ function BirthChart({ placements, birthData, reading, mode, houseCusps }) {
       </table>
 
       {(() => {
-        const maxEl   = Object.entries(tally).sort((a,b) => b[1]-a[1])[0]
-        const maxMode = Object.entries(modeTally).sort((a,b) => b[1]-a[1])[0]
+        const maxEl   = Object.entries(tally).length > 0 ? Object.entries(tally).sort((a,b) => b[1]-a[1])[0] : ['Air', 0]
+        const maxMode = Object.entries(modeTally).length > 0 ? Object.entries(modeTally).sort((a,b) => b[1]-a[1])[0] : ['Cardinal', 0]
         const ELEMENT_GLOSS = {
           Fire:  "instinctive, passionate, forward-moving",
           Earth: "grounded, practical, body-aware",
@@ -232,7 +241,7 @@ function BirthChart({ placements, birthData, reading, mode, houseCusps }) {
           const ta = Object.values(a[1]).reduce((s,v)=>s+v,0)
           const tb = Object.values(b[1]).reduce((s,v)=>s+v,0)
           return tb - ta
-        })[0]
+        })[0] || ["1", { Fire:0, Earth:0, Air:0, Water:0 }]
         const maxHouseCount = maxHouse ? Object.values(maxHouse[1]).reduce((s,v)=>s+v,0) : 1
         const houseTotal = h => houseTally[h] ? Object.values(houseTally[h]).reduce((s,v)=>s+v,0) : 0
         const HOUSE_THEMES = {
@@ -242,7 +251,7 @@ function BirthChart({ placements, birthData, reading, mode, houseCusps }) {
         }
         const ELEMENTS_ORDER = ['Fire', 'Earth', 'Air', 'Water']
         // dominant element in busiest house for gloss color
-        const maxHouseEl = maxHouse
+        const maxHouseEl = (maxHouse && maxHouse[1] && Object.entries(maxHouse[1]).length > 0)
           ? Object.entries(maxHouse[1]).sort((a,b)=>b[1]-a[1])[0][0]
           : 'Air'
 
@@ -252,7 +261,8 @@ function BirthChart({ placements, birthData, reading, mode, houseCusps }) {
             <div className="birth-chart__summary-column">
               <div className="birth-chart__summary-title">Elements</div>
               <div className="birth-chart__summary-bars">
-                {Object.entries(tally).map(([el, n]) => {
+                {ELEMENTS_ORDER.map(el => {
+                  const n = tally[el] || 0
                   const isDominant = el === maxEl[0] && n > 0
                   return (
                     <div key={el} className={`birth-chart__bar-row${isDominant ? ' is-dominant' : ''}`} style={{ opacity: n === 0 ? 0.2 : 1 }}>
@@ -275,7 +285,8 @@ function BirthChart({ placements, birthData, reading, mode, houseCusps }) {
             <div className="birth-chart__summary-column">
               <div className="birth-chart__summary-title">Modalities</div>
               <div className="birth-chart__summary-bars">
-                {Object.entries(modeTally).map(([mode, n]) => {
+                {['Cardinal', 'Fixed', 'Mutable'].map(mode => {
+                  const n = modeTally[mode] || 0
                   const isDominant = mode === maxMode[0] && n > 0
                   const modeCol = { Cardinal: '#f472b6', Fixed: '#a78bfa', Mutable: '#34d399' }[mode]
                   return (
@@ -297,7 +308,7 @@ function BirthChart({ placements, birthData, reading, mode, houseCusps }) {
             </div>
           </div>
 
-          {maxHouse && (() => {
+          {(() => {
             const cx = 150, cy = 150, size = 300
             const BASE_R  = 124
             const HOUSE_R1 = 126
@@ -315,6 +326,7 @@ function BirthChart({ placements, birthData, reading, mode, houseCusps }) {
             }
 
             function arc(startDeg, endDeg, r1, r2) {
+              if (isNaN(startDeg) || isNaN(endDeg) || isNaN(r1) || isNaN(r2)) return ""
               const s1 = polarToXY(startDeg, r1), e1 = polarToXY(endDeg, r1)
               const s2 = polarToXY(startDeg, r2), e2 = polarToXY(endDeg, r2)
               // Handle arcs larger than 180 degrees correctly
@@ -323,16 +335,117 @@ function BirthChart({ placements, birthData, reading, mode, houseCusps }) {
               return `M ${s1[0]} ${s1[1]} A ${r1} ${r1} 0 ${large} 1 ${e1[0]} ${e1[1]} L ${e2[0]} ${e2[1]} A ${r2} ${r2} 0 ${large} 0 ${s2[0]} ${s2[1]} Z`
             }
 
-            // Map specific planets to concentric rings
-            const PLANET_RINGS = {
-              Sun: 110, Moon: 100, Mercury: 90, Venus: 80, Mars: 70, 
-              Jupiter: 60, Saturn: 50, Uranus: 40, Neptune: 30, Pluto: 20
-            }
+            // Define strictly distinct orbits for every single point to prevent overlap
+            const ORBITS = [
+              { id: 'Sun',           r: 30,  distance: 0 },
+              { id: 'Moon',          r: 37,  distance: 1 },
+              { id: 'Mercury',       r: 44,  distance: 2 },
+              { id: 'Venus',         r: 51,  distance: 3 },
+              { id: 'Mars',          r: 58,  distance: 4 },
+              { id: 'NorthNode',     r: 65,  distance: 5 },
+              { id: 'Jupiter',       r: 72,  distance: 6 },
+              { id: 'Saturn',        r: 79,  distance: 7 },
+              { id: 'Chiron',        r: 86,  distance: 8 },
+              { id: 'Uranus',        r: 93,  distance: 9 },
+              { id: 'Neptune',       r: 100, distance: 10 },
+              { id: 'Pluto',         r: 107, distance: 11 },
+              { id: 'Lilith',        r: 114, distance: 12 },
+              { id: 'PartOfFortune', r: 121, distance: 13 },
+            ]
 
-            return (
-              <div style={{ marginTop: 16 }}>
-                <div className="birth-chart__summary-title" style={{ marginBottom: 8, textAlign: 'center' }}>House Analysis</div>
-                <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ display: 'block', margin: '0 auto', overflow: 'visible' }}>
+            // We exclude horizon points (ASC/MC/Vertex) from the concentric circles
+            // and instead draw them as structural lines or indicators.
+            const PLANET_RINGS = ORBITS.reduce((acc, o) => ({ ...acc, [o.id]: o.r }), {})
+
+                    // dominant element in busiest house for gloss color
+                    const maxHouseElLocal = (maxHouse && maxHouse[1] && Object.entries(maxHouse[1]).length > 0)
+                      ? Object.entries(maxHouse[1]).sort((a,b)=>b[1]-a[1])[0][0]
+                      : 'Air'
+
+                    const HOUSE_THEMES_LOCAL = {
+                      1: 'self', 2: 'resources', 3: 'mind', 4: 'home', 5: 'pleasure',
+                      6: 'service', 7: 'partnership', 8: 'transformation', 9: 'expansion',
+                      10: 'career', 11: 'community', 12: 'hidden'
+                    }
+
+                    const HOUSE_DESC_LOCAL = {
+                      1:  { 
+                        name: "House of Self",          
+                        short: "identity, physical appearance, and first impressions",
+                        long: "Defines the ego, self-image, and your natural approach to the world. It governs your physical vitality and how others perceive your essential character." 
+                      },
+                      2:  { 
+                        name: "House of Resources",     
+                        short: "finances, possessions, and personal values",
+                        long: "Governs material security, earnable income, and self-worth. It reflects what you value most and your relationship with the physical tools of survival."
+                      },
+                      3:  { 
+                        name: "House of Mind",          
+                        short: "communication, intellect, and local environment",
+                        long: "Rules the logical mind, siblings, neighbors, and short-distance travel. It describes your learning style and how you exchange information daily."
+                      },
+                      4:  { 
+                        name: "House of Home",          
+                        short: "ancestry, emotional foundations, and private life",
+                        long: "Represents your roots, family history, and the most private part of your soul. It governs the home environment and your inner sense of security."
+                      },
+                      5:  { 
+                        name: "House of Pleasure",      
+                        short: "creativity, romance, children, and joy",
+                        long: "The sector of self-expression, artistic pursuits, and risk-taking. It rules romance, hobbies, and the pure joy of bringing something new into the world."
+                      },
+                      6:  { 
+                        name: "House of Service",       
+                        short: "daily routines, health, and work environment",
+                        long: "Focuses on the mechanics of life: service to others, physical well-being, and work habits. It governs the relationship between the body and duty."
+                      },
+                      7:  { 
+                        name: "House of Partnership",   
+                        short: "committed relationships, marriage, and open mirrors",
+                        long: "Rules one-to-one connections, contracts, and business partners. It reflects how you relate to others and what you seek in a companion."
+                      },
+                      8:  { 
+                        name: "House of Transformation",
+                        short: "shared assets, rebirth, and hidden depths",
+                        long: "The house of profound change, intimacy, and shared wealth. It deals with life's mysteries, taxes, inheritance, and the psychological underworld."
+                      },
+                      9:  { 
+                        name: "House of Expansion",     
+                        short: "higher learning, philosophy, and long journeys",
+                        long: "Governs the quest for meaning, higher education, religion, and travel to foreign lands. It reflects your worldview and search for truth."
+                      },
+                      10: { 
+                        name: "House of Career",        
+                        short: "vocation, public status, and authority",
+                        long: "Represents your highest achievements, professional reputation, and worldly ambitions. It is the public face you present to the community."
+                      },
+                      11: { 
+                        name: "House of Community",     
+                        short: "friendships, social groups, and collective goals",
+                        long: "Focuses on networking, humanitarian efforts, and long-term hopes. It rules the circles of people who share your ideals and visions for the future."
+                      },
+                      12: { 
+                        name: "House of the Hidden",    
+                        short: "the subconscious, spiritual liberation, and solitude",
+                        long: "The sector of secrets, dreams, and karma. It governs hospitals, retreats, and the dissolution of the ego into a larger spiritual collective."
+                      },
+                    }
+
+                    const houseTotalLocal = h => (houseTally && houseTally[h]) ? Object.values(houseTally[h]).reduce((s,v)=>s+v,0) : 0
+
+                    return (
+                      <div style={{ marginTop: 24, marginBottom: 24 }}>
+                        <div className="birth-chart__summary-title" style={{ marginBottom: 20, textAlign: 'center' }}>House Analysis</div>
+                        <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ display: 'block', margin: '0 auto', overflow: 'visible' }}>
+                  
+                  {/* Orbital Track Visuals - now for EVERY point to ensure clear lanes */}
+                  {ORBITS.map(o => (
+                    <circle key={o.id} cx={cx} cy={cy} r={o.r} fill="none" stroke="rgba(255,255,255,0.02)" strokeWidth="0.5" />
+                  ))}
+                  
+                  {/* Central Void / The Sun's Sanctuary */}
+                  <circle cx={cx} cy={cy} r="30" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.1)" strokeWidth="0.5" strokeDasharray="2,2" />
+                  <circle cx={cx} cy={cy} r="4" fill="rgba(255,255,255,0.15)" />
 
                   {/* 1. Underlying Sign Rings (Continuous portions) */}
                   {SIGN_NAMES.map((signName, sigIdx) => {
@@ -349,15 +462,24 @@ function BirthChart({ placements, birthData, reading, mode, houseCusps }) {
                     const sMid   = sStart + 15
                     
                     const [sx, sy] = polarToXY(sMid, (SIGN_R1 + SIGN_R2) / 2)
+                    const isSignHovered = hovered?.type === 'sign' && hovered.id === signName
 
                     return (
-                      <g key={signName}>
+                      <g key={signName}
+                         onMouseEnter={() => setHovered({ type: 'sign', id: signName, label: signName, desc: SIGN_DESC[signName]?.long, color: signCol })}
+                         onMouseLeave={() => setHovered(null)}
+                         style={{ cursor: 'default' }}>
                         <path d={arc(sStart, sEnd, SIGN_R1, SIGN_R2)}
-                          fill={`${signCol}33`} stroke={`${signCol}66`} strokeWidth="1" />
+                          fill={isSignHovered ? `${signCol}66` : `${signCol}33`} 
+                          stroke={isSignHovered ? `${signCol}ff` : `${signCol}66`} 
+                          strokeWidth={isSignHovered ? "1.5" : "1"} 
+                          style={{ transition: 'all 0.2s ease' }} />
                         <text x={sx} y={sy} textAnchor="middle" dominantBaseline="middle"
-                          fontSize="6.5" 
-                          fill="rgba(255,255,255,0.9)" fontWeight="800" textTransform="uppercase" letterSpacing="0.8"
-                          style={{ transform: `rotate(${sMid}deg)`, transformOrigin: `${sx}px ${sy}px` }}>
+                          fontSize={isSignHovered ? "7.5" : "6.5"} 
+                          fill={isSignHovered ? "#fff" : "rgba(255,255,255,0.9)"} 
+                          fontWeight={isSignHovered ? "900" : "800"} 
+                          textTransform="uppercase" letterSpacing="0.8"
+                          style={{ transform: `rotate(${sMid}deg)`, transformOrigin: `${sx}px ${sy}px`, transition: 'all 0.2s ease' }}>
                           {signName}
                         </text>
                       </g>
@@ -370,26 +492,33 @@ function BirthChart({ placements, birthData, reading, mode, houseCusps }) {
                     
                     // Actual astronomical degrees (0-360) relative to House 1 Cusp
                     const ascLong = houseCusps ? houseCusps[0] : 0
-                    const hStartRaw = houseCusps ? (houseCusps[i] - ascLong) : (i * 30)
-                    const hEndRaw   = houseCusps ? (houseCusps[i === 11 ? 0 : i + 1] - ascLong) : ((i + 1) * 30)
+                    const hStartRaw = (houseCusps && !isNaN(houseCusps[i])) ? (houseCusps[i] - ascLong) : (i * 30)
+                    const hEndRaw   = (houseCusps && !isNaN(houseCusps[i === 11 ? 0 : i + 1])) ? (houseCusps[i === 11 ? 0 : i + 1] - ascLong) : ((i + 1) * 30)
                     
                     const startDeg = ((hStartRaw + 360) % 360) + GAP_DEG/2
                     const endDeg   = ((hEndRaw < hStartRaw ? hEndRaw + 360 : hEndRaw) % 720) - GAP_DEG/2
                     const midDeg   = (startDeg + (endDeg < startDeg ? endDeg + 360 : endDeg)) / 2
 
-                    const n = houseTotal(h)
-                    const housePlanets = rows.filter(pName => displayPlacements[pName].house === h)
+                    const n = houseTotalLocal(h)
+                    // Ensure housePlanets is always an array
+                    const housePlanets = Array.isArray(rows) ? rows.filter(pName => displayPlacements[pName] && displayPlacements[pName].house === h) : []
+                    const isHovered = hovered?.type === 'house' && hovered.id === h
 
                     return (
-                      <g key={h}>
+                      <g key={h} 
+                         onMouseEnter={() => setHovered({ type: 'house', id: h, label: `House ${h}`, theme: HOUSE_THEMES_LOCAL[h], desc: HOUSE_DESC_LOCAL[h]?.long || HOUSE_DESC_LOCAL[h]?.short })}
+                         onMouseLeave={() => setHovered(null)}
+                         style={{ cursor: 'default' }}>
                         {/* House base slice */}
                         <path d={arc(startDeg, endDeg, INNER_R, BASE_R)}
-                          fill="rgba(255,255,255,0.01)" 
+                          fill={isHovered ? "rgba(255,255,255,0.05)" : "rgba(255,255,255,0.01)"} 
                           stroke="rgba(255,255,255,0.03)" strokeWidth="0.5" />
 
                         {/* House number band with obviously highlighted borders */}
                         <path d={arc(startDeg, endDeg, HOUSE_R1, HOUSE_R2)}
-                          fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.6)" strokeWidth="1.2" />
+                          fill={isHovered ? "rgba(255,255,255,0.2)" : "rgba(255,255,255,0.08)"} 
+                          stroke={isHovered ? "rgba(255,255,255,0.9)" : "rgba(255,255,255,0.6)"} 
+                          strokeWidth="1.2" />
 
                         {/* Planets in Concentric Rings */}
                         {housePlanets.map((pName) => {
@@ -405,12 +534,27 @@ function BirthChart({ placements, birthData, reading, mode, houseCusps }) {
                           const pDegOnWheel = (planetAbsLong - ascLong + 360) % 360
                           
                           const [px, py] = polarToXY(pDegOnWheel, ringR)
-                          
+                          const isPlanetHovered = hovered?.type === 'planet' && hovered.id === pName
+                          const pd = PLANET_DESC[pName]
+
                           return (
-                            <g key={pName}>
-                              <circle cx={px} cy={py} r="5" fill={`${pCol}15`} stroke={`${pCol}33`} strokeWidth="0.5" />
+                            <g key={pName}
+                               onMouseEnter={(e) => {
+                                 e.stopPropagation()
+                                 setHovered({ type: 'planet', id: pName, label: pName, summary: pd?.detail || pd?.summary, glyph: PLANET_GLYPHS[pName], color: pCol })
+                               }}
+                               onMouseLeave={() => setHovered(null)}
+                               onClick={(e) => {
+                                 e.stopPropagation()
+                                 setLockedPoint(lockedPoint === pName ? null : pName)
+                               }}
+                               style={{ cursor: 'pointer' }}>
+                              <circle cx={px} cy={py} r={isPlanetHovered ? "7" : "5"} 
+                                fill={`${pCol}${isPlanetHovered ? '33' : '15'}`} 
+                                stroke={`${pCol}${isPlanetHovered ? '66' : '33'}`} 
+                                strokeWidth={isPlanetHovered ? "1.5" : "0.5"} />
                               <text x={px} y={py} textAnchor="middle" dominantBaseline="middle"
-                                fontSize="8" fill={pCol} fontWeight="900" style={{ pointerEvents: 'none' }}>
+                                fontSize={isPlanetHovered ? "10" : "8"} fill={pCol} fontWeight="900" style={{ pointerEvents: 'none' }}>
                                 {PLANET_GLYPHS[pName]}
                               </text>
                             </g>
@@ -438,12 +582,106 @@ function BirthChart({ placements, birthData, reading, mode, houseCusps }) {
                     )
                   })}
 
-                  {/* centre hole */}
-                  <circle cx={cx} cy={cy} r={INNER_R - 1} fill="#0e0a1e" />
+                  {/* centre hole (smaller to allow sun ring closer) */}
+                  <circle cx={cx} cy={cy} r="10" fill="#0e0a1e" />
                 </svg>
 
-                <div className="birth-chart__summary-gloss" style={{ color: ELEMENT_COLOR[maxHouseEl], marginTop: 8, textAlign: 'center' }}>
-                  {maxHouseCount >= 3 ? 'Stellium' : 'Focus'} in H{maxHouse[0]} ({HOUSE_THEMES[Number(maxHouse[0])]}) — {maxHouseCount} placements.
+                {/* Legend / Hover Detail Overlay */}
+                <div style={{ minHeight: 80, marginTop: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
+                  {(lockedPoint || hovered) ? (() => {
+                    // Logic to synthesize a full description
+                    const getInterpretation = (pName) => {
+                      const pData = displayPlacements[pName];
+                      if (!pData) return "";
+                      const pDesc = PLANET_DESC[pName];
+                      const sDesc = SIGN_DESC[pData.sign];
+                      const hDesc = HOUSE_DESC_LOCAL[pData.house];
+                      const deg = Math.floor(pData.degrees);
+                      const decan = deg <= 9 ? "1st decan" : deg <= 19 ? "2nd decan" : "3rd decan";
+                      
+                      const pKeyword = pDesc?.summary.split('—')[0].trim() || pName;
+                      // Clean sKeyword: remove "expressed with" if it exists to avoid double "by" logic
+                      let sKeyword = sDesc?.short.toLowerCase() || pData.sign;
+                      sKeyword = sKeyword.replace(/^expressed with\s+/, '').replace(/^expressed through\s+/, '');
+                      
+                      const hKeyword = hDesc?.short.toLowerCase() || `House ${pData.house}`;
+
+                      return `This ${pName} placement in ${pData.sign} at ${deg}° (${decan}) in the ${pData.house} House indicates that your ${pKeyword.toLowerCase()} is deeply influenced by ${sKeyword}. Since it is located in the ${hDesc?.name}, this energy manifests through ${hKeyword}. ${hDesc?.long || ''}`;
+                    };
+
+                    const active = lockedPoint ? { 
+                      type: 'planet', 
+                      id: lockedPoint, 
+                      label: lockedPoint, 
+                      glyph: PLANET_GLYPHS[lockedPoint], 
+                      color: ELEMENT_COLOR[SIGN_META[displayPlacements[lockedPoint]?.sign]?.element] ?? '#fff',
+                      desc: getInterpretation(lockedPoint),
+                      locked: true 
+                    } : hovered;
+
+                    return (
+                      <div style={{ 
+                        padding: '12px 20px', 
+                        background: active.locked ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.03)', 
+                        border: active.locked ? '1px solid rgba(255,255,255,0.3)' : '1px solid rgba(255,255,255,0.1)',
+                        borderRadius: 4,
+                        animation: 'fadeIn 0.2s ease-out',
+                        position: 'relative',
+                        maxWidth: 450
+                      }}>
+                        {active.locked && (
+                          <div 
+                            onClick={() => setLockedPoint(null)}
+                            style={{ position: 'absolute', top: 4, right: 8, cursor: 'pointer', fontSize: 10, opacity: 0.5 }}>
+                            ✕
+                          </div>
+                        )}
+
+                        {active.type === 'planet' ? (
+                          <div>
+                            <span style={{ color: active.color, fontWeight: 'bold', fontSize: 16 }}>
+                              {active.glyph} {active.label}
+                            </span>
+                            <div style={{ fontSize: 11, opacity: 0.8, marginTop: 4, lineHeight: '1.5', textAlign: 'left' }}>
+                              {active.locked ? (
+                                <span>
+                                  <strong style={{ color: 'rgba(255,255,255,0.9)', display: 'block', marginBottom: 4 }}>Interpretation:</strong>
+                                  {active.desc}
+                                </span>
+                              ) : active.summary}
+                            </div>
+                            {active.locked && (
+                              <div style={{ fontSize: 9, opacity: 0.4, marginTop: 10, fontStyle: 'italic' }}>
+                                Synthesis: Planet + Sign + House + Decan
+                              </div>
+                            )}
+                          </div>
+                        ) : active.type === 'sign' ? (
+                          <div>
+                            <span style={{ color: active.color, fontWeight: 'bold', fontSize: 16 }}>
+                              {active.label}
+                            </span>
+                            <div style={{ fontSize: 11, opacity: 0.8, marginTop: 4, lineHeight: '1.4' }}>{active.desc}</div>
+                          </div>
+                        ) : (
+                          <div>
+                            <span style={{ color: 'white', fontWeight: 'bold', fontSize: 14 }}>
+                              {active.label}: {HOUSE_DESC_LOCAL[active.id]?.name || active.theme}
+                            </span>
+                            <div style={{ fontSize: 11, opacity: 0.8, marginTop: 4, lineHeight: '1.4' }}>{active.desc}</div>
+                          </div>
+                        )}
+                      </div>
+                    )
+                  })() : (
+                    <div style={{ fontSize: 11, fontStyle: 'italic', opacity: 0.4 }}>
+                      Hover for long description · Click planet for synthesis
+                    </div>
+                  )}
+                </div>
+
+                <div className="birth-chart__summary-gloss" style={{ color: ELEMENT_COLOR[maxHouseElLocal], marginTop: 24, textAlign: 'center' }}>
+                  {(maxHouseCount || 0) >= 3 ? 'Stellium' : 'Focus'} in H{maxHouse ? maxHouse[0] : '?'} ({maxHouse ? HOUSE_THEMES_LOCAL[Number(maxHouse[0])] : 'unknown'}) — {maxHouseCount || 0} placements.
                 </div>
               </div>
             )
@@ -507,7 +745,7 @@ export default function HoroscopeModal({ birthData, onClose }) {
       if (scrollRef.current && (e.code === 'ArrowDown' || e.code === 'ArrowUp' || e.code === 'KeyW' || e.code === 'KeyS')) {
         const isUp = e.code === 'ArrowUp' || e.code === 'KeyW'
         const amount = isUp ? -40 : 40
-        scrollRef.current.scrollBy({ top: amount, behavior: 'smooth' })
+        scrollRef.current.scrollBy({ top: amount, behavior: 'auto' })
         e.preventDefault()
       }
     }
@@ -580,7 +818,13 @@ export default function HoroscopeModal({ birthData, onClose }) {
           {/* ── Birth Chart ── */}
           {mode === 'chart' && (
             <div className="modal__section">
-              <BirthChart placements={_debug.natalPlacements} birthData={birthData} reading={reading} mode={mode} houseCusps={_debug.natalHouses} />
+              {_debug?.natalPlacements ? (
+                <BirthChart placements={_debug.natalPlacements} birthData={birthData} reading={reading} mode={mode} houseCusps={_debug.natalHouses} />
+              ) : (
+                <div style={{ color: '#c8a8f0', textAlign: 'center', padding: '20px', opacity: 0.6 }}>
+                  Calculating chart...
+                </div>
+              )}
             </div>
           )}
 
