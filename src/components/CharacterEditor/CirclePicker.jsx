@@ -17,6 +17,7 @@ function polarToXY(cx, cy, angleDeg, r) {
 
 function useRingDrag(svgRef, cx, cy, onAngle) {
   const dragging = useRef(false)
+  const [isDown, setIsDown] = React.useState(false)
 
   const getAngle = useCallback(e => {
     const svg = svgRef.current
@@ -31,6 +32,7 @@ function useRingDrag(svgRef, cx, cy, onAngle) {
 
   const onPointerDown = useCallback(e => {
     dragging.current = true
+    setIsDown(true)
     onAngle(getAngle(e))
     e.currentTarget.setPointerCapture(e.pointerId)
   }, [getAngle, onAngle])
@@ -40,9 +42,13 @@ function useRingDrag(svgRef, cx, cy, onAngle) {
     onAngle(getAngle(e))
   }, [getAngle, onAngle])
 
-  const onPointerUp = useCallback(() => { dragging.current = false }, [])
+  const onPointerUp = useCallback(() => {
+    dragging.current = false
+    setIsDown(false)
+  }, [])
 
-  return { onPointerDown, onPointerMove, onPointerUp }
+  const cursor = isDown ? 'grabbing' : 'grab'
+  return { onPointerDown, onPointerMove, onPointerUp, cursor }
 }
 
 // ── Ring arc path ─────────────────────────────────────────────────────────────
@@ -88,6 +94,9 @@ export function DateWheel({ value, onChange, size = 220 }) {
     const idx = indexFromAngle(a, YEARS.length)
     onChange({ day, month, year: YEARS[idx] })
   })
+  const { cursor: dayCursor, ...dayHandlers } = dayDrag
+  const { cursor: monCursor, ...monHandlers } = monDrag
+  const { cursor: yrCursor,  ...yearHandlers } = yearDrag
 
   const yearIdx = YEARS.indexOf(year)
 
@@ -96,7 +105,7 @@ export function DateWheel({ value, onChange, size = 220 }) {
          style={{ display:'block', userSelect:'none', touchAction:'none' }}>
 
       {/* ── Day ring ── */}
-      <g {...dayDrag} style={{ cursor:'ew-resize' }}>
+      <g {...dayHandlers} style={{ cursor: dayCursor }}>
         {Array.from({length: maxDay}, (_, i) => {
           const ang = angleForIndex(i, maxDay)
           const isSelected = i + 1 === day
@@ -120,7 +129,7 @@ export function DateWheel({ value, onChange, size = 220 }) {
       </g>
 
       {/* ── Month ring ── */}
-      <g {...monDrag} style={{ cursor:'ew-resize' }}>
+      <g {...monHandlers} style={{ cursor: monCursor }}>
         {MONTHS_SHORT.map((m, i) => {
           const ang = i * 30
           const isSelected = i + 1 === month
@@ -142,7 +151,7 @@ export function DateWheel({ value, onChange, size = 220 }) {
       </g>
 
       {/* ── Year ring ── */}
-      <g {...yearDrag} style={{ cursor:'ew-resize' }}>
+      <g {...yearHandlers} style={{ cursor: yrCursor }}>
         {YEARS.map((y, i) => {
           const ang = angleForIndex(i, YEARS.length)
           const isSelected = y === year
@@ -202,13 +211,15 @@ export function TimeWheel({ value, onChange, size = 180 }) {
     const m = indexFromAngle(a, 60)
     onChange({ hour, minute: m })
   })
+  const { cursor: hrCursor, ...hourHandlers } = hourDrag
+  const { cursor: mnCursor, ...minHandlers  } = minDrag
 
   return (
     <svg ref={svgRef} width={size} height={size} viewBox={`0 0 ${VB} ${VB}`}
          style={{ display:'block', userSelect:'none', touchAction:'none' }}>
 
       {/* ── Hour ring ── */}
-      <g {...hourDrag} style={{ cursor:'ew-resize' }}>
+      <g {...hourHandlers} style={{ cursor: hrCursor }}>
         {Array.from({length: 24}, (_, i) => {
           const ang = i * 15
           const isSelected = i === hour
@@ -232,7 +243,7 @@ export function TimeWheel({ value, onChange, size = 180 }) {
       </g>
 
       {/* ── Minute ring ── */}
-      <g {...minDrag} style={{ cursor:'ew-resize' }}>
+      <g {...minHandlers} style={{ cursor: mnCursor }}>
         {Array.from({length: 60}, (_, i) => {
           const ang = i * 6
           const isSelected = i === minute

@@ -5,9 +5,7 @@
   inset: 0;
   z-index: 2000;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(4, 2, 12, 0.92);
+  background: rgba(4, 2, 12, 0.97);
   backdrop-filter: blur(16px);
   animation: modalFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -15,26 +13,19 @@
 .char-editor-content {
   display: flex;
   flex-direction: row;
-  align-items: flex-start;
-  gap: 48px;
-  background: rgba(255, 255, 255, 0.03);
-  padding: 48px;
-  border-radius: 24px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 32px 64px -16px rgba(0, 0, 0, 0.8);
-  transition: max-width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  max-height: 90vh;
-  overflow-y: auto;
-  scrollbar-width: none;
-  &::-webkit-scrollbar { display: none; }
+  align-items: stretch;
+  flex: 1;
+  gap: 24px;
+  padding: 28px 32px;
+  overflow: hidden;
 }
 
 .char-editor-wheel {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-self: center;
-  padding-top: 8px;
+  justify-content: flex-start;
+  padding-top: 24px;
+  padding-right: 16px;
   animation: modalFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -42,8 +33,9 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 24px;
-  
+  gap: 10px;
+  width: 240px;
+
   &-label {
     font-family: $font-ui;
     font-size: 14px;
@@ -65,91 +57,83 @@
 .char-editor-controls {
   display: flex;
   flex-direction: column;
-  width: 260px;
-  gap: 16px;
+  justify-content: space-between;
+  width: 310px;
+  flex: 1 0 auto;
+  max-height: 100%;
+}
 
-  h3 {
+.color-row {
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+}
+
+.control-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+
+  label {
     font-family: $font-ui;
-    font-size: 22px;
-    font-weight: 700;
-    color: #f4f0ff;
-    letter-spacing: -0.5px;
-    margin-bottom: 4px;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.35);
   }
 
-  // All 5 color pickers in a single row
-  .color-row {
-    display: flex;
-    gap: 10px;
-    align-items: flex-end;
-  }
+  input[type="color"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    background: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
 
-  .control-group {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-
-    label {
-      font-family: $font-ui;
-      font-size: 9px;
-      font-weight: 600;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      color: rgba(255, 255, 255, 0.35);
+    &:hover {
+      transform: scale(1.12);
+      border-color: rgba(255, 255, 255, 0.25);
     }
 
-    input[type="color"] {
-      appearance: none;
-      -webkit-appearance: none;
-      width: 32px;
-      height: 32px;
-      padding: 0;
-      border: 2px solid rgba(255, 255, 255, 0.1);
-      border-radius: 8px;
-      background: none;
-      cursor: pointer;
-      transition: all 0.2s ease;
-
-      &:hover {
-        transform: scale(1.12);
-        border-color: rgba(255, 255, 255, 0.25);
-      }
-
-      &::-webkit-color-swatch-wrapper { padding: 0; }
-      &::-webkit-color-swatch {
-        border: none;
-        border-radius: 6px;
-      }
+    &::-webkit-color-swatch-wrapper { padding: 0; }
+    &::-webkit-color-swatch {
+      border: none;
+      border-radius: 6px;
     }
   }
 }
 
 // ── Circle pickers ────────────────────────────────────────────────────────────
-.circle-pickers {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
+.birth-wheels {
+  position: relative;
+  width: 100%;
+  height: 390px;
+
+  &__date {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+
+  &__time {
+    position: absolute;
+    top: 210px;
+    right: 0;
+  }
 }
 
 // ── Birth Chart section ───────────────────────────────────────────────────────
 
 .birth-section {
-  padding-top: 20px;
-  border-top: 1px solid rgba(255, 255, 255, 0.07);
   display: flex;
   flex-direction: column;
   gap: 14px;
-
-  &__title {
-    font-family: $font-ui;
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 2.5px;
-    text-transform: uppercase;
-    color: rgba(168, 85, 247, 0.5);
-  }
 }
 
 .birth-datetime {
@@ -162,8 +146,14 @@
   flex-direction: column;
   gap: 6px;
   flex: 1;
+}
 
-  &--time { flex: 0 0 120px; }
+.earth-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
 }
 
 .birth-label {
@@ -268,45 +258,50 @@
 
 .char-editor-actions {
   display: flex;
-  gap: 16px;
-  margin-top: 24px;
-  
-  button {
-    flex: 1;
-    height: 56px;
-    border-radius: 16px;
-    font-family: $font-ui;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-    border: none;
-  }
-  
-  .btn-cancel {
-    background: rgba(255, 255, 255, 0.05);
-    color: rgba(255, 255, 255, 0.6);
-    
-    &:hover {
-      background: rgba(255, 255, 255, 0.1);
-      color: #fff;
-    }
-  }
-  
+  flex-direction: column;
+  gap: 6px;
+  padding-bottom: 4px;
+
   .btn-save {
-    background: #a855f7;
-    color: #fff;
-    box-shadow: 0 8px 16px -4px rgba(168, 85, 247, 0.5);
-    
+    width: 100%;
+    height: 52px;
+    border: none;
+    border-radius: 0;
+    background: #3b0764;
+    color: rgba(230, 215, 255, 0.75);
+    font-family: $font-ui;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.2s ease, color 0.2s ease;
+
     &:hover {
-      background: #c084fc;
-      transform: translateY(-2px);
-      box-shadow: 0 12px 24px -4px rgba(168, 85, 247, 0.6);
+      background: #4c0891;
+      color: #e9d5ff;
     }
-    
-    &:active {
-      transform: translateY(0);
-    }
+    &:active { background: #2e0650; }
+  }
+
+  .btn-cancel {
+    width: 100%;
+    height: 32px;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.2);
+    font-family: $font-ui;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: color 0.15s ease;
+
+    &:hover { color: rgba(255, 255, 255, 0.5); }
   }
 }
 

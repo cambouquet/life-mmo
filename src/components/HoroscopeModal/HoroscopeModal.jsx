@@ -684,7 +684,7 @@ function BirthChart({ placements, birthData, reading, mode, houseCusps }) {
                   )}
                 </div>
 
-                <div className="birth-chart__summary-gloss" style={{ color: ELEMENT_COLOR[maxHouseElLocal], marginTop: 24, textAlign: 'center' }}>
+                <div className="birth-chart__summary-gloss" style={{ color: ELEMENT_COLOR[maxHouseElLocal], marginTop: 40, textAlign: 'center' }}>
                   {(maxHouseCount || 0) >= 3 ? 'Stellium' : 'Focus'} in H{maxHouse ? maxHouse[0] : '?'} ({maxHouse ? HOUSE_THEMES_LOCAL[Number(maxHouse[0])] : 'unknown'}) — {maxHouseCount || 0} placements.
                 </div>
               </div>

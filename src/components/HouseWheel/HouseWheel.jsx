@@ -265,51 +265,49 @@ export function HouseWheel({ placements, houseCusps, size = 300 }) {
         <circle cx={cx} cy={cy} r="10" fill="#0e0a1e" />
       </svg>
 
-      {/* hover tooltip — absolutely positioned so it never shifts layout */}
-      {(lockedPoint || hovered) && (() => {
-        const active = lockedPoint
-          ? { type:'planet', id:lockedPoint, label:lockedPoint, glyph:PLANET_GLYPHS[lockedPoint],
-              color: ELEMENT_COLOR[SIGN_META[placements[lockedPoint]?.sign]?.element] ?? '#fff',
-              desc: getInterpretation(lockedPoint), locked:true }
-          : hovered
-        return (
-          <div style={{
-            position:'absolute', bottom: -4, left:0, right:0,
-            transform:'translateY(100%)',
-            padding:'10px 14px',
-            background: active.locked ? 'rgba(14,10,30,0.96)' : 'rgba(14,10,30,0.92)',
-            border: active.locked ? '1px solid rgba(168,85,247,0.5)' : '1px solid rgba(255,255,255,0.1)',
-            borderRadius:6, zIndex:10,
-            color:'#e8d4ff', fontFamily:'inherit',
-          }}>
-            {active.locked && (
-              <div onClick={() => setLockedPoint(null)}
-                   style={{ position:'absolute', top:6, right:10, cursor:'pointer', fontSize:11, color:'rgba(255,255,255,0.4)' }}>✕</div>
-            )}
-            {active.type === 'planet' ? (<>
-              <div style={{ color:active.color, fontWeight:700, fontSize:13, marginBottom:4 }}>{active.glyph} {active.label}</div>
-              <div style={{ fontSize:11, color:'rgba(232,212,255,0.8)', lineHeight:'1.5' }}>
-                {active.locked ? active.desc : active.summary}
-              </div>
-            </>) : active.type === 'sign' ? (<>
-              <div style={{ color:active.color, fontWeight:700, fontSize:13, marginBottom:4 }}>{active.label}</div>
-              <div style={{ fontSize:11, color:'rgba(232,212,255,0.8)', lineHeight:'1.4' }}>{active.desc}</div>
-            </>) : (<>
-              <div style={{ color:'#e8d4ff', fontWeight:700, fontSize:13, marginBottom:4 }}>{HOUSE_NAMES[active.id]}</div>
-              <div style={{ fontSize:11, color:'rgba(232,212,255,0.8)', lineHeight:'1.4' }}>{active.desc}</div>
-            </>)}
-          </div>
-        )
-      })()}
+      {/* fixed-height tooltip area — always reserves space so Stellium never shifts */}
+      <div style={{ position:'relative', height: 110, marginTop: 10 }}>
+        {(lockedPoint || hovered) && (() => {
+          const active = lockedPoint
+            ? { type:'planet', id:lockedPoint, label:lockedPoint, glyph:PLANET_GLYPHS[lockedPoint],
+                color: ELEMENT_COLOR[SIGN_META[placements[lockedPoint]?.sign]?.element] ?? '#fff',
+                desc: getInterpretation(lockedPoint), locked:true }
+            : hovered
+          return (
+            <div style={{
+              position:'absolute', top:0, left:0, right:0,
+              padding:'10px 14px',
+              background: active.locked ? 'rgba(14,10,30,0.96)' : 'rgba(14,10,30,0.92)',
+              border: active.locked ? '1px solid rgba(168,85,247,0.5)' : '1px solid rgba(255,255,255,0.1)',
+              borderRadius:6, zIndex:10,
+              color:'#e8d4ff', fontFamily:'inherit',
+            }}>
+              {active.locked && (
+                <div onClick={() => setLockedPoint(null)}
+                     style={{ position:'absolute', top:6, right:10, cursor:'pointer', fontSize:11, color:'rgba(255,255,255,0.4)' }}>✕</div>
+              )}
+              {active.type === 'planet' ? (<>
+                <div style={{ color:active.color, fontWeight:700, fontSize:13, marginBottom:4 }}>{active.glyph} {active.label}</div>
+                <div style={{ fontSize:11, color:'rgba(232,212,255,0.8)', lineHeight:'1.5' }}>
+                  {active.locked ? active.desc : active.summary}
+                </div>
+              </>) : active.type === 'sign' ? (<>
+                <div style={{ color:active.color, fontWeight:700, fontSize:13, marginBottom:4 }}>{active.label}</div>
+                <div style={{ fontSize:11, color:'rgba(232,212,255,0.8)', lineHeight:'1.4' }}>{active.desc}</div>
+              </>) : (<>
+                <div style={{ color:'#e8d4ff', fontWeight:700, fontSize:13, marginBottom:4 }}>{HOUSE_NAMES[active.id]}</div>
+                <div style={{ fontSize:11, color:'rgba(232,212,255,0.8)', lineHeight:'1.4' }}>{active.desc}</div>
+              </>)}
+            </div>
+          )
+        })()}
+      </div>
 
       {maxHouseEntry && (
-        <div style={{ fontSize:11, fontStyle:'italic', color:ELEMENT_COLOR[maxHouseEl], marginTop:8, textAlign:'center', opacity:0.8 }}>
+        <div style={{ fontSize:11, fontStyle:'italic', color:ELEMENT_COLOR[maxHouseEl], marginTop:12, textAlign:'center', opacity:0.8 }}>
           {maxHouseCount >= 3 ? 'Stellium' : 'Focus'} in H{maxHouseEntry[0]} ({HOUSE_THEMES[Number(maxHouseEntry[0])]}) — {maxHouseCount} placements.
         </div>
       )}
-
-      {/* placeholder height so the tooltip doesn't cover gloss line */}
-      <div style={{ height: 8 }} />
     </div>
   )
 }

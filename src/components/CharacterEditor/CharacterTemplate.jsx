@@ -33,7 +33,7 @@ export const CharacterTemplate = ({
     const ctx = canvas.getContext('2d');
     
     // Use the first frame for the editor preview (down facing)
-    const previewFrame = pixelData.down[1] || pixelData.down[0]; // Use idle/standing frame
+    const previewFrame = pixelData.down[0];
     previewFrame.forEach(p => {
       let fill = p.color;
       if (p.type === 'hair') fill = applyShading(hair, p.b);
