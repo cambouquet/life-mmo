@@ -1,10 +1,11 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react'
 import { CharacterTemplate } from './CharacterTemplate'
 import { searchCities }      from '../../game/astro/cities.js'
-import { HouseWheel }        from '../HouseWheel/HouseWheel.jsx'
+import { HouseWheel, HOUSE_THEMES }      from '../HouseWheel/HouseWheel.jsx'
 import { DateWheel, TimeWheel } from './CirclePicker.jsx'
 import { getAllPositions, getPlacidusHouses, getHouseNumber, longitudeToSign, longitudeToSymbol, degreesInSign, daysSinceJ2000 } from '../../game/astro/ephemeris.js'
 import { SIGN_META }         from '../../game/astro/horoscope.js'
+import { PLANET_GLYPHS, SIGN_GLYPHS, ELEMENT_COLOR } from '../HoroscopeModal/HoroscopeModal.jsx'
 import './CharacterEditor.scss'
 
 // Projects lat/lng onto a sphere SVG (orthographic-like, front hemisphere only)
@@ -121,6 +122,7 @@ function CitySearch({ value, onChange }) {
     <div className="city-search" ref={wrapRef}>
       <input
         className="input-birth input-city"
+        style={{ textAlign: 'center' }}
         type="text"
         value={query}
         onChange={handleInput}
@@ -139,7 +141,7 @@ function CitySearch({ value, onChange }) {
         </div>
       )}
       {value && (
-        <div className="city-coords">
+        <div className="city-coords" style={{ textAlign: 'center' }}>
           {value.lat > 0 ? value.lat.toFixed(2)+'°N' : Math.abs(value.lat).toFixed(2)+'°S'}
           {' · '}
           {value.lng > 0 ? value.lng.toFixed(2)+'°E' : Math.abs(value.lng).toFixed(2)+'°W'}
@@ -280,7 +282,111 @@ export default function CharacterEditor({ initialColors, initialBirthData, onSav
 
         {natalPlacements && (
           <div className="char-editor-wheel">
-            <HouseWheel placements={natalPlacements} houseCusps={houseCusps} size={300} />
+            <div style={{ padding: '0 0 16px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <div style={{ display: 'flex', gap: '20px', justifyContent: 'center', fontSize: '11px', fontFamily: "'JetBrains Mono', monospace", letterSpacing: '0.2px' }}>
+                {['Sun', 'Moon'].map(key => {
+                  const p = natalPlacements[key]
+                  if (!p) return null
+                  const color = ELEMENT_COLOR[SIGN_META[p.sign]?.element] ?? '#fff'
+                  return (
+                    <div key={key} style={{ color, display: 'flex', alignItems: 'center', gap: '5px' }}>
+                      <span style={{ fontSize: '1.2em' }}>{PLANET_GLYPHS[key]}</span>
+                      <span style={{ fontWeight: 800 }}>{p.sign} {SIGN_GLYPHS[p.sign]}</span>
+                      <span style={{ opacity: 0.6 }}>{Math.floor(p.degrees)}°{Math.floor((p.degrees % 1) * 60)}'</span>
+                    </div>
+                  )
+                })}
+              </div>
+
+              <div style={{ marginTop: '5px', fontSize: '12px', fontFamily: "'JetBrains Mono', monospace", letterSpacing: '0.2px', display: 'flex', alignItems: 'center', gap: '6px', color: ELEMENT_COLOR[SIGN_META[natalPlacements['Ascendant']?.sign]?.element] ?? '#fff' }}>
+                <span style={{ fontSize: '1.05em', opacity: 0.8 }}>{PLANET_GLYPHS['Ascendant']}</span>
+                <span style={{ fontWeight: 800 }}>{natalPlacements['Ascendant']?.sign} {SIGN_GLYPHS[natalPlacements['Ascendant']?.sign]}</span>
+                <span style={{ opacity: 0.6 }}>{Math.floor(natalPlacements['Ascendant']?.degrees)}°{Math.floor((natalPlacements['Ascendant']?.degrees % 1) * 60)}'</span>
+              </div>
+
+              {(() => {
+                const hTally = {}
+                Object.values(natalPlacements).forEach(p => {
+                  if (p.house) hTally[p.house] = (hTally[p.house] || 0) + 1
+                })
+                const maxH = Object.entries(hTally).sort((a,b) => b[1] - a[1])[0]
+                if (!maxH) return null
+                return (
+                  <div style={{ 
+                    fontSize: '10px', 
+                    color: '#ff9800', 
+                    opacity: 0.45, 
+                    fontStyle: 'italic', 
+                    marginTop: '5px',
+                    fontFamily: "'JetBrains Mono', monospace",
+                    letterSpacing: '0.5px'
+                  }}>
+                    {maxH[1] >= 3 ? 'Stellium' : 'Focus'} in H{maxH[0]} ({SIGN_META[Object.values(natalPlacements).find(p=>p.house==maxH[0])?.sign]?.element || ''}) — {maxH[1]} placements.
+                  </div>
+                )
+              })()}
+
+              {(() => {
+                const tally = { Fire: 0, Earth: 0, Air: 0, Water: 0 }
+                const modeTally = { Cardinal: 0, Fixed: 0, Mutable: 0 }
+                Object.values(natalPlacements).forEach(p => {
+                  const meta = SIGN_META[p.sign]
+                  if (meta) {
+                    if (meta.element) tally[meta.element]++
+                    if (meta.mode) modeTally[meta.mode]++
+                  }
+                })
+                const maxEl = Object.entries(tally).sort((a,b) => b[1]-a[1])[0]
+                const maxMo = Object.entries(modeTally).sort((a,b) => b[1]-a[1])[0]
+                const ELEMENTS_ORDER = ['Fire', 'Earth', 'Air', 'Water']
+
+                return (
+                  <div className="char-editor-summary-grid" style={{ 
+                    marginTop: '15px', 
+                    display: 'flex', 
+                    gap: '24px', 
+                    fontFamily: "'JetBrains Mono', monospace",
+                    fontSize: '9px'
+                  }}>
+                    {/* Elements Column */}
+                    <div style={{ flex: 1, minWidth: '94px' }}>
+                      {ELEMENTS_ORDER.map(el => {
+                        const n = tally[el]
+                        const isDominant = el === maxEl[0] && n > 0
+                        return (
+                          <div key={el} style={{ display: 'flex', alignItems: 'center', marginBottom: '3px', opacity: n === 0 ? 0.2 : 1 }}>
+                            <span style={{ width: '40px', color: ELEMENT_COLOR[el], fontWeight: isDominant ? 700 : 400 }}>{el.toUpperCase()}</span>
+                            <div style={{ flex: 1, height: '3px', background: 'rgba(255,255,255,0.05)', margin: '0 6px', borderRadius: 1 }}>
+                              <div style={{ height: '100%', width: maxEl[1] > 0 ? `${(n/maxEl[1])*100}%` : '0%', background: ELEMENT_COLOR[el], borderRadius: 1 }} />
+                            </div>
+                            <span style={{ width: '10px', textAlign: 'right', color: ELEMENT_COLOR[el] }}>{n}</span>
+                          </div>
+                        )
+                      })}
+                    </div>
+
+                    {/* Modalities Column */}
+                    <div style={{ flex: 1, minWidth: '94px' }}>
+                      {['Cardinal', 'Fixed', 'Mutable'].map(mode => {
+                        const n = modeTally[mode]
+                        const isDominant = mode === maxMo[0] && n > 0
+                        const modeCol = { Cardinal: '#f472b6', Fixed: '#a78bfa', Mutable: '#34d399' }[mode]
+                        return (
+                          <div key={mode} style={{ display: 'flex', alignItems: 'center', marginBottom: '3px', opacity: n === 0 ? 0.2 : 1 }}>
+                            <span style={{ width: '60px', color: modeCol, fontWeight: isDominant ? 700 : 400 }}>{mode.toUpperCase()}</span>
+                            <div style={{ flex: 1, height: '3px', background: 'rgba(255,255,255,0.05)', margin: '0 6px', borderRadius: 1 }}>
+                              <div style={{ height: '100%', width: maxMo[1] > 0 ? `${(n/maxMo[1])*100}%` : '0%', background: modeCol, borderRadius: 1 }} />
+                            </div>
+                            <span style={{ width: '10px', textAlign: 'right', color: modeCol }}>{n}</span>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </div>
+                )
+              })()}
+            </div>
+            <HouseWheel placements={natalPlacements} houseCusps={houseCusps} size={300} hideStellium />
           </div>
         )}
       </div>

@@ -4,8 +4,12 @@ import { HouseWheel } from '../HouseWheel/HouseWheel.jsx'
 
 const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
 
-const PLANET_GLYPHS = { Sun:'☉', Moon:'☽', Mercury:'☿', Venus:'♀', Mars:'♂', Jupiter:'♃', Saturn:'♄', Uranus:'♅', Neptune:'♆', Pluto:'♇', Chiron:'⚷', NorthNode:'☊', SouthNode:'☋', Lilith:'⚸', Ascendant:'ASC', Descendant:'DSC', Midheaven:'MC', IC:'IC', Vertex:'Vx', PartOfFortune:'⊕' }
-const PLANET_NAMES  = { NorthNode:'North Node', SouthNode:'South Node', PartOfFortune:'Part of Fortune' }
+export const PLANET_GLYPHS = { Sun:'☉', Moon:'☽', Mercury:'☿', Venus:'♀', Mars:'♂', Jupiter:'♃', Saturn:'♄', Uranus:'♅', Neptune:'♆', Pluto:'♇', Chiron:'⚷', NorthNode:'☊', SouthNode:'☋', Lilith:'⚸', Ascendant:'ASC', Descendant:'DSC', Midheaven:'MC', IC:'IC', Vertex:'Vx', PartOfFortune:'⊕' }
+export const SIGN_GLYPHS = {
+  Aries: '♈', Taurus: '♉', Gemini: '♊', Cancer: '♋', Leo: '♌', Virgo: '♍',
+  Libra: '♎', Scorpio: '♏', Sagittarius: '♐', Capricorn: '♑', Aquarius: '♒', Pisces: '♓'
+}
+export const PLANET_NAMES  = { NorthNode:'North Node', SouthNode:'South Node', PartOfFortune:'Part of Fortune' }
 const PLANET_ORDER  = ['Sun', 'Ascendant', 'Moon', 'Mercury', 'Venus', 'Mars', 'Jupiter', 'Saturn', 'Uranus', 'Neptune', 'Pluto', 'Chiron', 'NorthNode', 'SouthNode', 'Lilith', 'Descendant', 'Midheaven', 'IC', 'Vertex', 'PartOfFortune']
 
 const PLANET_DESC = {
@@ -60,7 +64,7 @@ const HOUSE_DESC = {
   12: { name: "House of the Hidden",    short: "the unconscious, isolation, karma, undoing" },
 }
 
-const ELEMENT_COLOR = { 
+export const ELEMENT_COLOR = { 
   Fire:  '#fb923c', // Orange
   Earth: '#86efac', // Green
   Air:   '#fef08a', // Yellow (Sunlight/Air)
@@ -135,6 +139,66 @@ function BirthChart({ placements, birthData, reading, mode, houseCusps }) {
 
   return (
     <div className="birth-chart">
+      <div style={{ padding: '0 0 24px', borderBottom: '2px solid rgba(255,255,255,0.1)', marginBottom: '24px' }}>
+        <div style={{ 
+          fontSize: '10px', 
+          color: 'rgba(255,255,255,0.4)', 
+          textTransform: 'uppercase', 
+          letterSpacing: '1px',
+          marginBottom: '12px',
+          fontWeight: 700
+        }}>Primary Placements</div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          {['Sun', 'Moon', 'Ascendant'].map(key => {
+            const p = displayPlacements[key]
+            if (!p) return null
+            const color = ELEMENT_COLOR[SIGN_META[p.sign]?.element] ?? '#fff'
+            return (
+              <div key={key} style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'space-between', 
+                padding: '12px 14px', 
+                background: 'rgba(255,255,255,0.03)', 
+                borderLeft: `3px solid ${color}`, 
+                borderRadius: '4px' 
+              }}>
+                <div style={{ 
+                  fontSize: '11px', 
+                  fontWeight: 900, 
+                  letterSpacing: '1px', 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: '12px', 
+                  color: color,
+                  width: '130px'
+                }}>
+                  <span style={{ fontSize: '18px', width: '24px', textAlign: 'center' }}>{PLANET_GLYPHS[key]}</span> 
+                  {PLANET_NAMES[key] ?? key}
+                </div>
+                <div style={{ 
+                  fontSize: '14px', 
+                  fontFamily: "'JetBrains Mono', monospace", 
+                  color: 'rgba(255, 255, 255, 0.95)', 
+                  flex: 1, 
+                  textAlign: 'right',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'flex-end',
+                  gap: '10px'
+                }}>
+                  <span style={{ opacity: 0.9 }}>{p.sign}</span> 
+                  <span style={{ color: '#fff' }}>{fmtDeg(p.degrees)}</span>
+                  <span style={{ color: color, marginLeft: '12px', fontSize: '11px', fontWeight: 700, background: `${color}22`, padding: '2px 8px', borderRadius: '4px' }}>
+                    H{p.house}
+                  </span>
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      </div>
+
       {birthLine && (
         <div className="birth-chart__header">{birthLine}</div>
       )}
@@ -223,6 +287,74 @@ function BirthChart({ placements, birthData, reading, mode, houseCusps }) {
         </tbody>
       </table>
 
+      {/* BIG THREE SUMMARY */}
+      {/* (Simplified text-based summary + Stellium) */}
+      {(() => {
+        const big3 = ['Sun', 'Moon', 'Ascendant'].map(key => {
+          const p = displayPlacements[key]
+          if (!p) return null
+          const color = ELEMENT_COLOR[SIGN_META[p.sign]?.element] ?? '#fff'
+          const sGlyph = SIGN_GLYPHS[p.sign] || ''
+          const pGlyph = PLANET_GLYPHS[key] || ''
+          return (
+            <span key={key} style={{ color, display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+              <span style={{ fontSize: '1.25em' }}>{pGlyph}</span>
+              <span style={{ fontWeight: 800 }}>{p.sign} {sGlyph}</span>
+              <span style={{ opacity: 0.9, fontSize: '0.95em' }}>{Math.floor(p.degrees)}°{Math.floor((p.degrees % 1) * 60)}'</span>
+              <span style={{ opacity: 0.5, fontSize: '0.85em', fontStyle: 'italic' }}>H{p.house}</span>
+            </span>
+          )
+        }).filter(Boolean)
+
+        // Calculate focus/stellium using local logic consistent with footer
+        const hTally = {}
+        rows.forEach(pName => {
+          const p = displayPlacements[pName]
+          if (p && p.house) {
+            hTally[p.house] = (hTally[p.house] || 0) + 1
+          }
+        })
+        const maxH = Object.entries(hTally).sort((a,b) => b[1] - a[1])[0]
+        const maxHCount = maxH ? maxH[1] : 0
+        const hId = maxH ? maxH[0] : null
+        
+        const stelliumText = hId ? (
+          <div style={{ 
+            width: '100%', 
+            textAlign: 'center', 
+            fontSize: '11px', 
+            color: 'rgba(255,255,255,0.7)', 
+            marginTop: '10px', 
+            fontStyle: 'italic', 
+            letterSpacing: '0.8px',
+            background: 'rgba(255,255,255,0.03)',
+            padding: '4px 0',
+            borderTop: '1px solid rgba(255,255,255,0.03)',
+            borderBottom: '1px solid rgba(255,255,255,0.03)'
+          }}>
+            {maxHCount >= 3 ? 'STELLIUM' : 'FOCUS'} IN HOUSE {hId} ({HOUSE_DESC_LOCAL[hId]?.name.toUpperCase() || '?'}) — {maxHCount} PLACEMENTS
+          </div>
+        ) : null
+
+        if (big3.length === 0) return null
+
+        return (
+          <div style={{ 
+            padding: '16px 0', 
+            borderBottom: '1px solid rgba(255,255,255,0.1)', 
+            marginBottom: '24px',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            fontFamily: "'JetBrains Mono', monospace"
+          }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', columnGap: '24px', rowGap: '12px', justifyContent: 'center', fontSize: '13px' }}>
+              {big3.reduce((prev, curr, i) => i === 0 ? [curr] : [...prev, <span key={`sep-${i}`} style={{ opacity: 0.2 }}>•</span>, curr], [])}
+            </div>
+          </div>
+        )
+      })()}
+
       {(() => {
         const maxEl   = Object.entries(tally).length > 0 ? Object.entries(tally).sort((a,b) => b[1]-a[1])[0] : ['Air', 0]
         const maxMode = Object.entries(modeTally).length > 0 ? Object.entries(modeTally).sort((a,b) => b[1]-a[1])[0] : ['Cardinal', 0]
@@ -256,8 +388,8 @@ function BirthChart({ placements, birthData, reading, mode, houseCusps }) {
           : 'Air'
 
         return (
-          <>
-          <div className="birth-chart__summary">
+          <div className="birth-chart__footer">
+            <div className="birth-chart__summary">
             <div className="birth-chart__summary-column">
               <div className="birth-chart__summary-title">Elements</div>
               <div className="birth-chart__summary-bars">
@@ -509,22 +641,29 @@ function BirthChart({ placements, birthData, reading, mode, houseCusps }) {
                     const isHovered = hovered?.type === 'house' && hovered.id === h
 
                     return (
-                      <g key={h} 
-                         onMouseEnter={() => setHovered({ type: 'house', id: h, label: `House ${h}`, theme: HOUSE_THEMES_LOCAL[h], desc: HOUSE_DESC_LOCAL[h]?.long || HOUSE_DESC_LOCAL[h]?.short })}
-                         onMouseLeave={() => setHovered(null)}
-                         style={{ cursor: 'default' }}>
-                        {/* House base slice */}
+                      <React.Fragment key={h}>
+                        {/* Interactive area for House hover (placed BEHIND planets) */}
                         <path d={arc(startDeg, endDeg, INNER_R, BASE_R)}
-                          fill={isHovered ? "rgba(255,255,255,0.05)" : "rgba(255,255,255,0.01)"} 
-                          stroke="rgba(255,255,255,0.03)" strokeWidth="0.5" />
+                          fill="transparent"
+                          onMouseEnter={() => setHovered({ type: 'house', id: h, label: `House ${h}`, theme: HOUSE_THEMES_LOCAL[h], desc: HOUSE_DESC_LOCAL[h]?.long || HOUSE_DESC_LOCAL[h]?.short })}
+                          onMouseLeave={() => setHovered(null)}
+                          style={{ cursor: 'default' }}
+                        />
 
-                        {/* House number band with obviously highlighted borders */}
-                        <path d={arc(startDeg, endDeg, HOUSE_R1, HOUSE_R2)}
-                          fill={isHovered ? "rgba(255,255,255,0.2)" : "rgba(255,255,255,0.08)"} 
-                          stroke={isHovered ? "rgba(255,255,255,0.9)" : "rgba(255,255,255,0.6)"} 
-                          strokeWidth="1.2" />
+                        <g style={{ pointerEvents: 'none' }}>
+                          {/* House base slice */}
+                          <path d={arc(startDeg, endDeg, INNER_R, BASE_R)}
+                            fill={isHovered ? "rgba(255,255,255,0.05)" : "rgba(255,255,255,0.01)"} 
+                            stroke="rgba(255,255,255,0.03)" strokeWidth="0.5" />
 
-                        {/* Planets in Concentric Rings */}
+                          {/* House number band with obviously highlighted borders */}
+                          <path d={arc(startDeg, endDeg, HOUSE_R1, HOUSE_R2)}
+                            fill={isHovered ? "rgba(255,255,255,0.2)" : "rgba(255,255,255,0.08)"} 
+                            stroke={isHovered ? "rgba(255,255,255,0.9)" : "rgba(255,255,255,0.6)"} 
+                            strokeWidth="1.2" />
+                        </g>
+
+                        {/* Planets in Concentric Rings (Interactive) */}
                         {housePlanets.map((pName) => {
                           const pData = displayPlacements[pName]
                           const pMeta = SIGN_META[pData.sign]
@@ -571,6 +710,7 @@ function BirthChart({ placements, birthData, reading, mode, houseCusps }) {
                           return (
                             <text x={hx} y={hy} textAnchor="middle" dominantBaseline="middle"
                               fontSize="7" fontFamily="monospace" fontWeight="800"
+                              style={{ pointerEvents: 'none' }}
                               fill={n > 0 ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.4)'}>
                               {h}
                             </text>
@@ -580,9 +720,9 @@ function BirthChart({ placements, birthData, reading, mode, houseCusps }) {
                         {/* H1 marker */}
                         {h === 1 && (() => {
                           const [mx, my] = polarToXY(0, SIGN_R2 + 4)
-                          return <circle cx={mx} cy={my} r="2.5" fill="rgba(255,255,255,0.5)" />
+                          return <circle cx={mx} cy={my} r="2.5" fill="rgba(255,255,255,0.5)" style={{ pointerEvents: 'none' }} />
                         })()}
-                      </g>
+                      </React.Fragment>
                     )
                   })}
 
@@ -684,13 +824,13 @@ function BirthChart({ placements, birthData, reading, mode, houseCusps }) {
                   )}
                 </div>
 
-                <div className="birth-chart__summary-gloss" style={{ color: ELEMENT_COLOR[maxHouseElLocal], marginTop: 40, textAlign: 'center' }}>
+                <div className="birth-chart__summary-gloss" style={{ display: 'none' }}>
                   {(maxHouseCount || 0) >= 3 ? 'Stellium' : 'Focus'} in H{maxHouse ? maxHouse[0] : '?'} ({maxHouse ? HOUSE_THEMES_LOCAL[Number(maxHouse[0])] : 'unknown'}) — {maxHouseCount || 0} placements.
                 </div>
               </div>
             )
           })()}
-          </>
+          </div>
         )
       })()}
     </div>
@@ -814,6 +954,34 @@ export default function HoroscopeModal({ birthData, onClose }) {
                     <div className="modal__label">Lucky {lucky.element}</div>
                     <div className="modal__text modal__lucky-value">{lucky.value}</div>
                   </div>
+
+                  {/* Summary of Big Three right here in Reading mode too */}
+                  {_debug?.natalPlacements && (
+                    <div className="modal__section" style={{ borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: 16 }}>
+                      <div className="modal__label" style={{ marginBottom: 12 }}>Your Big Three</div>
+                      <div style={{ 
+                        display: 'flex', 
+                        flexWrap: 'wrap', 
+                        gap: '12px 24px', 
+                        fontSize: '13px', 
+                        fontFamily: "'JetBrains Mono', monospace" 
+                      }}>
+                        {['Sun', 'Moon', 'Ascendant'].map((key, i) => {
+                          const p = _debug.natalPlacements[key]
+                          if (!p) return null
+                          const color = ELEMENT_COLOR[SIGN_META[p.sign]?.element] ?? '#fff'
+                          return (
+                            <div key={key} style={{ color, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                              <span style={{ fontSize: '1.2em' }}>{PLANET_GLYPHS[key]}</span>
+                              <span style={{ fontWeight: 800 }}>{p.sign} {SIGN_GLYPHS[p.sign]}</span>
+                              <span style={{ opacity: 0.8, fontSize: '0.9em' }}>{Math.floor(p.degrees)}°{Math.floor((p.degrees % 1) * 60)}'</span>
+                              <span style={{ opacity: 0.5, fontSize: '0.85em' }}>H{p.house}</span>
+                            </div>
+                          )
+                        })}
+                      </div>
+                    </div>
+                  )}
                 </>
               )}
             </>

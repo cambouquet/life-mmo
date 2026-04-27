@@ -152,7 +152,7 @@ export function DateWheel({ value, onChange, onPreview, size = 220 }) {
   const DAY_R1 = 28, DAY_R2 = 50
   const MON_R1 = 54, MON_R2 = 76
   const YR_R1  = 80, YR_R2  = 102
-  const NEEDLE_R1 = 106, NEEDLE_R2 = 116  // needle track just outside year ring
+  const NEEDLE_R1 = 101, NEEDLE_R2 = 111  // needle track just outside year ring
 
   const [hovDay,  setHovDay]  = useState(null)
   const [hovMon,  setHovMon]  = useState(null)
@@ -326,7 +326,7 @@ export function TimeWheel({ value, onChange, onPreview, size = 180 }) {
   const MN_R1 = 28, MN_R2 = 52
   const HR_R1 = 56, HR_R2 = 80
 
-  const HR_NEEDLE_R1 = 82, HR_NEEDLE_R2 = 92
+  const HR_NEEDLE_R1 = 81, HR_NEEDLE_R2 = 91
 
   const [hovHour, setHovHour] = useState(null)
   const [hovMin,  setHovMin]  = useState(null)
@@ -419,9 +419,9 @@ export function TimeWheel({ value, onChange, onPreview, size = 180 }) {
          onPointerUp={timeNeedle.onPointerUp} style={{ cursor:'grab' }}>
         <circle cx={cx} cy={cy} r={HR_NEEDLE_R2 + 4} fill="none" stroke="transparent" strokeWidth="22" />
         <g ref={timeNeedleRef}>
-          <line x1={cx} y1={cy - HR_NEEDLE_R1 + 4} x2={cx} y2={cy - HR_NEEDLE_R2 - 4}
+          <line x1={cx} y1={cy - HR_NEEDLE_R1} x2={cx} y2={cy - HR_NEEDLE_R2}
             stroke="rgba(168,85,247,0.35)" strokeWidth="10" strokeLinecap="round" />
-          <line x1={cx} y1={cy - HR_NEEDLE_R1 + 4} x2={cx} y2={cy - HR_NEEDLE_R2 - 4}
+          <line x1={cx} y1={cy - HR_NEEDLE_R1} x2={cx} y2={cy - HR_NEEDLE_R2}
             stroke="rgba(232,212,255,0.95)" strokeWidth="2" strokeLinecap="round" />
         </g>
       </g>

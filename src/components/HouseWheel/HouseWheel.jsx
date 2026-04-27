@@ -27,7 +27,7 @@ const ORBITS = [
 ]
 const PLANET_RINGS = ORBITS.reduce((acc, o) => ({ ...acc, [o.id]: o.r }), {})
 
-const HOUSE_THEMES = {
+export const HOUSE_THEMES = {
   1:'self', 2:'resources', 3:'mind', 4:'home', 5:'pleasure',
   6:'service', 7:'partnership', 8:'transformation', 9:'expansion',
   10:'career', 11:'community', 12:'hidden'
@@ -84,7 +84,7 @@ const PLANET_SUMMARY = {
 //   placements — object from enrichPlacements() (has .longitude, .sign, .degrees, .house)
 //   houseCusps — array[12] of ecliptic longitudes from getPlacidusHouses()
 //   size       — optional SVG size in px (default 300)
-export function HouseWheel({ placements, houseCusps, size = 300 }) {
+export function HouseWheel({ placements, houseCusps, size = 300, hideStellium }) {
   const [hovered,     setHovered]     = useState(null)
   const [lockedPoint, setLockedPoint] = useState(null)
 
@@ -310,7 +310,7 @@ export function HouseWheel({ placements, houseCusps, size = 300 }) {
         })()}
       </div>
 
-      {maxHouseEntry && (
+      {!hideStellium && maxHouseEntry && (
         <div style={{ fontSize:11, fontStyle:'italic', color:ELEMENT_COLOR[maxHouseEl], marginTop:12, textAlign:'center', opacity:0.8 }}>
           {maxHouseCount >= 3 ? 'Stellium' : 'Focus'} in H{maxHouseEntry[0]} ({HOUSE_THEMES[Number(maxHouseEntry[0])]}) — {maxHouseCount} placements.
         </div>
