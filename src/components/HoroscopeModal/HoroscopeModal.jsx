@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { generateHoroscope, SIGN_META } from '../../game/astro/horoscope.js'
 
 const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
@@ -35,6 +35,8 @@ function fmtDeg(decimal) {
 
 // ── Birth Chart view ──────────────────────────────────────────────────────────
 function BirthChart({ placements, birthData, reading, mode }) {
+  const [selected, setSelected] = useState(null)
+  
   if (!placements) {
     return (
       <div style={{ color:'#5a3870', fontSize:12, fontStyle:'italic', padding:'8px 0' }}>
@@ -74,62 +76,160 @@ function BirthChart({ placements, birthData, reading, mode }) {
             const meta = SIGN_META[p.sign]
             const col  = ELEMENT_COLOR[meta?.element] ?? '#c8a8f0'
             const isAsc = planet === 'Ascendant'
+            const isSelected = selected === planet
+
+            const PLANET_DESC = {
+              Sun:       { summary: "Your core self — who you are becoming.", detail: "The Sun is your conscious identity, the ego you build across a lifetime. It shows what you are here to master and express." },
+              Moon:      { summary: "Your inner world — how you feel and need.", detail: "The Moon governs your emotional instincts, memory, and what makes you feel safe. It is the part of you that reacts before thinking." },
+              Mercury:   { summary: "Your mind — how you think and speak.", detail: "Mercury rules your perception, reasoning, and communication style. It shapes how fast you process ideas and how you express them to others." },
+              Venus:     { summary: "Your heart — what you love and desire.", detail: "Venus governs attraction, beauty, and values. It reveals what draws you in and how you behave in close relationships." },
+              Mars:      { summary: "Your drive — how you act and fight.", detail: "Mars is raw energy and will. It shows how you pursue goals, handle conflict, and assert yourself when something matters." },
+              Jupiter:   { summary: "Your growth — where life opens up for you.", detail: "Jupiter expands whatever it touches. It points to the area of life where you find abundance, optimism, and the urge to seek meaning." },
+              Saturn:    { summary: "Your discipline — where you are tested.", detail: "Saturn brings structure through challenge. The sign and house it occupies reveal where you must work hardest — and where mastery is most rewarding." },
+              Ascendant: { summary: "Your mask — how others first see you.", detail: "The Ascendant is the zodiac sign rising on the eastern horizon at your birth. It colours your appearance, demeanour, and the instinctive role you play in new situations." },
+            }
+
+            const SIGN_DESC = {
+              Aries:       { short: "expressed with boldness and urgency",        long: "Aries sharpens energy into impulse and initiative. There is speed, directness, and a need to be first." },
+              Taurus:      { short: "expressed with patience and groundedness",    long: "Taurus slows energy into something steady and embodied. There is persistence, sensuality, and a need for security." },
+              Gemini:      { short: "expressed with curiosity and versatility",    long: "Gemini disperses energy across ideas and connections. There is wit, restlessness, and a need to communicate." },
+              Cancer:      { short: "expressed through feeling and instinct",      long: "Cancer turns energy inward and protective. There is empathy, memory, and a need to belong and nurture." },
+              Leo:         { short: "expressed with warmth and self-assurance",    long: "Leo channels energy into self-expression and generosity. There is pride, creativity, and a need to be seen." },
+              Virgo:       { short: "expressed through precision and service",     long: "Virgo focuses energy into analysis and refinement. There is discernment, humility, and a need to be useful." },
+              Libra:       { short: "expressed through harmony and relationship",  long: "Libra distributes energy between self and other. There is grace, indecision, and a need for fairness." },
+              Scorpio:     { short: "expressed with intensity and depth",          long: "Scorpio concentrates energy into transformation. There is power, suspicion, and a need to uncover what is hidden." },
+              Sagittarius: { short: "expressed with freedom and vision",           long: "Sagittarius expands energy toward meaning and horizon. There is optimism, excess, and a need for truth." },
+              Capricorn:   { short: "expressed with discipline and ambition",      long: "Capricorn structures energy into long-term achievement. There is patience, control, and a need to build something lasting." },
+              Aquarius:    { short: "expressed through originality and detachment",long: "Aquarius breaks energy away from convention. There is brilliance, coldness, and a need to serve a larger idea." },
+              Pisces:      { short: "expressed with sensitivity and imagination",  long: "Pisces dissolves energy into the boundless. There is compassion, escapism, and a need to transcend the ordinary." },
+            }
+
+            const pd = PLANET_DESC[planet]
+            const sd = SIGN_DESC[p.sign]
+
             return (
-              <tr key={planet} className={`birth-chart__row${isAsc ? ' birth-chart__row--asc' : ''}`}>
-                <td className="birth-chart__glyph" style={{ color: col }}>
-                  {PLANET_GLYPHS[planet]}
-                </td>
-                <td className="birth-chart__planet">{planet}</td>
-                <td className="birth-chart__sign" style={{ color: col }}>
-                  {p.symbol} {p.sign}
-                </td>
-                <td className="birth-chart__deg">{fmtDeg(p.degrees)}</td>
-                <td className="birth-chart__element" style={{ color: col }}>
-                  {meta?.element ?? ''}
-                </td>
-              </tr>
+              <React.Fragment key={planet}>
+                <tr 
+                  className={`birth-chart__row${isAsc ? ' birth-chart__row--asc' : ''}${isSelected ? ' is-selected' : ''}`} 
+                  style={{ color: col }} 
+                  onClick={() => setSelected(isSelected ? null : planet)}
+                >
+                  <td className="birth-chart__glyph">
+                    {PLANET_GLYPHS[planet]}
+                  </td>
+                  <td className="birth-chart__planet">
+                    {planet}
+                  </td>
+                  <td className="birth-chart__sign">
+                    {p.symbol} {p.sign}
+                  </td>
+                  <td className="birth-chart__deg">
+                    {fmtDeg(p.degrees)}
+                  </td>
+                  <td className="birth-chart__element-cell">
+                    <span className="birth-chart__element" style={{ color: col, backgroundColor: `${col}22`, border: `1px solid ${col}44` }}>
+                      {meta?.element ?? ''}
+                    </span>
+                  </td>
+                </tr>
+                {isSelected && (
+                  <tr className="birth-chart__inline-detail">
+                    <td colSpan="5">
+                      <div className="birth-chart__detail-content" style={{ borderLeftColor: col }}>
+                        <strong style={{ color: col }}>{planet} in {p.sign} — {pd?.summary}, {sd?.short}.</strong>
+                        <br/><br/>
+                        <span style={{ opacity: 0.9 }}>
+                          <em style={{ color: col, fontStyle:'normal' }}>{planet}: </em>{pd?.detail}
+                        </span>
+                        <br/><br/>
+                        <span style={{ opacity: 0.85 }}>
+                          <em style={{ color: col, fontStyle:'normal' }}>{p.symbol} {p.sign}: </em>{sd?.long}
+                        </span>
+                        <br/><br/>
+                        <span style={{ opacity: 0.7 }}>
+                          <em style={{ fontStyle:'normal' }}>° {Math.floor(p.degrees)}° in sign: </em>{
+                            Math.floor(p.degrees) <= 3 ? "Early degrees — this energy is fresh, unformed, and still finding its footing. Raw potential." :
+                            Math.floor(p.degrees) <= 9 ? "First decan — this energy expresses in its purest, most archetypal form." :
+                            Math.floor(p.degrees) <= 19 ? "Second decan — this energy has matured into complexity and nuance." :
+                            Math.floor(p.degrees) <= 26 ? "Third decan — this energy is seasoned, carrying experience and depth." :
+                            "Late degrees — this energy is at a threshold, carrying the weight of the sign and approaching a transition."
+                          }
+                        </span>
+                      </div>
+                    </td>
+                  </tr>
+                )}
+              </React.Fragment>
             )
           })}
         </tbody>
       </table>
 
-      <div className="birth-chart__summary">
-        <div className="birth-chart__summary-column">
-          <div className="birth-chart__summary-title">Elements</div>
-          <div className="birth-chart__summary-group">
-            {Object.entries(tally).map(([el, n]) => (
-              <div key={el} className="birth-chart__summary-item" style={{ opacity: n > 0 ? 1 : 0.3 }}>
-                <span className="birth-chart__summary-label" style={{ color: ELEMENT_COLOR[el] }}>{el}</span>
-                <span className="birth-chart__summary-count" style={{ color: ELEMENT_COLOR[el] }}>{n}</span>
-                <div className="birth-chart__summary-bar-container">
-                  <div className="birth-chart__summary-bar" style={{ 
-                    width: `${(n / rows.length) * 100}%`, 
-                    backgroundColor: ELEMENT_COLOR[el] 
-                  }} />
-                </div>
+      {(() => {
+        const maxEl   = Object.entries(tally).sort((a,b) => b[1]-a[1])[0]
+        const maxMode = Object.entries(modeTally).sort((a,b) => b[1]-a[1])[0]
+        const ELEMENT_GLOSS = {
+          Fire:  "instinctive, passionate, forward-moving",
+          Earth: "grounded, practical, body-aware",
+          Air:   "relational, intellectual, idea-driven",
+          Water: "intuitive, feeling-led, depth-seeking",
+        }
+        const MODE_GLOSS = {
+          Cardinal: "initiating — you begin things",
+          Fixed:    "sustaining — you hold and deepen",
+          Mutable:  "adapting — you shift and synthesise",
+        }
+        return (
+          <div className="birth-chart__summary">
+            <div className="birth-chart__summary-column">
+              <div className="birth-chart__summary-title">Elements</div>
+              <div className="birth-chart__summary-bars">
+                {Object.entries(tally).map(([el, n]) => {
+                  const isDominant = el === maxEl[0] && n > 0
+                  return (
+                    <div key={el} className={`birth-chart__bar-row${isDominant ? ' is-dominant' : ''}`} style={{ opacity: n === 0 ? 0.2 : 1 }}>
+                      <span className="birth-chart__bar-label" style={{ color: ELEMENT_COLOR[el] }}>{el}</span>
+                      <div className="birth-chart__bar-track">
+                        <div className="birth-chart__bar-fill" style={{ width: maxEl[1] > 0 ? `${(n / maxEl[1]) * 100}%` : '0%', backgroundColor: ELEMENT_COLOR[el] }} />
+                      </div>
+                      <span className="birth-chart__bar-count" style={{ color: ELEMENT_COLOR[el] }}>{n}</span>
+                    </div>
+                  )
+                })}
               </div>
-            ))}
-          </div>
-        </div>
+              {maxEl[1] > 0 && (
+                <div className="birth-chart__summary-gloss" style={{ color: ELEMENT_COLOR[maxEl[0]] }}>
+                  Dominant {maxEl[0]} — {ELEMENT_GLOSS[maxEl[0]]}.
+                </div>
+              )}
+            </div>
 
-        <div className="birth-chart__summary-column">
-          <div className="birth-chart__summary-title">Modalities</div>
-          <div className="birth-chart__summary-group">
-            {Object.entries(modeTally).map(([mode, n]) => (
-              <div key={mode} className="birth-chart__summary-item" style={{ opacity: n > 0 ? 1 : 0.3 }}>
-                <span className="birth-chart__summary-label" style={{ color: '#9a78c0' }}>{mode}</span>
-                <span className="birth-chart__summary-count" style={{ color: '#9a78c0' }}>{n}</span>
-                <div className="birth-chart__summary-bar-container">
-                  <div className="birth-chart__summary-bar" style={{ 
-                    width: `${(n / rows.length) * 100}%`, 
-                    backgroundColor: '#9a78c0' 
-                  }} />
-                </div>
+            <div className="birth-chart__summary-column">
+              <div className="birth-chart__summary-title">Modalities</div>
+              <div className="birth-chart__summary-bars">
+                {Object.entries(modeTally).map(([mode, n]) => {
+                  const isDominant = mode === maxMode[0] && n > 0
+                  const modeCol = { Cardinal: '#f472b6', Fixed: '#a78bfa', Mutable: '#34d399' }[mode]
+                  return (
+                    <div key={mode} className={`birth-chart__bar-row${isDominant ? ' is-dominant' : ''}`} style={{ opacity: n === 0 ? 0.2 : 1 }}>
+                      <span className="birth-chart__bar-label" style={{ color: modeCol }}>{mode}</span>
+                      <div className="birth-chart__bar-track">
+                        <div className="birth-chart__bar-fill" style={{ width: maxMode[1] > 0 ? `${(n / maxMode[1]) * 100}%` : '0%', backgroundColor: modeCol }} />
+                      </div>
+                      <span className="birth-chart__bar-count" style={{ color: modeCol }}>{n}</span>
+                    </div>
+                  )
+                })}
               </div>
-            ))}
+              {maxMode[1] > 0 && (
+                <div className="birth-chart__summary-gloss" style={{ color: '#9a78c0' }}>
+                  Dominant {maxMode[0]} — {MODE_GLOSS[maxMode[0]]}.
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-      </div>
+        )
+      })()}
     </div>
   )
 }
