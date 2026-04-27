@@ -295,111 +295,86 @@ export default function CharacterEditor({ initialColors, initialBirthData, onSav
 
         {natalPlacements && (
           <div className="char-editor-wheel">
-            <div style={{ padding: '0 0 16px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-              <div style={{ display: 'flex', gap: '20px', justifyContent: 'center', fontSize: '11px', fontFamily: "'JetBrains Mono', monospace", letterSpacing: '0.2px' }}>
-                {['Sun', 'Moon'].map(key => {
-                  const p = natalPlacements[key]
-                  if (!p) return null
-                  const color = ELEMENT_COLOR[SIGN_META[p.sign]?.element] ?? '#fff'
-                  return (
-                    <div key={key} style={{ color, display: 'flex', alignItems: 'center', gap: '5px' }}>
-                      <span style={{ fontSize: '1.2em' }}>{PLANET_GLYPHS[key]}</span>
-                      <span style={{ fontWeight: 800 }}>{p.sign} {SIGN_GLYPHS[p.sign]}</span>
-                      <span style={{ opacity: 0.6 }}>{Math.floor(p.degrees)}°{Math.floor((p.degrees % 1) * 60)}'</span>
-                    </div>
-                  )
-                })}
-              </div>
+            {(() => {
+              const tally = { Fire: 0, Earth: 0, Air: 0, Water: 0 }
+              const modeTally = { Cardinal: 0, Fixed: 0, Mutable: 0 }
+              Object.values(natalPlacements).forEach(p => {
+                const meta = SIGN_META[p.sign]
+                if (meta) {
+                  if (meta.element) tally[meta.element]++
+                  if (meta.mode) modeTally[meta.mode]++
+                }
+              })
+              const maxEl = Object.entries(tally).sort((a,b) => b[1]-a[1])[0]
+              const maxMo = Object.entries(modeTally).sort((a,b) => b[1]-a[1])[0]
+              const hTally = {}
+              Object.values(natalPlacements).forEach(p => {
+                if (p.house) hTally[p.house] = (hTally[p.house] || 0) + 1
+              })
+              const maxH = Object.entries(hTally).sort((a,b) => b[1] - a[1])[0]
+              const ELEMENTS_ORDER = ['Fire', 'Earth', 'Air', 'Water']
+              const sunP = natalPlacements['Sun']
+              const moonP = natalPlacements['Moon']
+              const ascP = natalPlacements['Ascendant']
 
-              <div style={{ marginTop: '5px', fontSize: '12px', fontFamily: "'JetBrains Mono', monospace", letterSpacing: '0.2px', display: 'flex', alignItems: 'center', gap: '6px', color: ELEMENT_COLOR[SIGN_META[natalPlacements['Ascendant']?.sign]?.element] ?? '#fff' }}>
-                <span style={{ fontSize: '1.05em', opacity: 0.8 }}>{PLANET_GLYPHS['Ascendant']}</span>
-                <span style={{ fontWeight: 800 }}>{natalPlacements['Ascendant']?.sign} {SIGN_GLYPHS[natalPlacements['Ascendant']?.sign]}</span>
-                <span style={{ opacity: 0.6 }}>{Math.floor(natalPlacements['Ascendant']?.degrees)}°{Math.floor((natalPlacements['Ascendant']?.degrees % 1) * 60)}'</span>
-              </div>
-
-              {(() => {
-                const hTally = {}
-                Object.values(natalPlacements).forEach(p => {
-                  if (p.house) hTally[p.house] = (hTally[p.house] || 0) + 1
-                })
-                const maxH = Object.entries(hTally).sort((a,b) => b[1] - a[1])[0]
-                if (!maxH) return null
-                return (
-                  <div style={{ 
-                    fontSize: '10px', 
-                    color: '#fff', 
-                    opacity: 0.65, 
-                    fontStyle: 'italic', 
-                    marginTop: '5px',
-                    fontFamily: "'JetBrains Mono', monospace",
-                    letterSpacing: '0.5px',
-                    padding: '8px 0'
-                  }}>
-                    {maxH[1] >= 3 ? 'Stellium' : 'Focus'} in H{maxH[0]} ({HOUSE_THEMES[maxH[0]] || ''}) — {maxH[1]} placements.
+              return (
+                <div className="char-editor-summary">
+                  {/* Row 1: Sun · Moon · Asc */}
+                  <div className="char-editor-summary__planets">
+                    {[['Sun', sunP], ['Moon', moonP], ['Asc', ascP]].map(([key, p]) => {
+                      if (!p) return null
+                      const color = ELEMENT_COLOR[SIGN_META[p.sign]?.element] ?? '#fff'
+                      return (
+                        <span key={key} className="char-editor-summary__planet" style={{ color }}>
+                          <span className="char-editor-summary__glyph">{PLANET_GLYPHS[key === 'Asc' ? 'Ascendant' : key]}</span>
+                          <span className="char-editor-summary__sign">{p.sign} {SIGN_GLYPHS[p.sign]}</span>
+                          <span className="char-editor-summary__deg">{Math.floor(p.degrees)}°{Math.floor((p.degrees % 1) * 60)}'</span>
+                        </span>
+                      )
+                    })}
                   </div>
-                )
-              })()}
 
-              {(() => {
-                const tally = { Fire: 0, Earth: 0, Air: 0, Water: 0 }
-                const modeTally = { Cardinal: 0, Fixed: 0, Mutable: 0 }
-                Object.values(natalPlacements).forEach(p => {
-                  const meta = SIGN_META[p.sign]
-                  if (meta) {
-                    if (meta.element) tally[meta.element]++
-                    if (meta.mode) modeTally[meta.mode]++
-                  }
-                })
-                const maxEl = Object.entries(tally).sort((a,b) => b[1]-a[1])[0]
-                const maxMo = Object.entries(modeTally).sort((a,b) => b[1]-a[1])[0]
-                const ELEMENTS_ORDER = ['Fire', 'Earth', 'Air', 'Water']
+                  {/* Row 2: stellium note */}
+                  {maxH && (
+                    <div className="char-editor-summary__stellium">
+                      {maxH[1] >= 3 ? 'Stellium' : 'Focus'} in H{maxH[0]} ({HOUSE_THEMES[maxH[0]] || ''}) — {maxH[1]} placements.
+                    </div>
+                  )}
 
-                return (
-                  <div className="char-editor-summary-grid" style={{ 
-                    marginTop: '15px', 
-                    display: 'flex', 
-                    gap: '24px', 
-                    fontFamily: "'JetBrains Mono', monospace",
-                    fontSize: '9px'
-                  }}>
-                    {/* Elements Column */}
-                    <div style={{ flex: 1, minWidth: '94px' }}>
+                  {/* Row 3: elements + modalities side by side */}
+                  <div className="char-editor-summary__grid">
+                    <div className="char-editor-summary__col">
                       {ELEMENTS_ORDER.map(el => {
                         const n = tally[el]
-                        const isDominant = el === maxEl[0] && n > 0
                         return (
-                          <div key={el} style={{ display: 'flex', alignItems: 'center', marginBottom: '3px', opacity: n === 0 ? 0.2 : 1 }}>
-                            <span style={{ width: '40px', color: ELEMENT_COLOR[el], fontWeight: isDominant ? 700 : 400 }}>{el.toUpperCase()}</span>
-                            <div style={{ flex: 1, height: '3px', background: 'rgba(255,255,255,0.05)', margin: '0 6px', borderRadius: 1 }}>
-                              <div style={{ height: '100%', width: maxEl[1] > 0 ? `${(n/maxEl[1])*100}%` : '0%', background: ELEMENT_COLOR[el], borderRadius: 1 }} />
+                          <div key={el} className="char-editor-summary__bar-row" style={{ opacity: n === 0 ? 0.2 : 1 }}>
+                            <span className="char-editor-summary__bar-label" style={{ color: ELEMENT_COLOR[el], fontWeight: el === maxEl[0] && n > 0 ? 700 : 400 }}>{el.slice(0,4).toUpperCase()}</span>
+                            <div className="char-editor-summary__bar-track">
+                              <div className="char-editor-summary__bar-fill" style={{ width: maxEl[1] > 0 ? `${(n/maxEl[1])*100}%` : '0%', background: ELEMENT_COLOR[el] }} />
                             </div>
-                            <span style={{ width: '10px', textAlign: 'right', color: ELEMENT_COLOR[el] }}>{n}</span>
+                            <span className="char-editor-summary__bar-num" style={{ color: ELEMENT_COLOR[el] }}>{n}</span>
                           </div>
                         )
                       })}
                     </div>
-
-                    {/* Modalities Column */}
-                    <div style={{ flex: 1, minWidth: '94px' }}>
-                      {['Cardinal', 'Fixed', 'Mutable'].map(mode => {
+                    <div className="char-editor-summary__col">
+                      {[['Cardinal','#f472b6'],['Fixed','#a78bfa'],['Mutable','#34d399']].map(([mode, modeCol]) => {
                         const n = modeTally[mode]
-                        const isDominant = mode === maxMo[0] && n > 0
-                        const modeCol = { Cardinal: '#f472b6', Fixed: '#a78bfa', Mutable: '#34d399' }[mode]
                         return (
-                          <div key={mode} style={{ display: 'flex', alignItems: 'center', marginBottom: '3px', opacity: n === 0 ? 0.2 : 1 }}>
-                            <span style={{ width: '60px', color: modeCol, fontWeight: isDominant ? 700 : 400 }}>{mode.toUpperCase()}</span>
-                            <div style={{ flex: 1, height: '3px', background: 'rgba(255,255,255,0.05)', margin: '0 6px', borderRadius: 1 }}>
-                              <div style={{ height: '100%', width: maxMo[1] > 0 ? `${(n/maxMo[1])*100}%` : '0%', background: modeCol, borderRadius: 1 }} />
+                          <div key={mode} className="char-editor-summary__bar-row" style={{ opacity: n === 0 ? 0.2 : 1 }}>
+                            <span className="char-editor-summary__bar-label" style={{ color: modeCol, fontWeight: mode === maxMo[0] && n > 0 ? 700 : 400 }}>{mode.slice(0,4).toUpperCase()}</span>
+                            <div className="char-editor-summary__bar-track">
+                              <div className="char-editor-summary__bar-fill" style={{ width: maxMo[1] > 0 ? `${(n/maxMo[1])*100}%` : '0%', background: modeCol }} />
                             </div>
-                            <span style={{ width: '10px', textAlign: 'right', color: modeCol }}>{n}</span>
+                            <span className="char-editor-summary__bar-num" style={{ color: modeCol }}>{n}</span>
                           </div>
                         )
                       })}
                     </div>
                   </div>
-                )
-              })()}
-            </div>
+                </div>
+              )
+            })()}
             <HouseWheel placements={natalPlacements} houseCusps={houseCusps} size={300} hideStellium />
           </div>
         )}

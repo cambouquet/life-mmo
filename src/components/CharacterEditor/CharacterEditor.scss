@@ -18,9 +18,21 @@
   gap: 24px;
   padding: 28px 32px;
   overflow: hidden;
+  width: 100%;
+  box-sizing: border-box;
+
+  &--wide {
+    // Let it fill the available width instead of fixed 1040px
+    // so it doesn't overflow narrow viewports
+    width: 100%;
+  }
 }
 
 .char-editor-wheel {
+  flex: 1;
+  min-width: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -42,10 +54,10 @@
 
   &-label {
     font-family: 'Inter', sans-serif;
-    font-size: 11px;
-    font-weight: 800;
-    color: rgba(255, 255, 255, 0.6);
-    letter-spacing: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.4);
+    letter-spacing: 2px;
     text-transform: uppercase;
   }
 }
@@ -63,7 +75,7 @@
   flex-direction: column;
   justify-content: space-between;
   width: 310px;
-  flex: 1 0 auto;
+  flex: 0 0 310px;
   max-height: 100%;
 }
 
@@ -325,6 +337,86 @@
     transition: color 0.15s ease;
 
     &:hover { color: rgba(255, 255, 255, 0.5); }
+  }
+}
+
+// ── Wheel column summary ──────────────────────────────────────────────────────
+.char-editor-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 0 10px;
+  font-family: $font-mono;
+  font-size: 9px;
+
+  &__planets {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  &__planet {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    white-space: nowrap;
+  }
+
+  &__glyph { font-size: 1.15em; }
+  &__sign  { font-weight: 800; font-size: 10px; }
+  &__deg   { opacity: 0.55; font-size: 9px; }
+
+  &__stellium {
+    font-size: 10px;
+    color: #fff;
+    opacity: 0.6;
+    font-style: italic;
+    letter-spacing: 0.3px;
+  }
+
+  &__grid {
+    display: flex;
+    gap: 16px;
+  }
+
+  &__col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  &__bar-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  &__bar-label {
+    width: 32px;
+    flex-shrink: 0;
+    letter-spacing: 0.3px;
+  }
+
+  &__bar-track {
+    flex: 1;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  &__bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.3s ease;
+  }
+
+  &__bar-num {
+    width: 12px;
+    text-align: right;
+    flex-shrink: 0;
   }
 }
 

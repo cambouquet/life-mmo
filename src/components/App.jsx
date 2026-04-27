@@ -7,6 +7,7 @@ import DialogModal           from './DialogModal/DialogModal.jsx'
 import GuidanceVoice         from './GuidanceVoice/GuidanceVoice.jsx'
 import CharacterEditor       from './CharacterEditor/CharacterEditor.jsx'
 import RecordButton          from './RecordButton/RecordButton.jsx'
+import VideoGallery          from './VideoGallery/VideoGallery.jsx'
 import DebugConsole          from './HUD/DebugConsole.jsx'
 import { useRecorder }       from '../playback/useRecorder.js'
 import { PlaybackEngine }    from '../playback/PlaybackEngine.js'
@@ -38,6 +39,8 @@ export default function App() {
   const [showDialog,    setShowDialog]    = useState(false)
   const [showHoroscope, setShowHoroscope] = useState(false)
   const [showEditor,    setShowEditor]    = useState(false)
+  const [showGallery,   setShowGallery]   = useState(false)
+  const [recordings,    setRecordings]    = useState([])
   const [charColors,    setCharColors]    = useState(() => load(LS_COLORS, DEFAULT_COLORS))
   const [birthData,     setBirthData]     = useState(() => load(LS_BIRTH,  DEFAULT_BIRTH))
 
@@ -45,7 +48,13 @@ export default function App() {
   const gameRef       = useRef(null)
   const uiOverlayRef  = useRef(null)
   const engineRef     = useRef(null)
-  const recorder      = useRecorder()
+  const recorder      = useRecorder({
+    onReady: (blob, filename) => {
+      const url = URL.createObjectURL(blob)
+      setRecordings(prev => [...prev, { id: Date.now(), url, filename, ts: Date.now() }])
+      setShowGallery(true)
+    }
+  })
   const handleStateChange = useCallback(({ facing, moving, log, guidance }) => {
     setFacing(facing)
     setMoving(moving)
@@ -56,7 +65,10 @@ export default function App() {
   const handleInteract = useCallback((target) => {
     if (showHoroscope) setShowHoroscope(false)
     else if (showEditor) setShowEditor(false)
-    else if (target === 'mirror') setShowEditor(true)
+    else if (target === 'mirror') {
+      console.action('Opening Mirror')
+      setShowEditor(true)
+    }
     else if (target === 'npc' || !showDialog) setShowDialog(true)
   }, [showHoroscope, showDialog, showEditor])
 
@@ -111,9 +123,18 @@ export default function App() {
             <CharacterEditor
               initialColors={charColors}
               initialBirthData={birthData}
-              onClose={() => setShowEditor(false)}
-              onChange={setCharColors}
+              onClose={() => {
+                console.action('Closing Mirror')
+                setShowEditor(false)
+              }}
+              onChange={(next) => {
+                const keys = Object.keys(next)
+                const changed = keys.find(k => next[k] !== charColors[k])
+                if (changed) console.action(`Changing ${changed} to ${next[changed]}`)
+                setCharColors(next)
+              }}
               onSave={(colors, data) => {
+                console.action('Saving character data')
                 setCharColors(colors)
                 setBirthData(data)
                 try { localStorage.setItem(LS_COLORS, JSON.stringify(colors)) } catch {}
@@ -138,9 +159,17 @@ export default function App() {
       <RecordButton
         status={recorder.status}
         progress={recorder.progress}
+        recordingCount={recordings.length}
         onRecord={handleRecord}
         onStop={handleStop}
+        onOpenGallery={() => setShowGallery(true)}
       />
+      {showGallery && (
+        <VideoGallery
+          videos={recordings}
+          onClose={() => setShowGallery(false)}
+        />
+      )}
     </div>
   )
 }

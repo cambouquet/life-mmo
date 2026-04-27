@@ -139,21 +139,64 @@
   white-space: pre-wrap;
   border-bottom: 1px solid rgba(255, 255, 255, 0.04);
   padding-bottom: 6px;
+  display: flex;
+  align-items: flex-start;
   
   &-ts {
-    margin-right: 6px;
+    margin-right: 12px;
     font-size: 9px;
     opacity: 0.35;
     flex-shrink: 0;
+    font-family: 'JetBrains Mono', monospace;
+    padding-top: 2px;
   }
 
-  &-type {
-    margin-right: 6px;
-    font-weight: 700;
-    font-size: 9px;
-    opacity: 0.5;
-    text-transform: uppercase;
+  &-content {
+    flex: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    min-width: 0; // allow truncation/wrap
+  }
+
+  &-msg {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &-copy {
+    opacity: 0;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.4);
+    padding: 4px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.15s;
     flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    svg {
+      width: 12px;
+      height: 12px;
+    }
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.3);
+      color: #fff;
+    }
+
+    &:active {
+      transform: scale(0.9);
+    }
+  }
+
+  &:hover &-copy {
+    opacity: 1;
   }
 
   &--log {
@@ -168,11 +211,11 @@
   &--error {
     color: #f87171;
     background: rgba(248, 113, 113, 0.05);
-    font-weight: 500;
   }
 
   &--action {
     color: #60a8ff;
-    background: rgba(96, 168, 255, 0.04);
+    background: rgba(96, 168, 255, 0.05);
+    font-weight: 500;
   }
 }

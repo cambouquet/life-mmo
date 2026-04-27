@@ -4,11 +4,13 @@ import html2canvas from 'html2canvas'
 // ffmpeg loaded as plain UMD scripts in index.html → window.FFmpegWASM / window.FFmpegUtil
 // This bypasses Vite's worker transform which breaks @ffmpeg/ffmpeg's internal worker spawn.
 
-export function useRecorder() {
+export function useRecorder({ onReady } = {}) {
   const mediaRecorderRef = useRef(null)
   const chunksRef        = useRef([])
   const ffmpegRef        = useRef(null)
   const captureFrameRef  = useRef(null)
+  const onReadyRef       = useRef(onReady)
+  onReadyRef.current     = onReady
   const [status,   setStatus]   = useState('idle')
   const [progress, setProgress] = useState(0)
 
@@ -145,9 +147,7 @@ export function useRecorder() {
 
       const data    = await ff.readFile('output.mp4')
       const mp4Blob = new Blob([data.buffer], { type: 'video/mp4' })
-      const url     = URL.createObjectURL(mp4Blob)
-      Object.assign(document.createElement('a'), { href: url, download: filename }).click()
-      URL.revokeObjectURL(url)
+      onReadyRef.current?.(mp4Blob, filename)
 
       setProgress(100)
       setStatus('done')

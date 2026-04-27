@@ -151,13 +151,15 @@ export function HouseWheel({ placements, houseCusps, size = 300, hideStellium })
   }
 
   return (
-    <div className="house-wheel-container" style={{ 
-      position: 'relative', 
-      padding: '20px', 
+    <div className="house-wheel-container" style={{
+      position: 'relative',
+      padding: '20px',
       margin: '0 auto',
-      width: 'fit-content'
+      width: '100%',
+      maxWidth: size,
+      boxSizing: 'border-box',
     }}>
-      <svg width={size} height={size} viewBox="0 0 300 300"
+      <svg width="100%" viewBox="0 0 300 300"
            style={{ display:'block', margin:'0 auto', overflow:'visible' }}>
 
         {/* orbit guide tracks */}
@@ -272,8 +274,7 @@ export function HouseWheel({ placements, houseCusps, size = 300, hideStellium })
         <circle cx={cx} cy={cy} r="10" fill="#0e0a1e" />
       </svg>
 
-      {/* fixed-height tooltip area — always reserves space so Stellium never shifts */}
-      <div style={{ position:'relative', height: 110, marginTop: 10 }}>
+      <div style={{ marginTop: 10 }}>
         {(lockedPoint || hovered) && (() => {
           const active = lockedPoint
             ? { type:'planet', id:lockedPoint, label:PLANET_NAMES[lockedPoint] ?? lockedPoint, glyph:PLANET_GLYPHS[lockedPoint],
@@ -282,11 +283,11 @@ export function HouseWheel({ placements, houseCusps, size = 300, hideStellium })
             : hovered
           return (
             <div style={{
-              position:'absolute', top:0, left:0, right:0,
+              position: 'relative',
               padding:'10px 14px',
               background: active.locked ? 'rgba(14,10,30,0.96)' : 'rgba(14,10,30,0.92)',
               border: active.locked ? '1px solid rgba(168,85,247,0.5)' : '1px solid rgba(255,255,255,0.1)',
-              borderRadius:6, zIndex:10,
+              borderRadius:6,
               color:'#e8d4ff', fontFamily:'inherit',
             }}>
               {active.locked && (

@@ -14,6 +14,9 @@ function releaseAll() {
 
 async function walkTo(getPos, targetX, targetY, threshold, abortRef) {
   const TICK = 50
+  let stuckCounter = 0
+  let lastX = 0
+  let lastY = 0
 
   while (true) {
     if (abortRef.current) {
@@ -25,13 +28,29 @@ async function walkTo(getPos, targetX, targetY, threshold, abortRef) {
     const dx = targetX - x
     const dy = targetY - y
 
-    if (Math.abs(dx) <= threshold && Math.abs(dy) <= threshold) {
+    const dist = Math.sqrt(dx * dx + dy * dy)
+    if (dist <= threshold) {
       releaseAll()
       return
     }
 
-    const moveH = Math.abs(dx) > threshold
-    const moveV = Math.abs(dy) > threshold
+    // Stuck detection: if we haven't moved significantly in 200ms
+    if (Math.abs(x - lastX) < 1 && Math.abs(y - lastY) < 1) {
+      stuckCounter++
+    } else {
+      stuckCounter = 0
+    }
+    lastX = x
+    lastY = y
+
+    if (stuckCounter > 8) { // Stuck for ~400ms
+      console.warn("Automation stuck, stopping movement.")
+      releaseAll()
+      return
+    }
+
+    const moveH = Math.abs(dx) > threshold / 1.5
+    const moveV = Math.abs(dy) > threshold / 1.5
 
     simulateKey('KeyA', moveH && dx < 0)
     simulateKey('KeyD', moveH && dx > 0)
@@ -73,32 +92,37 @@ export class PlaybackEngine {
 
   async moveTo(x, y, threshold = 10) {
     if (this._abortRef.current) return
+    console.action(`Moving to (${x}, ${y})`)
     await walkTo(this._getPos, x, y, threshold, this._abortRef)
     if (!this._abortRef.current) await sleep(jitter(120, 0.3))
   }
 
   async wait(ms) {
     if (this._abortRef.current) return
+    console.action(`Waiting ${ms}ms`)
     await sleep(jitter(ms, 0.05))
   }
 
   async openMirror() {
     if (this._abortRef.current) return
+    console.action("Opening Mirror")
     this._openEditor()
     await sleep(jitter(600, 0.15))
   }
 
   async closeMirror() {
     if (this._abortRef.current) return
+    console.action("Closing Mirror")
     this._closeEditor()
     await sleep(jitter(400, 0.15))
   }
 
   async changeColor(colorKey, hexValue) {
     if (this._abortRef.current) return
+    console.action(`Changing ${colorKey} to ${hexValue}`)
     await sleep(jitter(300, 0.3))
     this._colorChange(colorKey, hexValue)
-    await sleep(jitter(500, 0.2))
+    await sleep(jitter(150, 0.3))
   }
 
   async face(direction) {

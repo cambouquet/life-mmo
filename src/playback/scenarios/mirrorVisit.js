@@ -7,16 +7,14 @@
 // APPROACH: walk left from player start (480,320) toward mirror, stop at x=450
 //   Mirror solid cols end at x=431. x=450, y=320 → dist to centre (416,320) = 34px
 //   Just outside 32px trigger but close — use threshold=20 so we stop at ~450 which is fine.
-//   Actually use x=444: dist = 28px < 32px ✓, no collision (solid ends at x=431) ✓
-//
-// FRONT: step down to row below mirror (y=340), centred on mirror (x=416)
-//   dist to centre (416,320) = 20px < 32px ✓, facing up shows reflection ✓
+//   Actually use x=450: dist = 34px. 450 is safe from collision (ends at 431).
+//   We just need to be near the trigger (32px). 450 with threshold 15 is good.
 
-const APPROACH_X = 444
-const APPROACH_Y = 320
+const APPROACH_X = 450
+const APPROACH_Y = 328 // Align closer to the vertical center of the mirror
 
-const FRONT_X    = 416
-const FRONT_Y    = 340
+const FRONT_X    = 416 // Exact horizontal center of the mirror
+const FRONT_Y    = 346 // Step back more clearly to align with the mirror floor line
 
 // ── Random color helpers ──────────────────────────────────────────────────────
 
@@ -50,7 +48,7 @@ export async function mirrorVisit(engine) {
 
   // 1. Walk right-side of mirror (same row, stops before solid wall)
   await engine.wait(600)
-  await engine.moveTo(APPROACH_X, APPROACH_Y, 8)
+  await engine.moveTo(APPROACH_X, APPROACH_Y, 15) // Relaxed threshold
   await engine.wait(700)
 
   // 2. Open editor
@@ -68,7 +66,7 @@ export async function mirrorVisit(engine) {
   await engine.wait(400)
 
   // 5. Move directly in front of mirror (below it) to admire the reflection
-  await engine.moveTo(FRONT_X, FRONT_Y, 8)
+  await engine.moveTo(FRONT_X, FRONT_Y, 10) // Relaxed threshold
   await engine.face('up')
   await engine.wait(2800)
 }

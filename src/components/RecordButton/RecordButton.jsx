@@ -1,6 +1,6 @@
 import './RecordButton.scss'
 
-export default function RecordButton({ status, progress, onRecord, onStop }) {
+export default function RecordButton({ status, progress, recordingCount, onRecord, onStop, onOpenGallery }) {
   const isRecording  = status === 'recording'
   const isConverting = status === 'converting'
   const busy         = isRecording || isConverting
@@ -13,6 +13,19 @@ export default function RecordButton({ status, progress, onRecord, onStop }) {
 
   return (
     <div className="record-wrap">
+      {recordingCount > 0 && !busy && (
+        <button
+          className="record-gallery-btn"
+          onClick={onOpenGallery}
+          title={`${recordingCount} recording${recordingCount > 1 ? 's' : ''}`}
+        >
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="1" y="3" width="10" height="8" rx="1.5" />
+            <path d="M11 6l4-2v8l-4-2" />
+          </svg>
+          <span className="record-gallery-count">{recordingCount}</span>
+        </button>
+      )}
       <button
         type="button"
         className={`record-btn record-btn--${status}`}
