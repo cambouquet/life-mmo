@@ -327,7 +327,8 @@ export default function CharacterEditor({ initialColors, initialBirthData, onSav
                     fontStyle: 'italic', 
                     marginTop: '5px',
                     fontFamily: "'JetBrains Mono', monospace",
-                    letterSpacing: '0.5px'
+                    letterSpacing: '0.5px',
+                    padding: '8px 0'
                   }}>
                     {maxH[1] >= 3 ? 'Stellium' : 'Focus'} in H{maxH[0]} ({HOUSE_THEMES[maxH[0]] || ''}) — {maxH[1]} placements.
                   </div>

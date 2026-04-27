@@ -441,8 +441,8 @@ export function TimeWheel({ value, onChange, onPreview, size = 180 }) {
         {String(hovHour !== null ? hovHour : hour).padStart(2,'0')}:{String(hovMin !== null ? hovMin : minute).padStart(2,'0')}
       </text>
 
-      {/* 12-o'clock tick */}
-      <line x1={cx} y1={cy - MN_R2 - 2} x2={cx} y2={cy - HR_R1 + 2}
+      {/* 12-o'clock selector tick */}
+      <line x1={cx} y1={cy - HR_R2 - 2} x2={cx} y2={cy - MN_R1 + 2}
         stroke="rgba(168,85,247,0.5)" strokeWidth="1" strokeDasharray="2,2" />
     </svg>
   )
