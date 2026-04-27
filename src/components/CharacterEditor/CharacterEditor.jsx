@@ -267,7 +267,15 @@ export default function CharacterEditor({ initialColors, initialBirthData, onSav
               <div className="birth-wheels__time">
                 <TimeWheel
                   value={birthTime}
-                  onChange={v => { setBirthTime(v); setPreviewTime(null) }}
+                  onChange={v => { 
+                    if (v.daysDiff) {
+                      const d = new Date(birthDate.year, birthDate.month - 1, birthDate.day)
+                      d.setDate(d.getDate() + v.daysDiff)
+                      setBirthDate({ day: d.getDate(), month: d.getMonth() + 1, year: d.getFullYear() })
+                    }
+                    setBirthTime({ hour: v.hour, minute: v.minute })
+                    setPreviewTime(null) 
+                  }}
                   onPreview={v => setPreviewTime(v)}
                   size={190} />
               </div>

@@ -338,8 +338,17 @@ export function TimeWheel({ value, onChange, onPreview, size = 180 }) {
     const steps = Math.trunc(timeNeedleAccum.current)
     if (steps === 0) return
     timeNeedleAccum.current -= steps
-    const totalMin = ((hour * 60 + minute + steps) % 1440 + 1440) % 1440
-    onChange({ hour: Math.floor(totalMin / 60), minute: totalMin % 60 })
+    
+    // Calculate total minutes with rollover
+    let totalMin = hour * 60 + minute + steps
+    let daysDiff = Math.floor(totalMin / 1440)
+    totalMin = ((totalMin % 1440) + 1440) % 1440
+    
+    onChange({ 
+      hour: Math.floor(totalMin / 60), 
+      minute: totalMin % 60,
+      daysDiff // Pass daysDiff to parent if they want to update date
+    })
   })
 
   const hourRing = useImperativeRing(svgRef, cx, cy, 24,

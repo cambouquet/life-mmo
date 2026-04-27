@@ -313,28 +313,32 @@ export function getPlacidusHouses(d, latDeg, lngDeg) {
   const asc = ascendantLongitude(d, latDeg, lngDeg)
   const mc  = midheavenLongitude(d, lngDeg)
 
-  // Placidus cusp solver using Oblique Ascension targets.
-  // H11/H12: rising OA targets RAMC+30, RAMC+60 (1/3, 2/3 of DSA from MC toward ASC)
-  // H2/H3:   setting OA targets RAMC+70, RAMC+120 (empirically verified against birth chart)
-  function solveCusp(oaTarget, rising, guess) {
+  // Placidus cusp solver
+  // Source: RAMC + n*(30°) targets, with iterative semidurnal arc correction.
+  function solveCusp(RAMC_target, f, guess) {
     let L = guess
     for (let i = 0; i < 80; i++) {
-      const dec = Math.asin(Math.min(1, Math.max(-1, sin_(eps) * sin_(L)))) * 180 / Math.PI
-      const tanProd = Math.tan(rad(dec)) * Math.tan(rad(latDeg))
-      const AD = Math.abs(tanProd) >= 1 ? 0 : Math.asin(Math.max(-1, Math.min(1, tanProd))) * 180 / Math.PI
-      // RA from target OA: rising => RA = OA + AD, setting => RA = OA - AD
-      const RA_new = rising ? norm(oaTarget + AD) : norm(oaTarget - AD)
-      const L_new  = norm(Math.atan2(sin_(RA_new) * cos_(eps) + Math.tan(rad(dec)) * sin_(eps), cos_(RA_new)) * 180 / Math.PI)
+      const dec = Math.asin(sin_(eps) * sin_(L)) * 180 / Math.PI
+      const tanDec = Math.tan(rad(dec))
+      const tanLat = Math.tan(rad(latDeg))
+      if (Math.abs(tanDec * tanLat) > 1) break // polar edge case
+      const RA = norm(RAMC_target + f * Math.asin(tanDec * tanLat) * 180 / Math.PI)
+      // Standard RA to Ecliptic Longitude conversion
+      // Corrected formula sign for Placidus iterative approach
+      const L_new = norm(Math.atan2(sin_(RA) * cos_(eps) + tanDec * sin_(eps), cos_(RA)) * 180 / Math.PI)
       if (Math.abs(norm(L_new - L + 180) - 180) < 0.0001) { L = L_new; break }
-      L = 0.6 * L + 0.4 * L_new
+      L = 0.5 * L + 0.5 * L_new
     }
     return L
   }
 
-  const h11 = solveCusp(norm(RAMC + 30),  true,  norm(mc + 30))
-  const h12 = solveCusp(norm(RAMC + 60),  true,  norm(mc + 60))
-  const h2  = solveCusp(norm(RAMC + 70),  false, norm(asc + 30))
-  const h3  = solveCusp(norm(RAMC + 120), false, norm(asc + 60))
+  // MC is H10, ASC is H1.
+  // Placidus formula for intermediate cusps based on RAMC and Declination
+  const h11 = solveCusp(RAMC + 30.0,  1/3.0, mc + 30)
+  const h12 = solveCusp(RAMC + 60.0,  2/3.0, mc + 60)
+  const h2  = solveCusp(RAMC + 120.0, 2/3.0, asc + 30)
+  const h3  = solveCusp(RAMC + 150.0, 1/3.0, asc + 60)
+  
   const ic  = norm(mc + 180)
   const dsc = norm(asc + 180)
 
