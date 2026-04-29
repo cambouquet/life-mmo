@@ -152,6 +152,7 @@ function CitySearch({ value, onChange }) {
   )
 }
 
+
 export default function CharacterEditor({ initialColors, initialBirthData, onSave, onClose, onChange }) {
   const [colors, setColors] = useState(initialColors || {
     hair:   '#6030d0',

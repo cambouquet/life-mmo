@@ -5,6 +5,8 @@
   inset: 0;
   z-index: 2000;
   display: flex;
+  overflow-y: auto;
+  overflow-x: hidden;
   background: rgba(4, 2, 12, 0.97);
   backdrop-filter: blur(16px);
   animation: modalFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
@@ -17,19 +19,18 @@
   flex: 1;
   gap: 24px;
   padding: 28px 32px;
-  overflow: hidden;
   width: 100%;
   box-sizing: border-box;
-  transform-origin: top left;
 
-  &--wide {
-    width: 100%;
+  @media (max-width: 1100px) {
+    flex-direction: column;
+    align-items: center;
+    height: auto;
   }
 }
 
 .char-editor-wheel {
-  flex: 1;
-  min-width: 0;
+  flex: 0 0 420px;
   overflow-y: auto;
   overflow-x: hidden;
   display: flex;
@@ -38,6 +39,12 @@
   padding-top: 24px;
   padding-right: 16px;
   animation: modalFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+
+  @media (max-width: 1100px) {
+    flex: 0 0 auto;
+    width: 420px;
+    overflow-y: visible;
+  }
 }
 
 .char-editor-preview {
@@ -46,6 +53,7 @@
   align-items: center;
   gap: 20px;
   width: 280px;
+  flex-shrink: 0;
   padding: 24px;
   background: rgba(255, 255, 255, 0.01);
   border-radius: 16px;
@@ -75,7 +83,11 @@
   justify-content: space-between;
   width: 310px;
   flex: 0 0 310px;
-  max-height: 100%;
+
+  @media (max-width: 1100px) {
+    flex: 0 0 auto;
+    max-height: none;
+  }
 }
 
 .color-row {
