@@ -36,7 +36,7 @@
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  padding-top: 24px;
+  padding-top: 0;
   padding-right: 16px;
   animation: modalFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 
@@ -355,17 +355,20 @@
 .char-editor-summary {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding: 12px 0 10px;
-  font-family: $font-mono;
-  font-size: 12px;
+  gap: 4px;
+  padding: 4px 0 8px;
+  font-family: $font-ui;
+  font-size: 11px;
   line-height: 1.4;
+  max-width: 320px;
+  align-self: center;
 
   &__planets {
     display: flex;
-    gap: 14px;
+    gap: 4px 14px;
     flex-wrap: wrap;
     align-items: center;
+    justify-content: center;
   }
 
   &__planet {
@@ -380,16 +383,20 @@
   &__deg   { opacity: 0.55; font-size: 11px; }
 
   &__stellium {
-    font-size: 12px;
+    font-size: 10px;
     color: #fff;
     opacity: 0.6;
     font-style: italic;
     letter-spacing: 0.3px;
+    text-align: center;
   }
 
   &__grid {
     display: flex;
-    gap: 16px;
+    gap: 12px;
+    font-size: 10px;
+    font-family: $font-ui;
+    line-height: 1.4;
   }
 
   &__col {
@@ -397,17 +404,17 @@
     min-width: 0;
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 0;
   }
 
   &__bar-row {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 5px;
   }
 
   &__bar-label {
-    width: 36px;
+    width: 32px;
     flex-shrink: 0;
     letter-spacing: 0.3px;
   }
@@ -417,17 +424,19 @@
     height: 4px;
     background: rgba(255, 255, 255, 0.06);
     border-radius: 2px;
-    overflow: hidden;
+    position: relative;
   }
 
   &__bar-fill {
-    height: 100%;
+    position: absolute;
+    top: 0; left: 0;
+    height: 4px;
     border-radius: 2px;
     transition: width 0.3s ease;
   }
 
   &__bar-num {
-    width: 14px;
+    width: 12px;
     text-align: right;
     flex-shrink: 0;
   }
