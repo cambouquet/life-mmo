@@ -4,17 +4,17 @@
 //   Mirror solid tiles: row 20 (y=320–335), cols 25–26 (x=400–431)
 //   MIRROR_CX=416, MIRROR_CY=320
 //
-// APPROACH: walk left from player start (480,320) toward mirror, stop at x=450
-//   Mirror solid cols end at x=431. x=450, y=320 → dist to centre (416,320) = 34px
-//   Just outside 32px trigger but close — use threshold=20 so we stop at ~450 which is fine.
-//   Actually use x=450: dist = 34px. 450 is safe from collision (ends at 431).
-//   We just need to be near the trigger (32px). 450 with threshold 15 is good.
+// APPROACH: step down first (y=348) to clear solid row, then walk left to center x (416).
+//   Moving diagonally from start hits the solid wall at y=320; two steps avoids this.
 
-const APPROACH_X = 450
-const APPROACH_Y = 328 // Align closer to the vertical center of the mirror
+const STEP_DOWN_X = 480 // Stay at start x while stepping below solid tiles
+const STEP_DOWN_Y = 338 // y=338 clears solid row (ends at y=335), closer to mirror
 
-const FRONT_X    = 416 // Exact horizontal center of the mirror
-const FRONT_Y    = 346 // Step back more clearly to align with the mirror floor line
+const APPROACH_X  = 416 // Horizontal center of mirror
+const APPROACH_Y  = 338
+
+const FRONT_X     = 416
+const FRONT_Y     = 338
 
 // ── Random color helpers ──────────────────────────────────────────────────────
 
@@ -46,9 +46,10 @@ function randomPalette() {
 export async function mirrorVisit(engine) {
   const palette = randomPalette()
 
-  // 1. Walk right-side of mirror (same row, stops before solid wall)
+  // 1. Step down first to clear solid mirror row, then walk left to center
   await engine.wait(600)
-  await engine.moveTo(APPROACH_X, APPROACH_Y, 15) // Relaxed threshold
+  await engine.moveTo(STEP_DOWN_X, STEP_DOWN_Y, 10)
+  await engine.moveTo(APPROACH_X, APPROACH_Y, 10)
   await engine.wait(700)
 
   // 2. Open editor
@@ -66,7 +67,7 @@ export async function mirrorVisit(engine) {
   await engine.wait(400)
 
   // 5. Move directly in front of mirror (below it) to admire the reflection
-  await engine.moveTo(FRONT_X, FRONT_Y, 10) // Relaxed threshold
+  await engine.moveTo(FRONT_X, FRONT_Y, 10)
   await engine.face('up')
   await engine.wait(2800)
 }

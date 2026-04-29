@@ -120,9 +120,9 @@ export class PlaybackEngine {
   async changeColor(colorKey, hexValue) {
     if (this._abortRef.current) return
     console.action(`Changing ${colorKey} to ${hexValue}`)
-    await sleep(jitter(300, 0.3))
+    await sleep(jitter(180, 0.3))
     this._colorChange(colorKey, hexValue)
-    await sleep(jitter(150, 0.3))
+    await sleep(jitter(80, 0.3))
   }
 
   async face(direction) {

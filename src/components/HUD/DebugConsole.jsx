@@ -8,6 +8,18 @@ export default function DebugConsole() {
   const [logs,     setLogs]     = useState([])
   const [hidden,   setHidden]   = useState(new Set())   // categories currently filtered out
   const scrollRef = useRef(null)
+  const panelRef  = useRef(null)
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      // If panel is open and click is outside of the panel and the toggle button
+      if (isOpen && panelRef.current && !panelRef.current.contains(e.target) && !e.target.closest('.debug-toggle')) {
+        setIsOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [isOpen])
 
   useEffect(() => {
     const orig = {
@@ -22,12 +34,33 @@ export default function DebugConsole() {
       ).join(' ')
       const now = new Date()
       const ts  = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}.${String(now.getMilliseconds()).padStart(3,'0')}`
-      setLogs(prev => [...prev, { type, message, ts, id: Date.now() + Math.random() }].slice(-200))
+      
+      setLogs(prev => {
+        const newLog = { 
+          type, 
+          message, 
+          ts, 
+          id: `${performance.now()}-${Math.random()}` 
+        }
+        return [...prev, newLog].slice(-200)
+      })
     }
 
-    console.log    = (...a) => { orig.log(...a);   addLog('log',    a) }
-    console.error  = (...a) => { orig.error(...a); addLog('error',  a) }
-    console.warn   = (...a) => { orig.warn(...a);  addLog('warn',   a) }
+    console.log    = (...a) => { 
+      orig.log(...a);   
+      if (typeof a[0] === 'string' && a[0].includes('Encountered two children with the same key')) return;
+      addLog('log', a); 
+    }
+    console.error  = (...a) => { 
+      orig.error(...a); 
+      if (typeof a[0] === 'string' && a[0].includes('Encountered two children with the same key')) return;
+      addLog('error', a); 
+    }
+    console.warn   = (...a) => { 
+      orig.warn(...a);  
+      if (typeof a[0] === 'string' && a[0].includes('Encountered two children with the same key')) return;
+      addLog('warn', a); 
+    }
     console.action = (...a) => { orig.log(...a);   addLog('action', a) }
 
     const onError = (event) => {
@@ -89,6 +122,7 @@ export default function DebugConsole() {
     <div className="debug-container">
       {isOpen && (
         <div 
+          ref={panelRef}
           className="debug-panel" 
           tabIndex={0} 
           onKeyDown={handleKeyDown}

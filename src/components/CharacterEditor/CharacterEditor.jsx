@@ -375,7 +375,7 @@ export default function CharacterEditor({ initialColors, initialBirthData, onSav
                 </div>
               )
             })()}
-            <HouseWheel placements={natalPlacements} houseCusps={houseCusps} size={300} hideStellium />
+            <HouseWheel placements={natalPlacements} houseCusps={houseCusps} size={400} hideStellium />
           </div>
         )}
       </div>

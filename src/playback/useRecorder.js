@@ -22,20 +22,48 @@ export function useRecorder({ onReady } = {}) {
 
     let durationSec = 0
     ff.on('log', ({ message }) => {
+      console.log('[ffmpeg]', message)
+      
+      // 1. Primary Duration Check
       const durMatch = message.match(/Duration:\s*(\d+):(\d+):(\d+)\.(\d+)/)
       if (durMatch) {
         durationSec = parseInt(durMatch[1]) * 3600
           + parseInt(durMatch[2]) * 60
           + parseInt(durMatch[3])
           + parseInt(durMatch[4]) / 100
+        console.log(`[recorder] input duration: ${durationSec.toFixed(2)}s`)
       }
-      const timeMatch = message.match(/time=(\d+):(\d+):(\d+)\.(\d+)/)
-      if (timeMatch && durationSec > 0) {
+
+      // 2. Fallback: Secondary Stream Duration Check (Common in live-rec WebM)
+      const streamMatch = message.match(/Stream.*:\s*Video:.*,\s*(\d+):(\d+):(\d+)\.(\d+)/)
+      if (streamMatch && durationSec === 0) {
+        durationSec = parseInt(streamMatch[1]) * 3600
+          + parseInt(streamMatch[2]) * 60
+          + parseInt(streamMatch[3])
+          + parseInt(streamMatch[4]) / 100
+        console.log(`[recorder] fallback duration from stream: ${durationSec.toFixed(2)}s`)
+      }
+
+      const timeMatch = message.match(/time=\s*(\d+):(\d+):(\d+)\.(\d+)/)
+      if (timeMatch) {
         const cur = parseInt(timeMatch[1]) * 3600
           + parseInt(timeMatch[2]) * 60
           + parseInt(timeMatch[3])
           + parseInt(timeMatch[4]) / 100
-        setProgress(Math.min(99, Math.round((cur / durationSec) * 100)))
+        
+        if (durationSec > 0) {
+          const pct = Math.min(99, Math.round((cur / durationSec) * 100))
+          console.log(`[recorder] progress: ${cur.toFixed(2)}s / ${durationSec.toFixed(2)}s = ${pct}%`)
+          
+          setProgress(prev => {
+            // Only update if it's an actual increase, avoid "jittering" backwards
+            if (pct > prev) return pct;
+            return prev;
+          })
+        } else {
+          // Indeterminate progress if duration is missing
+          setProgress(prev => Math.min(99, prev + 1))
+        }
       }
     })
 
@@ -51,14 +79,22 @@ export function useRecorder({ onReady } = {}) {
 
   const start = useCallback((canvas, uiOverlay) => {
     if (!canvas) { console.error('useRecorder.start: no canvas'); return }
+    if (statusRef.current === 'recording' || statusRef.current === 'converting') {
+      console.warn('useRecorder.start: already recording'); return
+    }
 
     chunksRef.current = []
+    setStatus('idle')
+    setProgress(0)
     
     // Create a hidden "composition" canvas that merges game + UI
+    const rect = canvas.getBoundingClientRect()
     const compCanvas = document.createElement('canvas')
     compCanvas.width = canvas.width
     compCanvas.height = canvas.height
-    const compCtx = compCanvas.getContext('2d')
+    const compCtx = compCanvas.getContext('2d', { alpha: false })
+    compCtx.fillStyle = '#000'
+    compCtx.fillRect(0, 0, compCanvas.width, compCanvas.height)
     
     // Recording stream from the composition canvas
     const stream = compCanvas.captureStream(30)
@@ -73,17 +109,19 @@ export function useRecorder({ onReady } = {}) {
         lastCapture = ts
         
         // 1. Draw game canvas
+        compCtx.clearRect(0, 0, compCanvas.width, compCanvas.height)
         compCtx.drawImage(canvas, 0, 0)
         
         // 2. If UI is open, snapshot and draw it
-        if (uiOverlay && uiOverlay.children.length > 0) {
+        if (uiOverlay) {
           try {
             const uiCanvas = await html2canvas(uiOverlay, {
               backgroundColor: null,
-              width: canvas.width,
-              height: canvas.height,
-              scale: 1, // match canvas pixels
+              width: uiOverlay.offsetWidth,
+              height: uiOverlay.offsetHeight,
+              scale: (compCanvas.width / uiOverlay.offsetWidth), 
               logging: false,
+              useCORS: true,
             })
             compCtx.drawImage(uiCanvas, 0, 0)
           } catch (e) {
@@ -102,7 +140,10 @@ export function useRecorder({ onReady } = {}) {
       ? 'video/webm;codecs=vp9'
       : 'video/webm'
 
-    const mr = new MediaRecorder(stream, { mimeType, videoBitsPerSecond: 8_000_000 })
+    const mr = new MediaRecorder(stream, { 
+      mimeType, 
+      videoBitsPerSecond: 12_000_000 
+    })
     mr.ondataavailable = e => { if (e.data.size > 0) chunksRef.current.push(e.data) }
     mr.start(100)
     mediaRecorderRef.current = mr
@@ -127,32 +168,64 @@ export function useRecorder({ onReady } = {}) {
 
     try {
       const ff = await loadFfmpeg()
-      const { fetchFile } = window.FFmpegUtil
+      
+      // Use helper for Blob to Uint8Array if FFmpegUtil is missing
+      const toUint8Array = async (blob) => {
+        const buffer = await blob.arrayBuffer()
+        return new Uint8Array(buffer)
+      }
+
+      // Clean up any leftover files from a previous run
+      for (const f of ['input.webm', 'output.mp4']) {
+        try { await ff.deleteFile(f) } catch {}
+      }
 
       const webmBlob = new Blob(chunksRef.current, { type: 'video/webm' })
-      const webmData = await fetchFile(webmBlob)
+      console.action(`[recorder] webm size: ${(webmBlob.size / 1024).toFixed(1)} KB, chunks: ${chunksRef.current.length}`)
+      if (webmBlob.size < 1000) throw new Error('Recording too short — no data captured')
+
+      console.action('[recorder] Converting blob to Uint8Array...')
+      const webmData = await toUint8Array(webmBlob)
+      console.action('[recorder] Writing input.webm to WASM FS...')
       await ff.writeFile('input.webm', webmData)
 
+      console.action('[recorder] FFmpeg exec start — re-encoding VP9→H.264 (Max Compatibility)...')
       const exitCode = await ff.exec([
         '-i', 'input.webm',
         '-c:v', 'libx264',
         '-preset', 'fast',
-        '-crf', '18',
+        '-crf', '22',
+        '-vf', 'pad=ceil(iw/2)*2:ceil(ih/2)*2',
         '-pix_fmt', 'yuv420p',
         '-movflags', '+faststart',
         'output.mp4',
       ])
+      console.log(`[recorder] FFmpeg exec finished with code: ${exitCode}`)
 
       if (exitCode !== 0) throw new Error(`ffmpeg exited with code ${exitCode}`)
 
       const data    = await ff.readFile('output.mp4')
       const mp4Blob = new Blob([data.buffer], { type: 'video/mp4' })
-      onReadyRef.current?.(mp4Blob, filename)
+      
+      // Verification: Try to play the blob immediately in memory to ensure it's not corrupt
+      console.log('[recorder] Verifying Blob playback compatibility...')
+      const testUrl = URL.createObjectURL(mp4Blob)
+      console.log(`[recorder] Generated URL: ${testUrl}`)
 
+      console.action(`[recorder] mp4 size: ${(mp4Blob.size / 1024).toFixed(1)} KB`)
+      
       setProgress(100)
       setStatus('done')
+
+      // Immediate trigger with a safety check
+      if (onReadyRef.current) {
+        console.action('[recorder] Triggering onReady callback...')
+        onReadyRef.current(mp4Blob, filename)
+      } else {
+        console.warn('[recorder] No onReady callback provided')
+      }
     } catch (err) {
-      console.error('Recording export failed:', err)
+      console.error('Recording export failed:', err?.message ?? String(err))
       setStatus('error')
     }
   }, [loadFfmpeg])

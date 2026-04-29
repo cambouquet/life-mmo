@@ -7,18 +7,30 @@ export default function VideoGallery({ videos, onClose }) {
 
   // Select the latest on open
   useEffect(() => {
-    if (videos.length > 0) setSelected(videos[videos.length - 1].id)
-  }, [])
+    if (videos.length > 0) {
+      const latest = videos[videos.length - 1];
+      console.log('Gallery opened, selecting latest:', latest.id, latest.url);
+      setSelected(latest.id);
+    }
+  }, [videos.length])
 
-  // Revoke object URLs on unmount to free memory
+  // Revoke object URLs only on unmount — not when videos array changes,
+  // since revoking live URLs breaks playback and download in the same session.
+  const videosRef = useRef(videos)
+  useEffect(() => { videosRef.current = videos }, [videos])
   useEffect(() => {
-    return () => videos.forEach(v => URL.revokeObjectURL(v.url))
-  }, [videos])
+    return () => videosRef.current.forEach(v => URL.revokeObjectURL(v.url))
+  }, [])
 
   const active = videos.find(v => v.id === selected)
 
   function download(v) {
-    Object.assign(document.createElement('a'), { href: v.url, download: v.filename }).click()
+    const a = document.createElement('a')
+    a.href = v.url
+    a.download = v.filename
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
   }
 
   function fmt(ms) {
@@ -41,9 +53,14 @@ export default function VideoGallery({ videos, onClose }) {
               <div
                 key={v.id}
                 className={`vgallery-item ${v.id === selected ? 'vgallery-item--active' : ''}`}
-                onClick={() => setSelected(v.id)}
+                onClick={() => {
+                  console.log('Selecting video:', v.url);
+                  setSelected(v.id);
+                }}
               >
-                <video className="vgallery-thumb" src={v.url} muted preload="metadata" />
+                <div className="vgallery-thumb-wrap">
+                  <video className="vgallery-thumb" src={v.url} muted preload="metadata" />
+                </div>
                 <div className="vgallery-item-meta">
                   <span className="vgallery-item-name">{v.filename}</span>
                   <span className="vgallery-item-time">{fmt(v.ts)}</span>
@@ -55,20 +72,23 @@ export default function VideoGallery({ videos, onClose }) {
 
           <div className="vgallery-player">
             {active ? (
-              <>
-                <video
-                  ref={videoRef}
-                  key={active.id}
-                  className="vgallery-video"
-                  src={active.url}
-                  controls
-                  autoPlay
-                />
+              <div className="vgallery-player-content" key={active.id}>
+                <div className="vgallery-video-container">
+                  <video
+                    ref={videoRef}
+                    className="vgallery-video"
+                    src={active.url}
+                    controls
+                    autoPlay
+                    playsInline
+                    muted
+                  />
+                </div>
                 <div className="vgallery-player-bar">
                   <span className="vgallery-player-name">{active.filename}</span>
                   <button className="vgallery-player-dl" onClick={() => download(active)}>Download MP4</button>
                 </div>
-              </>
+              </div>
             ) : (
               <div className="vgallery-no-video">Select a recording to play</div>
             )}

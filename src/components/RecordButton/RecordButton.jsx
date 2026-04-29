@@ -32,12 +32,7 @@ export default function RecordButton({ status, progress, recordingCount, onRecor
         onClick={(e) => {
           e.stopPropagation()
           console.log('RecordButton onClick triggered, status:', status)
-          if (status === 'idle') {
-            console.log('Calling onRecord...')
-            onRecord()
-          } else {
-            console.warn('RecordButton clicked but status is not idle:', status)
-          }
+          onRecord()
         }}
         disabled={busy}
         title={busy ? undefined : 'Record gameplay (MP4)'}

@@ -51,7 +51,7 @@ export default function App() {
   const recorder      = useRecorder({
     onReady: (blob, filename) => {
       const url = URL.createObjectURL(blob)
-      setRecordings(prev => [...prev, { id: Date.now(), url, filename, ts: Date.now() }])
+      setRecordings(prev => [...prev, { id: Date.now(), url, blob, filename, ts: Date.now() }])
       setShowGallery(true)
     }
   })
