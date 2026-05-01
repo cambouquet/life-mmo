@@ -395,7 +395,7 @@ export default function CharacterEditor({ initialColors, initialBirthData, onSav
                 </div>
               )
             })()}
-            <HouseWheel placements={natalPlacements} houseCusps={houseCusps} size={300} hideStellium />
+            <HouseWheel placements={natalPlacements} houseCusps={houseCusps} size={220} hideStellium />
           </div>
         )}
         </div>{/* end char-editor-astro */}

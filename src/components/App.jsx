@@ -80,8 +80,8 @@ export default function App() {
     // Start with the state we have
     recorder.start(canvas, {
       showEditor: false,
-      charColors,
-      birthData
+      charColors: { ...charColors },
+      birthData: { ...birthData }
     })
 
     const engine = new PlaybackEngine({

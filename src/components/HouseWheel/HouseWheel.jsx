@@ -153,13 +153,12 @@ export function HouseWheel({ placements, houseCusps, size = 300, hideStellium })
   return (
     <div className="house-wheel-container" style={{
       position: 'relative',
-      padding: '4px 20px 20px',
+      padding: '4px 0 0',
       margin: '0 auto',
       width: '100%',
-      maxWidth: size,
       boxSizing: 'border-box',
     }}>
-      <svg width="100%" viewBox="0 0 300 300"
+      <svg width={size} height={size} viewBox="0 0 300 300"
            style={{ display:'block', margin:'0 auto', overflow:'visible' }}>
 
         {/* orbit guide tracks */}
@@ -274,41 +273,28 @@ export function HouseWheel({ placements, houseCusps, size = 300, hideStellium })
         <circle cx={cx} cy={cy} r="10" fill="#0e0a1e" />
       </svg>
 
-      <div style={{ marginTop: 10 }}>
-        {(lockedPoint || hovered) && (() => {
-          const active = lockedPoint
-            ? { type:'planet', id:lockedPoint, label:PLANET_NAMES[lockedPoint] ?? lockedPoint, glyph:PLANET_GLYPHS[lockedPoint],
-                color: ELEMENT_COLOR[SIGN_META[placements[lockedPoint]?.sign]?.element] ?? '#fff',
-                desc: getInterpretation(lockedPoint), locked:true }
-            : hovered
-          return (
-            <div style={{
-              position: 'relative',
-              padding:'10px 14px',
-              background: active.locked ? 'rgba(14,10,30,0.96)' : 'rgba(14,10,30,0.92)',
-              border: active.locked ? '1px solid rgba(168,85,247,0.5)' : '1px solid rgba(255,255,255,0.1)',
-              borderRadius:6,
-              color:'#e8d4ff', fontFamily:'inherit', lineHeight:'1.5',
-            }}>
-              {active.locked && (
-                <div onClick={() => setLockedPoint(null)}
-                     style={{ position:'absolute', top:6, right:10, cursor:'pointer', fontSize:11, color:'rgba(255,255,255,0.4)' }}>✕</div>
-              )}
-              {active.type === 'planet' ? (<>
-                <div style={{ color:active.color, fontWeight:700, fontSize:13 }}>{active.glyph} {active.label}{active.locked && placements[active.id]?.sign ? (() => { const pd = placements[active.id]; const deg = Math.floor(pd.degrees); const theme = HOUSE_THEMES[pd.house]; return ` · ${pd.sign} ${deg}°${pd.house ? ` · H${pd.house}${theme ? ` (${theme})` : ''}` : ''}` })() : ''}</div>
-                <div style={{ fontSize:11, color:'rgba(232,212,255,0.6)', fontStyle:'italic', marginBottom: active.locked ? 4 : 0, lineHeight:'1.4' }}>{active.summary}</div>
-                {active.locked && <div style={{ fontSize:11, color:'rgba(232,212,255,0.8)', lineHeight:'1.5' }}>{active.desc}</div>}
-              </>) : active.type === 'sign' ? (<>
-                <div style={{ color:active.color, fontWeight:700, fontSize:13, marginBottom:4 }}>{active.label}</div>
-                <div style={{ fontSize:11, color:'rgba(232,212,255,0.8)', lineHeight:'1.4' }}>{active.desc}</div>
-              </>) : (<>
-                <div style={{ color:'#e8d4ff', fontWeight:700, fontSize:13, marginBottom:4 }}>{HOUSE_NAMES[active.id]}</div>
-                <div style={{ fontSize:11, color:'rgba(232,212,255,0.8)', lineHeight:'1.4' }}>{active.desc}</div>
-              </>)}
-            </div>
-          )
-        })()}
-      </div>
+      {(lockedPoint || hovered) && (() => {
+        const active = lockedPoint
+          ? { type:'planet', id:lockedPoint, label:PLANET_NAMES[lockedPoint] ?? lockedPoint, glyph:PLANET_GLYPHS[lockedPoint],
+              color: ELEMENT_COLOR[SIGN_META[placements[lockedPoint]?.sign]?.element] ?? '#fff',
+              desc: getInterpretation(lockedPoint), locked:true }
+          : hovered
+        return (
+          <div style={{ padding:'10px 0 0', color:'#e8d4ff', fontFamily:'inherit', lineHeight:'1.5', width:'100%' }}>
+            {active.type === 'planet' ? (<>
+              <div style={{ color:active.color, fontWeight:700, fontSize:13 }}>{active.glyph} {active.label}{active.locked && placements[active.id]?.sign ? (() => { const pd = placements[active.id]; const deg = Math.floor(pd.degrees); const theme = HOUSE_THEMES[pd.house]; return ` · ${pd.sign} ${deg}°${pd.house ? ` · H${pd.house}${theme ? ` (${theme})` : ''}` : ''}` })() : ''}</div>
+              <div style={{ fontSize:11, color:'rgba(232,212,255,0.6)', fontStyle:'italic', marginBottom: active.locked ? 4 : 0, lineHeight:'1.4' }}>{active.summary}</div>
+              {active.locked && <div style={{ fontSize:11, color:'rgba(232,212,255,0.8)', lineHeight:'1.5' }}>{active.desc}</div>}
+            </>) : active.type === 'sign' ? (<>
+              <div style={{ color:active.color, fontWeight:700, fontSize:13, marginBottom:4 }}>{active.label}</div>
+              <div style={{ fontSize:11, color:'rgba(232,212,255,0.8)', lineHeight:'1.4' }}>{active.desc}</div>
+            </>) : (<>
+              <div style={{ color:'#e8d4ff', fontWeight:700, fontSize:13, marginBottom:4 }}>{HOUSE_NAMES[active.id]}</div>
+              <div style={{ fontSize:11, color:'rgba(232,212,255,0.8)', lineHeight:'1.4' }}>{active.desc}</div>
+            </>)}
+          </div>
+        )
+      })()}
 
       {!hideStellium && maxHouseEntry && (
         <div style={{ fontSize:11, fontStyle:'italic', color:ELEMENT_COLOR[maxHouseEl], marginTop:12, textAlign:'center', opacity:0.8 }}>

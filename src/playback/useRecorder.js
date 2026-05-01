@@ -1,5 +1,6 @@
 import { useRef, useState, useCallback } from 'react'
 import { renderFrame } from '../game/render.js'
+import { drawEditorOverlay } from '../game/draw/ui.jsx'
 
 // ffmpeg loaded as plain UMD scripts in index.html → window.FFmpegWASM / window.FFmpegUtil
 // This bypasses Vite's worker transform which breaks @ffmpeg/ffmpeg's internal worker spawn.
@@ -87,10 +88,18 @@ export function useRecorder({ onReady } = {}) {
     return ff
   }, [])
 
-  const start = useCallback((canvas, uiOverlay) => {
+  const start = useCallback((canvas, initialState = {}) => {
     if (!canvas) { console.error('useRecorder.start: no canvas'); return }
     if (statusRef.current === 'recording' || statusRef.current === 'converting') {
       console.warn('useRecorder.start: already recording'); return
+    }
+
+    // Set initial state for overlay
+    overlayStateRef.current = {
+      showEditor: false,
+      charColors: null,
+      birthData: null,
+      ...initialState
     }
 
     chunksRef.current = []
@@ -130,12 +139,12 @@ export function useRecorder({ onReady } = {}) {
         compCtx.drawImage(canvas, 0, 0)
         
         // 2. Clear UI if needed or just draw overlay
-        const { showEditor, charColors, birthData } = overlayStateRef.current
+        const { showEditor, charColors, birthData } = overlayStateRef.current;
+        console.log('[recorder-loop] UI State:', { showEditor, hasColors: !!charColors, hasBirth: !!birthData });
+        
         if (showEditor && charColors && birthData) {
-          // Note: we might want to manually draw the editor if we want it pixel-perfect
-          // For now, we use our new manual ui draw method
-          const { drawEditorOverlay } = await import('../game/draw/ui.jsx')
-          drawEditorOverlay(compCtx, charColors, birthData)
+          console.log('[recorder-loop] Drawing Editor Overlay...');
+          drawEditorOverlay(compCtx, charColors, birthData);
         }
       }
       captureFrameRef.current = requestAnimationFrame(captureFrame)
