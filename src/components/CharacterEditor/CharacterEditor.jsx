@@ -154,6 +154,20 @@ function CitySearch({ value, onChange }) {
 
 
 export default function CharacterEditor({ initialColors, initialBirthData, onSave, onClose, onChange }) {
+  const modalRef   = useRef(null)
+  const [activePage, setActivePage] = useState(0)
+
+  useEffect(() => {
+    const el = modalRef.current
+    if (!el) return
+    const onScroll = () => {
+      const page = Math.round(el.scrollLeft / el.clientWidth)
+      setActivePage(page)
+    }
+    el.addEventListener('scroll', onScroll, { passive: true })
+    return () => el.removeEventListener('scroll', onScroll)
+  }, [])
+
   const [colors, setColors] = useState(initialColors || {
     hair:   '#6030d0',
     skin:   '#f8c898',
@@ -227,8 +241,16 @@ export default function CharacterEditor({ initialColors, initialBirthData, onSav
   }, [hasDate, chartDate, chartTime, birthCity])
 
   return (
-    <div className="char-editor-modal">
+    <div className="char-editor-root">
+      <div className="char-editor-dots" aria-hidden="true">
+        {[0, 1].map(i => (
+          <span key={i} className={`char-editor-dot${activePage === i ? ' char-editor-dot--active' : ''}`} />
+        ))}
+      </div>
+      <div className="char-editor-modal" ref={modalRef}>
       <div className={`char-editor-content${natalPlacements ? ' char-editor-content--wide' : ''}`}>
+
+        {/* Page 1: character + colors + actions */}
         <div className="char-editor-preview">
           <CharacterTemplate colors={colors} scale={5} />
           <div className="char-editor-preview-label">Kami</div>
@@ -254,45 +276,42 @@ export default function CharacterEditor({ initialColors, initialBirthData, onSav
               <label>Wand</label>
             </div>
           </div>
-          <div className="earth-section">
-            <EarthGlobe city={birthCity} size={190} />
-            <CitySearch value={birthCity} onChange={setBirthCity} />
-          </div>
-        </div>
-
-        <div className="char-editor-controls">
-          <div className="birth-section">
-            <div className="birth-wheels">
-              <div className="birth-wheels__date">
-                <DateWheel
-                  value={birthDate}
-                  onChange={v => { setBirthDate(v); setHasDate(true); setPreviewDate(null) }}
-                  onPreview={v => setPreviewDate(v)}
-                  size={240} />
-              </div>
-              <div className="birth-wheels__time">
-                <TimeWheel
-                  value={birthTime}
-                  onChange={v => { 
-                    if (v.daysDiff) {
-                      const d = new Date(birthDate.year, birthDate.month - 1, birthDate.day)
-                      d.setDate(d.getDate() + v.daysDiff)
-                      setBirthDate({ day: d.getDate(), month: d.getMonth() + 1, year: d.getFullYear() })
-                    }
-                    setBirthTime({ hour: v.hour, minute: v.minute })
-                    setPreviewTime(null) 
-                  }}
-                  onPreview={v => setPreviewTime(v)}
-                  size={190} />
-              </div>
-            </div>
-          </div>
-
           <div className="char-editor-actions">
             <button className="btn-save" onClick={() => onSave(colors, buildBirthData())}>Embody</button>
             <button className="btn-cancel" onClick={onClose}>Cancel</button>
           </div>
         </div>
+
+        {/* Page 2 (mobile) / columns 2-3 (desktop): all astro */}
+        <div className="char-editor-astro">
+          <div className="birth-trio">
+            <div className="birth-trio__date">
+              <DateWheel
+                value={birthDate}
+                onChange={v => { setBirthDate(v); setHasDate(true); setPreviewDate(null) }}
+                onPreview={v => setPreviewDate(v)}
+                size={120} />
+            </div>
+            <div className="birth-trio__city">
+              <EarthGlobe city={birthCity} size={80} />
+              <CitySearch value={birthCity} onChange={setBirthCity} />
+            </div>
+            <div className="birth-trio__time">
+              <TimeWheel
+                value={birthTime}
+                onChange={v => {
+                  if (v.daysDiff) {
+                    const d = new Date(birthDate.year, birthDate.month - 1, birthDate.day)
+                    d.setDate(d.getDate() + v.daysDiff)
+                    setBirthDate({ day: d.getDate(), month: d.getMonth() + 1, year: d.getFullYear() })
+                  }
+                  setBirthTime({ hour: v.hour, minute: v.minute })
+                  setPreviewTime(null)
+                }}
+                onPreview={v => setPreviewTime(v)}
+                size={100} />
+            </div>
+          </div>
 
         {natalPlacements && (
           <div className="char-editor-wheel">
@@ -376,10 +395,14 @@ export default function CharacterEditor({ initialColors, initialBirthData, onSav
                 </div>
               )
             })()}
-            <HouseWheel placements={natalPlacements} houseCusps={houseCusps} size={400} hideStellium />
+            <HouseWheel placements={natalPlacements} houseCusps={houseCusps} size={300} hideStellium />
           </div>
         )}
+        </div>{/* end char-editor-astro */}
+
+      </div>
       </div>
     </div>
   )
 }
+

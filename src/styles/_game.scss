@@ -28,7 +28,7 @@
 
 .guidance {
   position: absolute;
-  top: 28px;
+  top: calc($hud-h + 12px);
   left: 0;
   right: 0;
   text-align: center;

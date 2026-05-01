@@ -77,15 +77,32 @@ export default function App() {
     const canvas = gameRef.current?.canvas()
     if (!canvas) { console.error('handleRecord: canvas not found'); return }
 
-    recorder.start(canvas, uiOverlayRef.current)
+    // Start with the state we have
+    recorder.start(canvas, {
+      showEditor: false,
+      charColors,
+      birthData
+    })
 
     const engine = new PlaybackEngine({
       getPlayerPos:  () => gameRef.current?.playerPos() ?? { x: 0, y: 0 },
-      onOpenEditor:  () => { console.action('⬡ Mirror opened'); setShowEditor(true) },
-      onCloseEditor: () => { console.action('⬡ Mirror closed'); setShowEditor(false) },
+      onOpenEditor:  () => { 
+        console.action('⬡ Mirror opened')
+        setShowEditor(true) 
+        recorder.updateOverlay({ showEditor: true })
+      },
+      onCloseEditor: () => { 
+        console.action('⬡ Mirror closed')
+        setShowEditor(false) 
+        recorder.updateOverlay({ showEditor: false })
+      },
       onColorChange: (key, value) => {
         console.action(`🎨 Color changed — ${key}: ${value}`)
-        setCharColors(prev => ({ ...prev, [key]: value }))
+        setCharColors(prev => {
+          const next = { ...prev, [key]: value }
+          recorder.updateOverlay({ charColors: next })
+          return next
+        })
       },
       onComplete: () => {
         console.action('✓ Scenario complete — converting in 1.5s')
@@ -95,7 +112,7 @@ export default function App() {
 
     engineRef.current = engine
     engine.run(mirrorVisit)
-  }, [recorder])
+  }, [recorder, charColors, birthData])
 
   const handleStop = useCallback(() => {
     console.action('■ Recording stopped by user')

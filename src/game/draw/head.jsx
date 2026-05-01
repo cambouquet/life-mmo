@@ -4,11 +4,12 @@ import pixelData from '../../components/CharacterEditor/pixel_data.json';
 
 const CV = 32
 
-export function drawHead(ctx, facing, expr, colors) {
+export function drawHead(ctx, facing, expr, colors, options = {}) {
+  const { isBlinking = false } = options;
   ctx.clearRect(0, 0, CV, CV)
 
   if (colors) {
-    drawVectorHead(ctx, colors, facing);
+    drawVectorHead(ctx, colors, facing, isBlinking);
     return
   }
 }
@@ -40,7 +41,7 @@ const applyShading = (hex, originalBrightness) => {
  * Pixel-accurate Head drawing function for the HUD
  * Uses the same pixelData extraction logic as the warrior
  */
-function drawVectorHead(ctx, colors, facing) {
+function drawVectorHead(ctx, colors, facing, isBlinking) {
   const { hair, skin, outfit, eyes, secondary, stick } = colors;
   
   const dirFrames = pixelData[facing] || pixelData.down;
@@ -107,7 +108,10 @@ function drawVectorHead(ctx, colors, facing) {
           fill = `rgb(${Math.min(255, sr * skinFactor)}, ${Math.min(255, sg * skinFactor)}, ${Math.min(255, sb * skinFactor)})`;
       }
       else if (p.type === 'outfit') fill = applyShading(outfit, p.b);
-      else if (p.type === 'eyes') fill = applyShading(eyes, p.b);
+      else if (p.type === 'eyes') {
+        if (isBlinking) return; // Don't draw eye pixels if blinking
+        fill = applyShading(eyes, p.b);
+      }
       else if (p.type === 'secondary') fill = applyShading(secondary, p.b);
       else if (p.type === 'stick') fill = applyShading(stick, p.b);
       else if (p.type === 'accessory') fill = applyShading('#ffd700', p.b);

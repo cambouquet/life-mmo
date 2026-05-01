@@ -20,6 +20,13 @@
   flex-direction: column;
   overflow: hidden;
   box-shadow: 0 24px 64px rgba(0, 0, 0, 0.8);
+
+  @media (max-width: 768px) {
+    width: 100vw;
+    height: 100vh;
+    border: none;
+    border-radius: 0;
+  }
 }
 
 .vgallery-header {
@@ -29,6 +36,10 @@
   padding: 12px 16px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   flex-shrink: 0;
+
+  @media (max-width: 768px) {
+    padding: 16px;
+  }
 }
 
 .vgallery-title {
@@ -47,7 +58,7 @@
   cursor: pointer;
   font-size: 14px;
   line-height: 1;
-  padding: 4px;
+  padding: 8px;
   transition: color 0.15s;
   &:hover { color: #fff; }
 }
@@ -56,6 +67,10 @@
   display: flex;
   flex: 1;
   overflow: hidden;
+
+  @media (max-width: 768px) {
+    flex-direction: column-reverse;
+  }
 }
 
 // ── Left list ────────────────────────────────────────────────────────────────
@@ -68,6 +83,16 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
+
+  @media (max-width: 768px) {
+    width: 100%;
+    height: 120px;
+    flex-direction: row;
+    border-right: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
 }
 
 .vgallery-empty {
@@ -76,6 +101,11 @@
   color: rgba(255, 255, 255, 0.2);
   text-align: center;
   padding: 24px 8px;
+
+  @media (max-width: 768px) {
+    width: 100%;
+    padding: 40px;
+  }
 }
 
 .vgallery-item {
@@ -87,6 +117,13 @@
   cursor: pointer;
   border: 1px solid transparent;
   transition: background 0.12s, border-color 0.12s;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    width: 100px;
+    flex-shrink: 0;
+    text-align: center;
+  }
 
   &:hover { background: rgba(255, 255, 255, 0.04); }
 
@@ -103,6 +140,11 @@
   border-radius: 3px;
   background: #000;
   flex-shrink: 0;
+
+  @media (max-width: 768px) {
+    width: 80px;
+    height: 45px;
+  }
 }
 
 .vgallery-item-meta {
@@ -121,6 +163,10 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+
+  @media (max-width: 768px) {
+    width: 80px;
+  }
 }
 
 .vgallery-item-time {
@@ -143,6 +189,11 @@
   justify-content: center;
   flex-shrink: 0;
   transition: all 0.12s;
+
+  @media (max-width: 768px) {
+    display: none; // Hide extra DL button on mobile list
+  }
+
   &:hover {
     background: rgba(255, 255, 255, 0.08);
     color: #fff;
@@ -155,7 +206,7 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  background: #000;
+  background: #0a0616; // Use the theme color
   min-width: 0;
 }
 
@@ -169,20 +220,29 @@
 .vgallery-video-container {
   flex: 1;
   display: flex;
-  align-items: stretch;
+  align-items: center;
   justify-content: center;
   min-height: 0;
   background: #000;
   padding: 20px;
+
+  @media (max-width: 768px) {
+    padding: 0;
+  }
 }
 
 .vgallery-video {
   width: 100%;
-  height: 100%;
+  height: auto;
   max-width: 100%;
   max-height: 100%;
   display: block;
   object-fit: contain;
+
+  @media (max-width: 768px) {
+    width: 100vw;
+    aspect-ratio: 16 / 9; // Forces correct landscape proportions on mobile or game aspect
+  }
 }
 
 .vgallery-no-video {

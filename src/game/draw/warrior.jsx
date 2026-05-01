@@ -73,7 +73,7 @@ let offscreenPlayerCtx = null;
 let lastRenderState = "";
 
 // Helper to apply relative shading to a hex color
-const applyShading = (hex, originalBrightness) => {
+export const applyShading = (hex, originalBrightness) => {
   if (!hex) return '#000000';
   const r = parseInt(hex.slice(1, 3), 16);
   const g = parseInt(hex.slice(3, 5), 16);
@@ -90,7 +90,7 @@ const applyShading = (hex, originalBrightness) => {
   return `rgb(${nr}, ${ng}, ${nb})`;
 };
 
-function drawVectorWarrior(ctx, x, y, facing, frame, colors, moving) {
+export function drawVectorWarrior(ctx, x, y, facing, frame, colors, moving) {
   const { hair, skin, outfit, eyes, secondary, stick } = colors;
   
   // Create or resize offscreen canvas if needed (1:1 scale)

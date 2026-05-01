@@ -1,5 +1,5 @@
 import { useRef, useState, useCallback } from 'react'
-import html2canvas from 'html2canvas'
+import { renderFrame } from '../game/render.js'
 
 // ffmpeg loaded as plain UMD scripts in index.html → window.FFmpegWASM / window.FFmpegUtil
 // This bypasses Vite's worker transform which breaks @ffmpeg/ffmpeg's internal worker spawn.
@@ -13,6 +13,16 @@ export function useRecorder({ onReady } = {}) {
   onReadyRef.current     = onReady
   const [status,   setStatus]   = useState('idle')
   const [progress, setProgress] = useState(0)
+
+  const overlayStateRef = useRef({
+    showEditor: false,
+    charColors: null,
+    birthData: null
+  })
+
+  const updateOverlay = useCallback((next) => {
+    overlayStateRef.current = { ...overlayStateRef.current, ...next }
+  }, [])
 
   const loadFfmpeg = useCallback(async () => {
     if (ffmpegRef.current) return ffmpegRef.current
@@ -88,7 +98,6 @@ export function useRecorder({ onReady } = {}) {
     setProgress(0)
     
     // Create a hidden "composition" canvas that merges game + UI
-    const rect = canvas.getBoundingClientRect()
     const compCanvas = document.createElement('canvas')
     compCanvas.width = canvas.width
     compCanvas.height = canvas.height
@@ -99,34 +108,34 @@ export function useRecorder({ onReady } = {}) {
     // Recording stream from the composition canvas
     const stream = compCanvas.captureStream(30)
     
+    // Internal world state for rendering (stubs or data from app)
+    // In a real app we might pass the full state object, but here we can
+    // leverage the fact that the main canvas is already rendering.
+    // However, for the overlay, we need to KNOW if it's open.
+    
     // Frame capture loop
     let lastCapture = 0
+    let torchInternal = 0
     const captureFrame = async (ts) => {
       if (statusRef.current !== 'recording') return
       
-      // Update at ~30fps
-      if (ts - lastCapture >= 33) {
+      const dt = ts - lastCapture
+      if (dt >= 33) {
         lastCapture = ts
-        
-        // 1. Draw game canvas
-        compCtx.clearRect(0, 0, compCanvas.width, compCanvas.height)
+        torchInternal += dt / 1000 * 4.5
+
+        // DRAWING STRATEGY:
+        // We can't easily "steal" the main loop's exact state without more refactoring.
+        // But we DO have the main canvas. We can just draw that, then overlay our UI code.
         compCtx.drawImage(canvas, 0, 0)
         
-        // 2. If UI is open, snapshot and draw it
-        if (uiOverlay) {
-          try {
-            const uiCanvas = await html2canvas(uiOverlay, {
-              backgroundColor: null,
-              width: uiOverlay.offsetWidth,
-              height: uiOverlay.offsetHeight,
-              scale: (compCanvas.width / uiOverlay.offsetWidth), 
-              logging: false,
-              useCORS: true,
-            })
-            compCtx.drawImage(uiCanvas, 0, 0)
-          } catch (e) {
-            console.warn('UI Capture failed:', e)
-          }
+        // 2. Clear UI if needed or just draw overlay
+        const { showEditor, charColors, birthData } = overlayStateRef.current
+        if (showEditor && charColors && birthData) {
+          // Note: we might want to manually draw the editor if we want it pixel-perfect
+          // For now, we use our new manual ui draw method
+          const { drawEditorOverlay } = await import('../game/draw/ui.jsx')
+          drawEditorOverlay(compCtx, charColors, birthData)
         }
       }
       captureFrameRef.current = requestAnimationFrame(captureFrame)
@@ -184,6 +193,10 @@ export function useRecorder({ onReady } = {}) {
       console.action(`[recorder] webm size: ${(webmBlob.size / 1024).toFixed(1)} KB, chunks: ${chunksRef.current.length}`)
       if (webmBlob.size < 1000) throw new Error('Recording too short — no data captured')
 
+      // FALLBACK/DEBUG: Also trigger onReady with the raw WebM if MP4 fails or for testing
+      // console.log('[recorder] Triggering preview with raw WebM...')
+      // onReadyRef.current?.(webmBlob, filename.replace('.mp4', '.webm'))
+
       console.action('[recorder] Converting blob to Uint8Array...')
       const webmData = await toUint8Array(webmBlob)
       console.action('[recorder] Writing input.webm to WASM FS...')
@@ -207,6 +220,14 @@ export function useRecorder({ onReady } = {}) {
       const data    = await ff.readFile('output.mp4')
       const mp4Blob = new Blob([data.buffer], { type: 'video/mp4' })
       
+      // Auto-download for debugging
+      const link = document.createElement('a')
+      link.href = URL.createObjectURL(mp4Blob)
+      link.download = filename
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+
       // Verification: Try to play the blob immediately in memory to ensure it's not corrupt
       console.log('[recorder] Verifying Blob playback compatibility...')
       const testUrl = URL.createObjectURL(mp4Blob)
@@ -244,5 +265,5 @@ export function useRecorder({ onReady } = {}) {
     setProgress(0)
   }, [])
 
-  return { start, stop, cancel, status, progress }
+  return { start, stop, cancel, updateOverlay, status, progress }
 }
