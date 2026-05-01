@@ -12,24 +12,18 @@ export function drawEditorOverlay(ctx, colors, birthData) {
   ctx.fillStyle = '#16112a' // Solid dark background for full screen
   ctx.fillRect(0, 0, W, H)
   
-  // 3. Header
-  ctx.fillStyle = '#fefefe'
-  ctx.font = 'bold 32px "Cinzel", serif'
-  ctx.textAlign = 'center'
-  ctx.fillText('CHARACTER COSMOS', W / 2, 80)
-  
   // Separator
   ctx.strokeStyle = 'rgba(168, 85, 247, 0.5)'
   ctx.lineWidth = 1
   ctx.beginPath()
-  ctx.moveTo(W * 0.1, 110)
-  ctx.lineTo(W * 0.9, 110)
+  ctx.moveTo(W * 0.1, 80)
+  ctx.lineTo(W * 0.9, 80)
   ctx.stroke()
 
   // 4. Draw Character Preview
   const charSize = 256
   const cx = W / 2
-  const cy = H / 2 - 40
+  const cy = H / 2 - 20
   
   // Larger glowing orb behind char
   const grad = ctx.createRadialGradient(cx, cy, 20, cx, cy, 150)

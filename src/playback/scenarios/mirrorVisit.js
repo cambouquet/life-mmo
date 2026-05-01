@@ -8,13 +8,13 @@
 //   Moving diagonally from start hits the solid wall at y=320; two steps avoids this.
 
 const STEP_DOWN_X = 480 // Stay at start x while stepping below solid tiles
-const STEP_DOWN_Y = 338 // y=338 clears solid row (ends at y=335), closer to mirror
+const STEP_DOWN_Y = 336 // y=336 clears solid row (ends at y=335), closer to mirror
 
-const APPROACH_X  = 416 // Horizontal center of mirror
-const APPROACH_Y  = 338
+const APPROACH_X  = 408 // Rebalanced: Mirror CX is 416, player x is left edge
+const APPROACH_Y  = 350 // Stepping further down to clear the solid mirror base
 
-const FRONT_X     = 416
-const FRONT_Y     = 338
+const FRONT_X     = 408 
+const FRONT_Y     = 350
 
 // ── Random color helpers ──────────────────────────────────────────────────────
 

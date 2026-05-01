@@ -134,17 +134,20 @@ export function useRecorder({ onReady } = {}) {
         torchInternal += dt / 1000 * 4.5
 
         // DRAWING STRATEGY:
-        // We can't easily "steal" the main loop's exact state without more refactoring.
-        // But we DO have the main canvas. We can just draw that, then overlay our UI code.
-        compCtx.drawImage(canvas, 0, 0)
-        
-        // 2. Clear UI if needed or just draw overlay
+        // If the editor is open, we ONLY draw the editor UI (full screen style).
+        // If not, we draw the game canvas.
         const { showEditor, charColors, birthData } = overlayStateRef.current;
-        console.log('[recorder-loop] UI State:', { showEditor, hasColors: !!charColors, hasBirth: !!birthData });
         
         if (showEditor && charColors && birthData) {
-          console.log('[recorder-loop] Drawing Editor Overlay...');
+          // 1. Fill background first (ensures no game bleed if there's transparency)
+          compCtx.fillStyle = '#16112a';
+          compCtx.fillRect(0, 0, compCanvas.width, compCanvas.height);
+          
+          // 2. Draw the manual UI
           drawEditorOverlay(compCtx, charColors, birthData);
+        } else {
+          // Normal game recording
+          compCtx.drawImage(canvas, 0, 0);
         }
       }
       captureFrameRef.current = requestAnimationFrame(captureFrame)
@@ -227,27 +230,23 @@ export function useRecorder({ onReady } = {}) {
       if (exitCode !== 0) throw new Error(`ffmpeg exited with code ${exitCode}`)
 
       const data    = await ff.readFile('output.mp4')
-      const mp4Blob = new Blob([data.buffer], { type: 'video/mp4' })
-      
-      // Auto-download for debugging
+      const mp4Blob = new Blob([data.buffer.slice(0)], { type: 'video/mp4' })
+
+      console.action(`[recorder] mp4 size: ${(mp4Blob.size / 1024).toFixed(1)} KB`)
+
+      // Auto-download
+      const dlUrl = URL.createObjectURL(mp4Blob)
       const link = document.createElement('a')
-      link.href = URL.createObjectURL(mp4Blob)
+      link.href = dlUrl
       link.download = filename
       document.body.appendChild(link)
       link.click()
       document.body.removeChild(link)
+      setTimeout(() => URL.revokeObjectURL(dlUrl), 10_000)
 
-      // Verification: Try to play the blob immediately in memory to ensure it's not corrupt
-      console.log('[recorder] Verifying Blob playback compatibility...')
-      const testUrl = URL.createObjectURL(mp4Blob)
-      console.log(`[recorder] Generated URL: ${testUrl}`)
-
-      console.action(`[recorder] mp4 size: ${(mp4Blob.size / 1024).toFixed(1)} KB`)
-      
       setProgress(100)
       setStatus('done')
 
-      // Immediate trigger with a safety check
       if (onReadyRef.current) {
         console.action('[recorder] Triggering onReady callback...')
         onReadyRef.current(mp4Blob, filename)

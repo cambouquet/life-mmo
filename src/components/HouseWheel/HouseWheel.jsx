@@ -28,15 +28,15 @@ const ORBITS = [
 const PLANET_RINGS = ORBITS.reduce((acc, o) => ({ ...acc, [o.id]: o.r }), {})
 
 export const HOUSE_THEMES = {
-  1:'self', 2:'resources', 3:'mind', 4:'home', 5:'pleasure',
-  6:'service', 7:'partnership', 8:'transformation', 9:'expansion',
-  10:'career', 11:'community', 12:'hidden'
+  1:'Identity', 2:'Abundance', 3:'Expression', 4:'Foundations', 5:'Creation',
+  6:'Synthesis', 7:'Balance', 8:'Evolution', 9:'Wisdom',
+  10:'Legacy', 11:'Connection', 12:'Transcendence'
 }
 const HOUSE_NAMES = {
-  1:'House of Self', 2:'House of Resources', 3:'House of Mind', 4:'House of Home',
-  5:'House of Pleasure', 6:'House of Service', 7:'House of Partnership',
-  8:'House of Transformation', 9:'House of Expansion', 10:'House of Career',
-  11:'House of Community', 12:'House of the Hidden'
+  1:'House of Identity', 2:'House of Abundance', 3:'House of Expression', 4:'House of Foundations',
+  5:'House of Creation', 6:'House of Synthesis', 7:'House of Balance',
+  8:'House of Evolution', 9:'House of Wisdom', 10:'House of Legacy',
+  11:'House of Connection', 12:'House of Transcendence'
 }
 const HOUSE_LONG = {
   1:"Defines the ego, self-image, and your natural approach to the world.",
@@ -274,11 +274,11 @@ export function HouseWheel({ placements, houseCusps, size = 300, hideStellium })
       </svg>
 
       {(lockedPoint || hovered) && (() => {
-        const active = lockedPoint
-          ? { type:'planet', id:lockedPoint, label:PLANET_NAMES[lockedPoint] ?? lockedPoint, glyph:PLANET_GLYPHS[lockedPoint],
+        const active = hovered
+          ? hovered
+          : { type:'planet', id:lockedPoint, label:PLANET_NAMES[lockedPoint] ?? lockedPoint, glyph:PLANET_GLYPHS[lockedPoint],
               color: ELEMENT_COLOR[SIGN_META[placements[lockedPoint]?.sign]?.element] ?? '#fff',
               desc: getInterpretation(lockedPoint), locked:true }
-          : hovered
         return (
           <div style={{ padding:'10px 0 0', color:'#e8d4ff', fontFamily:'inherit', lineHeight:'1.5', width:'100%' }}>
             {active.type === 'planet' ? (<>

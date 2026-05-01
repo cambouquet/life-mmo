@@ -106,7 +106,10 @@ export default function App() {
       },
       onComplete: () => {
         console.action('✓ Scenario complete — converting in 1.5s')
-        setTimeout(() => recorder.stop('mirror-visit.mp4'), 1500)
+        setTimeout(() => {
+          const ts = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19)
+          recorder.stop(`mirror-visit_${ts}.mp4`)
+        }, 1500)
       },
     })
 

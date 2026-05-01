@@ -14,12 +14,14 @@ export default defineConfig({
     headers: {
       'Cross-Origin-Opener-Policy':   'same-origin',
       'Cross-Origin-Embedder-Policy': 'require-corp',
+      'Content-Security-Policy':      "media-src 'self' blob:",
     },
   },
   preview: {
     headers: {
       'Cross-Origin-Opener-Policy':   'same-origin',
       'Cross-Origin-Embedder-Policy': 'require-corp',
+      'Content-Security-Policy':      "media-src 'self' blob:",
     },
   },
 })

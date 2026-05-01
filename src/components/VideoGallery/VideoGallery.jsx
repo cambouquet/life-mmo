@@ -8,11 +8,16 @@ export default function VideoGallery({ videos, onClose }) {
   // Select the latest on open
   useEffect(() => {
     if (videos.length > 0) {
-      const latest = videos[videos.length - 1];
-      console.log('Gallery opened, selecting latest:', latest.id, latest.url);
-      setSelected(latest.id);
+      setSelected(videos[videos.length - 1].id)
     }
   }, [videos.length])
+
+  // Load video when selection changes
+  useEffect(() => {
+    const el = videoRef.current
+    if (!el) return
+    el.load()
+  }, [selected])
 
   // Revoke object URLs only on unmount — not when videos array changes,
   // since revoking live URLs breaks playback and download in the same session.
@@ -79,9 +84,7 @@ export default function VideoGallery({ videos, onClose }) {
                     className="vgallery-video"
                     src={active.url}
                     controls
-                    autoPlay
                     playsInline
-                    muted
                   />
                 </div>
                 <div className="vgallery-player-bar">
