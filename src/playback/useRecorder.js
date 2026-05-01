@@ -68,12 +68,17 @@ export function useRecorder({ onReady } = {}) {
           
           setProgress(prev => {
             // Only update if it's an actual increase, avoid "jittering" backwards
+            // If we're already at 100 (done), don't go back
+            if (prev >= 100) return 100;
             if (pct > prev) return pct;
             return prev;
           })
         } else {
           // Indeterminate progress if duration is missing
-          setProgress(prev => Math.min(99, prev + 1))
+          setProgress(prev => {
+            if (prev >= 99) return 99;
+            return prev + 1;
+          })
         }
       }
     })
@@ -242,8 +247,8 @@ export function useRecorder({ onReady } = {}) {
       document.body.removeChild(link)
       setTimeout(() => URL.revokeObjectURL(dlUrl), 10_000)
 
-      setProgress(100)
       setStatus('done')
+      setProgress(100)
 
       if (onReadyRef.current) {
         console.action('[recorder] Triggering onReady callback...')

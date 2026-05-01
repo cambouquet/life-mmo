@@ -19,13 +19,7 @@ export default function VideoGallery({ videos, onClose }) {
     el.load()
   }, [selected])
 
-  // Revoke object URLs only on unmount — not when videos array changes,
-  // since revoking live URLs breaks playback and download in the same session.
-  const videosRef = useRef(videos)
-  useEffect(() => { videosRef.current = videos }, [videos])
-  useEffect(() => {
-    return () => videosRef.current.forEach(v => URL.revokeObjectURL(v.url))
-  }, [])
+  // URLs are data URLs — nothing to revoke
 
   const active = videos.find(v => v.id === selected)
 

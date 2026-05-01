@@ -50,9 +50,13 @@ export default function App() {
   const engineRef     = useRef(null)
   const recorder      = useRecorder({
     onReady: (blob, filename) => {
-      const url = URL.createObjectURL(blob)
-      setRecordings(prev => [...prev, { id: Date.now(), url, blob, filename, ts: Date.now() }])
-      setShowGallery(true)
+      const reader = new FileReader()
+      reader.onload = () => {
+        const url = reader.result
+        setRecordings(prev => [...prev, { id: Date.now(), url, blob, filename, ts: Date.now() }])
+        setShowGallery(true)
+      }
+      reader.readAsDataURL(blob)
     }
   })
   const handleStateChange = useCallback(({ facing, moving, log, guidance }) => {
@@ -128,52 +132,54 @@ export default function App() {
   return (
     <div className="game-wrap" ref={wrapRef}>
       <HUD facing={facing} moving={moving} logEntries={logEntries} charColors={charColors} />
-      <div className="canvas-wrap">
-        <Game
-          ref={gameRef}
-          onStateChange={handleStateChange}
-          onInteract={handleInteract}
-          paused={showDialog || showHoroscope || showEditor}
-          charColors={charColors}
-        />
-        <div className="ui-overlay" ref={uiOverlayRef}>
-          {!showDialog && !showHoroscope && !showEditor && <GuidanceVoice text={guidance} />}
+      {!showEditor && (
+        <div className="canvas-wrap">
+          <Game
+            ref={gameRef}
+            onStateChange={handleStateChange}
+            onInteract={handleInteract}
+            paused={showDialog || showHoroscope}
+            charColors={charColors}
+          />
+          <div className="ui-overlay" ref={uiOverlayRef}>
+            {!showDialog && !showHoroscope && <GuidanceVoice text={guidance} />}
 
-          {showEditor && (
-            <CharacterEditor
-              initialColors={charColors}
-              initialBirthData={birthData}
-              onClose={() => {
-                console.action('Closing Mirror')
-                setShowEditor(false)
-              }}
-              onChange={(next) => {
-                const keys = Object.keys(next)
-                const changed = keys.find(k => next[k] !== charColors[k])
-                if (changed) console.action(`Changing ${changed} to ${next[changed]}`)
-                setCharColors(next)
-              }}
-              onSave={(colors, data) => {
-                console.action('Saving character data')
-                setCharColors(colors)
-                setBirthData(data)
-                try { localStorage.setItem(LS_COLORS, JSON.stringify(colors)) } catch {}
-                try { if (data) localStorage.setItem(LS_BIRTH, JSON.stringify(data)) } catch {}
-                setShowEditor(false)
-              }}
-            />
-          )}
+            {showDialog && (
+              <DialogModal
+                onClose={() => setShowDialog(false)}
+                onHoroscope={() => { setShowDialog(false); setShowHoroscope(true) }}
+              />
+            )}
 
-          {showDialog && (
-            <DialogModal
-              onClose={() => setShowDialog(false)}
-              onHoroscope={() => { setShowDialog(false); setShowHoroscope(true) }}
-            />
-          )}
-
-          {showHoroscope && <HoroscopeModal birthData={birthData} onClose={() => setShowHoroscope(false)} />}
+            {showHoroscope && <HoroscopeModal birthData={birthData} onClose={() => setShowHoroscope(false)} />}
+          </div>
         </div>
-      </div>
+      )}
+
+      {showEditor && (
+        <CharacterEditor
+          initialColors={charColors}
+          initialBirthData={birthData}
+          onClose={() => {
+            console.action('Closing Mirror')
+            setShowEditor(false)
+          }}
+          onChange={(next) => {
+            const keys = Object.keys(next)
+            const changed = keys.find(k => next[k] !== charColors[k])
+            if (changed) console.action(`Changing ${changed} to ${next[changed]}`)
+            setCharColors(next)
+          }}
+          onSave={(colors, data) => {
+            console.action('Saving character data')
+            setCharColors(colors)
+            setBirthData(data)
+            try { localStorage.setItem(LS_COLORS, JSON.stringify(colors)) } catch {}
+            try { if (data) localStorage.setItem(LS_BIRTH, JSON.stringify(data)) } catch {}
+            setShowEditor(false)
+          }}
+        />
+      )}
       <div className="hint">WASD to move &nbsp;·&nbsp; SPACE to jump &nbsp;·&nbsp; SHIFT to interact</div>
       <DebugConsole />
       <RecordButton
