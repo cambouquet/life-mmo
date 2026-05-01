@@ -77,7 +77,8 @@ export function drawMirror(ctx, x, y, phase, reflection) {
       ctx.scale(-1, 1)
       ctx.translate(-reflX, 0)
       
-      drawWarriorSprite(ctx, reflX, reflY, reflFacing, reflection.frame, phase, reflection.colors, reflection.moving)
+      // Draw everything EXCEPT the aura/halo in the reflection
+      drawWarriorSprite(ctx, reflX, reflY, reflFacing, reflection.frame, phase, reflection.colors, reflection.moving, true)
       
       ctx.restore()
     }
@@ -112,7 +113,7 @@ export function drawMirror(ctx, x, y, phase, reflection) {
   p2(4, 2, '#c0c0f0'); p2(2, 4, '#c0c0f0')
   p2(3, 3, '#c8c8f8')
 
-  // Soft violet ambient glow
+  // Soft violet ambient glow (Mirror's own halo)
   const gx = Math.round(drawX + W / 2)
   const gy = Math.round(drawY + H / 2)
   if (!isNaN(gx) && !isNaN(gy)) {

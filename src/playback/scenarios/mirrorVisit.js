@@ -10,11 +10,13 @@
 const STEP_DOWN_X = 480 // Stay at start x while stepping below solid tiles
 const STEP_DOWN_Y = 336 // y=336 clears solid row (ends at y=335), closer to mirror
 
-const APPROACH_X  = 408 // Rebalanced: Mirror CX is 416, player x is left edge
-const APPROACH_Y  = 350 // Stepping further down to clear the solid mirror base
+// Position 1: Extremely close to the glass (touching the wall)
+const CLOSE_X     = 408 
+const CLOSE_Y     = 326 
 
-const FRONT_X     = 408 
-const FRONT_Y     = 350
+// Position 2: Stepped back to admire the full reflection
+const ADMIRE_X    = 408
+const ADMIRE_Y    = 358
 
 // ── Random color helpers ──────────────────────────────────────────────────────
 
@@ -46,28 +48,29 @@ function randomPalette() {
 export async function mirrorVisit(engine) {
   const palette = randomPalette()
 
-  // 1. Step down first to clear solid mirror row, then walk left to center
+  // 1. Initial Approach: Walk right up to the glass
   await engine.wait(600)
   await engine.moveTo(STEP_DOWN_X, STEP_DOWN_Y, 10)
-  await engine.moveTo(APPROACH_X, APPROACH_Y, 10)
-  await engine.wait(700)
-
-  // 2. Open editor
-  await engine.openMirror()
+  await engine.moveTo(CLOSE_X, CLOSE_Y, 10)
+  await engine.face('up')
   await engine.wait(900)
 
-  // 3. Change colors one by one
+  // 2. Open editor while standing close
+  await engine.openMirror()
+  await engine.wait(1000)
+
+  // 3. Change colors
   await engine.changeColor('hair',   palette.hair)
   await engine.changeColor('outfit', palette.outfit)
   await engine.changeColor('eyes',   palette.eyes)
-  await engine.wait(1000)
+  await engine.wait(1200)
 
   // 4. Close editor
   await engine.closeMirror()
-  await engine.wait(400)
+  await engine.wait(600)
 
-  // 5. Move directly in front of mirror (below it) to admire the reflection
-  await engine.moveTo(FRONT_X, FRONT_Y, 10)
+  // 5. Step back to admire the transformation
+  await engine.moveTo(ADMIRE_X, ADMIRE_Y, 10)
   await engine.face('up')
-  await engine.wait(2800)
+  await engine.wait(3000)
 }

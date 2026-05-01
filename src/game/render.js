@@ -17,11 +17,11 @@ export function drawBadge(ctx, bx, by, torchPhase, label = '[SPC]') {
   ctx.strokeStyle  = '#4a2878'
   ctx.lineWidth    = 0.5
   ctx.strokeRect(bx - 14, by - 4, 32, 8)
-  ctx.font         = '6px "Courier New"'
+  ctx.font         = '500 7px "Outfit", sans-serif'
   ctx.textAlign    = 'center'
   ctx.textBaseline = 'middle'
-  ctx.fillStyle    = '#c8a8f0'
-  ctx.fillText(label, bx, by)
+  ctx.fillStyle    = '#f4f0ff'
+  ctx.fillText(label, bx, by + 0.5)
   ctx.restore()
 }
 
@@ -39,6 +39,12 @@ export function renderFrame(ctx, {
   const { W, H, NPC_CX, NPC_CY, MIRROR_TX, MIRROR_TY, MIRROR_CX, MIRROR_CY, TABLE_X, TABLE_Y, TABLE_CX, TABLE_CY, map } = world
   const cw = ctx.canvas.width
   const ch = ctx.canvas.height
+  const dpr = window.devicePixelRatio || 1
+
+  // Enable high-quality rendering for text/gradients
+  ctx.imageSmoothingEnabled = true
+  ctx.imageSmoothingQuality = 'high'
+
   const pcx = player.x + 8
   const pcy = player.y + 8
 
@@ -46,14 +52,17 @@ export function renderFrame(ctx, {
   ctx.fillRect(0, 0, cw, ch)
 
   ctx.save()
+  // Scale everything to account for high-DPI display
+  ctx.scale(dpr, dpr)
+
   // Ensure the center translation is integer-rounded if the viewport scale is integer
   // However, on high-DPI screens or non-integer scales, floor/round can cause jitter.
   // We'll revert to precise floats for the camera but keep the sprite snapping.
-  ctx.translate(cw / 2, ch / 2)
+  ctx.translate(window.innerWidth / 2, window.innerHeight / 2)
   ctx.scale(DRAW_SCALE, DRAW_SCALE)
   ctx.translate(-pcx, -pcy)
 
-  drawProximityAura(ctx, NPC_CX,    NPC_CY,    pcx, pcy, 64, '96,232,255')
+  drawProximityAura(ctx, NPC_CX,    NPC_CY,    pcx, pcy, 56, '168,85,247')
   drawProximityAura(ctx, MIRROR_CX, MIRROR_CY, pcx, pcy, 56, '168,85,247')
 
   drawRoom(ctx, map, torchPhase)

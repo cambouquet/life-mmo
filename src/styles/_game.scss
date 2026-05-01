@@ -20,8 +20,6 @@
 
 .game-canvas {
   display: block;
-  image-rendering: pixelated;
-  image-rendering: crisp-edges;
   width: 100vw;
   height: 100vh;
 }
@@ -39,6 +37,12 @@
   color: rgba(220, 185, 255, 0.78);
   text-shadow: 0 0 18px rgba(0,0,0,0.95), 0 1px 6px rgba(0,0,0,0.9);
   pointer-events: none;
+  
+  // Mobile wrapping support
+  max-width: 80%;
+  margin: 0 auto;
+  line-height: 1.4;
+  white-space: pre-wrap;
 
   &--in  { animation: guidanceIn 0.7s ease forwards; }
   &--out { opacity: 0; transition: opacity 0.5s ease; }

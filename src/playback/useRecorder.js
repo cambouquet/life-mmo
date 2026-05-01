@@ -1,6 +1,6 @@
 import { useRef, useState, useCallback } from 'react'
+import html2canvas from 'html2canvas'
 import { renderFrame } from '../game/render.js'
-import { drawEditorOverlay } from '../game/draw/ui.jsx'
 
 // ffmpeg loaded as plain UMD scripts in index.html → window.FFmpegWASM / window.FFmpegUtil
 // This bypasses Vite's worker transform which breaks @ffmpeg/ffmpeg's internal worker spawn.
@@ -90,6 +90,9 @@ export function useRecorder({ onReady } = {}) {
 
   const start = useCallback((canvas, initialState = {}) => {
     if (!canvas) { console.error('useRecorder.start: no canvas'); return }
+    const rootElement = document.querySelector('.game-wrap')
+    if (!rootElement) { console.error('useRecorder.start: .game-wrap not found'); return }
+
     if (statusRef.current === 'recording' || statusRef.current === 'converting') {
       console.warn('useRecorder.start: already recording'); return
     }
@@ -108,8 +111,9 @@ export function useRecorder({ onReady } = {}) {
     
     // Create a hidden "composition" canvas that merges game + UI
     const compCanvas = document.createElement('canvas')
-    compCanvas.width = canvas.width
-    compCanvas.height = canvas.height
+    const rect = rootElement.getBoundingClientRect()
+    compCanvas.width = rect.width
+    compCanvas.height = rect.height
     const compCtx = compCanvas.getContext('2d', { alpha: false })
     compCtx.fillStyle = '#000'
     compCtx.fillRect(0, 0, compCanvas.width, compCanvas.height)
@@ -117,37 +121,31 @@ export function useRecorder({ onReady } = {}) {
     // Recording stream from the composition canvas
     const stream = compCanvas.captureStream(30)
     
-    // Internal world state for rendering (stubs or data from app)
-    // In a real app we might pass the full state object, but here we can
-    // leverage the fact that the main canvas is already rendering.
-    // However, for the overlay, we need to KNOW if it's open.
-    
     // Frame capture loop
     let lastCapture = 0
-    let torchInternal = 0
+    let isCapturing = false
     const captureFrame = async (ts) => {
       if (statusRef.current !== 'recording') return
       
       const dt = ts - lastCapture
-      if (dt >= 33) {
+      if (dt >= 66 && !isCapturing) { // ~15fps capture to avoid lag, html2canvas is heavy
         lastCapture = ts
-        torchInternal += dt / 1000 * 4.5
+        isCapturing = true
 
-        // DRAWING STRATEGY:
-        // If the editor is open, we ONLY draw the editor UI (full screen style).
-        // If not, we draw the game canvas.
-        const { showEditor, charColors, birthData } = overlayStateRef.current;
-        
-        if (showEditor && charColors && birthData) {
-          // 1. Fill background first (ensures no game bleed if there's transparency)
-          compCtx.fillStyle = '#16112a';
-          compCtx.fillRect(0, 0, compCanvas.width, compCanvas.height);
+        try {
+          const snapshot = await html2canvas(rootElement, {
+            backgroundColor: '#06040e',
+            scale: 1, // Capture at 1:1 screen size
+            logging: false,
+            useCORS: true,
+            allowTaint: true
+          })
           
-          // 2. Draw the manual UI
-          drawEditorOverlay(compCtx, charColors, birthData);
-        } else {
-          // Normal game recording
-          compCtx.drawImage(canvas, 0, 0);
+          compCtx.drawImage(snapshot, 0, 0, compCanvas.width, compCanvas.height)
+        } catch (err) {
+          console.error('[recorder] html2canvas error:', err)
+        } finally {
+          isCapturing = false
         }
       }
       captureFrameRef.current = requestAnimationFrame(captureFrame)

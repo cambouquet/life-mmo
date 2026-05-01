@@ -12,7 +12,14 @@ const Game = forwardRef(function Game({ onStateChange, onInteract, paused, charC
     playerPos: () => playerRef.current ? { x: playerRef.current.x, y: playerRef.current.y } : { x: 0, y: 0 },
   }))
 
-  return <canvas ref={canvasRef} className="game-canvas" width={window.innerWidth} height={window.innerHeight} />
+  const dpr = window.devicePixelRatio || 1
+  return <canvas 
+    ref={canvasRef} 
+    className="game-canvas" 
+    width={window.innerWidth * dpr} 
+    height={window.innerHeight * dpr} 
+    style={{ width: '100vw', height: '100vh' }}
+  />
 })
 
 export default Game
