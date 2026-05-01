@@ -63,6 +63,7 @@
   }
 }
 
+
 // ── Content wrapper: desktop flex row, mobile transparent ────────────────────
 
 .char-editor-content {
@@ -70,10 +71,20 @@
   flex-direction: row;
   align-items: stretch;
   flex: 1;
-  gap: 24px;
-  padding: 28px 32px;
+  gap: 0;
+  padding: 0;
   width: 100%;
   box-sizing: border-box;
+
+  // Add padding/gap between columns via the columns themselves
+  > .char-editor-preview {
+    margin: 28px 0 28px 32px;
+  }
+
+  > .char-editor-astro {
+    margin: 0 0;
+    border-left: 1px solid rgba(255, 255, 255, 0.04);
+  }
 
   @media (max-width: 768px) {
     display: flex;
@@ -82,6 +93,15 @@
     gap: 0;
     width: 200vw; // two full-width pages side by side
     height: 100%;
+
+    > .char-editor-preview {
+      margin: 0;
+    }
+
+    > .char-editor-astro {
+      margin: 0;
+      border-left: none;
+    }
   }
 }
 
@@ -123,18 +143,20 @@
   }
 }
 
-// ── Page 2: all astro elements (desktop + mobile) ────────────────────────────
+// ── Column 2: birth wheels ────────────────────────────────────────────────────
 
 .char-editor-astro {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 12px;
-  flex: 1;
+  width: 280px;
+  flex-shrink: 0;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 20px 20px 24px;
+  padding: 24px 20px;
   box-sizing: border-box;
+  justify-content: center;
 
   @media (max-width: 768px) {
     scroll-snap-align: start;
@@ -146,10 +168,30 @@
     padding: 36px 16px 28px;
     overflow-y: auto;
     overflow-x: hidden;
+    justify-content: flex-start;
   }
 }
 
-// ── House wheel (inside astro column) ────────────────────────────────────────
+// ── Column 3 (desktop only): natal chart summary + house wheel ────────────────
+
+.char-editor-chart {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 24px 20px;
+  box-sizing: border-box;
+  border-left: 1px solid rgba(255, 255, 255, 0.04);
+
+  @media (max-width: 768px) {
+    display: none;
+  }
+}
+
+// ── House wheel ────────────────────────────────────────────────────────────────
 
 .char-editor-wheel {
   display: flex;
@@ -157,6 +199,12 @@
   align-items: center;
   width: 100%;
   gap: 12px;
+
+  &--mobile-only {
+    @media (min-width: 769px) {
+      display: none;
+    }
+  }
 }
 
 // ── Character preview SVG ─────────────────────────────────────────────────────

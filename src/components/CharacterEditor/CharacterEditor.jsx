@@ -153,9 +153,93 @@ function CitySearch({ value, onChange }) {
 }
 
 
+function AstroSummary({ natalPlacements }) {
+  const tally = { Fire: 0, Earth: 0, Air: 0, Water: 0 }
+  const modeTally = { Cardinal: 0, Fixed: 0, Mutable: 0 }
+  Object.values(natalPlacements).forEach(p => {
+    const meta = SIGN_META[p.sign]
+    if (meta) {
+      if (meta.element) tally[meta.element]++
+      if (meta.mode) modeTally[meta.mode]++
+    }
+  })
+  const maxEl = Object.entries(tally).sort((a,b) => b[1]-a[1])[0]
+  const maxMo = Object.entries(modeTally).sort((a,b) => b[1]-a[1])[0]
+  const hTally = {}
+  Object.values(natalPlacements).forEach(p => {
+    if (p.house) hTally[p.house] = (hTally[p.house] || 0) + 1
+  })
+  const maxH = Object.entries(hTally).sort((a,b) => b[1] - a[1])[0]
+  const ELEMENTS_ORDER = ['Fire', 'Earth', 'Air', 'Water']
+  const sunP = natalPlacements['Sun']
+  const moonP = natalPlacements['Moon']
+  const ascP = natalPlacements['Ascendant']
+
+  return (
+    <div className="char-editor-summary">
+      <div className="char-editor-summary__planets">
+        {[['Sun', sunP], ['Moon', moonP], ['Asc', ascP]].map(([key, p]) => {
+          if (!p) return null
+          const color = ELEMENT_COLOR[SIGN_META[p.sign]?.element] ?? '#fff'
+          return (
+            <span key={key} className="char-editor-summary__planet" style={{ color }}>
+              <span className="char-editor-summary__glyph">{PLANET_GLYPHS[key === 'Asc' ? 'Ascendant' : key]}</span>
+              <span className="char-editor-summary__sign">{p.sign} {SIGN_GLYPHS[p.sign]}</span>
+              <span className="char-editor-summary__deg">{Math.floor(p.degrees)}°{Math.floor((p.degrees % 1) * 60)}'</span>
+            </span>
+          )
+        })}
+      </div>
+      {maxH && (
+        <div className="char-editor-summary__stellium">
+          {maxH[1] >= 3 ? 'Stellium' : 'Focus'} in H{maxH[0]} ({HOUSE_THEMES[maxH[0]] || ''}) — {maxH[1]} placements.
+        </div>
+      )}
+      <div className="char-editor-summary__grid">
+        <div className="char-editor-summary__col">
+          {ELEMENTS_ORDER.map(el => {
+            const n = tally[el]
+            return (
+              <div key={el} className="char-editor-summary__bar-row" style={{ opacity: n === 0 ? 0.2 : 1 }}>
+                <span className="char-editor-summary__bar-label" style={{ color: ELEMENT_COLOR[el], fontWeight: el === maxEl[0] && n > 0 ? 700 : 400 }}>{el.slice(0,4).toUpperCase()}</span>
+                <div className="char-editor-summary__bar-track">
+                  <div className="char-editor-summary__bar-fill" style={{ width: maxEl[1] > 0 ? `${(n/maxEl[1])*100}%` : '0%', background: ELEMENT_COLOR[el] }} />
+                </div>
+                <span className="char-editor-summary__bar-num" style={{ color: ELEMENT_COLOR[el] }}>{n}</span>
+              </div>
+            )
+          })}
+        </div>
+        <div className="char-editor-summary__col">
+          {[['Cardinal','#f472b6'],['Fixed','#a78bfa'],['Mutable','#34d399']].map(([mode, modeCol]) => {
+            const n = modeTally[mode]
+            return (
+              <div key={mode} className="char-editor-summary__bar-row" style={{ opacity: n === 0 ? 0.2 : 1 }}>
+                <span className="char-editor-summary__bar-label" style={{ color: modeCol, fontWeight: mode === maxMo[0] && n > 0 ? 700 : 400 }}>{mode.slice(0,4).toUpperCase()}</span>
+                <div className="char-editor-summary__bar-track">
+                  <div className="char-editor-summary__bar-fill" style={{ width: maxMo[1] > 0 ? `${(n/maxMo[1])*100}%` : '0%', background: modeCol }} />
+                </div>
+                <span className="char-editor-summary__bar-num" style={{ color: modeCol }}>{n}</span>
+              </div>
+            )
+          })}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function CharacterEditor({ initialColors, initialBirthData, onSave, onClose, onChange }) {
   const modalRef   = useRef(null)
   const [activePage, setActivePage] = useState(0)
+
+  const [colors, setColors] = useState(initialColors || {
+    hair:   '#6030d0',
+    skin:   '#f8c898',
+    eyes:   '#8040e8',
+    outfit: '#4a1090',
+    stick:  '#60a8ff',
+  })
 
   useEffect(() => {
     const el = modalRef.current
@@ -168,13 +252,8 @@ export default function CharacterEditor({ initialColors, initialBirthData, onSav
     return () => el.removeEventListener('scroll', onScroll)
   }, [])
 
-  const [colors, setColors] = useState(initialColors || {
-    hair:   '#6030d0',
-    skin:   '#f8c898',
-    eyes:   '#8040e8',
-    outfit: '#4a1090',
-    stick:  '#60a8ff',
-  })
+  const colorsRef = useRef(colors)
+  useEffect(() => { colorsRef.current = colors }, [colors])
 
   // Sync when parent pushes new colors (e.g. playback engine changing colors)
   useEffect(() => {
@@ -209,6 +288,35 @@ export default function CharacterEditor({ initialColors, initialBirthData, onSav
 
   const buildBirthData = () =>
     hasDate ? { date: dateStr, time: timeStr, city: birthCity } : null
+
+  useEffect(() => {
+    // Wait for Space/Enter to be physically released before accepting them,
+    // so the same keypress that opened the editor doesn't immediately confirm it.
+    let ready = false
+    const onKeyUp = e => { if (e.key === ' ' || e.key === 'Enter') ready = true }
+    const onKey = e => {
+      if (e.target.tagName === 'INPUT') return
+      if (e.key === 'Enter' || e.key === ' ') {
+        if (!ready) return
+        e.preventDefault()
+        onSave(colorsRef.current, buildBirthData())
+      } else if (e.key === 'Escape') {
+        onClose()
+      } else if (e.key === 'ArrowRight') {
+        const el = modalRef.current
+        if (el) el.scrollTo({ left: el.clientWidth, behavior: 'smooth' })
+      } else if (e.key === 'ArrowLeft') {
+        const el = modalRef.current
+        if (el) el.scrollTo({ left: 0, behavior: 'smooth' })
+      }
+    }
+    window.addEventListener('keyup', onKeyUp)
+    window.addEventListener('keydown', onKey)
+    return () => {
+      window.removeEventListener('keyup', onKeyUp)
+      window.removeEventListener('keydown', onKey)
+    }
+  }, [hasDate, dateStr, timeStr, birthCity])
 
   // Live natal chart computation — uses preview values while hovering
   const { natalPlacements, houseCusps } = useMemo(() => {
@@ -282,7 +390,7 @@ export default function CharacterEditor({ initialColors, initialBirthData, onSav
           </div>
         </div>
 
-        {/* Page 2 (mobile) / columns 2-3 (desktop): all astro */}
+        {/* Page 2 (mobile) / column 2 (desktop): birth wheels */}
         <div className="char-editor-astro">
           <div className="birth-trio">
             <div className="birth-trio__date">
@@ -313,92 +421,24 @@ export default function CharacterEditor({ initialColors, initialBirthData, onSav
             </div>
           </div>
 
+          {/* Mobile only: wheel + summary inline on page 2 */}
+          {natalPlacements && (
+            <div className="char-editor-wheel char-editor-wheel--mobile-only">
+              <AstroSummary natalPlacements={natalPlacements} />
+              <HouseWheel placements={natalPlacements} houseCusps={houseCusps} size={220} hideStellium />
+            </div>
+          )}
+        </div>{/* end char-editor-astro */}
+
+        {/* Column 3 (desktop only): natal chart summary + house wheel */}
         {natalPlacements && (
-          <div className="char-editor-wheel">
-            {(() => {
-              const tally = { Fire: 0, Earth: 0, Air: 0, Water: 0 }
-              const modeTally = { Cardinal: 0, Fixed: 0, Mutable: 0 }
-              Object.values(natalPlacements).forEach(p => {
-                const meta = SIGN_META[p.sign]
-                if (meta) {
-                  if (meta.element) tally[meta.element]++
-                  if (meta.mode) modeTally[meta.mode]++
-                }
-              })
-              const maxEl = Object.entries(tally).sort((a,b) => b[1]-a[1])[0]
-              const maxMo = Object.entries(modeTally).sort((a,b) => b[1]-a[1])[0]
-              const hTally = {}
-              Object.values(natalPlacements).forEach(p => {
-                if (p.house) hTally[p.house] = (hTally[p.house] || 0) + 1
-              })
-              const maxH = Object.entries(hTally).sort((a,b) => b[1] - a[1])[0]
-              const ELEMENTS_ORDER = ['Fire', 'Earth', 'Air', 'Water']
-              const sunP = natalPlacements['Sun']
-              const moonP = natalPlacements['Moon']
-              const ascP = natalPlacements['Ascendant']
-
-              return (
-                <div className="char-editor-summary">
-                  {/* Row 1: Sun · Moon · Asc */}
-                  <div className="char-editor-summary__planets">
-                    {[['Sun', sunP], ['Moon', moonP], ['Asc', ascP]].map(([key, p]) => {
-                      if (!p) return null
-                      const color = ELEMENT_COLOR[SIGN_META[p.sign]?.element] ?? '#fff'
-                      return (
-                        <span key={key} className="char-editor-summary__planet" style={{ color }}>
-                          <span className="char-editor-summary__glyph">{PLANET_GLYPHS[key === 'Asc' ? 'Ascendant' : key]}</span>
-                          <span className="char-editor-summary__sign">{p.sign} {SIGN_GLYPHS[p.sign]}</span>
-                          <span className="char-editor-summary__deg">{Math.floor(p.degrees)}°{Math.floor((p.degrees % 1) * 60)}'</span>
-                        </span>
-                      )
-                    })}
-                  </div>
-
-                  {/* Row 2: stellium note */}
-                  {maxH && (
-                    <div className="char-editor-summary__stellium">
-                      {maxH[1] >= 3 ? 'Stellium' : 'Focus'} in H{maxH[0]} ({HOUSE_THEMES[maxH[0]] || ''}) — {maxH[1]} placements.
-                    </div>
-                  )}
-
-                  {/* Row 3: elements + modalities side by side */}
-                  <div className="char-editor-summary__grid">
-                    <div className="char-editor-summary__col">
-                      {ELEMENTS_ORDER.map(el => {
-                        const n = tally[el]
-                        return (
-                          <div key={el} className="char-editor-summary__bar-row" style={{ opacity: n === 0 ? 0.2 : 1 }}>
-                            <span className="char-editor-summary__bar-label" style={{ color: ELEMENT_COLOR[el], fontWeight: el === maxEl[0] && n > 0 ? 700 : 400 }}>{el.slice(0,4).toUpperCase()}</span>
-                            <div className="char-editor-summary__bar-track">
-                              <div className="char-editor-summary__bar-fill" style={{ width: maxEl[1] > 0 ? `${(n/maxEl[1])*100}%` : '0%', background: ELEMENT_COLOR[el] }} />
-                            </div>
-                            <span className="char-editor-summary__bar-num" style={{ color: ELEMENT_COLOR[el] }}>{n}</span>
-                          </div>
-                        )
-                      })}
-                    </div>
-                    <div className="char-editor-summary__col">
-                      {[['Cardinal','#f472b6'],['Fixed','#a78bfa'],['Mutable','#34d399']].map(([mode, modeCol]) => {
-                        const n = modeTally[mode]
-                        return (
-                          <div key={mode} className="char-editor-summary__bar-row" style={{ opacity: n === 0 ? 0.2 : 1 }}>
-                            <span className="char-editor-summary__bar-label" style={{ color: modeCol, fontWeight: mode === maxMo[0] && n > 0 ? 700 : 400 }}>{mode.slice(0,4).toUpperCase()}</span>
-                            <div className="char-editor-summary__bar-track">
-                              <div className="char-editor-summary__bar-fill" style={{ width: maxMo[1] > 0 ? `${(n/maxMo[1])*100}%` : '0%', background: modeCol }} />
-                            </div>
-                            <span className="char-editor-summary__bar-num" style={{ color: modeCol }}>{n}</span>
-                          </div>
-                        )
-                      })}
-                    </div>
-                  </div>
-                </div>
-              )
-            })()}
-            <HouseWheel placements={natalPlacements} houseCusps={houseCusps} size={220} hideStellium />
+          <div className="char-editor-chart">
+            <div className="char-editor-wheel">
+              <AstroSummary natalPlacements={natalPlacements} />
+              <HouseWheel placements={natalPlacements} houseCusps={houseCusps} size={240} hideStellium />
+            </div>
           </div>
         )}
-        </div>{/* end char-editor-astro */}
 
       </div>
       </div>

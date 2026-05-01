@@ -32,18 +32,23 @@ export default function DebugConsole() {
       const message = args.map(a =>
         typeof a === 'object' ? JSON.stringify(a, null, 2) : String(a)
       ).join(' ')
+      
       const now = new Date()
       const ts  = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}.${String(now.getMilliseconds()).padStart(3,'0')}`
       
-      setLogs(prev => {
-        const newLog = { 
-          type, 
-          message, 
-          ts, 
-          id: `${performance.now()}-${Math.random()}` 
-        }
-        return [...prev, newLog].slice(-200)
-      })
+      // Defend against "Cannot update a component while rendering a different component"
+      // This happens if a console.log is hit during a component's render phase.
+      setTimeout(() => {
+        setLogs(prev => {
+          const newLog = { 
+            type, 
+            message, 
+            ts, 
+            id: `${performance.now()}-${Math.random()}` 
+          }
+          return [...prev, newLog].slice(-200)
+        })
+      }, 0)
     }
 
     console.log    = (...a) => { 
