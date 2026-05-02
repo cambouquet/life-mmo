@@ -369,13 +369,13 @@
     justify-content: center;
   }
 
-  // Mobile: back to flex row
+  // Mobile: back to flex row, all three items same size
   @media (max-width: 768px) {
     position: static;
     flex: none;
     display: flex;
     flex-direction: row;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
     gap: 8px;
 
@@ -383,6 +383,11 @@
       position: static;
       transform: none;
       width: auto;
+
+      svg {
+        width: 120px !important;
+        height: 120px !important;
+      }
     }
 
     &__pickers {

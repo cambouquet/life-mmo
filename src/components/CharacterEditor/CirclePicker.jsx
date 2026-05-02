@@ -77,61 +77,42 @@ function useNeedle(svgRef, cx, cy, needleRef, onDelta) {
   return { onPointerDown, onPointerMove, onPointerUp }
 }
 
-// Imperative ring: rotate DOM directly, preview on hover, commit on click or drag-release
+// Static ring: ring never rotates, pointer angle maps directly to segment index
 function useImperativeRing(svgRef, cx, cy, total, onPreview, onCommit) {
   const groupRef     = useRef(null)
-  const rotRef       = useRef(0)
-  const prevAngle    = useRef(null)
-  const didDrag      = useRef(false)
+  const isDragging   = useRef(false)
   const onPreviewRef = useRef(onPreview)
   const onCommitRef  = useRef(onCommit)
   useEffect(() => { onPreviewRef.current = onPreview }, [onPreview])
   useEffect(() => { onCommitRef.current  = onCommit  }, [onCommit])
 
-  const applyTransform = useCallback(() => {
-    if (groupRef.current)
-      groupRef.current.setAttribute('transform', `rotate(${rotRef.current} ${cx} ${cy})`)
-  }, [cx, cy])
-
-  // Re-apply after every React render so parent re-renders don't reset the transform
-  useEffect(() => { applyTransform() })
+  const angleToIdx = useCallback(e => {
+    const angle = getPointerAngle(e, svgRef.current, cx, cy)
+    const norm = ((angle + 90) % 360 + 360) % 360
+    return Math.floor(norm / (360 / total)) % total
+  }, [svgRef, cx, cy, total])
 
   const onPointerDown = useCallback(e => {
-    didDrag.current = false
-    prevAngle.current = getPointerAngle(e, svgRef.current, cx, cy)
+    isDragging.current = true
     e.currentTarget.setPointerCapture(e.pointerId)
     e.currentTarget.style.cursor = 'grabbing'
-  }, [svgRef, cx, cy])
+    onPreviewRef.current(angleToIdx(e))
+  }, [angleToIdx])
 
   const onPointerMove = useCallback(e => {
-    const angle = getPointerAngle(e, svgRef.current, cx, cy)
-    // Preview hovered segment
-    onPreviewRef.current(hoveredIndexFromAngle(angle, rotRef, total))
-    // Rotate if dragging
-    if (prevAngle.current === null) return
-    let delta = angle - prevAngle.current
-    if (delta > 180)  delta -= 360
-    if (delta < -180) delta += 360
-    if (Math.abs(delta) > 0.3) didDrag.current = true
-    rotRef.current += delta
-    prevAngle.current = angle
-    applyTransform()
-  }, [svgRef, cx, cy, total, applyTransform])
+    onPreviewRef.current(angleToIdx(e))
+  }, [angleToIdx])
 
   const onPointerUp = useCallback(e => {
     e.currentTarget.style.cursor = 'grab'
-    const angle = getPointerAngle(e, svgRef.current, cx, cy)
-    const idx = didDrag.current
-      ? indexFromRotation(rotRef.current, total)
-      : hoveredIndexFromAngle(angle, rotRef, total)
-    onCommitRef.current(idx)
-    prevAngle.current = null
-    didDrag.current = false
-  }, [svgRef, cx, cy, total])
+    isDragging.current = false
+    onCommitRef.current(angleToIdx(e))
+    onPreviewRef.current(null)
+  }, [angleToIdx])
 
   const onPointerLeave = useCallback(() => {
-    if (prevAngle.current !== null) return // mid-drag, ignore
-    onPreviewRef.current(null) // restore committed value
+    if (isDragging.current) return
+    onPreviewRef.current(null)
   }, [])
 
   return { groupRef, onPointerDown, onPointerMove, onPointerUp, onPointerLeave }

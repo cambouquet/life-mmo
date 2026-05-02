@@ -16,7 +16,7 @@ const ADMIRE_Y    = 370
 
 // Position 2: Extremely close to the glass (touching the wall)
 const CLOSE_X     = 416 
-const CLOSE_Y     = 326 
+const CLOSE_Y     = 340 
 
 // ── Random color helpers ──────────────────────────────────────────────────────
 
@@ -49,39 +49,45 @@ export async function mirrorVisit(engine) {
   const palette = randomPalette()
 
   // 1. Initial Approach: Walk to the "admire" position first
-  await engine.wait(600)
-  await engine.moveTo(STEP_DOWN_X, STEP_DOWN_Y, 10)
+  // We MUST step down (y=348+) to clear the solid mirror tiles at y=320-335
+  await engine.wait(300)
+  const start = engine.getPlayerPos()
+  
+  // Step 1: Move diagonally to below the mirror's x-center
+  // Using moderate threshold (10) for reliability
+  await engine.moveTo(ADMIRE_X, start.y + 40, 10) 
+  // Step 2: Move up slightly to the admire spot
   await engine.moveTo(ADMIRE_X, ADMIRE_Y, 10)
   await engine.face('up')
-  await engine.wait(1500)
+  await engine.wait(800)
 
   // 2. Walk close to the mirror
-  await engine.moveTo(CLOSE_X, CLOSE_Y, 10)
+  await engine.moveTo(CLOSE_X, CLOSE_Y, 12)
   await engine.face('up')
-  await engine.wait(900)
+  await engine.wait(500)
 
   // 3. Open editor
   await engine.openMirror()
-  await engine.wait(1000)
+  await engine.wait(600)
 
   // 4. Change colors
   await engine.changeColor('hair',   palette.hair)
   await engine.changeColor('outfit', palette.outfit)
   await engine.changeColor('eyes',   palette.eyes)
-  await engine.wait(1500)
+  await engine.wait(800)
 
   // 5. Scroll to chart
   await engine.scrollEditor(1)
-  await engine.wait(3000)
+  await engine.wait(1500)
 
   // 6. Scroll back and close
   await engine.scrollEditor(0)
-  await engine.wait(1000)
-  await engine.closeMirror()
   await engine.wait(600)
+  await engine.closeMirror()
+  await engine.wait(400)
 
   // 7. Final step back to admire
-  await engine.moveTo(ADMIRE_X, ADMIRE_Y, 10)
+  await engine.moveTo(ADMIRE_X, ADMIRE_Y, 12)
   await engine.face('up')
-  await engine.wait(3000)
+  await engine.wait(1500)
 }
