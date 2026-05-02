@@ -66,19 +66,19 @@ export function buildMap(doorOpen = false, door2Open = false) {
     }
   }
 
-  // Door 1 opening — wall tile + full corridor through the first void gap
+  // Door 1 opening — right wall of left room + void gap + left wall of mid room
   if (doorOpen) {
     for (let dr = 0; dr < DOOR_H; dr++) {
-      for (let dc = 0; dc < GAP_W; dc++) {
+      for (let dc = 0; dc <= GAP_W + 1; dc++) {
         map[DOOR_R + dr][DOOR_C + dc] = 6
       }
     }
   }
 
-  // Door 2 opening — right wall of mid room + corridor through the second void gap
+  // Door 2 opening — right wall of mid room + void gap + left wall of right room
   if (door2Open) {
     for (let dr = 0; dr < DOOR2_H; dr++) {
-      for (let dc = 0; dc < GAP_W; dc++) {
+      for (let dc = 0; dc <= GAP_W + 1; dc++) {
         map[DOOR2_R + dr][DOOR2_C + dc] = 6
       }
     }
@@ -109,11 +109,18 @@ export function buildMap(doorOpen = false, door2Open = false) {
   return { map, mirrorC, mirrorR, mirror2C, mirror2R, tableC, tableR }
 }
 
-// ── Torch positions — two door torches flanking the right wall opening ────────
+// ── Torch positions — door 1 torches (right wall of left room) ───────────────
 // top torch lights when name is set; bottom torch lights when colors are chosen
 export const TORCHES = [
-  { c: LEFT_W - 1, r: DOOR_R - 1 },   // top — lit by name
-  { c: LEFT_W - 1, r: DOOR_R + DOOR_H }, // bottom — lit by colors
+  { c: LEFT_W - 1, r: DOOR_R - 1       },  // top — lit by name
+  { c: LEFT_W - 1, r: DOOR_R + DOOR_H  },  // bottom — lit by colors
+]
+
+// ── Torch positions — door 2 torches (right wall of mid room) ────────────────
+// both light when player approaches door 2
+export const TORCHES2 = [
+  { c: DOOR2_C, r: DOOR2_R - 1      },  // top
+  { c: DOOR2_C, r: DOOR2_R + DOOR2_H }, // bottom
 ]
 
 // ── Colour palettes (defined in palette.js) ───────────────────────────────────

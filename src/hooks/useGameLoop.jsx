@@ -1,20 +1,11 @@
 import { useEffect, useRef } from 'react'
-import { TILE, DRAW_SCALE, SPEED, buildMap, LEFT_W, TOTAL_H, GAP_W, MID_W, MID_START, RIGHT_W, ROOM_H, DOOR_C, DOOR_R, DOOR_H, DOOR2_C, DOOR2_R, DOOR2_H, TORCHES } from '../game/constants.jsx'
-import { movePlayer }                from '../game/collision.jsx'
-import { initInput, inputDir, isKeyDown } from '../game/input.jsx'
-import { drawRoom }                  from '../game/draw/room.jsx'
-import { drawTable }                 from '../game/draw/table.jsx'
-import { drawWarriorSprite }         from '../game/draw/warrior.jsx'
-import { drawNpc }                   from '../game/draw/npc.jsx'
-import { drawBoundsOfLight }         from '../game/draw/bounds.jsx'
-import { drawProximityAura }         from '../game/draw/proximityAura.jsx'
-import { drawMirror }               from '../game/draw/mirror.jsx'
-import { drawTorch }               from '../game/draw/torch.jsx'
-
-const NPC_INTERACT_R2 = 28 * 28
-
-const JUMP_VEL = 70
-const GRAVITY  = 280
+import { initInput, isKeyDown } from '../game/input.jsx'
+import { buildWorld }           from '../game/world.js'
+import { updatePlayer }         from '../game/systems/player.js'
+import { updateDoors, isNearDoor } from '../game/systems/door.js'
+import { resolveGuidance }      from '../game/systems/guidance.js'
+import { resolveInteract }      from '../game/systems/interact.js'
+import { renderScene }          from '../game/draw/scene.js'
 
 export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, charColors, playerRef, playerStateRef, doorUnlockedRef, nameSetRef, colorsSetRef }) {
   const pausedRef     = useRef(paused)
@@ -32,262 +23,21 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
     const ctx = canvasRef.current.getContext('2d')
     ctx.imageSmoothingEnabled = false
 
-    // Door 1 state
-    let doorOpen     = false
-    let doorProgress = 0
-    // Door 2 state — right wall of mid room, always unlocked (no extra condition)
-    let door2Open     = false
-    let door2Progress = 0
+    const world = buildWorld(playerStateRef)
+    let { map, player } = world
 
-    let mapData = buildMap(false, false)
-    let { map, mirrorC, mirrorR, mirror2C, mirror2R, tableC, tableR } = mapData
-
-    // Door 1 world-pixel coords
-    const DOOR_WX = DOOR_C * TILE + TILE / 2
-    const DOOR_WY = (DOOR_R + DOOR_H / 2) * TILE
-    const wallX   = DOOR_C * TILE
-    const gapY1   = DOOR_R * TILE
-    const gapY2   = (DOOR_R + DOOR_H) * TILE
-
-    // Door 2 world-pixel coords
-    const DOOR2_WX = DOOR2_C * TILE + TILE / 2
-    const DOOR2_WY = (DOOR2_R + DOOR2_H / 2) * TILE
-    const wall2X   = DOOR2_C * TILE
-    const gap2Y1   = DOOR2_R * TILE
-    const gap2Y2   = (DOOR2_R + DOOR2_H) * TILE
-
-    // Room rects in world pixels — used for per-room bounds-of-light
-    const ROOMS = [
-      { x: 0,                              y: 0, w: LEFT_W * TILE, h: ROOM_H * TILE },
-      { x: MID_START * TILE,               y: 0, w: MID_W * TILE,  h: ROOM_H * TILE },
-      { x: (MID_START + MID_W + GAP_W) * TILE, y: 0, w: RIGHT_W * TILE, h: ROOM_H * TILE },
-    ]
-
-    // Mirror 1 (left room): 2 tiles wide at (mirrorC, mirrorR); sprite is 32px wide
-    const MIRROR_TX = mirrorC * TILE
-    const MIRROR_TY = mirrorR * TILE
-    const MIRROR_CX = MIRROR_TX + 16
-    const MIRROR_CY = MIRROR_TY + 16
-
-    // Mirror 2 (mid room)
-    const MIRROR2_TX = mirror2C * TILE
-    const MIRROR2_TY = mirror2R * TILE
-    const MIRROR2_CX = MIRROR2_TX + 16
-    const MIRROR2_CY = MIRROR2_TY + 16
-
-    // Player spawn: pixel-align so body center (x+9) lands on MIRROR_CX
-    const pcStartX = MIRROR_CX - 9
-    const pcStartR = Math.floor(TOTAL_H / 2)
-    const pcStartY = pcStartR * TILE
-
-    // Table in right room
-    const TABLE_X  = tableC * TILE
-    const TABLE_Y  = tableR * TILE
-    const TABLE_CX = TABLE_X + 16
-    const TABLE_CY = TABLE_Y + 8
-
-    // NPC stands next to the table (2 tiles right of tableC)
-    const NPC_X  = (tableC + 2) * TILE
-    const NPC_Y  = tableR * TILE
-    const NPC_CX = NPC_X + 8
-    const NPC_CY = NPC_Y + 8
-
-    const saved  = playerStateRef?.current
-    const player = {
-      x: saved?.x ?? pcStartX,
-      y: saved?.y ?? pcStartY,
-      w: TILE, h: TILE,
-      frame: 0, frameTick: 0,
-      facing: saved?.facing ?? 'up', moving: false,
-      jumpHeight: 0, jumpVel: 0, jumping: false,
-    }
-
-    let torchPhase   = 0
-    let last         = 0
-    let prevShift    = isKeyDown('ShiftLeft') || isKeyDown('ShiftRight')
-    let prevSpace    = isKeyDown('Space')
-    let elapsed      = 0
-    let guidance     = null
-    let mirrorOpened = false
+    // Mutable loop state
+    let torchPhase        = 0
+    let last              = 0
+    let prevShift         = isKeyDown('ShiftLeft') || isKeyDown('ShiftRight')
+    let prevSpace         = isKeyDown('Space')
+    let elapsed           = 0
+    let guidance          = null
+    let mirrorOpened      = false
     let hasMovedToCorridor = false
-    let log          = []
-
-    const DOOR_TRIGGER_R2 = (TILE * 3) * (TILE * 3)
-    function nearDoor() {
-      const px = player.x + TILE / 2, py = player.y + TILE / 2
-      const dx = px - DOOR_WX, dy = py - DOOR_WY
-      return dx * dx + dy * dy < DOOR_TRIGGER_R2
-    }
-    function nearDoor2() {
-      const px = player.x + TILE / 2, py = player.y + TILE / 2
-      const dx = px - DOOR2_WX, dy = py - DOOR2_WY
-      return dx * dx + dy * dy < DOOR_TRIGGER_R2
-    }
-
-    function nearNpc() {
-      const px = player.x + TILE / 2, py = player.y + TILE / 2
-      const dx = px - NPC_CX, dy = py - NPC_CY
-      return dx * dx + dy * dy < NPC_INTERACT_R2
-    }
-
-    function nearMirror() {
-      const px = player.x + TILE / 2, py = player.y + TILE / 2
-      const dx = px - MIRROR_CX, dy = py - MIRROR_CY
-      return dx * dx + dy * dy < 32 * 32
-    }
-
-    function nearMirror2() {
-      const px = player.x + TILE / 2, py = player.y + TILE / 2
-      const dx = px - MIRROR2_CX, dy = py - MIRROR2_CY
-      return dx * dx + dy * dy < 32 * 32
-    }
-
-    function badge(bx, by, label = '[SPC]') {
-      const pulse = Math.sin(torchPhase * 2.5) * 0.18 + 0.82
-      ctx.save()
-      ctx.globalAlpha  = pulse
-      ctx.fillStyle    = 'rgba(10,6,22,0.78)'
-      ctx.fillRect(bx - 14, by - 4, 32, 8)
-      ctx.strokeStyle  = '#4a2878'
-      ctx.lineWidth    = 0.5
-      ctx.strokeRect(bx - 14, by - 4, 32, 8)
-      ctx.font         = '6px "Courier New"'
-      ctx.textAlign    = 'center'
-      ctx.textBaseline = 'middle'
-      ctx.fillStyle    = '#c8a8f0'
-      ctx.fillText(label, bx, by)
-      ctx.restore()
-    }
-
-    function drawDoorCorridor(progress) {
-      if (progress <= 0) return
-
-      const eased = 1 - Math.pow(1 - progress, 2)
-      const angle = (Math.PI / 2) * eased
-
-      // Corridor floor — fades in as doors open
-      ctx.save()
-      ctx.globalAlpha = progress
-      for (let col = 1; col < GAP_W; col++) {
-        for (let row = DOOR_R; row < DOOR_R + DOOR_H; row++) {
-          ctx.fillStyle = (col + row) % 2 === 0 ? '#0e0b1a' : '#0b0917'
-          ctx.fillRect((DOOR_C + col) * TILE, row * TILE, TILE, TILE)
-        }
-      }
-      ctx.restore()
-
-      function drawWallGlowTile() {
-        const g = ctx.createLinearGradient(0, 0, -TILE, 0)
-        g.addColorStop(0,    'rgba(180,230,255,0.162)')
-        g.addColorStop(0.15, 'rgba(100,170,255,0.063)')
-        g.addColorStop(1,    'rgba(60,120,255,0)')
-        ctx.fillStyle = g
-        ctx.fillRect(-TILE, 0, TILE, TILE)
-      }
-
-      // Top tile: hinge at top-right (wallX+TILE, gapY1). Swings up (counter-clockwise).
-      ctx.save()
-      ctx.translate(wallX + TILE, gapY1)
-      ctx.rotate(-angle)
-      drawWallGlowTile()
-      ctx.restore()
-
-      // Bottom tile: hinge at bottom-right (wallX+TILE, gapY2). Swings down (clockwise).
-      ctx.save()
-      ctx.translate(wallX + TILE, gapY2)
-      ctx.rotate(angle)
-      ctx.translate(0, -TILE)
-      drawWallGlowTile()
-      ctx.restore()
-    }
-
-    function render(npcNear, mirrorNear, mirror2Near) {
-      const cw = ctx.canvas.width, ch = ctx.canvas.height
-      const pcxCurrent = player.x + 8, pcyCurrent = player.y + 8
-
-      ctx.fillStyle = '#06040e'
-      ctx.fillRect(0, 0, cw, ch)
-
-      // Camera: keep player centered on screen, world drawn at DRAW_SCALE
-      ctx.save()
-      ctx.translate(cw / 2, ch / 2)
-      ctx.scale(DRAW_SCALE, DRAW_SCALE)
-      ctx.translate(-pcxCurrent, -pcyCurrent)
-
-      drawProximityAura(ctx, NPC_CX,     NPC_CY,     pcxCurrent, pcyCurrent, 64, '96,232,255')   // NPC — cyan
-      drawProximityAura(ctx, MIRROR_CX,  MIRROR_CY,  pcxCurrent, pcyCurrent, 56, '168,85,247')  // Mirror 1 — purple
-      drawProximityAura(ctx, MIRROR2_CX, MIRROR2_CY, pcxCurrent, pcyCurrent, 56, '168,85,247')  // Mirror 2 — purple
-
-      drawRoom(ctx, map, torchPhase)
-      drawDoorCorridor(doorProgress)
-
-      // Mirror 1 reflection data
-      const mirrorDist  = Math.hypot(pcxCurrent - MIRROR_CX, pcyCurrent - MIRROR_CY)
-      const reflAlpha   = Math.max(0, Math.min(1, (64 - mirrorDist) / 44))
-      const reflection  = reflAlpha > 0.02 ? {
-        facing: player.facing, frame: player.frame,
-        colors: charColorsRef.current, moving: player.moving,
-        alpha:  reflAlpha,
-        x: player.x,
-        y: player.y,
-      } : null
-
-      // Mirror 2 reflection data
-      const mirror2Dist  = Math.hypot(pcxCurrent - MIRROR2_CX, pcyCurrent - MIRROR2_CY)
-      const refl2Alpha   = Math.max(0, Math.min(1, (64 - mirror2Dist) / 44))
-      const reflection2  = refl2Alpha > 0.02 ? {
-        facing: player.facing, frame: player.frame,
-        colors: charColorsRef.current, moving: player.moving,
-        alpha:  refl2Alpha,
-        x: player.x,
-        y: player.y,
-      } : null
-
-      // Depth sort: draw objects behind the player first
-      if (MIRROR_TY + 32 < player.y + 8) {
-        drawMirror(ctx, MIRROR_TX, MIRROR_TY, torchPhase, reflection, true)
-      }
-      if (MIRROR2_TY + 32 < player.y + 8) {
-        drawMirror(ctx, MIRROR2_TX, MIRROR2_TY, torchPhase, reflection2)
-      }
-      if (TABLE_Y + 12 < player.y + 8) {
-        const tableDist = Math.hypot(pcxCurrent - TABLE_CX, pcyCurrent - TABLE_CY)
-        const tableAlpha = Math.max(0, Math.min(1, (48 - tableDist) / 36))
-        drawTable(ctx, torchPhase, TABLE_X, TABLE_Y, tableAlpha)
-      }
-
-      drawNpc(ctx, NPC_X, NPC_Y, torchPhase)
-
-      // Player
-      drawWarriorSprite(ctx, player.x, player.y - player.jumpHeight, player.facing, player.frame, torchPhase, charColorsRef.current, player.moving)
-
-      // Foreground objects in front of the player
-      if (MIRROR_TY + 32 >= player.y + 8) {
-        drawMirror(ctx, MIRROR_TX, MIRROR_TY, torchPhase, reflection, true)
-      }
-      if (MIRROR2_TY + 32 >= player.y + 8) {
-        drawMirror(ctx, MIRROR2_TX, MIRROR2_TY, torchPhase, reflection2)
-      }
-      if (TABLE_Y + 12 >= player.y + 8) {
-        const tableDist = Math.hypot(pcxCurrent - TABLE_CX, pcyCurrent - TABLE_CY)
-        const tableAlpha = Math.max(0, Math.min(1, (48 - tableDist) / 36))
-        drawTable(ctx, torchPhase, TABLE_X, TABLE_Y, tableAlpha)
-      }
-
-      if (!pausedRef.current) {
-        if (npcNear) badge(NPC_CX, NPC_Y - 2)
-        if (mirrorNear) badge(MIRROR_CX, MIRROR_TY - 4, '[MIR]')
-        if (mirror2Near) badge(MIRROR2_CX, MIRROR2_TY - 4, '[MIR]')
-      }
-
-      const gap = doorProgress > 0 ? { y1: gapY1, y2: gapY2 } : null
-      drawBoundsOfLight(ctx, ROOMS, torchPhase, pcxCurrent, pcyCurrent, gap)
-      // Torches drawn after wall glow so they show on top
-      drawTorch(ctx, TORCHES[0].c, TORCHES[0].r, torchPhase, !!nameSetRef?.current)
-      drawTorch(ctx, TORCHES[1].c, TORCHES[1].r, torchPhase, !!colorsSetRef?.current)
-
-      ctx.restore()
-    }
+    let log               = []
+    let door1             = { open: false, progress: 0 }
+    let door2             = { open: false, progress: 0 }
 
     function loop(ts) {
       const dt = Math.min((ts - last) / 1000, 0.05)
@@ -295,107 +45,45 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
       torchPhase += dt * 4.5
       if (playerRef) playerRef.current = player
 
-      const npcNear     = nearNpc()
-      const mirrorNear  = nearMirror()
-      const mirror2Near = nearMirror2()
-
       if (!pausedRef.current) {
-        const { dx, dy } = inputDir()
-        const isMoving = dx !== 0 || dy !== 0
-        player.moving = isMoving
+        // Player movement + jump
+        prevShift = updatePlayer(player, map, dt, prevShift)
+        elapsed  += dt
 
-        if (isMoving) {
-          if (dy < 0) player.facing = 'up'
-          else if (dy > 0) player.facing = 'down'
-          else if (dx < 0) player.facing = 'left'
-          else if (dx > 0) player.facing = 'right'
+        // Doors
+        ;({ door1, door2, map } = updateDoors(door1, door2, player, world, !!doorUnlockedRef?.current, dt, map))
 
-          movePlayer(player, map, dx, dy, dt, SPEED)
+        // Guidance
+        const g = resolveGuidance(player, elapsed, mirrorOpened, hasMovedToCorridor)
+        guidance          = g.text
+        hasMovedToCorridor = g.movedToCorridor
 
-          player.frameTick += dt
-          if (player.frameTick >= 0.12) {
-            player.frameTick = 0
-            player.frame = (player.frame + 1) % 8
-          }
-        } else {
-          player.frame = 0
-          player.frameTick = 0
-        }
-
-        // Jump
-        const shiftNow = isKeyDown('ShiftLeft') || isKeyDown('ShiftRight')
-        if (shiftNow && !prevShift && !player.jumping) {
-          player.jumping = true
-          player.jumpVel = JUMP_VEL
-        }
-        prevShift = shiftNow
-        if (player.jumping) {
-          player.jumpVel    -= GRAVITY * dt
-          player.jumpHeight += player.jumpVel * dt
-          if (player.jumpHeight <= 0) {
-            player.jumpHeight = 0
-            player.jumpVel    = 0
-            player.jumping    = false
-          }
-        }
-
-        // Guidance logic
-        const TORCH_PX_X = (LEFT_W - 1) * TILE
-        const TRIGGER_PX_X = TORCH_PX_X - TILE * 1.5
-        const px = player.x + TILE/2
-
-        // Reset guidance to null initially, we'll decide what to show
-        guidance = null
-
-        if (px > TRIGGER_PX_X) {
-             guidance = "Ready to know more?"
-             hasMovedToCorridor = true
-        } else if (hasMovedToCorridor && px <= TRIGGER_PX_X) {
-             guidance = "Take your time..."
-        } else if (!mirrorOpened && elapsed >= 20) {
-             guidance = "Do you know who you are?"
-        }
-
-        // Door: opens when near + unlocked, closes when walking away
-        if (doorUnlockedRef?.current) {
-          if (!doorOpen && nearDoor()) {
-            doorOpen = true
-            map = buildMap(true).map
-          } else if (doorOpen && !nearDoor()) {
-            doorOpen = false
-            map = buildMap(false).map
-          }
-        }
-        if (doorOpen && doorProgress < 1) {
-          doorProgress = Math.min(1, doorProgress + dt * 0.7)
-        } else if (!doorOpen && doorProgress > 0) {
-          doorProgress = Math.max(0, doorProgress - dt * 0.7)
-        }
-
-        // Interact
+        // Interaction
         const spaceNow = isKeyDown('Space')
-        if (spaceNow && !prevSpace && (npcNear || mirrorNear || mirror2Near)) {
-          if (mirrorNear) {
-            mirrorOpened = true
+        if (spaceNow && !prevSpace) {
+          const target = resolveInteract(player, world)
+          if (target) {
+            if (target === 'mirror1' || target === 'mirror2') mirrorOpened = true
             guidance = null
-            onInteractRef.current?.('mirror1')
-          } else if (mirror2Near) {
-            mirrorOpened = true
-            guidance = null
-            onInteractRef.current?.('mirror2')
-          } else {
-            onInteractRef.current?.('npc')
+            onInteractRef.current?.(target)
           }
         }
         prevSpace = spaceNow
-        onStateRef.current?.({ facing: player.facing, moving: player.moving, log, guidance, doorOpen })
+
+        onStateRef.current?.({ facing: player.facing, moving: player.moving, log, guidance, doorOpen: door1.open, door2Open: door2.open })
       } else {
         const spaceNow = isKeyDown('Space')
         if (spaceNow && !prevSpace) onInteractRef.current?.()
         prevSpace = spaceNow
       }
 
-      render(npcNear, mirrorNear, mirror2Near)
+      const near2 = door2.open || isNearDoor(player, world.DOOR2_WX, world.DOOR2_WY)
+      renderScene(ctx, world, { map, door1Progress: door1.progress, door2Progress: door2.progress, near2 }, player, torchPhase, charColorsRef.current, {
+        paused:    pausedRef.current,
+        nameSet:   !!nameSetRef?.current,
+        colorsSet: !!colorsSetRef?.current,
+      })
+
       rafId = requestAnimationFrame(loop)
     }
 
