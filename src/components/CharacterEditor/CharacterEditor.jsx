@@ -9,7 +9,7 @@ import { PLANET_GLYPHS, SIGN_GLYPHS, ELEMENT_COLOR, PLANET_NAMES } from '../Horo
 import './CharacterEditor.scss'
 
 // Projects lat/lng onto a sphere SVG (orthographic-like, front hemisphere only)
-function EarthGlobe({ city, size = 120 }) {
+function EarthGlobe({ city, size = 120, style }) {
   const cx = size / 2, cy = size / 2, r = size / 2 - 4
 
   // Orthographic projection: center globe on city if present, else 0,0
@@ -55,7 +55,7 @@ function EarthGlobe({ city, size = 120 }) {
   const dotPos    = city ? project(city.lat, city.lng) : null
 
   return (
-    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ display: 'block' }}>
+    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ display: 'block', ...style }}>
       <defs>
         <radialGradient id="globe-grad" cx="38%" cy="35%" r="60%">
           <stop offset="0%"   stopColor="rgba(80,40,160,0.7)" />
@@ -401,31 +401,37 @@ export default function CharacterEditor({ initialColors, initialBirthData, scrol
         {/* Page 2 (mobile) / column 2 (desktop): birth wheels */}
         <div className="char-editor-astro">
           <div className="birth-trio">
-            <div className="birth-trio__date">
-              <DateWheel
-                value={birthDate}
-                onChange={v => { setBirthDate(v); setHasDate(true); setPreviewDate(null) }}
-                onPreview={v => setPreviewDate(v)}
-                size={120} />
-            </div>
-            <div className="birth-trio__city">
-              <EarthGlobe city={birthCity} size={80} />
+            {/* Left: earth globe fills height */}
+            <div className="birth-trio__earth">
+              <EarthGlobe city={birthCity} size={300} style={{ width: '100%', height: 'auto', aspectRatio: '1 / 1' }} />
               <CitySearch value={birthCity} onChange={setBirthCity} />
             </div>
-            <div className="birth-trio__time">
-              <TimeWheel
-                value={birthTime}
-                onChange={v => {
-                  if (v.daysDiff) {
-                    const d = new Date(birthDate.year, birthDate.month - 1, birthDate.day)
-                    d.setDate(d.getDate() + v.daysDiff)
-                    setBirthDate({ day: d.getDate(), month: d.getMonth() + 1, year: d.getFullYear() })
-                  }
-                  setBirthTime({ hour: v.hour, minute: v.minute })
-                  setPreviewTime(null)
-                }}
-                onPreview={v => setPreviewTime(v)}
-                size={100} />
+            {/* Right: date on top, time on bottom */}
+            <div className="birth-trio__pickers">
+              <div className="birth-trio__date">
+                <DateWheel
+                  value={birthDate}
+                  onChange={v => { setBirthDate(v); setHasDate(true); setPreviewDate(null) }}
+                  onPreview={v => setPreviewDate(v)}
+                  size={220}
+                  style={{ width: '100%', height: '100%' }} />
+              </div>
+              <div className="birth-trio__time">
+                <TimeWheel
+                  value={birthTime}
+                  onChange={v => {
+                    if (v.daysDiff) {
+                      const d = new Date(birthDate.year, birthDate.month - 1, birthDate.day)
+                      d.setDate(d.getDate() + v.daysDiff)
+                      setBirthDate({ day: d.getDate(), month: d.getMonth() + 1, year: d.getFullYear() })
+                    }
+                    setBirthTime({ hour: v.hour, minute: v.minute })
+                    setPreviewTime(null)
+                  }}
+                  onPreview={v => setPreviewTime(v)}
+                  size={180}
+                  style={{ width: '100%', height: '100%' }} />
+              </div>
             </div>
           </div>
 
@@ -443,7 +449,8 @@ export default function CharacterEditor({ initialColors, initialBirthData, scrol
           <div className="char-editor-chart">
             <div className="char-editor-wheel">
               <AstroSummary natalPlacements={natalPlacements} />
-              <HouseWheel placements={natalPlacements} houseCusps={houseCusps} size={240} hideStellium />
+              <HouseWheel placements={natalPlacements} houseCusps={houseCusps} size={300} hideStellium
+                style={{ width: '100%', height: 'auto' }} />
             </div>
           </div>
         )}

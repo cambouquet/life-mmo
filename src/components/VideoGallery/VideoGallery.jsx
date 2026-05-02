@@ -16,10 +16,15 @@ export default function VideoGallery({ videos, onClose }) {
   useEffect(() => {
     const el = videoRef.current
     if (!el) return
+    console.log('Video src changed to:', active?.url)
+    el.currentTime = 0
     el.load()
-  }, [selected])
+  }, [selected, active?.url])
 
   // URLs are data URLs — nothing to revoke
+  // Wait, I switched to Object URLs in App.jsx, I should handle cleanup if I was creating them here,
+  // but they are managed in the recordings state in App.jsx.
+  // Actually, keeping them as long as the app is open is standard for this kind of "session gallery".
 
   const active = videos.find(v => v.id === selected)
 
@@ -58,7 +63,14 @@ export default function VideoGallery({ videos, onClose }) {
                 }}
               >
                 <div className="vgallery-thumb-wrap">
-                  <video className="vgallery-thumb" src={v.url} muted preload="metadata" />
+                  <video
+                    className="vgallery-thumb"
+                    muted
+                    preload="metadata"
+                    playsInline
+                  >
+                    <source src={v.url} type={v.blob?.type} />
+                  </video>
                 </div>
                 <div className="vgallery-item-meta">
                   <span className="vgallery-item-name">{v.filename}</span>
@@ -75,11 +87,16 @@ export default function VideoGallery({ videos, onClose }) {
                 <div className="vgallery-video-container">
                   <video
                     ref={videoRef}
+                    key={`video-${active.id}`}
                     className="vgallery-video"
-                    src={active.url}
                     controls
                     playsInline
-                  />
+                    autoPlay
+                    muted
+                  >
+                    <source src={active.url} type={active.blob?.type || 'video/mp4'} />
+                    Your browser does not support the video tag.
+                  </video>
                 </div>
                 <div className="vgallery-player-bar">
                   <span className="vgallery-player-name">{active.filename}</span>

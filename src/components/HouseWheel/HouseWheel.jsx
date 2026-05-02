@@ -84,7 +84,7 @@ const PLANET_SUMMARY = {
 //   placements — object from enrichPlacements() (has .longitude, .sign, .degrees, .house)
 //   houseCusps — array[12] of ecliptic longitudes from getPlacidusHouses()
 //   size       — optional SVG size in px (default 300)
-export function HouseWheel({ placements, houseCusps, size = 300, hideStellium }) {
+export function HouseWheel({ placements, houseCusps, size = 300, hideStellium, style, containerStyle }) {
   const [hovered,     setHovered]     = useState(null)
   const [lockedPoint, setLockedPoint] = useState(null)
 
@@ -157,9 +157,10 @@ export function HouseWheel({ placements, houseCusps, size = 300, hideStellium })
       margin: '0 auto',
       width: '100%',
       boxSizing: 'border-box',
+      ...containerStyle,
     }}>
       <svg width={size} height={size} viewBox="0 0 300 300"
-           style={{ display:'block', margin:'0 auto', overflow:'visible' }}>
+           style={{ display:'block', margin:'0 auto', overflow:'visible', ...style }}>
 
         {/* orbit guide tracks */}
         {ORBITS.map(o => (

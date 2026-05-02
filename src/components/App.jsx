@@ -52,13 +52,9 @@ export default function App() {
   const playerStateRef = useRef(null)
   const recorder      = useRecorder({
     onReady: (blob, filename) => {
-      const reader = new FileReader()
-      reader.onload = () => {
-        const url = reader.result
-        setRecordings(prev => [...prev, { id: Date.now(), url, blob, filename, ts: Date.now() }])
-        setShowGallery(true)
-      }
-      reader.readAsDataURL(blob)
+      const url = URL.createObjectURL(blob)
+      setRecordings(prev => [...prev, { id: Date.now(), url, blob, filename, ts: Date.now() }])
+      setShowGallery(true)
     }
   })
   const handleStateChange = useCallback(({ facing, moving, log, guidance }) => {

@@ -141,7 +141,7 @@ function useImperativeRing(svgRef, cx, cy, total, onPreview, onCommit) {
 // value: committed { day, month, year }
 // onChange: called on click/drag-release
 // onPreview: called on hover with { day, month, year } or null (restore)
-export function DateWheel({ value, onChange, onPreview, size = 220 }) {
+export function DateWheel({ value, onChange, onPreview, size = 220, style }) {
   const { day, month, year } = value
   const svgRef = useRef(null)
   const VB = 220, cx = 110, cy = 110
@@ -196,7 +196,7 @@ export function DateWheel({ value, onChange, onPreview, size = 220 }) {
 
   return (
     <svg ref={svgRef} width={size} height={size} viewBox={`0 0 ${VB} ${VB}`}
-         style={{ display:'block', userSelect:'none', touchAction:'none' }}>
+         style={{ display:'block', userSelect:'none', touchAction:'none', ...style }}>
 
       {/* ── Day ring ── */}
       <g onPointerDown={dayRing.onPointerDown} onPointerMove={dayRing.onPointerMove}
@@ -318,7 +318,7 @@ export function DateWheel({ value, onChange, onPreview, size = 220 }) {
 // value: committed { hour, minute }
 // onChange: called on click/drag-release
 // onPreview: called on hover with { hour, minute } or null (restore)
-export function TimeWheel({ value, onChange, onPreview, size = 180 }) {
+export function TimeWheel({ value, onChange, onPreview, size = 180, style }) {
   const { hour, minute } = value
   const svgRef = useRef(null)
   const VB = 180, cx = 90, cy = 90
@@ -362,7 +362,7 @@ export function TimeWheel({ value, onChange, onPreview, size = 180 }) {
 
   return (
     <svg ref={svgRef} width={size} height={size} viewBox={`0 0 ${VB} ${VB}`}
-         style={{ display:'block', userSelect:'none', touchAction:'none' }}>
+         style={{ display:'block', userSelect:'none', touchAction:'none', ...style }}>
 
       {/* ── Hour ring ── */}
       <g onPointerDown={hourRing.onPointerDown} onPointerMove={hourRing.onPointerMove}
