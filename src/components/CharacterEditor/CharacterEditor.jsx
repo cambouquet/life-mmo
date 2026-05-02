@@ -421,15 +421,8 @@ export default function CharacterEditor({ initialColors, initialBirthData, scrol
               <EarthGlobe city={birthCity} size={160} />
               <CitySearch value={birthCity} onChange={setBirthCity} />
             </div>
-            {/* Right: date on top, time on bottom */}
+            {/* Right: time on left, date on right (exchanged) */}
             <div className="birth-trio__pickers">
-              <div className="birth-trio__date">
-                <DateWheel
-                  value={birthDate}
-                  onChange={v => { setBirthDate(v); setHasDate(true); setPreviewDate(null) }}
-                  onPreview={v => setPreviewDate(v)}
-                  size={160} />
-              </div>
               <div className="birth-trio__time">
                 <TimeWheel
                   value={birthTime}
@@ -443,6 +436,13 @@ export default function CharacterEditor({ initialColors, initialBirthData, scrol
                     setPreviewTime(null)
                   }}
                   onPreview={v => setPreviewTime(v)}
+                  size={160} />
+              </div>
+              <div className="birth-trio__date">
+                <DateWheel
+                  value={birthDate}
+                  onChange={v => { setBirthDate(v); setHasDate(true); setPreviewDate(null) }}
+                  onPreview={v => setPreviewDate(v)}
                   size={160} />
               </div>
             </div>
