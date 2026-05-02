@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { TILE, DRAW_SCALE, SPEED, buildMap, LEFT_W, TOTAL_H, GAP_W, MID_W, MID_START, RIGHT_W, ROOM_H, DOOR_C, DOOR_R, DOOR_H, TORCHES } from '../game/constants.jsx'
+import { TILE, DRAW_SCALE, SPEED, buildMap, LEFT_W, TOTAL_H, GAP_W, MID_W, MID_START, RIGHT_W, ROOM_H, DOOR_C, DOOR_R, DOOR_H, DOOR2_C, DOOR2_R, DOOR2_H, TORCHES } from '../game/constants.jsx'
 import { movePlayer }                from '../game/collision.jsx'
 import { initInput, inputDir, isKeyDown } from '../game/input.jsx'
 import { drawRoom }                  from '../game/draw/room.jsx'
@@ -32,19 +32,29 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
     const ctx = canvasRef.current.getContext('2d')
     ctx.imageSmoothingEnabled = false
 
-    // Door state — open when player has named themselves and approaches the right wall
+    // Door 1 state
     let doorOpen     = false
-    let doorProgress = 0   // 0 = closed, 1 = fully open (animated)
-    // Rebuild map — starts closed, rebuilt when door opens
-    let mapData = buildMap(false)
+    let doorProgress = 0
+    // Door 2 state — right wall of mid room, always unlocked (no extra condition)
+    let door2Open     = false
+    let door2Progress = 0
+
+    let mapData = buildMap(false, false)
     let { map, mirrorC, mirrorR, mirror2C, mirror2R, tableC, tableR } = mapData
 
-    // Door world-pixel coords
+    // Door 1 world-pixel coords
     const DOOR_WX = DOOR_C * TILE + TILE / 2
     const DOOR_WY = (DOOR_R + DOOR_H / 2) * TILE
     const wallX   = DOOR_C * TILE
     const gapY1   = DOOR_R * TILE
     const gapY2   = (DOOR_R + DOOR_H) * TILE
+
+    // Door 2 world-pixel coords
+    const DOOR2_WX = DOOR2_C * TILE + TILE / 2
+    const DOOR2_WY = (DOOR2_R + DOOR2_H / 2) * TILE
+    const wall2X   = DOOR2_C * TILE
+    const gap2Y1   = DOOR2_R * TILE
+    const gap2Y2   = (DOOR2_R + DOOR2_H) * TILE
 
     // Room rects in world pixels — used for per-room bounds-of-light
     const ROOMS = [
@@ -99,13 +109,18 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
     let elapsed      = 0
     let guidance     = null
     let mirrorOpened = false
+    let hasMovedToCorridor = false
     let log          = []
 
-    // Door proximity: true when player is close to the right wall door area
     const DOOR_TRIGGER_R2 = (TILE * 3) * (TILE * 3)
     function nearDoor() {
       const px = player.x + TILE / 2, py = player.y + TILE / 2
       const dx = px - DOOR_WX, dy = py - DOOR_WY
+      return dx * dx + dy * dy < DOOR_TRIGGER_R2
+    }
+    function nearDoor2() {
+      const px = player.x + TILE / 2, py = player.y + TILE / 2
+      const dx = px - DOOR2_WX, dy = py - DOOR2_WY
       return dx * dx + dy * dy < DOOR_TRIGGER_R2
     }
 
@@ -144,44 +159,40 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
       ctx.restore()
     }
 
-    function drawDoorCorridor(progress, pcx, pcy) {
+    function drawDoorCorridor(progress) {
       if (progress <= 0) return
 
       const eased = 1 - Math.pow(1 - progress, 2)
       const angle = (Math.PI / 2) * eased
 
-const wallX = DOOR_C * TILE
-      const gapY1 = DOOR_R * TILE
-      const gapY2 = (DOOR_R + DOOR_H) * TILE
-
-      // Compute pRight the same way drawBoundsOfLight does for the left room
-      const leftRoomRX = LEFT_W * TILE
-      const distRight  = leftRoomRX - pcx
-      const pRight     = (pcx >= 0 && pcx <= leftRoomRX && pcy >= 0 && pcy <= ROOM_H * TILE) 
-                         ? Math.max(0, 1 - distRight / 80) 
-                         : 0
-      const glowW      = 6 + 40 * pRight
-      const bright     = 0.18 + 0.82 * pRight
+      // Corridor floor — fades in as doors open
+      ctx.save()
+      ctx.globalAlpha = progress
+      for (let col = 1; col < GAP_W; col++) {
+        for (let row = DOOR_R; row < DOOR_R + DOOR_H; row++) {
+          ctx.fillStyle = (col + row) % 2 === 0 ? '#0e0b1a' : '#0b0917'
+          ctx.fillRect((DOOR_C + col) * TILE, row * TILE, TILE, TILE)
+        }
+      }
+      ctx.restore()
 
       function drawWallGlowTile() {
-        // Local space: hinge at origin (top-right of tile), tile extends x:[-TILE,0], y:[0,TILE]
-        // Glow goes from x=0 (wall face, bright) leftward to x=-glowW (transparent)
-        const g = ctx.createLinearGradient(0, 0, -glowW, 0)
-        g.addColorStop(0,                          `rgba(180,230,255,${(bright * 0.9).toFixed(3)})`)
-        g.addColorStop(Math.min(0.99, 6 / glowW * 0.6), `rgba(100,170,255,${(bright * 0.35).toFixed(3)})`)
-        g.addColorStop(1,                          'rgba(60,120,255,0)')
+        const g = ctx.createLinearGradient(0, 0, -TILE, 0)
+        g.addColorStop(0,    'rgba(180,230,255,0.162)')
+        g.addColorStop(0.15, 'rgba(100,170,255,0.063)')
+        g.addColorStop(1,    'rgba(60,120,255,0)')
         ctx.fillStyle = g
-        ctx.fillRect(-glowW, 0, glowW, TILE)
+        ctx.fillRect(-TILE, 0, TILE, TILE)
       }
 
-      // Top tile: hinge at top-right (wallX+TILE, gapY1). Swings counter-clockwise (up).
+      // Top tile: hinge at top-right (wallX+TILE, gapY1). Swings up (counter-clockwise).
       ctx.save()
       ctx.translate(wallX + TILE, gapY1)
       ctx.rotate(-angle)
       drawWallGlowTile()
       ctx.restore()
 
-      // Bottom tile: hinge at bottom-right (wallX+TILE, gapY2). Swings clockwise (down).
+      // Bottom tile: hinge at bottom-right (wallX+TILE, gapY2). Swings down (clockwise).
       ctx.save()
       ctx.translate(wallX + TILE, gapY2)
       ctx.rotate(angle)
@@ -208,7 +219,7 @@ const wallX = DOOR_C * TILE
       drawProximityAura(ctx, MIRROR2_CX, MIRROR2_CY, pcxCurrent, pcyCurrent, 56, '168,85,247')  // Mirror 2 — purple
 
       drawRoom(ctx, map, torchPhase)
-      drawDoorCorridor(doorProgress, pcxCurrent, pcyCurrent)
+      drawDoorCorridor(doorProgress)
 
       // Mirror 1 reflection data
       const mirrorDist  = Math.hypot(pcxCurrent - MIRROR_CX, pcyCurrent - MIRROR_CY)
@@ -328,10 +339,21 @@ const wallX = DOOR_C * TILE
           }
         }
 
-        // Guidance: silent for 20s, then show question until mirror is opened
-        elapsed += dt
-        if (!mirrorOpened) {
-          guidance = elapsed >= 20 ? "Do you know who you are?" : null
+        // Guidance logic
+        const TORCH_PX_X = (LEFT_W - 1) * TILE
+        const TRIGGER_PX_X = TORCH_PX_X - TILE * 1.5
+        const px = player.x + TILE/2
+
+        // Reset guidance to null initially, we'll decide what to show
+        guidance = null
+
+        if (px > TRIGGER_PX_X) {
+             guidance = "Ready to know more?"
+             hasMovedToCorridor = true
+        } else if (hasMovedToCorridor && px <= TRIGGER_PX_X) {
+             guidance = "Take your time..."
+        } else if (!mirrorOpened && elapsed >= 20) {
+             guidance = "Do you know who you are?"
         }
 
         // Door: opens when near + unlocked, closes when walking away

@@ -26,13 +26,18 @@ export const RIGHT_START = MID_START + MID_W + GAP_W
 export const TOTAL_W = LEFT_W + GAP_W + MID_W + GAP_W + RIGHT_W
 export const TOTAL_H = ROOM_H
 
-// ── Door position — right wall of left room, vertically centered ──────────────
+// ── Door 1 — right wall of left room, vertically centered ────────────────────
 export const DOOR_C    = LEFT_W - 1          // col 15 — rightmost wall of left room
 export const DOOR_R    = Math.floor(ROOM_H / 2) - 1  // row 6
 export const DOOR_H    = 2                   // 2 tiles tall
 
+// ── Door 2 — right wall of mid room, same row/height as door 1 ───────────────
+export const DOOR2_C   = MID_START + MID_W - 1   // col 33 — rightmost wall of mid room
+export const DOOR2_R   = DOOR_R
+export const DOOR2_H   = DOOR_H
+
 // ── Room tile map  (0=floor, 1=wall, 2=door gap, 3=table, 4=mirror, 6=door opening) ──
-export function buildMap(doorOpen = false) {
+export function buildMap(doorOpen = false, door2Open = false) {
   const cols = TOTAL_W
   const rows = TOTAL_H
   const map = []
@@ -61,11 +66,20 @@ export function buildMap(doorOpen = false) {
     }
   }
 
-  // Door opening — wall tile + full corridor through the void gap
+  // Door 1 opening — wall tile + full corridor through the first void gap
   if (doorOpen) {
     for (let dr = 0; dr < DOOR_H; dr++) {
       for (let dc = 0; dc < GAP_W; dc++) {
-        map[DOOR_R + dr][DOOR_C + dc] = 6  // passable through wall and void
+        map[DOOR_R + dr][DOOR_C + dc] = 6
+      }
+    }
+  }
+
+  // Door 2 opening — right wall of mid room + corridor through the second void gap
+  if (door2Open) {
+    for (let dr = 0; dr < DOOR2_H; dr++) {
+      for (let dc = 0; dc < GAP_W; dc++) {
+        map[DOOR2_R + dr][DOOR2_C + dc] = 6
       }
     }
   }
