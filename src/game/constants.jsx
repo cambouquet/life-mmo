@@ -55,8 +55,11 @@ export function buildMap() {
   // They align when mirrorC = floor(LEFT_W/2) - 1  and  playerC = mirrorC + 1
   const mirrorC = Math.floor(LEFT_W / 2) - 1   // col 7  → mirror spans cols 7-8, center at px 128
   const mirrorR = 1
-  map[mirrorR][mirrorC]     = 4
-  map[mirrorR][mirrorC + 1] = 4
+  // Sprite draws at y-12 with H=40, covering ~2 tile rows visually — mark both solid
+  for (let dr = 0; dr <= 1; dr++) {
+    map[mirrorR + dr][mirrorC]     = 4
+    map[mirrorR + dr][mirrorC + 1] = 4
+  }
 
   // Divination table — 2 tiles wide, in right room interior
   const tableC = RIGHT_START + 3
