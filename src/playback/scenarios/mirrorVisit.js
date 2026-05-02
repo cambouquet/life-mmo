@@ -10,13 +10,13 @@
 const STEP_DOWN_X = 480 // Stay at start x while stepping below solid tiles
 const STEP_DOWN_Y = 336 // y=336 clears solid row (ends at y=335), closer to mirror
 
-// Position 1: Extremely close to the glass (touching the wall)
-const CLOSE_X     = 408 
-const CLOSE_Y     = 326 
+// Position 1: Stepped back to admire the full reflection (Looking up)
+const ADMIRE_X    = 416
+const ADMIRE_Y    = 370
 
-// Position 2: Stepped back to admire the full reflection
-const ADMIRE_X    = 408
-const ADMIRE_Y    = 358
+// Position 2: Extremely close to the glass (touching the wall)
+const CLOSE_X     = 416 
+const CLOSE_Y     = 326 
 
 // ── Random color helpers ──────────────────────────────────────────────────────
 
@@ -48,34 +48,39 @@ function randomPalette() {
 export async function mirrorVisit(engine) {
   const palette = randomPalette()
 
-  // 1. Initial Approach: Walk right up to the glass
+  // 1. Initial Approach: Walk to the "admire" position first
   await engine.wait(600)
   await engine.moveTo(STEP_DOWN_X, STEP_DOWN_Y, 10)
+  await engine.moveTo(ADMIRE_X, ADMIRE_Y, 10)
+  await engine.face('up')
+  await engine.wait(1500)
+
+  // 2. Walk close to the mirror
   await engine.moveTo(CLOSE_X, CLOSE_Y, 10)
   await engine.face('up')
   await engine.wait(900)
 
-  // 2. Open editor while standing close
+  // 3. Open editor
   await engine.openMirror()
   await engine.wait(1000)
 
-  // 3. Change colors
+  // 4. Change colors
   await engine.changeColor('hair',   palette.hair)
   await engine.changeColor('outfit', palette.outfit)
   await engine.changeColor('eyes',   palette.eyes)
   await engine.wait(1500)
 
-  // 4. Scroll to chart
+  // 5. Scroll to chart
   await engine.scrollEditor(1)
   await engine.wait(3000)
 
-  // 5. Scroll back and close
+  // 6. Scroll back and close
   await engine.scrollEditor(0)
   await engine.wait(1000)
   await engine.closeMirror()
   await engine.wait(600)
 
-  // 6. Step back to admire the transformation
+  // 7. Final step back to admire
   await engine.moveTo(ADMIRE_X, ADMIRE_Y, 10)
   await engine.face('up')
   await engine.wait(3000)

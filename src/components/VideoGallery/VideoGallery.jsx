@@ -12,6 +12,8 @@ export default function VideoGallery({ videos, onClose }) {
     }
   }, [videos.length])
 
+  const active = videos.find(v => v.id === selected)
+
   // Load video when selection changes
   useEffect(() => {
     const el = videoRef.current
@@ -25,8 +27,6 @@ export default function VideoGallery({ videos, onClose }) {
   // Wait, I switched to Object URLs in App.jsx, I should handle cleanup if I was creating them here,
   // but they are managed in the recordings state in App.jsx.
   // Actually, keeping them as long as the app is open is standard for this kind of "session gallery".
-
-  const active = videos.find(v => v.id === selected)
 
   function download(v) {
     const a = document.createElement('a')

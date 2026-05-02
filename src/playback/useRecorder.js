@@ -129,21 +129,25 @@ export function useRecorder({ onReady } = {}) {
     // Frame capture loop
     let lastCapture = 0
     let isCapturing = false
+    const TARGET_FPS = 30
+    const FRAME_INTERVAL = 1000 / TARGET_FPS
+
     const captureFrame = async (ts) => {
       if (statusRef.current !== 'recording') return
       
       const dt = ts - lastCapture
-      if (dt >= 66 && !isCapturing) { // ~15fps capture to avoid lag, html2canvas is heavy
+      if (dt >= FRAME_INTERVAL && !isCapturing) {
         lastCapture = ts
         isCapturing = true
 
         try {
           const snapshot = await html2canvas(rootElement, {
             backgroundColor: '#06040e',
-            scale: 1, // Capture at 1:1 screen size
+            scale: 1, 
             logging: false,
             useCORS: true,
-            allowTaint: true
+            allowTaint: true,
+            ignoreElements: (el) => el.classList.contains('vgallery-backdrop') || el.classList.contains('record-btn')
           })
           
           compCtx.drawImage(snapshot, 0, 0, compCanvas.width, compCanvas.height)
@@ -166,7 +170,7 @@ export function useRecorder({ onReady } = {}) {
 
     const mr = new MediaRecorder(stream, { 
       mimeType, 
-      videoBitsPerSecond: 12_000_000 
+      videoBitsPerSecond: 8_000_000 
     })
     mr.ondataavailable = e => { if (e.data.size > 0) chunksRef.current.push(e.data) }
     mr.start(100)
@@ -220,12 +224,14 @@ export function useRecorder({ onReady } = {}) {
       console.action('[recorder] FFmpeg exec start — re-encoding VP9→H.264 (Max Compatibility)...')
       const exitCode = await ff.exec([
         '-i', 'input.webm',
+        '-r', '30',
         '-c:v', 'libx264',
-        '-preset', 'fast',
-        '-crf', '22',
-        '-vf', 'pad=ceil(iw/2)*2:ceil(ih/2)*2',
+        '-preset', 'veryfast',
+        '-crf', '25',
+        '-vf', 'fps=30,pad=ceil(iw/2)*2:ceil(ih/2)*2',
         '-pix_fmt', 'yuv420p',
         '-movflags', '+faststart',
+        '-vsync', 'cfr',
         'output.mp4',
       ])
       console.log(`[recorder] FFmpeg exec finished with code: ${exitCode}`)

@@ -301,7 +301,7 @@ export function HouseWheel({ placements, houseCusps, size = 300, hideStellium, s
             })
 
         return (
-          <div style={{ padding:'10px 0 0', color:'#e8d4ff', fontFamily:'inherit', lineHeight:'1.5', width:'100%' }}>
+          <div style={{ padding:'12px 0 0', color:'#e8d4ff', fontFamily:'inherit', lineHeight:'1.6', width:'100%', flex: 1 }}>
             {active.type === 'planet' ? (<>
               <div style={{ color:active.color, fontWeight:700, fontSize:13 }}>{active.glyph} {active.label}{(active.locked || (lockedPoint === active.id)) && placements[active.id]?.sign ? (() => { const pd = placements[active.id]; const deg = Math.floor(pd.degrees); const theme = HOUSE_THEMES[pd.house]; return ` · ${pd.sign} ${deg}°${pd.house ? ` · H${pd.house}${theme ? ` (${theme})` : ''}` : ''}` })() : ''}</div>
               <div style={{ fontSize:11, color:'rgba(232,212,255,0.6)', fontStyle:'italic', marginBottom: (active.locked || lockedPoint === active.id) ? 4 : 0, lineHeight:'1.4' }}>{active.summary}</div>

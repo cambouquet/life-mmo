@@ -403,7 +403,7 @@ export default function CharacterEditor({ initialColors, initialBirthData, scrol
           <div className="birth-trio">
             {/* Left: earth globe fills height */}
             <div className="birth-trio__earth">
-              <EarthGlobe city={birthCity} size={300} style={{ width: '100%', height: 'auto', aspectRatio: '1 / 1' }} />
+              <EarthGlobe city={birthCity} size={180} />
               <CitySearch value={birthCity} onChange={setBirthCity} />
             </div>
             {/* Right: date on top, time on bottom */}
@@ -413,8 +413,7 @@ export default function CharacterEditor({ initialColors, initialBirthData, scrol
                   value={birthDate}
                   onChange={v => { setBirthDate(v); setHasDate(true); setPreviewDate(null) }}
                   onPreview={v => setPreviewDate(v)}
-                  size={220}
-                  style={{ width: '100%', height: '100%' }} />
+                  size={180} />
               </div>
               <div className="birth-trio__time">
                 <TimeWheel
@@ -429,8 +428,7 @@ export default function CharacterEditor({ initialColors, initialBirthData, scrol
                     setPreviewTime(null)
                   }}
                   onPreview={v => setPreviewTime(v)}
-                  size={180}
-                  style={{ width: '100%', height: '100%' }} />
+                  size={150} />
               </div>
             </div>
           </div>
@@ -450,7 +448,8 @@ export default function CharacterEditor({ initialColors, initialBirthData, scrol
             <div className="char-editor-wheel">
               <AstroSummary natalPlacements={natalPlacements} />
               <HouseWheel placements={natalPlacements} houseCusps={houseCusps} size={300} hideStellium
-                style={{ width: '100%', height: 'auto' }} />
+                containerStyle={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}
+                style={{ width: '100%', height: 'auto', flexShrink: 0 }} />
             </div>
           </div>
         )}
