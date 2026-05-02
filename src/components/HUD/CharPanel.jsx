@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { drawHead } from '../../game/draw/head.jsx'
 
-export default function CharPanel({ facing, charColors }) {
+export default function CharPanel({ facing, charColors, charName }) {
   const canvasRef = useRef(null)
 
   useEffect(() => {
@@ -41,7 +41,7 @@ export default function CharPanel({ facing, charColors }) {
     <div className="char-panel">
       <canvas ref={canvasRef} width={32} height={32} />
       <div className="char-panel__info">
-        <div className="char-panel__name">?</div>
+        <div className="char-panel__name">{charName ?? '?'}</div>
         <div className="char-panel__class">Novice · Lv 1</div>
       </div>
     </div>

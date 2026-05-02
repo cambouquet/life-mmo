@@ -1,11 +1,11 @@
 import { useRef, forwardRef, useImperativeHandle } from 'react'
 import { useGameLoop } from '../../hooks/useGameLoop.jsx'
 
-const Game = forwardRef(function Game({ onStateChange, onInteract, paused, charColors, playerStateRef }, ref) {
+const Game = forwardRef(function Game({ onStateChange, onInteract, paused, charColors, playerStateRef, doorUnlockedRef, nameSetRef, colorsSetRef }, ref) {
   const canvasRef  = useRef(null)
   const playerRef  = useRef(null)   // populated by useGameLoop
 
-  useGameLoop(canvasRef, { onStateChange, onInteract, paused, charColors, playerRef, playerStateRef })
+  useGameLoop(canvasRef, { onStateChange, onInteract, paused, charColors, playerRef, playerStateRef, doorUnlockedRef, nameSetRef, colorsSetRef })
 
   useImperativeHandle(ref, () => ({
     canvas:    () => canvasRef.current,

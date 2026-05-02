@@ -26,8 +26,13 @@ export const RIGHT_START = MID_START + MID_W + GAP_W
 export const TOTAL_W = LEFT_W + GAP_W + MID_W + GAP_W + RIGHT_W
 export const TOTAL_H = ROOM_H
 
-// ── Room tile map  (0=floor, 1=wall, 2=door gap, 3=table, 4=mirror) ───────────
-export function buildMap() {
+// ── Door position — right wall of left room, vertically centered ──────────────
+export const DOOR_C    = LEFT_W - 1          // col 15 — rightmost wall of left room
+export const DOOR_R    = Math.floor(ROOM_H / 2) - 1  // row 6
+export const DOOR_H    = 2                   // 2 tiles tall
+
+// ── Room tile map  (0=floor, 1=wall, 2=door gap, 3=table, 4=mirror, 6=door opening) ──
+export function buildMap(doorOpen = false) {
   const cols = TOTAL_W
   const rows = TOTAL_H
   const map = []
@@ -56,6 +61,13 @@ export function buildMap() {
     }
   }
 
+  // Door opening in right wall of left room
+  if (doorOpen) {
+    for (let dr = 0; dr < DOOR_H; dr++) {
+      map[DOOR_R + dr][DOOR_C] = 6  // passable door opening
+    }
+  }
+
   // Left room mirror — 2 tiles wide, centered at top of left room (row 1)
   const mirrorC = Math.floor(LEFT_W / 2) - 1   // col 7
   const mirrorR = 1
@@ -81,18 +93,11 @@ export function buildMap() {
   return { map, mirrorC, mirrorR, mirror2C, mirror2R, tableC, tableR }
 }
 
-// ── Torch positions ───────────────────────────────────────────────────────────
+// ── Torch positions — two door torches flanking the right wall opening ────────
+// top torch lights when name is set; bottom torch lights when colors are chosen
 export const TORCHES = [
-  // Left room
-  { c: 3,          r: 0 },
-  { c: LEFT_W - 4, r: 0 },
-  { c: 0,          r: Math.floor(ROOM_H / 2) },
-  { c: LEFT_W - 1, r: Math.floor(ROOM_H / 2) },
-  // Mid room
-  { c: MID_START + 2,        r: 0 },
-  { c: MID_START + MID_W - 3, r: 0 },
-  { c: MID_START,             r: Math.floor(ROOM_H / 2) },
-  { c: MID_START + MID_W - 1, r: Math.floor(ROOM_H / 2) },
+  { c: LEFT_W - 1, r: DOOR_R - 1 },   // top — lit by name
+  { c: LEFT_W - 1, r: DOOR_R + DOOR_H }, // bottom — lit by colors
 ]
 
 // ── Colour palettes (defined in palette.js) ───────────────────────────────────

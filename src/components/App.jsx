@@ -48,11 +48,19 @@ export default function App() {
   const [birthData,     setBirthData]     = useState(() => load(LS_BIRTH,  DEFAULT_BIRTH))
   const [charName,      setCharName]      = useState(() => load(LS_NAME,   null))
 
-  const wrapRef        = useViewportScale()
-  const gameRef        = useRef(null)
-  const uiOverlayRef   = useRef(null)
-  const engineRef      = useRef(null)
-  const playerStateRef = useRef(null)
+  const wrapRef          = useViewportScale()
+  const gameRef          = useRef(null)
+  const uiOverlayRef     = useRef(null)
+  const engineRef        = useRef(null)
+  const playerStateRef   = useRef(null)
+  const doorUnlockedRef  = useRef(false)
+  const nameSetRef       = useRef(!!charName)
+  const colorsSetRef     = useRef(Object.values(charColors).every(v => v !== '#ffffff'))
+
+  // Keep refs in sync each render
+  nameSetRef.current   = !!charName
+  colorsSetRef.current = Object.values(charColors).every(v => v !== '#ffffff')
+  doorUnlockedRef.current = nameSetRef.current && colorsSetRef.current
   const recorder      = useRecorder({
     onReady: (blob, filename) => {
       const url = URL.createObjectURL(blob)
@@ -147,7 +155,7 @@ export default function App() {
 
   return (
     <div className="game-wrap" ref={wrapRef}>
-      <HUD facing={facing} moving={moving} logEntries={logEntries} charColors={charColors} />
+      <HUD facing={facing} moving={moving} logEntries={logEntries} charColors={charColors} charName={charName} />
       {!showEditor && (
         <div className="canvas-wrap">
         <Game
@@ -157,6 +165,9 @@ export default function App() {
           paused={showDialog || showHoroscope}
           charColors={charColors}
           playerStateRef={playerStateRef}
+          doorUnlockedRef={doorUnlockedRef}
+          nameSetRef={nameSetRef}
+          colorsSetRef={colorsSetRef}
         />
         <div className="ui-overlay" ref={uiOverlayRef}>
           {!showDialog && !showHoroscope && <GuidanceVoice text={guidance} />}
@@ -196,10 +207,8 @@ export default function App() {
             console.action('Saving character data')
             setCharColors(colors)
             setBirthData(data)
-            if (name != null) {
-              setCharName(name)
-              try { localStorage.setItem(LS_NAME, JSON.stringify(name)) } catch {}
-            }
+            setCharName(name)
+            try { localStorage.setItem(LS_NAME, JSON.stringify(name)) } catch {}
             try { localStorage.setItem(LS_COLORS, JSON.stringify(colors)) } catch {}
             try { if (data) localStorage.setItem(LS_BIRTH, JSON.stringify(data)) } catch {}
             setShowEditor(false)
@@ -208,8 +217,43 @@ export default function App() {
           }}
         />
       )}
-      <div className="hint">WASD to move &nbsp;·&nbsp; SPACE to jump &nbsp;·&nbsp; SHIFT to interact</div>
-      <DebugConsole />
+      <DebugConsole
+        onReset={() => {
+          playerStateRef.current = null
+          setCharColors(DEFAULT_COLORS)
+          setBirthData(DEFAULT_BIRTH)
+          setCharName(null)
+          setShowEditor(false)
+          setEditorPage(0)
+          setEditorLimited(false)
+          setShowDialog(false)
+          setShowHoroscope(false)
+          setGuidance(null)
+          setLogEntries([
+            '<em>System:</em> Move with WASD.',
+            'The torches flicker in the dark.',
+            '<em>?</em> enters the dungeon.',
+          ])
+        }}
+        getSaveData={() => ({
+          name:    charName,
+          colors:  charColors,
+          birth:   birthData,
+          pos:     playerStateRef.current ? { x: playerStateRef.current.x, y: playerStateRef.current.y, facing: playerStateRef.current.facing } : null,
+          savedAt: Date.now(),
+        })}
+        onLoad={(slot) => {
+          if (slot.colors) { localStorage.setItem('life-mmo-colors-v3', JSON.stringify(slot.colors)); setCharColors(slot.colors) }
+          if (slot.birth)  { localStorage.setItem('life-mmo-birth',     JSON.stringify(slot.birth));  setBirthData(slot.birth) }
+          if (slot.name != null) { localStorage.setItem('life-mmo-name', JSON.stringify(slot.name));  setCharName(slot.name) }
+          if (slot.pos)    { playerStateRef.current = slot.pos }
+          setShowEditor(false)
+          setEditorPage(0)
+          setEditorLimited(false)
+          setShowDialog(false)
+          setShowHoroscope(false)
+        }}
+      />
       <RecordButton
         status={recorder.status}
         progress={recorder.progress}

@@ -44,6 +44,10 @@ export function drawRoom(ctx, map, phase = 0) {
 
       if (t === 1 || t === 5) {
         // Wall and void tiles — no draw, handled by drawBoundsOfLight per room
+      } else if (t === 6) {
+        // Door opening — render as floor (corridor drawn separately)
+        ctx.fillStyle = c % 2 === r % 2 ? '#0e0b1a' : '#0b0917'
+        ctx.fillRect(px, py, TILE, TILE)
       } else if (t === 4) {
         // Mirror backing — drawMirror() in the game loop paints the full 32×32 visual on top
         ctx.fillStyle = '#07060e'

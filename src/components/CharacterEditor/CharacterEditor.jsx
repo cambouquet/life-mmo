@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useMemo } from 'react'
+import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react'
 import { CharacterTemplate } from './CharacterTemplate'
 import { searchCities }      from '../../game/astro/cities.js'
 import { HouseWheel, HOUSE_THEMES }      from '../HouseWheel/HouseWheel.jsx'
@@ -6,6 +6,7 @@ import { DateWheel, TimeWheel } from './CirclePicker.jsx'
 import { getAllPositions, getPlacidusHouses, getHouseNumber, longitudeToSign, longitudeToSymbol, degreesInSign, daysSinceJ2000 } from '../../game/astro/ephemeris.js'
 import { SIGN_META }         from '../../game/astro/horoscope.js'
 import { PLANET_GLYPHS, SIGN_GLYPHS, ELEMENT_COLOR, PLANET_NAMES } from '../HoroscopeModal/HoroscopeModal.jsx'
+import { CassiopeiaWheel } from './CassiopeiaWheel.jsx'
 import './CharacterEditor.scss'
 
 // Projects lat/lng onto a sphere SVG (orthographic-like, front hemisphere only)
@@ -244,6 +245,45 @@ function AstroSummary({ natalPlacements }) {
   )
 }
 
+function hslToHex(h, s, l) {
+  h /= 360; s /= 100; l /= 100
+  let r, g, b
+  if (s === 0) { r = g = b = l } else {
+    const q = l < 0.5 ? l * (1 + s) : l + s - l * s
+    const p = 2 * l - q
+    const hue2rgb = (p, q, t) => {
+      if (t < 0) t += 1; if (t > 1) t -= 1
+      if (t < 1/6) return p + (q - p) * 6 * t
+      if (t < 1/2) return q
+      if (t < 2/3) return p + (q - p) * (2/3 - t) * 6
+      return p
+    }
+    r = hue2rgb(p, q, h + 1/3)
+    g = hue2rgb(p, q, h)
+    b = hue2rgb(p, q, h - 1/3)
+  }
+  return '#' + [r, g, b].map(x => Math.round(x * 255).toString(16).padStart(2, '0')).join('')
+}
+
+function randomHsl(hBase, sRange, lRange) {
+  const h = (hBase + Math.random() * 360) % 360
+  const s = sRange[0] + Math.random() * (sRange[1] - sRange[0])
+  const l = lRange[0] + Math.random() * (lRange[1] - lRange[0])
+  return hslToHex(h, s, l)
+}
+
+function randomPalette() {
+  const hue = Math.random() * 360
+  return {
+    hair:   randomHsl(hue + 20,  [40, 90], [25, 65]),
+    skin:   randomHsl(0,          [15, 40], [55, 80]),
+    eyes:   randomHsl(hue + 180, [60, 100],[45, 65]),
+    outfit: randomHsl(hue,        [45, 80], [20, 45]),
+    stick:  randomHsl(hue + 90,  [50, 90], [40, 70]),
+  }
+}
+
+
 export default function CharacterEditor({ initialColors, initialBirthData, initialName, scrollPage, limited, onSave, onClose, onChange }) {
   const modalRef   = useRef(null)
   const [activePage, setActivePage] = useState(0)
@@ -300,6 +340,9 @@ export default function CharacterEditor({ initialColors, initialBirthData, initi
   // Use preview values for chart if hovering, else committed values
   const chartDate = previewDate ?? birthDate
   const chartTime = previewTime ?? birthTime
+
+  const [previewColors, setPreviewColors] = useState(null)
+  const displayColors = previewColors ?? colors
 
   const updateColor = (key, val) => {
     const next = { ...colors, [key]: val }
@@ -388,13 +431,14 @@ export default function CharacterEditor({ initialColors, initialBirthData, initi
 
         {/* Page 1: character + colors + actions */}
         <div className="char-editor-preview">
-          <CharacterTemplate colors={colors} scale={5} />
+          <CharacterTemplate colors={displayColors} scale={5} />
           {limited ? (
             <input
               className="char-editor-name-input"
               type="text"
               value={name}
               onChange={e => setName(e.target.value)}
+              onKeyDown={e => { if (e.key === 'Enter') onSave(colorsRef.current, buildBirthData(), name.trim() || null) }}
               placeholder="Your name"
               maxLength={24}
               autoFocus
@@ -402,28 +446,17 @@ export default function CharacterEditor({ initialColors, initialBirthData, initi
           ) : (
             <div className="char-editor-preview-label">{initialName || '?'}</div>
           )}
-          <div className="color-row">
-            <div className="control-group">
-              <input type="color" value={colors.hair}   onChange={e => updateColor('hair',   e.target.value)} />
-              <label>Hair</label>
-            </div>
-            <div className="control-group">
-              <input type="color" value={colors.skin}   onChange={e => updateColor('skin',   e.target.value)} />
-              <label>Skin</label>
-            </div>
-            <div className="control-group">
-              <input type="color" value={colors.eyes}   onChange={e => updateColor('eyes',   e.target.value)} />
-              <label>Eyes</label>
-            </div>
-            <div className="control-group">
-              <input type="color" value={colors.outfit} onChange={e => updateColor('outfit', e.target.value)} />
-              <label>Armor</label>
-            </div>
-            <div className="control-group">
-              <input type="color" value={colors.stick}  onChange={e => updateColor('stick',  e.target.value)} />
-              <label>Wand</label>
-            </div>
-          </div>
+          <CassiopeiaWheel
+            colors={colors}
+            onChange={next => { setColors(next); setPreviewColors(null); onChange?.(next) }}
+            onPreview={next => setPreviewColors(next)}
+            onRandom={() => {
+              const next = { ...colors, ...randomPalette() }
+              setColors(next)
+              setPreviewColors(null)
+              onChange?.(next)
+            }}
+          />
           <div className="char-editor-actions">
             <button className="btn-save" onClick={() => onSave(colors, buildBirthData(), trimmedName)}>Embody</button>
             <button className="btn-cancel" onClick={onClose}>Cancel</button>
