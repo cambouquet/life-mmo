@@ -13,10 +13,10 @@ import { useRecorder }       from '../playback/useRecorder.js'
 import { PlaybackEngine }    from '../playback/PlaybackEngine.js'
 import { mirrorVisit }       from '../playback/scenarios/mirrorVisit.js'
 
-const LS_COLORS = 'life-mmo-colors'
+const LS_COLORS = 'life-mmo-colors-v3'
 const LS_BIRTH  = 'life-mmo-birth'
 
-const DEFAULT_COLORS = { hair: '#6030d0', skin: '#f8c898', eyes: '#8040e8', outfit: '#4a1090', stick: '#60a8ff' }
+const DEFAULT_COLORS = { hair: '#ffffff', skin: '#ffffff', eyes: '#ffffff', outfit: '#ffffff', stick: '#ffffff' }
 const DEFAULT_BIRTH = {
   date: '1988-01-27',
   time: '03:55',

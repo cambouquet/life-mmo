@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { TILE, DRAW_SCALE, SPEED, buildMap } from '../game/constants.jsx'
+import { TILE, DRAW_SCALE, SPEED, buildMap, LEFT_W, TOTAL_H, GAP_W, RIGHT_W, ROOM_H } from '../game/constants.jsx'
 import { movePlayer }                from '../game/collision.jsx'
 import { initInput, inputDir, isKeyDown } from '../game/input.jsx'
 import { drawRoom }                  from '../game/draw/room.jsx'
@@ -10,31 +10,10 @@ import { drawBoundsOfLight }         from '../game/draw/bounds.jsx'
 import { drawProximityAura }         from '../game/draw/proximityAura.jsx'
 import { drawMirror }               from '../game/draw/mirror.jsx'
 
-const LOG_MAX         = 3
 const NPC_INTERACT_R2 = 28 * 28
 
-const MAX_JUMP_H  = 9
-const JUMP_VEL    = 70
-const GRAVITY     = 280
-const FRAME_TIME  = 0.18
-
-const GUIDANCE_NPC = [
-  "She's been watching you.",
-  "The orb stirs when you draw close.",
-  "A question hangs in the air between you.",
-  "She has something to say. Or maybe she's waiting for you to ask.",
-]
-
-const GUIDANCE_IDLE = [
-  "Still.",
-  "Nothing moves but the torchlight.",
-  "You've been standing here a while.",
-  "The room is patient. Are you?",
-  "What are you looking for?",
-  "Some doors don't open until you stop rushing.",
-]
-
-function pick(arr) { return arr[Math.floor(Math.random() * arr.length)] }
+const JUMP_VEL = 70
+const GRAVITY  = 280
 
 export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, charColors, playerRef, playerStateRef }) {
   const pausedRef     = useRef(paused)
@@ -52,41 +31,45 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
     const ctx = canvasRef.current.getContext('2d')
     ctx.imageSmoothingEnabled = false
 
-    // Fixed large world — player is always centered, camera follows
-    const WORLD_COLS = 60
-    const WORLD_ROWS = 40
-    const W      = WORLD_COLS * TILE
-    const H      = WORLD_ROWS * TILE
-    const pcStartC = Math.floor(WORLD_COLS / 2)
-    const pcStartR = Math.floor(WORLD_ROWS / 2)
-    const tableC   = pcStartC - 2
-    const tableR   = pcStartR - 2
+    // Build map — returns tile grid + key object coords
+    const { map, mirrorC, mirrorR, tableC, tableR } = buildMap()
+
+    // Room rects in world pixels — used for per-room bounds-of-light
+    const ROOMS = [
+      { x: 0,                          y: 0, w: LEFT_W * TILE,  h: ROOM_H * TILE },
+      { x: (LEFT_W + GAP_W) * TILE,    y: 0, w: RIGHT_W * TILE, h: ROOM_H * TILE },
+    ]
+
+    // Player starts centered in the left room, facing up
+    const LEFT_INTERIOR_W = LEFT_W - 2   // exclude walls on each side
+    const pcStartC = 1 + Math.floor(LEFT_INTERIOR_W / 2)   // center of left room interior
+    const pcStartR = Math.floor(TOTAL_H / 2)
+
+    // Mirror: 2 tiles wide at (mirrorC, mirrorR); sprite is 32×32 drawn from top-left
+    const MIRROR_TX = mirrorC * TILE
+    const MIRROR_TY = mirrorR * TILE
+    const MIRROR_CX = MIRROR_TX + 16
+    const MIRROR_CY = MIRROR_TY + 16
+
+    // Table in right room
     const TABLE_X  = tableC * TILE
     const TABLE_Y  = tableR * TILE
     const TABLE_CX = TABLE_X + 16
     const TABLE_CY = TABLE_Y + 8
-    // NPC stands directly next to the table (right edge at tableC+1, NPC at tableC+2)
-    const NPC_X    = (tableC + 2) * TILE
-    const NPC_Y    = tableR * TILE
-    const NPC_CX   = NPC_X + 8
-    const NPC_CY   = NPC_Y + 8
 
-    // Mirror — 2×2 tiles; top-left at (MIRROR_C, MIRROR_R - 1)
-    const MIRROR_C  = pcStartC - 5
-    const MIRROR_R  = pcStartR
-    const MIRROR_TX = MIRROR_C * TILE                // top-left x of 32×32 sprite
-    const MIRROR_TY = (MIRROR_R - 1) * TILE          // top-left y
-    const MIRROR_CX = MIRROR_TX + 16                 // centre x (for aura / near-check)
-    const MIRROR_CY = MIRROR_TY + 16                 // centre y
+    // NPC stands next to the table (2 tiles right of tableC)
+    const NPC_X  = (tableC + 2) * TILE
+    const NPC_Y  = tableR * TILE
+    const NPC_CX = NPC_X + 8
+    const NPC_CY = NPC_Y + 8
 
-    const map    = buildMap(WORLD_COLS, WORLD_ROWS, MIRROR_C, MIRROR_R, tableC, tableR)
     const saved  = playerStateRef?.current
     const player = {
       x: saved?.x ?? pcStartC * TILE,
       y: saved?.y ?? pcStartR * TILE,
       w: TILE, h: TILE,
       frame: 0, frameTick: 0,
-      facing: saved?.facing ?? 'down', moving: false,
+      facing: saved?.facing ?? 'up', moving: false,
       jumpHeight: 0, jumpVel: 0, jumping: false,
     }
 
@@ -94,16 +77,10 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
     let last        = 0
     let prevShift   = isKeyDown('ShiftLeft') || isKeyDown('ShiftRight')
     let prevSpace   = isKeyDown('Space')
-    let idleTime       = 0
-    let guidanceTimer  = 16
-    let guidance       = null
-    let lastGuidanceCtx = null
-    let idleSaidCount  = 0
-    let log         = [
-      '<em>System:</em> Move with WASD.',
-      'The void holds its breath.',
-      '<em>Kami</em> steps into the dark.',
-    ]
+    let elapsed     = 0      // total time since game start
+    let guidance    = null
+    let mirrorOpened = false
+    let log         = []
 
     function nearNpc() {
       const px = player.x + TILE / 2, py = player.y + TILE / 2
@@ -152,23 +129,21 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
 
       drawRoom(ctx, map, torchPhase)
 
-      // 1. Mirror - reflection data calculation
+      // Mirror reflection data
       const mirrorDist  = Math.hypot(pcx - MIRROR_CX, pcy - MIRROR_CY)
       const reflAlpha   = Math.max(0, Math.min(1, (64 - mirrorDist) / 44))
       const reflection  = reflAlpha > 0.02 ? {
         facing: player.facing, frame: player.frame,
         colors: charColorsRef.current, moving: player.moving,
         alpha:  reflAlpha,
-        x: player.x, 
-        y: player.y, 
+        x: player.x,
+        y: player.y,
       } : null
 
-      // 2. Depth Sort: Draw objects whose base is behind the player
-      // Mirror base is roughly at Y=32 within its tile
+      // Depth sort: draw objects behind the player first
       if (MIRROR_TY + 32 < player.y + 8) {
         drawMirror(ctx, MIRROR_TX, MIRROR_TY, torchPhase, reflection)
       }
-      // Table base is roughly at Y=12 within its tile
       if (TABLE_Y + 12 < player.y + 8) {
         const tableDist = Math.hypot(pcx - TABLE_CX, pcy - TABLE_CY)
         const tableAlpha = Math.max(0, Math.min(1, (48 - tableDist) / 36))
@@ -176,11 +151,11 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
       }
 
       drawNpc(ctx, NPC_X, NPC_Y, torchPhase)
-      
-      // 3. Player
+
+      // Player
       drawWarriorSprite(ctx, player.x, player.y - player.jumpHeight, player.facing, player.frame, torchPhase, charColorsRef.current, player.moving)
 
-      // 4. Foregrounds: Draw objects whose base is in front of the player
+      // Foreground objects in front of the player
       if (MIRROR_TY + 32 >= player.y + 8) {
         drawMirror(ctx, MIRROR_TX, MIRROR_TY, torchPhase, reflection)
       }
@@ -195,7 +170,7 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
         if (mirrorNear) badge(MIRROR_CX, MIRROR_TY - 4, '[MIR]')
       }
 
-      drawBoundsOfLight(ctx, W, H, torchPhase, pcx, pcy)
+      drawBoundsOfLight(ctx, ROOMS, torchPhase, pcx, pcy)
 
       ctx.restore()
     }
@@ -223,13 +198,11 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
           movePlayer(player, map, dx, dy, dt, SPEED)
 
           player.frameTick += dt
-          // Relaxed walk cycle (0.12s per frame) through all 8 unique positions
           if (player.frameTick >= 0.12) {
             player.frameTick = 0
             player.frame = (player.frame + 1) % 8
           }
         } else {
-          // Idle frame logic: if not moving, we reset frame to 0
           player.frame = 0
           player.frameTick = 0
         }
@@ -251,31 +224,20 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
           }
         }
 
-        // NPC speech timer removed — dialog modal handles NPC interaction
-
-        // Guidance voice
-        idleTime += player.moving ? -idleTime * dt * 3 : dt
-        const guidanceCtx = npcNear ? 'npc' : mirrorNear ? 'mirror' : (idleTime > 15 && idleSaidCount < 2) ? 'idle' : null
-        if (guidanceCtx !== lastGuidanceCtx) {
-          guidanceTimer = Math.min(guidanceTimer, guidanceCtx ? 4 : 2)
-          lastGuidanceCtx = guidanceCtx
-        }
-        guidanceTimer -= dt
-        if (guidanceTimer <= 0) {
-          if      (guidanceCtx === 'npc')    { guidance = pick(GUIDANCE_NPC);   guidanceTimer = 30 + Math.random() * 20 }
-          else if (guidanceCtx === 'mirror') { guidance = "The glass reflects more than just your face."; guidanceTimer = 30 }
-          else if (guidanceCtx === 'idle')   { guidance = pick(GUIDANCE_IDLE);  guidanceTimer = 999; idleSaidCount++ }
-          else                               { guidance = null; guidanceTimer = 20 }
+        // Guidance: silent for 20s, then show question until mirror is opened
+        elapsed += dt
+        if (!mirrorOpened) {
+          guidance = elapsed >= 20 ? "Do you know who you are?" : null
         }
 
         // Interact
         const spaceNow = isKeyDown('Space')
         if (spaceNow && !prevSpace && (npcNear || mirrorNear)) {
           if (mirrorNear) {
-            log = ['<em>Kami</em> looks into the mirror.', ...log].slice(0, LOG_MAX)
+            mirrorOpened = true
+            guidance = null
             onInteractRef.current?.('mirror')
           } else {
-            log = ['<em>Kami</em> speaks with Lyra.', ...log].slice(0, LOG_MAX)
             onInteractRef.current?.('npc')
           }
         }

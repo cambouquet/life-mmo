@@ -42,8 +42,8 @@ export function drawRoom(ctx, map, phase = 0) {
       const px = c * TILE
       const py = r * TILE
 
-      if (t === 1) {
-        // Wall tile — no explicit tiles drawn, handled by drawBoundsOfLight
+      if (t === 1 || t === 5) {
+        // Wall and void tiles — no draw, handled by drawBoundsOfLight per room
       } else if (t === 4) {
         // Mirror backing — drawMirror() in the game loop paints the full 32×32 visual on top
         ctx.fillStyle = '#07060e'
@@ -53,9 +53,9 @@ export function drawRoom(ctx, map, phase = 0) {
         ctx.fillStyle = c % 2 === r % 2 ? '#0e0b1a' : '#0b0917'
         ctx.fillRect(px, py, TILE, TILE)
       } else {
-        // Floor tile (0 = floor, 2 = door gap, 3 = furniture base)
-        // Hidden/void background is handled by the clearRect/fillRect, 
-        // we only draw interactable objects or let the floor remain the dark void.
+        // Floor tile — subtle checkerboard to show room boundaries
+        ctx.fillStyle = c % 2 === r % 2 ? '#0e0b1a' : '#0b0917'
+        ctx.fillRect(px, py, TILE, TILE)
       }
     }
   }

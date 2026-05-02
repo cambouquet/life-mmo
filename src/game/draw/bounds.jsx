@@ -1,15 +1,19 @@
-const GLOW          = 6    // base glow width (px)
-const PROX_RADIUS   = 80   // distance at which proximity effect starts (px)
-const PROX_GLOW     = 40   // extra glow width at full proximity
+const GLOW        = 6
+const PROX_RADIUS = 80
+const PROX_GLOW   = 40
 
-export function drawBoundsOfLight(ctx, w, h, phase, px, py) {
-  // Normalised proximity [0..1] for each wall
-  const distTop    = py
-  const distBottom = h - py
-  const distLeft   = px
-  const distRight  = w - px
+// Draw glowing walls for a single room rect { x, y, w, h }
+// Only draws proximity effects when the player is actually inside this room.
+function drawRoomBounds(ctx, rx, ry, rw, rh, pcx, pcy, phase) {
+  const insideRoom = pcx >= rx && pcx <= rx + rw && pcy >= ry && pcy <= ry + rh
+
+  const distTop    = pcy - ry
+  const distBottom = (ry + rh) - pcy
+  const distLeft   = pcx - rx
+  const distRight  = (rx + rw) - pcx
 
   function prox(dist) {
+    if (!insideRoom) return 0
     return Math.max(0, 1 - dist / PROX_RADIUS)
   }
 
@@ -18,7 +22,7 @@ export function drawBoundsOfLight(ctx, w, h, phase, px, py) {
   const pLeft   = prox(distLeft)
   const pRight  = prox(distRight)
 
-  function band(x, y, bw, bh, g0x, g0y, g1x, g1y, p) {
+  function band(bx, by, bw, bh, g0x, g0y, g1x, g1y, p) {
     const glowW  = GLOW + PROX_GLOW * p
     const bright = 0.18 + 0.82 * p
     const g = ctx.createLinearGradient(g0x, g0y, g1x, g1y)
@@ -26,22 +30,19 @@ export function drawBoundsOfLight(ctx, w, h, phase, px, py) {
     g.addColorStop(Math.min(0.99, GLOW / glowW * 0.6), `rgba(100, 170, 255, ${(bright * 0.35).toFixed(3)})`)
     g.addColorStop(1,   'rgba(60, 120, 255, 0)')
     ctx.fillStyle = g
-    // Adjust rect to match extended glow width
-    if (g1y > g0y) ctx.fillRect(x, y, bw, glowW)          // top
-    else if (g1y < g0y) ctx.fillRect(x, h - glowW, bw, glowW) // bottom
-    else if (g1x > g0x) ctx.fillRect(x, y, glowW, bh)     // left
-    else ctx.fillRect(w - glowW, y, glowW, bh)             // right
+    if (g1y > g0y)      ctx.fillRect(bx, by,              bw, glowW)   // top band
+    else if (g1y < g0y) ctx.fillRect(bx, ry + rh - glowW, bw, glowW)  // bottom band
+    else if (g1x > g0x) ctx.fillRect(bx, by,              glowW, bh)   // left band
+    else                ctx.fillRect(rx + rw - glowW, by,  glowW, bh)  // right band
   }
 
-  ctx.save()
+  // Four wall bands
+  band(rx, ry,        rw, GLOW,  rx, ry,      rx, ry+GLOW,  pTop)
+  band(rx, ry+rh-GLOW, rw, GLOW,  rx, ry+rh,   rx, ry+rh-GLOW, pBottom)
+  band(rx, ry,        GLOW, rh,  rx, ry,      rx+GLOW, ry, pLeft)
+  band(rx+rw-GLOW, ry, GLOW, rh, rx+rw, ry,  rx+rw-GLOW, ry, pRight)
 
-  // Base + proximity bands
-  band(0, 0,        w, GLOW,  0, 0,   0, GLOW,   pTop)
-  band(0, h - GLOW, w, GLOW,  0, h,   0, h-GLOW, pBottom)
-  band(0, 0,        GLOW, h,  0, 0,   GLOW, 0,   pLeft)
-  band(w - GLOW, 0, GLOW, h,  w, 0,   w-GLOW, 0, pRight)
-
-  // Radial burst at the closest point on each wall when near
+  // Radial burst at closest wall point
   function burst(cx, cy, p) {
     if (p < 0.05) return
     const r = 18 + 40 * p
@@ -55,10 +56,17 @@ export function drawBoundsOfLight(ctx, w, h, phase, px, py) {
     ctx.fill()
   }
 
-  burst(px, 0,   pTop)
-  burst(px, h,   pBottom)
-  burst(0,  py,  pLeft)
-  burst(w,  py,  pRight)
+  burst(pcx, ry,      pTop)
+  burst(pcx, ry + rh, pBottom)
+  burst(rx,      pcy, pLeft)
+  burst(rx + rw, pcy, pRight)
+}
 
+// rooms: array of { x, y, w, h } in world pixels
+export function drawBoundsOfLight(ctx, rooms, phase, pcx, pcy) {
+  ctx.save()
+  for (const room of rooms) {
+    drawRoomBounds(ctx, room.x, room.y, room.w, room.h, pcx, pcy, phase)
+  }
   ctx.restore()
 }
