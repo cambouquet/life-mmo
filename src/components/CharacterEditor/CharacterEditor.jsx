@@ -384,7 +384,7 @@ export default function CharacterEditor({ initialColors, initialBirthData, scrol
         {/* Page 1: character + colors + actions */}
         <div className="char-editor-preview">
           <CharacterTemplate colors={colors} scale={5} />
-          <div className="char-editor-preview-label">Kami</div>
+          <div className="char-editor-preview-label">?</div>
           <div className="color-row">
             <div className="control-group">
               <input type="color" value={colors.hair}   onChange={e => updateColor('hair',   e.target.value)} />

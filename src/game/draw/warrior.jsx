@@ -18,7 +18,7 @@ export function drawWarriorSprite(ctx, x, y, facing, frame, phase, colors, movin
     const ringBrightness = (1 - t) * 0.9
     const inner = Math.max(0, t - 0.22)
     const outer = Math.min(1, t + 0.08)
-    const cx = Math.floor(x) + 8
+    const cx = Math.floor(x) + 9   // body center is at x+9 in the 32px sprite (pixels 9-25, center=17, offset by -8 draw origin)
     const cy = Math.floor(y) + 8
 
     // Safety check for Gradient

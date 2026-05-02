@@ -33,7 +33,7 @@ export default function App() {
   const [logEntries,    setLogEntries]    = useState([
     '<em>System:</em> Move with WASD.',
     'The torches flicker in the dark.',
-    '<em>Kami</em> enters the dungeon.',
+    '<em>?</em> enters the dungeon.',
   ])
   const [guidance,      setGuidance]      = useState(null)
   const [showDialog,    setShowDialog]    = useState(false)

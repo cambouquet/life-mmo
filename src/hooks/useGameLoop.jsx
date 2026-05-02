@@ -40,16 +40,16 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
       { x: (LEFT_W + GAP_W) * TILE,    y: 0, w: RIGHT_W * TILE, h: ROOM_H * TILE },
     ]
 
-    // Player starts centered in the left room, facing up
-    const LEFT_INTERIOR_W = LEFT_W - 2   // exclude walls on each side
-    const pcStartC = 1 + Math.floor(LEFT_INTERIOR_W / 2)   // center of left room interior
-    const pcStartR = Math.floor(TOTAL_H / 2)
-
-    // Mirror: 2 tiles wide at (mirrorC, mirrorR); sprite is 32×32 drawn from top-left
+    // Mirror: 2 tiles wide at (mirrorC, mirrorR); sprite is 32px wide
     const MIRROR_TX = mirrorC * TILE
     const MIRROR_TY = mirrorR * TILE
-    const MIRROR_CX = MIRROR_TX + 16
+    const MIRROR_CX = MIRROR_TX + 16   // center of 32px sprite
     const MIRROR_CY = MIRROR_TY + 16
+
+    // Player spawn: pixel-align so body center (x+9) lands on MIRROR_CX
+    const pcStartX = MIRROR_CX - 9
+    const pcStartR = Math.floor(TOTAL_H / 2)
+    const pcStartY = pcStartR * TILE
 
     // Table in right room
     const TABLE_X  = tableC * TILE
@@ -65,8 +65,8 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
 
     const saved  = playerStateRef?.current
     const player = {
-      x: saved?.x ?? pcStartC * TILE,
-      y: saved?.y ?? pcStartR * TILE,
+      x: saved?.x ?? pcStartX,
+      y: saved?.y ?? pcStartY,
       w: TILE, h: TILE,
       frame: 0, frameTick: 0,
       facing: saved?.facing ?? 'up', moving: false,

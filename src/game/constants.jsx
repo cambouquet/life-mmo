@@ -49,7 +49,11 @@ export function buildMap() {
   }
 
   // Mirror — 2 tiles wide, centered at top of left room (row 1)
-  const mirrorC = Math.floor((LEFT_W - 2) / 2)
+  // Interior is cols 1..(LEFT_W-2). Center of interior = LEFT_W/2 - 0.5 tiles.
+  // Mirror center (px) = mirrorC*TILE + TILE = (mirrorC+1)*TILE
+  // Player center (px) = playerC*TILE + TILE/2
+  // They align when mirrorC = floor(LEFT_W/2) - 1  and  playerC = mirrorC + 1
+  const mirrorC = Math.floor(LEFT_W / 2) - 1   // col 7  → mirror spans cols 7-8, center at px 128
   const mirrorR = 1
   map[mirrorR][mirrorC]     = 4
   map[mirrorR][mirrorC + 1] = 4
