@@ -49,15 +49,15 @@ export async function mirrorVisit(engine) {
   const palette = randomPalette()
 
   // 1. Initial Approach: Walk to the "admire" position first
-  // We MUST step down (y=348+) to clear the solid mirror tiles at y=320-335
+  // Start is (480, 320). We first move down to clear the collision zone, then left.
   await engine.wait(300)
-  const start = engine.getPlayerPos()
   
-  // Step 1: Move diagonally to below the mirror's x-center
-  // Using moderate threshold (10) for reliability
-  await engine.moveTo(ADMIRE_X, start.y + 40, 10) 
-  // Step 2: Move up slightly to the admire spot
-  await engine.moveTo(ADMIRE_X, ADMIRE_Y, 10)
+  // Step 1: Specifically move DOWN first to clear the mirror row (y=320-335)
+  await engine.moveTo(STEP_DOWN_X, STEP_DOWN_Y, 8) 
+  // Step 2: Now walk horizontally to reach the mirror's X center
+  await engine.moveTo(ADMIRE_X, STEP_DOWN_Y, 8)
+  // Step 3: Move to the final admire spot
+  await engine.moveTo(ADMIRE_X, ADMIRE_Y, 8)
   await engine.face('up')
   await engine.wait(800)
 

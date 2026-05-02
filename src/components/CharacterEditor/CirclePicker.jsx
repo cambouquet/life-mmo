@@ -37,44 +37,54 @@ function hoveredIndexFromAngle(angle, rotRef, total) {
   return indexFromRotation(rotRef.current - (angle + 90), total)
 }
 
-// Needle hook: spins freely, calls onDelta(degrees) continuously
 function useNeedle(svgRef, cx, cy, needleRef, onDelta) {
   const prevAngle  = useRef(null)
   const angleRef   = useRef(0)
   const onDeltaRef = useRef(onDelta)
   useEffect(() => { onDeltaRef.current = onDelta }, [onDelta])
 
-  const applyTransform = useCallback(() => {
+  // Simple visual update on render
+  useEffect(() => {
     if (needleRef.current)
       needleRef.current.setAttribute('transform', `rotate(${angleRef.current} ${cx} ${cy})`)
-  }, [needleRef, cx, cy])
+  })
 
-  useEffect(() => { applyTransform() })
-
-  const onPointerDown = useCallback(e => {
-    prevAngle.current = getPointerAngle(e, svgRef.current, cx, cy)
-    e.currentTarget.setPointerCapture(e.pointerId)
-    e.currentTarget.style.cursor = 'grabbing'
-  }, [svgRef, cx, cy])
-
-  const onPointerMove = useCallback(e => {
-    if (prevAngle.current === null) return
-    const angle = getPointerAngle(e, svgRef.current, cx, cy)
-    let delta = angle - prevAngle.current
-    if (delta > 180)  delta -= 360
-    if (delta < -180) delta += 360
-    angleRef.current += delta
-    prevAngle.current = angle
-    applyTransform()
-    onDeltaRef.current(delta)
-  }, [svgRef, cx, cy, applyTransform])
-
-  const onPointerUp = useCallback(e => {
-    prevAngle.current = null
-    e.currentTarget.style.cursor = 'grab'
-  }, [])
-
-  return { onPointerDown, onPointerMove, onPointerUp }
+  return {
+    onPointerDown: (e) => {
+      // Logic fix: reset delta accumulator when starting a new drag
+      // and capture the exact angle at start
+      prevAngle.current = getPointerAngle(e, svgRef.current, cx, cy)
+      e.currentTarget.setPointerCapture(e.pointerId)
+      e.currentTarget.style.cursor = 'grabbing'
+    },
+    onPointerMove: (e) => {
+      if (prevAngle.current === null) return
+      const angle = getPointerAngle(e, svgRef.current, cx, cy)
+      
+      let delta = angle - prevAngle.current
+      if (delta > 180)  delta -= 360
+      if (delta < -180) delta += 360
+      
+      // If movement is tiny (jitter or sub-pixel), ignore it
+      if (Math.abs(delta) < 0.01) return
+      
+      angleRef.current += delta
+      prevAngle.current = angle
+      
+      if (needleRef.current) {
+        needleRef.current.setAttribute('transform', `rotate(${angleRef.current} ${cx} ${cy})`)
+      }
+      onDeltaRef.current(delta)
+    },
+    onPointerUp: (e) => {
+      // Logic fix: explicitly release pointer capture
+      if (e.currentTarget.hasPointerCapture(e.pointerId)) {
+        e.currentTarget.releasePointerCapture(e.pointerId)
+      }
+      prevAngle.current = null
+      e.currentTarget.style.cursor = 'grab'
+    }
+  }
 }
 
 // Static ring: ring never rotates, pointer angle maps directly to segment index
@@ -124,6 +134,10 @@ function useImperativeRing(svgRef, cx, cy, total, onPreview, onCommit) {
 // onPreview: called on hover with { day, month, year } or null (restore)
 export function DateWheel({ value, onChange, onPreview, size = 220, style }) {
   const { day, month, year } = value
+  // Keep values in ref to avoid stale closure during fast movements
+  const valRef = useRef({ day, month, year })
+  useEffect(() => { valRef.current = { day, month, year } }, [day, month, year])
+
   const svgRef = useRef(null)
   const VB = 240, cx = 120, cy = 120
 
@@ -141,18 +155,26 @@ export function DateWheel({ value, onChange, onPreview, size = 220, style }) {
   const needleRef    = useRef(null)
   const needleAccum  = useRef(0)  // fractional day accumulator
   const yearNeedle = useNeedle(svgRef, cx, cy, needleRef, delta => {
+    // Logic fix: update accumulator based on delta
+    const d = new Date(valRef.current.year, valRef.current.month - 1, valRef.current.day)
+    
     // 360° = 365 days (1 year scroll)
+    // We update the date EVERY move to keep it in sync with the visual needle
     needleAccum.current += delta * (365 / 360)
+    
     const steps = Math.trunc(needleAccum.current)
     if (steps === 0) return
+    
     needleAccum.current -= steps
-    // convert current date to total days since epoch, shift, convert back
-    const d = new Date(year, month - 1, day)
     d.setDate(d.getDate() + steps)
+    
     const minDate = new Date(1930, 0, 1)
     const maxDate = new Date(2030, 11, 31)
     if (d < minDate || d > maxDate) return
-    onChange({ day: d.getDate(), month: d.getMonth() + 1, year: d.getFullYear() })
+    
+    const nextVal = { day: d.getDate(), month: d.getMonth() + 1, year: d.getFullYear() }
+    valRef.current = nextVal // immediately update ref to prevent race condition
+    onChange(nextVal)
   })
 
   const dayRing = useImperativeRing(svgRef, cx, cy, maxDay,
@@ -301,6 +323,9 @@ export function DateWheel({ value, onChange, onPreview, size = 220, style }) {
 // onPreview: called on hover with { hour, minute } or null (restore)
 export function TimeWheel({ value, onChange, onPreview, size = 180, style }) {
   const { hour, minute } = value
+  const valRef = useRef({ hour, minute })
+  useEffect(() => { valRef.current = { hour, minute } }, [hour, minute])
+
   const svgRef = useRef(null)
   const VB = 200, cx = 100, cy = 100
 
@@ -321,15 +346,17 @@ export function TimeWheel({ value, onChange, onPreview, size = 180, style }) {
     timeNeedleAccum.current -= steps
     
     // Calculate total minutes with rollover
-    let totalMin = hour * 60 + minute + steps
+    let totalMin = valRef.current.hour * 60 + valRef.current.minute + steps
     let daysDiff = Math.floor(totalMin / 1440)
     totalMin = ((totalMin % 1440) + 1440) % 1440
     
-    onChange({ 
+    const nextVal = { 
       hour: Math.floor(totalMin / 60), 
       minute: totalMin % 60,
-      daysDiff // Pass daysDiff to parent if they want to update date
-    })
+      daysDiff 
+    }
+    valRef.current = nextVal // Update ref immediately
+    onChange(nextVal)
   })
 
   const hourRing = useImperativeRing(svgRef, cx, cy, 24,

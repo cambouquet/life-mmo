@@ -79,16 +79,15 @@ export default function App() {
   }, [showHoroscope, showDialog, showEditor])
 
   const handleRecord = useCallback(async () => {
+    let stream
+    try {
+      stream = await navigator.mediaDevices.getDisplayMedia({ video: { frameRate: 30 }, audio: false })
+    } catch (err) {
+      console.error('[record] screen capture denied:', err?.message)
+      return
+    }
     console.action('▶ Record started — scenario: mirrorVisit')
-    const canvas = gameRef.current?.canvas()
-    if (!canvas) { console.error('handleRecord: canvas not found'); return }
-
-    // Start with the state we have
-    recorder.start(canvas, {
-      showEditor: false,
-      charColors: { ...charColors },
-      birthData: { ...birthData }
-    })
+    if (!recorder.start(stream)) return
 
     const engine = new PlaybackEngine({
       getPlayerPos:  () => gameRef.current?.playerPos() ?? { x: 0, y: 0 },
