@@ -91,6 +91,10 @@ export class PlaybackEngine {
     }
   }
 
+  getPlayerPos() {
+    return this._getPos()
+  }
+
   async moveTo(x, y, threshold = 10) {
     if (this._abortRef.current) return
     console.action(`Moving to (${x}, ${y})`)

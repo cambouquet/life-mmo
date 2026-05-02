@@ -125,7 +125,7 @@ function useImperativeRing(svgRef, cx, cy, total, onPreview, onCommit) {
 export function DateWheel({ value, onChange, onPreview, size = 220, style }) {
   const { day, month, year } = value
   const svgRef = useRef(null)
-  const VB = 220, cx = 110, cy = 110
+  const VB = 240, cx = 120, cy = 120
 
   const maxDay = DAYS_IN_MONTH(month, year)
   const YEARS  = Array.from({length: 101}, (_, i) => 1930 + i)
@@ -133,7 +133,7 @@ export function DateWheel({ value, onChange, onPreview, size = 220, style }) {
   const DAY_R1 = 28, DAY_R2 = 50
   const MON_R1 = 54, MON_R2 = 76
   const YR_R1  = 80, YR_R2  = 102
-  const NEEDLE_R1 = 101, NEEDLE_R2 = 111  // needle track just outside year ring
+  const NEEDLE_R1 = 101, NEEDLE_R2 = 113  // needle track just outside year ring
 
   const [hovDay,  setHovDay]  = useState(null)
   const [hovMon,  setHovMon]  = useState(null)
@@ -302,12 +302,12 @@ export function DateWheel({ value, onChange, onPreview, size = 220, style }) {
 export function TimeWheel({ value, onChange, onPreview, size = 180, style }) {
   const { hour, minute } = value
   const svgRef = useRef(null)
-  const VB = 180, cx = 90, cy = 90
+  const VB = 200, cx = 100, cy = 100
 
   const MN_R1 = 28, MN_R2 = 52
-  const HR_R1 = 56, HR_R2 = 80
+  const HR_R1 = 60, HR_R2 = 84
 
-  const HR_NEEDLE_R1 = 81, HR_NEEDLE_R2 = 91
+  const HR_NEEDLE_R1 = 85, HR_NEEDLE_R2 = 97
 
   const [hovHour, setHovHour] = useState(null)
   const [hovMin,  setHovMin]  = useState(null)

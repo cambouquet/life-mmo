@@ -112,6 +112,7 @@ export function HouseWheel({ placements, houseCusps, size = 300, hideStellium, s
     // Handle arcs that cross the 0 line or are near it
     const delta = (endDeg - startDeg + 360) % 360
     const large = delta > 180 ? 1 : 0
+    // Clean up small segments or use slight overlap if needed
     return `M ${s1[0]} ${s1[1]} A ${r1} ${r1} 0 ${large} 1 ${e1[0]} ${e1[1]} L ${e2[0]} ${e2[1]} A ${r2} ${r2} 0 ${large} 0 ${s2[0]} ${s2[1]} Z`
   }
 
@@ -161,6 +162,12 @@ export function HouseWheel({ placements, houseCusps, size = 300, hideStellium, s
     }}>
       <svg width={size} height={size} viewBox="0 0 300 300"
            style={{ display:'block', margin:'0 auto', overflow:'visible', ...style }}>
+        <defs>
+          <filter id="glow-wheel" x="-20%" y="-20%" width="140%" height="140%">
+            <feGaussianBlur stdDeviation="1.5" result="blur" />
+            <feComposite in="SourceGraphic" in2="blur" operator="over" />
+          </filter>
+        </defs>
 
         {/* orbit guide tracks */}
         {ORBITS.map(o => (
@@ -190,7 +197,8 @@ export function HouseWheel({ placements, houseCusps, size = 300, hideStellium, s
               <path d={arc(sStart, sEnd, SIGN_R1, SIGN_R2)}
                 fill={isHov ? `${signCol}66` : `${signCol}33`}
                 stroke={isHov ? `${signCol}ff` : `${signCol}66`}
-                strokeWidth={isHov ? '1.5' : '1'}
+                strokeWidth={isHov ? '1.5' : '1.2'}
+                strokeMiterlimit="2"
  />
               <text x={sx} y={sy} textAnchor="middle" dominantBaseline="middle"
                 fontSize="6.5" fill="rgba(255,255,255,0.9)" fontWeight="800">

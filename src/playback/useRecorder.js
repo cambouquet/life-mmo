@@ -243,16 +243,6 @@ export function useRecorder({ onReady } = {}) {
 
       console.action(`[recorder] mp4 size: ${(mp4Blob.size / 1024).toFixed(1)} KB`)
 
-      // Auto-download
-      const dlUrl = URL.createObjectURL(mp4Blob)
-      const link = document.createElement('a')
-      link.href = dlUrl
-      link.download = filename
-      document.body.appendChild(link)
-      link.click()
-      document.body.removeChild(link)
-      setTimeout(() => URL.revokeObjectURL(dlUrl), 10_000)
-
       setStatus('done')
       setProgress(100)
 
