@@ -62,12 +62,14 @@ async function walkTo(getPos, targetX, targetY, threshold, abortRef) {
 }
 
 export class PlaybackEngine {
-  constructor({ getPlayerPos, onOpenEditor, onCloseEditor, onColorChange, onScrollEditor, onComplete }) {
+  constructor({ getPlayerPos, onOpenEditor, onCloseEditor, onColorChange, onScrollEditor, onSetName, onSaveMirror, onComplete }) {
     this._getPos        = getPlayerPos
     this._openEditor    = onOpenEditor
     this._closeEditor   = onCloseEditor
     this._colorChange   = onColorChange
     this._scrollEditor  = onScrollEditor
+    this._setName       = onSetName
+    this._saveMirror    = onSaveMirror
     this._onComplete    = onComplete
     this._running       = false
     this._abortRef      = { current: false }
@@ -135,6 +137,20 @@ export class PlaybackEngine {
     await sleep(jitter(180, 0.3))
     this._colorChange(colorKey, hexValue)
     await sleep(jitter(80, 0.3))
+  }
+
+  async setName(name) {
+    if (this._abortRef.current) return
+    console.action(`Setting name to "${name}"`)
+    this._setName?.(name)
+    await sleep(jitter(300, 0.2))
+  }
+
+  async saveMirror(colors, name) {
+    if (this._abortRef.current) return
+    console.action('Saving mirror (name + colors) and closing')
+    this._saveMirror?.(colors, name)
+    await sleep(jitter(500, 0.15))
   }
 
   async face(direction) {

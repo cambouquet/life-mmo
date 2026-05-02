@@ -61,10 +61,12 @@ export function buildMap(doorOpen = false) {
     }
   }
 
-  // Door opening in right wall of left room
+  // Door opening — wall tile + full corridor through the void gap
   if (doorOpen) {
     for (let dr = 0; dr < DOOR_H; dr++) {
-      map[DOOR_R + dr][DOOR_C] = 6  // passable door opening
+      for (let dc = 0; dc < GAP_W; dc++) {
+        map[DOOR_R + dr][DOOR_C + dc] = 6  // passable through wall and void
+      }
     }
   }
 

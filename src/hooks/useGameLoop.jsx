@@ -144,42 +144,44 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
       ctx.restore()
     }
 
-    function drawDoorCorridor(progress) {
+    function drawDoorCorridor(progress, pcx, pcy) {
       if (progress <= 0) return
 
       const eased = 1 - Math.pow(1 - progress, 2)
       const angle = (Math.PI / 2) * eased
 
-      // Corridor floor — fades in as doors open
-      ctx.save()
-      ctx.globalAlpha = progress
-      for (let col = 1; col < GAP_W; col++) {
-        for (let row = DOOR_R; row < DOOR_R + DOOR_H; row++) {
-          ctx.fillStyle = (col + row) % 2 === 0 ? '#0e0b1a' : '#0b0917'
-          ctx.fillRect((DOOR_C + col) * TILE, row * TILE, TILE, TILE)
-        }
-      }
-      ctx.restore()
+const wallX = DOOR_C * TILE
+      const gapY1 = DOOR_R * TILE
+      const gapY2 = (DOOR_R + DOOR_H) * TILE
+
+      // Compute pRight the same way drawBoundsOfLight does for the left room
+      const leftRoomRX = LEFT_W * TILE
+      const distRight  = leftRoomRX - pcx
+      const pRight     = (pcx >= 0 && pcx <= leftRoomRX && pcy >= 0 && pcy <= ROOM_H * TILE) 
+                         ? Math.max(0, 1 - distRight / 80) 
+                         : 0
+      const glowW      = 6 + 40 * pRight
+      const bright     = 0.18 + 0.82 * pRight
 
       function drawWallGlowTile() {
-        // Matches the right-wall glow style from drawBoundsOfLight
-        // In local space: tile occupies x:[-TILE,0], y:[0,TILE]
-        const g = ctx.createLinearGradient(0, 0, -TILE, 0)
-        g.addColorStop(0,    'rgba(180,230,255,0.162)')
-        g.addColorStop(0.15, 'rgba(100,170,255,0.063)')
-        g.addColorStop(1,    'rgba(60,120,255,0)')
+        // Local space: hinge at origin (top-right of tile), tile extends x:[-TILE,0], y:[0,TILE]
+        // Glow goes from x=0 (wall face, bright) leftward to x=-glowW (transparent)
+        const g = ctx.createLinearGradient(0, 0, -glowW, 0)
+        g.addColorStop(0,                          `rgba(180,230,255,${(bright * 0.9).toFixed(3)})`)
+        g.addColorStop(Math.min(0.99, 6 / glowW * 0.6), `rgba(100,170,255,${(bright * 0.35).toFixed(3)})`)
+        g.addColorStop(1,                          'rgba(60,120,255,0)')
         ctx.fillStyle = g
-        ctx.fillRect(-TILE, 0, TILE, TILE)
+        ctx.fillRect(-glowW, 0, glowW, TILE)
       }
 
-      // Top tile: row DOOR_R, col DOOR_C. Hinge at top-right. Swings up (counter-clockwise).
+      // Top tile: hinge at top-right (wallX+TILE, gapY1). Swings counter-clockwise (up).
       ctx.save()
       ctx.translate(wallX + TILE, gapY1)
       ctx.rotate(-angle)
       drawWallGlowTile()
       ctx.restore()
 
-      // Bottom tile: row DOOR_R+1, col DOOR_C. Hinge at bottom-right. Swings down (clockwise).
+      // Bottom tile: hinge at bottom-right (wallX+TILE, gapY2). Swings clockwise (down).
       ctx.save()
       ctx.translate(wallX + TILE, gapY2)
       ctx.rotate(angle)
@@ -190,7 +192,7 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
 
     function render(npcNear, mirrorNear, mirror2Near) {
       const cw = ctx.canvas.width, ch = ctx.canvas.height
-      const pcx = player.x + 8, pcy = player.y + 8
+      const pcxCurrent = player.x + 8, pcyCurrent = player.y + 8
 
       ctx.fillStyle = '#06040e'
       ctx.fillRect(0, 0, cw, ch)
@@ -199,19 +201,17 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
       ctx.save()
       ctx.translate(cw / 2, ch / 2)
       ctx.scale(DRAW_SCALE, DRAW_SCALE)
-      ctx.translate(-pcx, -pcy)
+      ctx.translate(-pcxCurrent, -pcyCurrent)
 
-      drawProximityAura(ctx, NPC_CX,     NPC_CY,     pcx, pcy, 64, '96,232,255')   // NPC — cyan
-      drawProximityAura(ctx, MIRROR_CX,  MIRROR_CY,  pcx, pcy, 56, '168,85,247')  // Mirror 1 — purple
-      drawProximityAura(ctx, MIRROR2_CX, MIRROR2_CY, pcx, pcy, 56, '168,85,247')  // Mirror 2 — purple
+      drawProximityAura(ctx, NPC_CX,     NPC_CY,     pcxCurrent, pcyCurrent, 64, '96,232,255')   // NPC — cyan
+      drawProximityAura(ctx, MIRROR_CX,  MIRROR_CY,  pcxCurrent, pcyCurrent, 56, '168,85,247')  // Mirror 1 — purple
+      drawProximityAura(ctx, MIRROR2_CX, MIRROR2_CY, pcxCurrent, pcyCurrent, 56, '168,85,247')  // Mirror 2 — purple
 
       drawRoom(ctx, map, torchPhase)
-      // TORCHES[0] = top torch, lit by name; TORCHES[1] = bottom torch, lit by colors
-      drawTorch(ctx, TORCHES[0].c, TORCHES[0].r, torchPhase, !!nameSetRef?.current)
-      drawTorch(ctx, TORCHES[1].c, TORCHES[1].r, torchPhase, !!colorsSetRef?.current)
+      drawDoorCorridor(doorProgress, pcxCurrent, pcyCurrent)
 
       // Mirror 1 reflection data
-      const mirrorDist  = Math.hypot(pcx - MIRROR_CX, pcy - MIRROR_CY)
+      const mirrorDist  = Math.hypot(pcxCurrent - MIRROR_CX, pcyCurrent - MIRROR_CY)
       const reflAlpha   = Math.max(0, Math.min(1, (64 - mirrorDist) / 44))
       const reflection  = reflAlpha > 0.02 ? {
         facing: player.facing, frame: player.frame,
@@ -222,7 +222,7 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
       } : null
 
       // Mirror 2 reflection data
-      const mirror2Dist  = Math.hypot(pcx - MIRROR2_CX, pcy - MIRROR2_CY)
+      const mirror2Dist  = Math.hypot(pcxCurrent - MIRROR2_CX, pcyCurrent - MIRROR2_CY)
       const refl2Alpha   = Math.max(0, Math.min(1, (64 - mirror2Dist) / 44))
       const reflection2  = refl2Alpha > 0.02 ? {
         facing: player.facing, frame: player.frame,
@@ -240,7 +240,7 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
         drawMirror(ctx, MIRROR2_TX, MIRROR2_TY, torchPhase, reflection2)
       }
       if (TABLE_Y + 12 < player.y + 8) {
-        const tableDist = Math.hypot(pcx - TABLE_CX, pcy - TABLE_CY)
+        const tableDist = Math.hypot(pcxCurrent - TABLE_CX, pcyCurrent - TABLE_CY)
         const tableAlpha = Math.max(0, Math.min(1, (48 - tableDist) / 36))
         drawTable(ctx, torchPhase, TABLE_X, TABLE_Y, tableAlpha)
       }
@@ -258,7 +258,7 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
         drawMirror(ctx, MIRROR2_TX, MIRROR2_TY, torchPhase, reflection2)
       }
       if (TABLE_Y + 12 >= player.y + 8) {
-        const tableDist = Math.hypot(pcx - TABLE_CX, pcy - TABLE_CY)
+        const tableDist = Math.hypot(pcxCurrent - TABLE_CX, pcyCurrent - TABLE_CY)
         const tableAlpha = Math.max(0, Math.min(1, (48 - tableDist) / 36))
         drawTable(ctx, torchPhase, TABLE_X, TABLE_Y, tableAlpha)
       }
@@ -269,20 +269,11 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
         if (mirror2Near) badge(MIRROR2_CX, MIRROR2_TY - 4, '[MIR]')
       }
 
-      // Clip right wall of left room to exclude the door tile rows while animating
-      if (doorProgress > 0) {
-        ctx.save()
-        ctx.beginPath()
-        ctx.rect(0, 0, wallX + TILE, gapY1)
-        ctx.rect(0, gapY2, wallX + TILE, ROOM_H * TILE - gapY2)
-        ctx.rect(wallX + TILE, 0, 9999, ROOM_H * TILE)
-        ctx.clip()
-        drawBoundsOfLight(ctx, ROOMS, torchPhase, pcx, pcy)
-        ctx.restore()
-      } else {
-        drawBoundsOfLight(ctx, ROOMS, torchPhase, pcx, pcy)
-      }
-      drawDoorCorridor(doorProgress)
+      const gap = doorProgress > 0 ? { y1: gapY1, y2: gapY2 } : null
+      drawBoundsOfLight(ctx, ROOMS, torchPhase, pcxCurrent, pcyCurrent, gap)
+      // Torches drawn after wall glow so they show on top
+      drawTorch(ctx, TORCHES[0].c, TORCHES[0].r, torchPhase, !!nameSetRef?.current)
+      drawTorch(ctx, TORCHES[1].c, TORCHES[1].r, torchPhase, !!colorsSetRef?.current)
 
       ctx.restore()
     }

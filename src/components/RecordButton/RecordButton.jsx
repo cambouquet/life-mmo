@@ -1,6 +1,6 @@
 import './RecordButton.scss'
 
-export default function RecordButton({ status, progress, recordingCount, onRecord, onStop, onOpenGallery }) {
+export default function RecordButton({ status, progress, recordingCount, onRecord, onRecordGate, onStop, onOpenGallery }) {
   const isRecording  = status === 'recording'
   const isConverting = status === 'converting'
   const busy         = isRecording || isConverting
@@ -35,11 +35,21 @@ export default function RecordButton({ status, progress, recordingCount, onRecor
           onRecord()
         }}
         disabled={busy}
-        title={busy ? undefined : 'Record gameplay (MP4)'}
+        title={busy ? undefined : 'Record: mirror visit'}
         style={isConverting ? { '--prog': `${progress}%` } : undefined}
       >
         {recLabel()}
       </button>
+      {!busy && onRecordGate && (
+        <button
+          type="button"
+          className={`record-btn record-btn--${status} record-btn--gate`}
+          onClick={(e) => { e.stopPropagation(); onRecordGate() }}
+          title="Record: gate run"
+        >
+          ⬡
+        </button>
+      )}
       {busy && (
         <button className="record-btn record-btn--stop" onClick={onStop} title="Stop recording">
           ■

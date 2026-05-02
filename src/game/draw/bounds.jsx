@@ -63,10 +63,29 @@ function drawRoomBounds(ctx, rx, ry, rw, rh, pcx, pcy, phase) {
 }
 
 // rooms: array of { x, y, w, h } in world pixels
-export function drawBoundsOfLight(ctx, rooms, phase, pcx, pcy) {
+// rightWallGap: optional { y1, y2 } to skip the right-wall band of rooms[0] between those y coords
+export function drawBoundsOfLight(ctx, rooms, phase, pcx, pcy, rightWallGap) {
   ctx.save()
-  for (const room of rooms) {
-    drawRoomBounds(ctx, room.x, room.y, room.w, room.h, pcx, pcy, phase)
+  for (let i = 0; i < rooms.length; i++) {
+    const room = rooms[i]
+    if (i === 0 && rightWallGap) {
+      const { y1, y2 } = rightWallGap
+      // Draw the room twice: clipped above and below the gap, so the right-wall band is split
+      ctx.save()
+      ctx.beginPath()
+      ctx.rect(room.x, room.y, room.w, y1 - room.y)
+      ctx.clip()
+      drawRoomBounds(ctx, room.x, room.y, room.w, room.h, pcx, pcy, phase)
+      ctx.restore()
+      ctx.save()
+      ctx.beginPath()
+      ctx.rect(room.x, y2, room.w, room.y + room.h - y2)
+      ctx.clip()
+      drawRoomBounds(ctx, room.x, room.y, room.w, room.h, pcx, pcy, phase)
+      ctx.restore()
+    } else {
+      drawRoomBounds(ctx, room.x, room.y, room.w, room.h, pcx, pcy, phase)
+    }
   }
   ctx.restore()
 }

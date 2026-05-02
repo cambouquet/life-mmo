@@ -12,6 +12,7 @@ import DebugConsole          from './HUD/DebugConsole.jsx'
 import { useRecorder }       from '../playback/useRecorder.js'
 import { PlaybackEngine }    from '../playback/PlaybackEngine.js'
 import { mirrorVisit }       from '../playback/scenarios/mirrorVisit.js'
+import { gateRun }           from '../playback/scenarios/gateRun.js'
 
 const LS_COLORS = 'life-mmo-colors-v3'
 const LS_BIRTH  = 'life-mmo-birth'
@@ -145,6 +146,74 @@ export default function App() {
     engine.run(mirrorVisit)
   }, [recorder, charColors, birthData])
 
+  const handleRecordGate = useCallback(async () => {
+    let stream
+    try {
+      stream = await navigator.mediaDevices.getDisplayMedia({ video: { frameRate: 30 }, audio: false })
+    } catch (err) {
+      console.error('[record] screen capture denied:', err?.message)
+      return
+    }
+    console.action('▶ Record started — scenario: gateRun')
+    if (!recorder.start(stream)) return
+
+    const engine = new PlaybackEngine({
+      getPlayerPos:  () => gameRef.current?.playerPos() ?? { x: 0, y: 0 },
+      onOpenEditor:  () => {
+        console.action('⬡ Mirror opened')
+        setShowEditor(true)
+        setEditorPage(0)
+        recorder.updateOverlay({ showEditor: true })
+      },
+      onCloseEditor: () => {
+        console.action('⬡ Mirror closed')
+        setShowEditor(false)
+        setEditorPage(0)
+        recorder.updateOverlay({ showEditor: false })
+      },
+      onScrollEditor: (p) => {
+        setEditorPage(p)
+      },
+      onColorChange: (key, value) => {
+        console.action(`🎨 Color changed — ${key}: ${value}`)
+        setCharColors(prev => {
+          const next = { ...prev, [key]: value }
+          recorder.updateOverlay({ charColors: next })
+          return next
+        })
+      },
+      onSetName: (name) => {
+        console.action(`✏ Name set — ${name}`)
+        setCharName(name)
+        try { localStorage.setItem(LS_NAME, JSON.stringify(name)) } catch {}
+      },
+      onSaveMirror: (colors, name) => {
+        console.action('💾 Mirror saved')
+        setCharColors(prev => {
+          const merged = { ...prev, ...colors }
+          try { localStorage.setItem(LS_COLORS, JSON.stringify(merged)) } catch {}
+          recorder.updateOverlay({ charColors: merged, showEditor: false })
+          return merged
+        })
+        setCharName(name)
+        try { localStorage.setItem(LS_NAME, JSON.stringify(name)) } catch {}
+        setShowEditor(false)
+        setEditorPage(0)
+        setEditorLimited(false)
+      },
+      onComplete: () => {
+        console.action('✓ Scenario complete — converting in 1.5s')
+        setTimeout(() => {
+          const ts = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19)
+          recorder.stop(`gate-run_${ts}.mp4`)
+        }, 1500)
+      },
+    })
+
+    engineRef.current = engine
+    engine.run(gateRun)
+  }, [recorder])
+
   const handleStop = useCallback(() => {
     console.action('■ Recording stopped by user')
     engineRef.current?.abort()
@@ -259,6 +328,7 @@ export default function App() {
         progress={recorder.progress}
         recordingCount={recordings.length}
         onRecord={handleRecord}
+        onRecordGate={handleRecordGate}
         onStop={handleStop}
         onOpenGallery={() => setShowGallery(true)}
       />
