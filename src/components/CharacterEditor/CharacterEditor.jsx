@@ -178,17 +178,32 @@ function AstroSummary({ natalPlacements }) {
   return (
     <div className="char-editor-summary">
       <div className="char-editor-summary__planets">
-        {[['Sun', sunP], ['Moon', moonP], ['Asc', ascP]].map(([key, p]) => {
-          if (!p) return null
-          const color = ELEMENT_COLOR[SIGN_META[p.sign]?.element] ?? '#fff'
-          return (
-            <span key={key} className="char-editor-summary__planet" style={{ color }}>
-              <span className="char-editor-summary__glyph">{PLANET_GLYPHS[key === 'Asc' ? 'Ascendant' : key]}</span>
-              <span className="char-editor-summary__sign">{p.sign} {SIGN_GLYPHS[p.sign]}</span>
-              <span className="char-editor-summary__deg">{Math.floor(p.degrees)}°{Math.floor((p.degrees % 1) * 60)}'</span>
-            </span>
-          )
-        })}
+        <div className="char-editor-summary__row">
+          {[['Sun', sunP], ['Moon', moonP]].map(([key, p]) => {
+            if (!p) return null
+            const color = ELEMENT_COLOR[SIGN_META[p.sign]?.element] ?? '#fff'
+            return (
+              <span key={key} className="char-editor-summary__planet" style={{ color }}>
+                <span className="char-editor-summary__glyph">{PLANET_GLYPHS[key]}</span>
+                <span className="char-editor-summary__sign">{p.sign} {SIGN_GLYPHS[p.sign]}</span>
+                <span className="char-editor-summary__deg">{Math.floor(p.degrees)}°{Math.floor((p.degrees % 1) * 60)}'</span>
+              </span>
+            )
+          })}
+        </div>
+        <div className="char-editor-summary__row">
+          {[['Asc', ascP]].map(([key, p]) => {
+            if (!p) return null
+            const color = ELEMENT_COLOR[SIGN_META[p.sign]?.element] ?? '#fff'
+            return (
+              <span key={key} className="char-editor-summary__planet" style={{ color }}>
+                <span className="char-editor-summary__glyph">{PLANET_GLYPHS['Ascendant']}</span>
+                <span className="char-editor-summary__sign">{p.sign} {SIGN_GLYPHS[p.sign]}</span>
+                <span className="char-editor-summary__deg">{Math.floor(p.degrees)}°{Math.floor((p.degrees % 1) * 60)}'</span>
+              </span>
+            )
+          })}
+        </div>
       </div>
       {maxH && (
         <div className="char-editor-summary__stellium">

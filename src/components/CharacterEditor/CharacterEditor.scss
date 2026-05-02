@@ -541,8 +541,15 @@
 
   &__planets {
     display: flex;
-    gap: 3px 10px;
-    flex-wrap: wrap;
+    flex-direction: column;
+    gap: 4px;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__row {
+    display: flex;
+    gap: 12px;
     align-items: center;
     justify-content: center;
   }
