@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { TILE, DRAW_SCALE, SPEED, buildMap, LEFT_W, TOTAL_H, GAP_W, RIGHT_W, ROOM_H } from '../game/constants.jsx'
+import { TILE, DRAW_SCALE, SPEED, buildMap, LEFT_W, TOTAL_H, GAP_W, MID_W, MID_START, RIGHT_W, ROOM_H } from '../game/constants.jsx'
 import { movePlayer }                from '../game/collision.jsx'
 import { initInput, inputDir, isKeyDown } from '../game/input.jsx'
 import { drawRoom }                  from '../game/draw/room.jsx'
@@ -32,19 +32,26 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
     ctx.imageSmoothingEnabled = false
 
     // Build map — returns tile grid + key object coords
-    const { map, mirrorC, mirrorR, tableC, tableR } = buildMap()
+    const { map, mirrorC, mirrorR, mirror2C, mirror2R, tableC, tableR } = buildMap()
 
     // Room rects in world pixels — used for per-room bounds-of-light
     const ROOMS = [
-      { x: 0,                          y: 0, w: LEFT_W * TILE,  h: ROOM_H * TILE },
-      { x: (LEFT_W + GAP_W) * TILE,    y: 0, w: RIGHT_W * TILE, h: ROOM_H * TILE },
+      { x: 0,                              y: 0, w: LEFT_W * TILE, h: ROOM_H * TILE },
+      { x: MID_START * TILE,               y: 0, w: MID_W * TILE,  h: ROOM_H * TILE },
+      { x: (MID_START + MID_W + GAP_W) * TILE, y: 0, w: RIGHT_W * TILE, h: ROOM_H * TILE },
     ]
 
-    // Mirror: 2 tiles wide at (mirrorC, mirrorR); sprite is 32px wide
+    // Mirror 1 (left room): 2 tiles wide at (mirrorC, mirrorR); sprite is 32px wide
     const MIRROR_TX = mirrorC * TILE
     const MIRROR_TY = mirrorR * TILE
-    const MIRROR_CX = MIRROR_TX + 16   // center of 32px sprite
+    const MIRROR_CX = MIRROR_TX + 16
     const MIRROR_CY = MIRROR_TY + 16
+
+    // Mirror 2 (mid room)
+    const MIRROR2_TX = mirror2C * TILE
+    const MIRROR2_TY = mirror2R * TILE
+    const MIRROR2_CX = MIRROR2_TX + 16
+    const MIRROR2_CY = MIRROR2_TY + 16
 
     // Player spawn: pixel-align so body center (x+9) lands on MIRROR_CX
     const pcStartX = MIRROR_CX - 9
@@ -94,6 +101,12 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
       return dx * dx + dy * dy < 32 * 32
     }
 
+    function nearMirror2() {
+      const px = player.x + TILE / 2, py = player.y + TILE / 2
+      const dx = px - MIRROR2_CX, dy = py - MIRROR2_CY
+      return dx * dx + dy * dy < 32 * 32
+    }
+
     function badge(bx, by, label = '[SPC]') {
       const pulse = Math.sin(torchPhase * 2.5) * 0.18 + 0.82
       ctx.save()
@@ -111,7 +124,7 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
       ctx.restore()
     }
 
-    function render(npcNear, mirrorNear) {
+    function render(npcNear, mirrorNear, mirror2Near) {
       const cw = ctx.canvas.width, ch = ctx.canvas.height
       const pcx = player.x + 8, pcy = player.y + 8
 
@@ -124,12 +137,13 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
       ctx.scale(DRAW_SCALE, DRAW_SCALE)
       ctx.translate(-pcx, -pcy)
 
-      drawProximityAura(ctx, NPC_CX,    NPC_CY,    pcx, pcy, 64, '96,232,255')   // NPC — cyan
-      drawProximityAura(ctx, MIRROR_CX, MIRROR_CY, pcx, pcy, 56, '168,85,247')  // Mirror — purple
+      drawProximityAura(ctx, NPC_CX,     NPC_CY,     pcx, pcy, 64, '96,232,255')   // NPC — cyan
+      drawProximityAura(ctx, MIRROR_CX,  MIRROR_CY,  pcx, pcy, 56, '168,85,247')  // Mirror 1 — purple
+      drawProximityAura(ctx, MIRROR2_CX, MIRROR2_CY, pcx, pcy, 56, '168,85,247')  // Mirror 2 — purple
 
       drawRoom(ctx, map, torchPhase)
 
-      // Mirror reflection data
+      // Mirror 1 reflection data
       const mirrorDist  = Math.hypot(pcx - MIRROR_CX, pcy - MIRROR_CY)
       const reflAlpha   = Math.max(0, Math.min(1, (64 - mirrorDist) / 44))
       const reflection  = reflAlpha > 0.02 ? {
@@ -140,9 +154,23 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
         y: player.y,
       } : null
 
+      // Mirror 2 reflection data
+      const mirror2Dist  = Math.hypot(pcx - MIRROR2_CX, pcy - MIRROR2_CY)
+      const refl2Alpha   = Math.max(0, Math.min(1, (64 - mirror2Dist) / 44))
+      const reflection2  = refl2Alpha > 0.02 ? {
+        facing: player.facing, frame: player.frame,
+        colors: charColorsRef.current, moving: player.moving,
+        alpha:  refl2Alpha,
+        x: player.x,
+        y: player.y,
+      } : null
+
       // Depth sort: draw objects behind the player first
       if (MIRROR_TY + 32 < player.y + 8) {
-        drawMirror(ctx, MIRROR_TX, MIRROR_TY, torchPhase, reflection)
+        drawMirror(ctx, MIRROR_TX, MIRROR_TY, torchPhase, reflection, true)
+      }
+      if (MIRROR2_TY + 32 < player.y + 8) {
+        drawMirror(ctx, MIRROR2_TX, MIRROR2_TY, torchPhase, reflection2)
       }
       if (TABLE_Y + 12 < player.y + 8) {
         const tableDist = Math.hypot(pcx - TABLE_CX, pcy - TABLE_CY)
@@ -157,7 +185,10 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
 
       // Foreground objects in front of the player
       if (MIRROR_TY + 32 >= player.y + 8) {
-        drawMirror(ctx, MIRROR_TX, MIRROR_TY, torchPhase, reflection)
+        drawMirror(ctx, MIRROR_TX, MIRROR_TY, torchPhase, reflection, true)
+      }
+      if (MIRROR2_TY + 32 >= player.y + 8) {
+        drawMirror(ctx, MIRROR2_TX, MIRROR2_TY, torchPhase, reflection2)
       }
       if (TABLE_Y + 12 >= player.y + 8) {
         const tableDist = Math.hypot(pcx - TABLE_CX, pcy - TABLE_CY)
@@ -168,6 +199,7 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
       if (!pausedRef.current) {
         if (npcNear) badge(NPC_CX, NPC_Y - 2)
         if (mirrorNear) badge(MIRROR_CX, MIRROR_TY - 4, '[MIR]')
+        if (mirror2Near) badge(MIRROR2_CX, MIRROR2_TY - 4, '[MIR]')
       }
 
       drawBoundsOfLight(ctx, ROOMS, torchPhase, pcx, pcy)
@@ -181,8 +213,9 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
       torchPhase += dt * 4.5
       if (playerRef) playerRef.current = player
 
-      const npcNear    = nearNpc()
-      const mirrorNear = nearMirror()
+      const npcNear     = nearNpc()
+      const mirrorNear  = nearMirror()
+      const mirror2Near = nearMirror2()
 
       if (!pausedRef.current) {
         const { dx, dy } = inputDir()
@@ -232,11 +265,15 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
 
         // Interact
         const spaceNow = isKeyDown('Space')
-        if (spaceNow && !prevSpace && (npcNear || mirrorNear)) {
+        if (spaceNow && !prevSpace && (npcNear || mirrorNear || mirror2Near)) {
           if (mirrorNear) {
             mirrorOpened = true
             guidance = null
-            onInteractRef.current?.('mirror')
+            onInteractRef.current?.('mirror1')
+          } else if (mirror2Near) {
+            mirrorOpened = true
+            guidance = null
+            onInteractRef.current?.('mirror2')
           } else {
             onInteractRef.current?.('npc')
           }
@@ -249,7 +286,7 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
         prevSpace = spaceNow
       }
 
-      render(npcNear, mirrorNear)
+      render(npcNear, mirrorNear, mirror2Near)
       rafId = requestAnimationFrame(loop)
     }
 

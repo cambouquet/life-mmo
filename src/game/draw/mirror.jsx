@@ -2,15 +2,17 @@ import { drawWarriorSprite } from './warrior.jsx'
 
 // x, y = top-left of the mirror (MIRROR_C * TILE, (MIRROR_R - 1) * TILE)
 // reflection = { facing, frame, colors, moving, alpha, y } — null when player is far
-export function drawMirror(ctx, x, y, phase, reflection) {
-  const W = 24, H = 40
+// small = true → draw a compact 16×24 mirror instead of the full 24×40
+export function drawMirror(ctx, x, y, phase, reflection, small = false) {
+  const W = small ? 16 : 24
+  const H = small ? 24 : 40
 
   const b = (ox, oy, w, h, c) => { ctx.fillStyle = c; ctx.fillRect(x+ox, y+oy, w, h) }
   const p = (ox, oy, c)       => { ctx.fillStyle = c; ctx.fillRect(x+ox, y+oy, 1, 1) }
 
-  // Draw at modified x,y to center it slightly over tiles
-  const drawX = x + 4
-  const drawY = y - 12
+  // Center over tiles — shift inward so the mirror stays visually centered
+  const drawX = x + (small ? 8 : 4)
+  const drawY = y + (small ? -4 : -12)
 
   // Glass base
   ctx.fillStyle = '#0d0b1e'

@@ -9,19 +9,22 @@ export const H     = ROWS * TILE;   // 224
 export const SPEED = 80;            // px/s (logical)
 
 // ── Room layout ───────────────────────────────────────────────────────────────
-// Two fully separate rooms with a void gap between them:
-//   Left room  (start): cols 0..LEFT_W-1              — player + mirror
-//   Gap (void):         cols LEFT_W..LEFT_W+GAP_W-1   — impassable void
-//   Right room (side):  cols LEFT_W+GAP_W..TOTAL_W-1  — elf + table
+// Three fully separate rooms with void gaps between them:
+//   Left room  (start): cols 0..LEFT_W-1                         — player + mirror
+//   Gap (void):         cols LEFT_W..LEFT_W+GAP_W-1              — impassable void
+//   Mid room:           cols LEFT_W+GAP_W..LEFT_W+GAP_W+MID_W-1  — mirror
+//   Gap2 (void):        cols MID_START+MID_W..MID_START+MID_W+GAP_W-1
+//   Right room (side):  cols RIGHT_START..TOTAL_W-1              — elf + table
 // Each room has its own complete set of walls. No shared wall.
-// Doors will open later.
 export const LEFT_W  = 16   // left room width in tiles
 export const GAP_W   = 4    // void gap between rooms
+export const MID_W   = 14   // middle room width in tiles
 export const RIGHT_W = 14   // right room width in tiles
 export const ROOM_H  = 14   // shared height in tiles
-export const TOTAL_W = LEFT_W + GAP_W + RIGHT_W
+export const MID_START   = LEFT_W + GAP_W
+export const RIGHT_START = MID_START + MID_W + GAP_W
+export const TOTAL_W = LEFT_W + GAP_W + MID_W + GAP_W + RIGHT_W
 export const TOTAL_H = ROOM_H
-export const RIGHT_START = LEFT_W + GAP_W   // first col of right room
 
 // ── Room tile map  (0=floor, 1=wall, 2=door gap, 3=table, 4=mirror) ───────────
 export function buildMap() {
@@ -33,32 +36,40 @@ export function buildMap() {
     map[r] = []
     for (let c = 0; c < cols; c++) {
       const inLeft  = c < LEFT_W
+      const inMid   = c >= MID_START && c < MID_START + MID_W
       const inRight = c >= RIGHT_START && c < RIGHT_START + RIGHT_W
 
       if (inLeft) {
         const edge = r === 0 || r === rows - 1 || c === 0 || c === LEFT_W - 1
+        map[r][c] = edge ? 1 : 0
+      } else if (inMid) {
+        const lc = c - MID_START
+        const edge = r === 0 || r === rows - 1 || lc === 0 || lc === MID_W - 1
         map[r][c] = edge ? 1 : 0
       } else if (inRight) {
         const lc = c - RIGHT_START
         const edge = r === 0 || r === rows - 1 || lc === 0 || lc === RIGHT_W - 1
         map[r][c] = edge ? 1 : 0
       } else {
-        map[r][c] = 5   // void gap — impassable but renders as pure dark void
+        map[r][c] = 5   // void gap — impassable
       }
     }
   }
 
-  // Mirror — 2 tiles wide, centered at top of left room (row 1)
-  // Interior is cols 1..(LEFT_W-2). Center of interior = LEFT_W/2 - 0.5 tiles.
-  // Mirror center (px) = mirrorC*TILE + TILE = (mirrorC+1)*TILE
-  // Player center (px) = playerC*TILE + TILE/2
-  // They align when mirrorC = floor(LEFT_W/2) - 1  and  playerC = mirrorC + 1
-  const mirrorC = Math.floor(LEFT_W / 2) - 1   // col 7  → mirror spans cols 7-8, center at px 128
+  // Left room mirror — 2 tiles wide, centered at top of left room (row 1)
+  const mirrorC = Math.floor(LEFT_W / 2) - 1   // col 7
   const mirrorR = 1
-  // Sprite draws at y-12 with H=40, covering ~2 tile rows visually — mark both solid
   for (let dr = 0; dr <= 1; dr++) {
     map[mirrorR + dr][mirrorC]     = 4
     map[mirrorR + dr][mirrorC + 1] = 4
+  }
+
+  // Mid room mirror — 2 tiles wide, centered at top of mid room (row 1)
+  const mirror2C = MID_START + Math.floor(MID_W / 2) - 1
+  const mirror2R = 1
+  for (let dr = 0; dr <= 1; dr++) {
+    map[mirror2R + dr][mirror2C]     = 4
+    map[mirror2R + dr][mirror2C + 1] = 4
   }
 
   // Divination table — 2 tiles wide, in right room interior
@@ -67,15 +78,21 @@ export function buildMap() {
   map[tableR][tableC]     = 3
   map[tableR][tableC + 1] = 3
 
-  return { map, mirrorC, mirrorR, tableC, tableR }
+  return { map, mirrorC, mirrorR, mirror2C, mirror2R, tableC, tableR }
 }
 
 // ── Torch positions ───────────────────────────────────────────────────────────
 export const TORCHES = [
+  // Left room
   { c: 3,          r: 0 },
   { c: LEFT_W - 4, r: 0 },
   { c: 0,          r: Math.floor(ROOM_H / 2) },
   { c: LEFT_W - 1, r: Math.floor(ROOM_H / 2) },
+  // Mid room
+  { c: MID_START + 2,        r: 0 },
+  { c: MID_START + MID_W - 3, r: 0 },
+  { c: MID_START,             r: Math.floor(ROOM_H / 2) },
+  { c: MID_START + MID_W - 1, r: Math.floor(ROOM_H / 2) },
 ]
 
 // ── Colour palettes (defined in palette.js) ───────────────────────────────────

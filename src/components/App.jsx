@@ -15,6 +15,7 @@ import { mirrorVisit }       from '../playback/scenarios/mirrorVisit.js'
 
 const LS_COLORS = 'life-mmo-colors-v3'
 const LS_BIRTH  = 'life-mmo-birth'
+const LS_NAME   = 'life-mmo-name'
 
 const DEFAULT_COLORS = { hair: '#ffffff', skin: '#ffffff', eyes: '#ffffff', outfit: '#ffffff', stick: '#ffffff' }
 const DEFAULT_BIRTH = {
@@ -40,10 +41,12 @@ export default function App() {
   const [showHoroscope, setShowHoroscope] = useState(false)
   const [showEditor,    setShowEditor]    = useState(false)
   const [editorPage,    setEditorPage]    = useState(0)
+  const [editorLimited, setEditorLimited] = useState(false)
   const [showGallery,   setShowGallery]   = useState(false)
   const [recordings,    setRecordings]    = useState([])
   const [charColors,    setCharColors]    = useState(() => load(LS_COLORS, DEFAULT_COLORS))
   const [birthData,     setBirthData]     = useState(() => load(LS_BIRTH,  DEFAULT_BIRTH))
+  const [charName,      setCharName]      = useState(() => load(LS_NAME,   null))
 
   const wrapRef        = useViewportScale()
   const gameRef        = useRef(null)
@@ -70,8 +73,15 @@ export default function App() {
       setShowEditor(false)
       setEditorPage(0)
     }
-    else if (target === 'mirror') {
+    else if (target === 'mirror1') {
+      console.action('Opening Mirror (limited)')
+      setEditorLimited(true)
+      setShowEditor(true)
+      setEditorPage(0)
+    }
+    else if (target === 'mirror2') {
       console.action('Opening Mirror')
+      setEditorLimited(false)
       setShowEditor(true)
       setEditorPage(0)
     }
@@ -167,11 +177,14 @@ export default function App() {
         <CharacterEditor
           initialColors={charColors}
           initialBirthData={birthData}
+          initialName={charName}
           scrollPage={editorPage}
+          limited={editorLimited}
           onClose={() => {
             console.action('Closing Mirror')
             setShowEditor(false)
             setEditorPage(0)
+            setEditorLimited(false)
           }}
           onChange={(next) => {
             const keys = Object.keys(next)
@@ -179,14 +192,19 @@ export default function App() {
             if (changed) console.action(`Changing ${changed} to ${next[changed]}`)
             setCharColors(next)
           }}
-          onSave={(colors, data) => {
+          onSave={(colors, data, name) => {
             console.action('Saving character data')
             setCharColors(colors)
             setBirthData(data)
+            if (name != null) {
+              setCharName(name)
+              try { localStorage.setItem(LS_NAME, JSON.stringify(name)) } catch {}
+            }
             try { localStorage.setItem(LS_COLORS, JSON.stringify(colors)) } catch {}
             try { if (data) localStorage.setItem(LS_BIRTH, JSON.stringify(data)) } catch {}
             setShowEditor(false)
             setEditorPage(0)
+            setEditorLimited(false)
           }}
         />
       )}

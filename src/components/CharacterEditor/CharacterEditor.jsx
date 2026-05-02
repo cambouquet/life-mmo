@@ -244,9 +244,10 @@ function AstroSummary({ natalPlacements }) {
   )
 }
 
-export default function CharacterEditor({ initialColors, initialBirthData, scrollPage, onSave, onClose, onChange }) {
+export default function CharacterEditor({ initialColors, initialBirthData, initialName, scrollPage, limited, onSave, onClose, onChange }) {
   const modalRef   = useRef(null)
   const [activePage, setActivePage] = useState(0)
+  const [name, setName] = useState(initialName ?? '')
 
   // External control of scrolling for automation/playback
   useEffect(() => {
@@ -312,6 +313,8 @@ export default function CharacterEditor({ initialColors, initialBirthData, scrol
   const buildBirthData = () =>
     hasDate ? { date: dateStr, time: timeStr, city: birthCity } : null
 
+  const trimmedName = name.trim() || null
+
   useEffect(() => {
     // Wait for Space/Enter to be physically released before accepting them,
     // so the same keypress that opened the editor doesn't immediately confirm it.
@@ -322,7 +325,7 @@ export default function CharacterEditor({ initialColors, initialBirthData, scrol
       if (e.key === 'Enter' || e.key === ' ') {
         if (!ready) return
         e.preventDefault()
-        onSave(colorsRef.current, buildBirthData())
+        onSave(colorsRef.current, buildBirthData(), trimmedName)
       } else if (e.key === 'Escape') {
         onClose()
       } else if (e.key === 'ArrowRight') {
@@ -373,18 +376,32 @@ export default function CharacterEditor({ initialColors, initialBirthData, scrol
 
   return (
     <div className="char-editor-root">
-      <div className="char-editor-dots" aria-hidden="true">
-        {[0, 1].map(i => (
-          <span key={i} className={`char-editor-dot${activePage === i ? ' char-editor-dot--active' : ''}`} />
-        ))}
-      </div>
+      {!limited && (
+        <div className="char-editor-dots" aria-hidden="true">
+          {[0, 1].map(i => (
+            <span key={i} className={`char-editor-dot${activePage === i ? ' char-editor-dot--active' : ''}`} />
+          ))}
+        </div>
+      )}
       <div className="char-editor-modal" ref={modalRef}>
-      <div className={`char-editor-content${natalPlacements ? ' char-editor-content--wide' : ''}`}>
+      <div className={`char-editor-content${!limited && natalPlacements ? ' char-editor-content--wide' : ''}`}>
 
         {/* Page 1: character + colors + actions */}
         <div className="char-editor-preview">
           <CharacterTemplate colors={colors} scale={5} />
-          <div className="char-editor-preview-label">?</div>
+          {limited ? (
+            <input
+              className="char-editor-name-input"
+              type="text"
+              value={name}
+              onChange={e => setName(e.target.value)}
+              placeholder="Your name"
+              maxLength={24}
+              autoFocus
+            />
+          ) : (
+            <div className="char-editor-preview-label">{initialName || '?'}</div>
+          )}
           <div className="color-row">
             <div className="control-group">
               <input type="color" value={colors.hair}   onChange={e => updateColor('hair',   e.target.value)} />
@@ -408,57 +425,59 @@ export default function CharacterEditor({ initialColors, initialBirthData, scrol
             </div>
           </div>
           <div className="char-editor-actions">
-            <button className="btn-save" onClick={() => onSave(colors, buildBirthData())}>Embody</button>
+            <button className="btn-save" onClick={() => onSave(colors, buildBirthData(), trimmedName)}>Embody</button>
             <button className="btn-cancel" onClick={onClose}>Cancel</button>
           </div>
         </div>
 
-        {/* Page 2 (mobile) / column 2 (desktop): birth wheels */}
-        <div className="char-editor-astro">
-          <div className="birth-trio">
-            {/* Left: earth globe fills height */}
-            <div className="birth-trio__earth">
-              <EarthGlobe city={birthCity} size={160} />
-              <CitySearch value={birthCity} onChange={setBirthCity} />
-            </div>
-            {/* Right: time on left, date on right (exchanged) */}
-            <div className="birth-trio__pickers">
-              <div className="birth-trio__time">
-                <TimeWheel
-                  value={birthTime}
-                  onChange={v => {
-                    if (v.daysDiff) {
-                      const d = new Date(birthDate.year, birthDate.month - 1, birthDate.day)
-                      d.setDate(d.getDate() + v.daysDiff)
-                      setBirthDate({ day: d.getDate(), month: d.getMonth() + 1, year: d.getFullYear() })
-                    }
-                    setBirthTime({ hour: v.hour, minute: v.minute })
-                    setPreviewTime(null)
-                  }}
-                  onPreview={v => setPreviewTime(v)}
-                  size={160} />
+        {/* Page 2 (mobile) / column 2 (desktop): birth wheels — hidden in limited mode */}
+        {!limited && (
+          <div className="char-editor-astro">
+            <div className="birth-trio">
+              {/* Left: earth globe fills height */}
+              <div className="birth-trio__earth">
+                <EarthGlobe city={birthCity} size={160} />
+                <CitySearch value={birthCity} onChange={setBirthCity} />
               </div>
-              <div className="birth-trio__date">
-                <DateWheel
-                  value={birthDate}
-                  onChange={v => { setBirthDate(v); setHasDate(true); setPreviewDate(null) }}
-                  onPreview={v => setPreviewDate(v)}
-                  size={160} />
+              {/* Right: time on left, date on right (exchanged) */}
+              <div className="birth-trio__pickers">
+                <div className="birth-trio__time">
+                  <TimeWheel
+                    value={birthTime}
+                    onChange={v => {
+                      if (v.daysDiff) {
+                        const d = new Date(birthDate.year, birthDate.month - 1, birthDate.day)
+                        d.setDate(d.getDate() + v.daysDiff)
+                        setBirthDate({ day: d.getDate(), month: d.getMonth() + 1, year: d.getFullYear() })
+                      }
+                      setBirthTime({ hour: v.hour, minute: v.minute })
+                      setPreviewTime(null)
+                    }}
+                    onPreview={v => setPreviewTime(v)}
+                    size={160} />
+                </div>
+                <div className="birth-trio__date">
+                  <DateWheel
+                    value={birthDate}
+                    onChange={v => { setBirthDate(v); setHasDate(true); setPreviewDate(null) }}
+                    onPreview={v => setPreviewDate(v)}
+                    size={160} />
+                </div>
               </div>
             </div>
+
+            {/* Mobile only: wheel + summary inline on page 2 */}
+            {natalPlacements && (
+              <div className="char-editor-wheel char-editor-wheel--mobile-only">
+                <AstroSummary natalPlacements={natalPlacements} />
+                <HouseWheel placements={natalPlacements} houseCusps={houseCusps} size={220} hideStellium />
+              </div>
+            )}
           </div>
+        )}
 
-          {/* Mobile only: wheel + summary inline on page 2 */}
-          {natalPlacements && (
-            <div className="char-editor-wheel char-editor-wheel--mobile-only">
-              <AstroSummary natalPlacements={natalPlacements} />
-              <HouseWheel placements={natalPlacements} houseCusps={houseCusps} size={220} hideStellium />
-            </div>
-          )}
-        </div>{/* end char-editor-astro */}
-
-        {/* Column 3 (desktop only): natal chart summary + house wheel */}
-        {natalPlacements && (
+        {/* Column 3 (desktop only): natal chart summary + house wheel — hidden in limited mode */}
+        {!limited && natalPlacements && (
           <div className="char-editor-chart">
             <div className="char-editor-wheel">
               <AstroSummary natalPlacements={natalPlacements} />
