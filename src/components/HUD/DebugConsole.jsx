@@ -7,8 +7,30 @@ export default function DebugConsole() {
   const [isOpen,   setIsOpen]   = useState(false)
   const [logs,     setLogs]     = useState([])
   const [hidden,   setHidden]   = useState(new Set())   // categories currently filtered out
+  const [height,   setHeight]   = useState(380)         // adjustable height
   const scrollRef = useRef(null)
   const panelRef  = useRef(null)
+  const isResizingRef = useRef(false)
+
+  // Resizing logic
+  useEffect(() => {
+    const onMouseMove = (e) => {
+      if (!isResizingRef.current) return
+      const newHeight = window.innerHeight - e.clientY
+      setHeight(Math.max(100, Math.min(newHeight, window.innerHeight * 0.9)))
+    }
+    const onMouseUp = () => {
+      isResizingRef.current = false
+      document.body.style.cursor = 'default'
+      document.body.style.userSelect = 'auto'
+    }
+    window.addEventListener('mousemove', onMouseMove)
+    window.addEventListener('mouseup', onMouseUp)
+    return () => {
+      window.removeEventListener('mousemove', onMouseMove)
+      window.removeEventListener('mouseup', onMouseUp)
+    }
+  }, [])
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -124,7 +146,7 @@ export default function DebugConsole() {
   }
 
   return (
-    <div className="debug-container">
+    <div className="debug-container" style={{ '--debug-height': `${height}px` }}>
       {isOpen && (
         <div 
           ref={panelRef}
@@ -132,6 +154,15 @@ export default function DebugConsole() {
           tabIndex={0} 
           onKeyDown={handleKeyDown}
         >
+          <div 
+            className="debug-resize-handle" 
+            onMouseDown={(e) => {
+              e.preventDefault()
+              isResizingRef.current = true
+              document.body.style.cursor = 'ns-resize'
+              document.body.style.userSelect = 'none'
+            }}
+          />
           <div className="debug-header">
             <span>Debug</span>
             <div className="debug-filters">

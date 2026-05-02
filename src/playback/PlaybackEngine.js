@@ -62,14 +62,15 @@ async function walkTo(getPos, targetX, targetY, threshold, abortRef) {
 }
 
 export class PlaybackEngine {
-  constructor({ getPlayerPos, onOpenEditor, onCloseEditor, onColorChange, onComplete }) {
-    this._getPos      = getPlayerPos
-    this._openEditor  = onOpenEditor
-    this._closeEditor = onCloseEditor
-    this._colorChange = onColorChange
-    this._onComplete  = onComplete
-    this._running     = false
-    this._abortRef    = { current: false }
+  constructor({ getPlayerPos, onOpenEditor, onCloseEditor, onColorChange, onScrollEditor, onComplete }) {
+    this._getPos        = getPlayerPos
+    this._openEditor    = onOpenEditor
+    this._closeEditor   = onCloseEditor
+    this._colorChange   = onColorChange
+    this._scrollEditor  = onScrollEditor
+    this._onComplete    = onComplete
+    this._running       = false
+    this._abortRef      = { current: false }
   }
 
   abort() {
@@ -115,6 +116,13 @@ export class PlaybackEngine {
     console.action("Closing Mirror")
     this._closeEditor()
     await sleep(jitter(400, 0.15))
+  }
+
+  async scrollEditor(pageIndex) {
+    if (this._abortRef.current) return
+    console.action(`Scrolling editor to page ${pageIndex}`)
+    this._scrollEditor?.(pageIndex)
+    await sleep(jitter(1200, 0.2))
   }
 
   async changeColor(colorKey, hexValue) {

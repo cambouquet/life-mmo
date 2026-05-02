@@ -63,13 +63,19 @@ export async function mirrorVisit(engine) {
   await engine.changeColor('hair',   palette.hair)
   await engine.changeColor('outfit', palette.outfit)
   await engine.changeColor('eyes',   palette.eyes)
-  await engine.wait(1200)
+  await engine.wait(1500)
 
-  // 4. Close editor
+  // 4. Scroll to chart
+  await engine.scrollEditor(1)
+  await engine.wait(3000)
+
+  // 5. Scroll back and close
+  await engine.scrollEditor(0)
+  await engine.wait(1000)
   await engine.closeMirror()
   await engine.wait(600)
 
-  // 5. Step back to admire the transformation
+  // 6. Step back to admire the transformation
   await engine.moveTo(ADMIRE_X, ADMIRE_Y, 10)
   await engine.face('up')
   await engine.wait(3000)

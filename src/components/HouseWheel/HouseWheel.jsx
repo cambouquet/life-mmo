@@ -233,16 +233,28 @@ export function HouseWheel({ placements, houseCusps, size = 300, hideStellium })
                 const pDeg  = (pd.longitude - ascLong + 360) % 360
                 const [px, py] = polarToXY(pDeg, ringR)
                 const isPHov = hovered?.type === 'planet' && hovered.id === pName
+                const isPLocked = lockedPoint === pName
                 return (
                   <g key={pName}
-                     onMouseEnter={e => { e.stopPropagation(); setHovered({ type:'planet', id:pName, label:PLANET_NAMES[pName] ?? pName, summary:PLANET_SUMMARY[pName], glyph:PLANET_GLYPHS[pName], color:col }) }}
+                     onMouseEnter={e => {
+                       e.stopPropagation();
+                       setHovered({
+                         type:'planet',
+                         id:pName,
+                         label:PLANET_NAMES[pName] ?? pName,
+                         summary:PLANET_SUMMARY[pName],
+                         glyph:PLANET_GLYPHS[pName],
+                         color:col,
+                         desc: getInterpretation(pName) // Add interpretation even to hover
+                       })
+                     }}
                      onMouseLeave={() => setHovered(null)}
                      onClick={e => { e.stopPropagation(); setLockedPoint(lockedPoint === pName ? null : pName) }}
                      style={{ cursor:'pointer' }}>
-                    <circle cx={px} cy={py} r={isPHov ? 7 : 5}
-                      fill={`${col}${isPHov ? '33' : '15'}`}
-                      stroke={`${col}${isPHov ? '66' : '33'}`}
-                      strokeWidth={isPHov ? '1.5' : '0.5'} />
+                    <circle cx={px} cy={py} r={isPHov || isPLocked ? 7 : 5}
+                      fill={`${col}${isPHov || isPLocked ? '33' : '15'}`}
+                      stroke={`${col}${isPHov || isPLocked ? '66' : '33'}`}
+                      strokeWidth={isPHov || isPLocked ? '1.5' : '0.5'} />
                     <text x={px} y={py} textAnchor="middle" dominantBaseline="middle"
                       fontSize={isPHov ? 10 : 8} fill={col} fontWeight="900" style={{ pointerEvents:'none' }}>
                       {PLANET_GLYPHS[pName]}
@@ -274,17 +286,25 @@ export function HouseWheel({ placements, houseCusps, size = 300, hideStellium })
       </svg>
 
       {(lockedPoint || hovered) && (() => {
-        const active = hovered
-          ? hovered
-          : { type:'planet', id:lockedPoint, label:PLANET_NAMES[lockedPoint] ?? lockedPoint, glyph:PLANET_GLYPHS[lockedPoint],
+        const active = (hovered?.type === 'planet' && hovered.id === lockedPoint)
+          ? { ...hovered, locked: true }
+          : (hovered || {
+              type: 'planet',
+              id: lockedPoint,
+              label: PLANET_NAMES[lockedPoint] ?? lockedPoint,
+              glyph: PLANET_GLYPHS[lockedPoint],
               color: ELEMENT_COLOR[SIGN_META[placements[lockedPoint]?.sign]?.element] ?? '#fff',
-              desc: getInterpretation(lockedPoint), locked:true }
+              desc: getInterpretation(lockedPoint),
+              summary: PLANET_SUMMARY[lockedPoint],
+              locked: true
+            })
+
         return (
           <div style={{ padding:'10px 0 0', color:'#e8d4ff', fontFamily:'inherit', lineHeight:'1.5', width:'100%' }}>
             {active.type === 'planet' ? (<>
-              <div style={{ color:active.color, fontWeight:700, fontSize:13 }}>{active.glyph} {active.label}{active.locked && placements[active.id]?.sign ? (() => { const pd = placements[active.id]; const deg = Math.floor(pd.degrees); const theme = HOUSE_THEMES[pd.house]; return ` · ${pd.sign} ${deg}°${pd.house ? ` · H${pd.house}${theme ? ` (${theme})` : ''}` : ''}` })() : ''}</div>
-              <div style={{ fontSize:11, color:'rgba(232,212,255,0.6)', fontStyle:'italic', marginBottom: active.locked ? 4 : 0, lineHeight:'1.4' }}>{active.summary}</div>
-              {active.locked && <div style={{ fontSize:11, color:'rgba(232,212,255,0.8)', lineHeight:'1.5' }}>{active.desc}</div>}
+              <div style={{ color:active.color, fontWeight:700, fontSize:13 }}>{active.glyph} {active.label}{(active.locked || (lockedPoint === active.id)) && placements[active.id]?.sign ? (() => { const pd = placements[active.id]; const deg = Math.floor(pd.degrees); const theme = HOUSE_THEMES[pd.house]; return ` · ${pd.sign} ${deg}°${pd.house ? ` · H${pd.house}${theme ? ` (${theme})` : ''}` : ''}` })() : ''}</div>
+              <div style={{ fontSize:11, color:'rgba(232,212,255,0.6)', fontStyle:'italic', marginBottom: (active.locked || lockedPoint === active.id) ? 4 : 0, lineHeight:'1.4' }}>{active.summary}</div>
+              {(active.locked || lockedPoint === active.id) && <div style={{ fontSize:11, color:'rgba(232,212,255,0.8)', lineHeight:'1.5' }}>{active.desc}</div>}
             </>) : active.type === 'sign' ? (<>
               <div style={{ color:active.color, fontWeight:700, fontSize:13, marginBottom:4 }}>{active.label}</div>
               <div style={{ fontSize:11, color:'rgba(232,212,255,0.8)', lineHeight:'1.4' }}>{active.desc}</div>

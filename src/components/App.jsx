@@ -39,15 +39,17 @@ export default function App() {
   const [showDialog,    setShowDialog]    = useState(false)
   const [showHoroscope, setShowHoroscope] = useState(false)
   const [showEditor,    setShowEditor]    = useState(false)
+  const [editorPage,    setEditorPage]    = useState(0)
   const [showGallery,   setShowGallery]   = useState(false)
   const [recordings,    setRecordings]    = useState([])
   const [charColors,    setCharColors]    = useState(() => load(LS_COLORS, DEFAULT_COLORS))
   const [birthData,     setBirthData]     = useState(() => load(LS_BIRTH,  DEFAULT_BIRTH))
 
-  const wrapRef       = useViewportScale()
-  const gameRef       = useRef(null)
-  const uiOverlayRef  = useRef(null)
-  const engineRef     = useRef(null)
+  const wrapRef        = useViewportScale()
+  const gameRef        = useRef(null)
+  const uiOverlayRef   = useRef(null)
+  const engineRef      = useRef(null)
+  const playerStateRef = useRef(null)
   const recorder      = useRecorder({
     onReady: (blob, filename) => {
       const reader = new FileReader()
@@ -68,10 +70,14 @@ export default function App() {
 
   const handleInteract = useCallback((target) => {
     if (showHoroscope) setShowHoroscope(false)
-    else if (showEditor) setShowEditor(false)
+    else if (showEditor) {
+      setShowEditor(false)
+      setEditorPage(0)
+    }
     else if (target === 'mirror') {
       console.action('Opening Mirror')
       setShowEditor(true)
+      setEditorPage(0)
     }
     else if (target === 'npc' || !showDialog) setShowDialog(true)
   }, [showHoroscope, showDialog, showEditor])
@@ -93,12 +99,17 @@ export default function App() {
       onOpenEditor:  () => { 
         console.action('⬡ Mirror opened')
         setShowEditor(true) 
+        setEditorPage(0)
         recorder.updateOverlay({ showEditor: true })
       },
       onCloseEditor: () => { 
         console.action('⬡ Mirror closed')
         setShowEditor(false) 
+        setEditorPage(0)
         recorder.updateOverlay({ showEditor: false })
+      },
+      onScrollEditor: (p) => {
+        setEditorPage(p)
       },
       onColorChange: (key, value) => {
         console.action(`🎨 Color changed — ${key}: ${value}`)
@@ -134,25 +145,26 @@ export default function App() {
       <HUD facing={facing} moving={moving} logEntries={logEntries} charColors={charColors} />
       {!showEditor && (
         <div className="canvas-wrap">
-          <Game
-            ref={gameRef}
-            onStateChange={handleStateChange}
-            onInteract={handleInteract}
-            paused={showDialog || showHoroscope}
-            charColors={charColors}
-          />
-          <div className="ui-overlay" ref={uiOverlayRef}>
-            {!showDialog && !showHoroscope && <GuidanceVoice text={guidance} />}
+        <Game
+          ref={gameRef}
+          onStateChange={handleStateChange}
+          onInteract={handleInteract}
+          paused={showDialog || showHoroscope}
+          charColors={charColors}
+          playerStateRef={playerStateRef}
+        />
+        <div className="ui-overlay" ref={uiOverlayRef}>
+          {!showDialog && !showHoroscope && <GuidanceVoice text={guidance} />}
 
-            {showDialog && (
-              <DialogModal
-                onClose={() => setShowDialog(false)}
-                onHoroscope={() => { setShowDialog(false); setShowHoroscope(true) }}
-              />
-            )}
+          {showDialog && (
+            <DialogModal
+              onClose={() => setShowDialog(false)}
+              onHoroscope={() => { setShowDialog(false); setShowHoroscope(true) }}
+            />
+          )}
 
-            {showHoroscope && <HoroscopeModal birthData={birthData} onClose={() => setShowHoroscope(false)} />}
-          </div>
+          {showHoroscope && <HoroscopeModal birthData={birthData} onClose={() => setShowHoroscope(false)} />}
+        </div>
         </div>
       )}
 
@@ -160,9 +172,11 @@ export default function App() {
         <CharacterEditor
           initialColors={charColors}
           initialBirthData={birthData}
+          scrollPage={editorPage}
           onClose={() => {
             console.action('Closing Mirror')
             setShowEditor(false)
+            setEditorPage(0)
           }}
           onChange={(next) => {
             const keys = Object.keys(next)
@@ -177,6 +191,7 @@ export default function App() {
             try { localStorage.setItem(LS_COLORS, JSON.stringify(colors)) } catch {}
             try { if (data) localStorage.setItem(LS_BIRTH, JSON.stringify(data)) } catch {}
             setShowEditor(false)
+            setEditorPage(0)
           }}
         />
       )}

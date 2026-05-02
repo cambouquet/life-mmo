@@ -229,9 +229,17 @@ function AstroSummary({ natalPlacements }) {
   )
 }
 
-export default function CharacterEditor({ initialColors, initialBirthData, onSave, onClose, onChange }) {
+export default function CharacterEditor({ initialColors, initialBirthData, scrollPage, onSave, onClose, onChange }) {
   const modalRef   = useRef(null)
   const [activePage, setActivePage] = useState(0)
+
+  // External control of scrolling for automation/playback
+  useEffect(() => {
+    if (scrollPage !== undefined && modalRef.current) {
+      const el = modalRef.current
+      el.scrollTo({ left: scrollPage * el.clientWidth, behavior: 'smooth' })
+    }
+  }, [scrollPage])
 
   const [colors, setColors] = useState(initialColors || {
     hair:   '#6030d0',

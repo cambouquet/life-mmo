@@ -36,7 +36,7 @@ const GUIDANCE_IDLE = [
 
 function pick(arr) { return arr[Math.floor(Math.random() * arr.length)] }
 
-export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, charColors, playerRef }) {
+export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, charColors, playerRef, playerStateRef }) {
   const pausedRef     = useRef(paused)
   const onInteractRef = useRef(onInteract)
   const onStateRef    = useRef(onStateChange)
@@ -80,19 +80,20 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
     const MIRROR_CY = MIRROR_TY + 16                 // centre y
 
     const map    = buildMap(WORLD_COLS, WORLD_ROWS, MIRROR_C, MIRROR_R, tableC, tableR)
+    const saved  = playerStateRef?.current
     const player = {
-      x: pcStartC * TILE,
-      y: pcStartR * TILE,
+      x: saved?.x ?? pcStartC * TILE,
+      y: saved?.y ?? pcStartR * TILE,
       w: TILE, h: TILE,
       frame: 0, frameTick: 0,
-      facing: 'down', moving: false,
+      facing: saved?.facing ?? 'down', moving: false,
       jumpHeight: 0, jumpVel: 0, jumping: false,
     }
 
     let torchPhase  = 0
     let last        = 0
-    let prevShift   = false
-    let prevSpace   = false
+    let prevShift   = isKeyDown('ShiftLeft') || isKeyDown('ShiftRight')
+    let prevSpace   = isKeyDown('Space')
     let idleTime       = 0
     let guidanceTimer  = 16
     let guidance       = null
@@ -291,6 +292,10 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
     }
 
     let rafId = requestAnimationFrame(loop)
-    return () => { cleanupInput(); cancelAnimationFrame(rafId) }
+    return () => {
+      cleanupInput()
+      cancelAnimationFrame(rafId)
+      if (playerStateRef) playerStateRef.current = { x: player.x, y: player.y, facing: player.facing }
+    }
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 }
