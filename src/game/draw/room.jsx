@@ -1,6 +1,3 @@
-// Soft elliptical aura — drawn beneath a character sprite.
-// rgb: comma-separated r,g,b string  e.g. '140,32,220'
-// alpha: 0-1 centre opacity   rx/ry: ellipse radii in logical pixels
 export function drawAura(ctx, cx, cy, rgb, alpha, rx, ry) {
   ctx.save()
   ctx.translate(Math.floor(cx), Math.floor(cy))
@@ -31,37 +28,37 @@ export function drawShadow(ctx, x, y, jumpFactor = 0) {
 
 const TILE = 16
 
-// Draws the full room tile-by-tile from the map array
-export function drawRoom(ctx, map, phase = 0) {
-  const rows = map.length
-  const cols = map[0]?.length ?? 0
+// Spritesheet color palettes indexed by (ss, row)
+// These must match the colors used in generate-spritesheets.mjs
+const FLOOR_COLORS = ['#0e0b1a', '#0b0917', '#06040e', '#0e0b1a']
+const WALL_COLORS  = ['#0c0a14', '#1e1a38', '#100e1c', '#0e0c1c']
+
+function floorColor(row) { return FLOOR_COLORS[row] ?? '#0e0b1a' }
+function wallColor(row)  { return WALL_COLORS[row]  ?? '#0c0a14' }
+
+// Draws the full world tile-by-tile from map layer data.
+// layers:  { ground, walls, objects } — 2D grids of { ss, row, variant } | null
+// collMap: 2D collision array (0=floor, 1=wall, 5=void, 6=door-open)
+export function drawRoom(ctx, layers, collMap) {
+  const rows = layers.height
+  const cols = layers.width
 
   for (let r = 0; r < rows; r++) {
     for (let c = 0; c < cols; c++) {
-      const t  = map[r][c]
       const px = c * TILE
       const py = r * TILE
+      const coll = collMap[r]?.[c] ?? 5
 
-      if (t === 1 || t === 5) {
-        // Wall and void tiles — no draw, handled by drawBoundsOfLight per room
-      } else if (t === 6) {
-        // Door opening — render as floor (corridor drawn separately)
-        ctx.fillStyle = c % 2 === r % 2 ? '#0e0b1a' : '#0b0917'
-        ctx.fillRect(px, py, TILE, TILE)
-      } else if (t === 4) {
-        // Mirror backing — drawMirror() in the game loop paints the full 32×32 visual on top
-        ctx.fillStyle = '#07060e'
-        ctx.fillRect(px, py, TILE, TILE)
-      } else if (t === 3) {
-        // Table tile (already handled by drawTable in game loop, but needs background here)
-        ctx.fillStyle = c % 2 === r % 2 ? '#0e0b1a' : '#0b0917'
-        ctx.fillRect(px, py, TILE, TILE)
-      } else {
-        // Floor tile — subtle checkerboard to show room boundaries
-        ctx.fillStyle = c % 2 === r % 2 ? '#0e0b1a' : '#0b0917'
-        ctx.fillRect(px, py, TILE, TILE)
-      }
+      // Skip void (walls/bounds-of-light handles those tiles)
+      if (coll === 5 || coll === 1) continue
+
+      const groundPixel = layers.ground[r]?.[c]
+      const color = groundPixel
+        ? floorColor(groundPixel.row)
+        : '#0e0b1a'
+
+      ctx.fillStyle = color
+      ctx.fillRect(px, py, TILE, TILE)
     }
   }
 }
-

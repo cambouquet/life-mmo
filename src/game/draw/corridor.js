@@ -1,45 +1,61 @@
 import { TILE, DOOR_H, GAP_W } from '../constants.jsx'
 
-export function drawDoorCorridor(ctx, progress, wallX, gapY1, gapY2) {
+// flip=false: wall is on the left, hinge on right, tiles swing rightward into gap (door 1)
+// flip=true:  wall is on the right, hinge on left, tiles swing leftward into gap (door 2)
+export function drawDoorCorridor(ctx, progress, wallX, gapY1, gapY2, flip = false) {
   if (progress <= 0) return
 
-  const eased  = 1 - Math.pow(1 - progress, 2)
-  const angle  = (Math.PI / 2) * eased
-  const doorC  = wallX / TILE
-  const doorR  = gapY1 / TILE
+  const eased = 1 - Math.pow(1 - progress, 2)
+  const angle = (Math.PI / 2) * eased
+  const doorC = wallX / TILE
+  const doorR = gapY1 / TILE
 
-  // Corridor floor tiles — fade in as door opens
+  // Corridor floor tiles
   ctx.save()
   ctx.globalAlpha = progress
   for (let col = 1; col <= GAP_W; col++) {
     for (let row = doorR; row < doorR + DOOR_H; row++) {
-      ctx.fillStyle = (col + row) % 2 === 0 ? '#0e0b1a' : '#0b0917'
-      ctx.fillRect((doorC + col) * TILE, row * TILE, TILE, TILE)
+      const c = flip ? doorC - col : doorC + col
+      ctx.fillStyle = (c + row) % 2 === 0 ? '#0e0b1a' : '#0b0917'
+      ctx.fillRect(c * TILE, row * TILE, TILE, TILE)
     }
   }
   ctx.restore()
 
-  function drawWallGlowTile() {
-    const g = ctx.createLinearGradient(0, 0, -TILE, 0)
-    g.addColorStop(0,    'rgba(180,230,255,0.162)')
-    g.addColorStop(0.15, 'rgba(100,170,255,0.063)')
-    g.addColorStop(1,    'rgba(60,120,255,0)')
-    ctx.fillStyle = g
-    ctx.fillRect(-TILE, 0, TILE, TILE)
+  function drawWallTile(ox, oy) {
+    ctx.fillStyle = '#0c0a14'
+    ctx.fillRect(ox, oy, TILE, TILE)
+    ctx.fillStyle = '#0a0816'
+    ctx.fillRect(ox, oy + 7, TILE, 1)
+    ctx.fillStyle = '#161428'
+    ctx.fillRect(ox + 1, oy + 1, 1, 6)
+    ctx.fillStyle = '#1e1a38'
+    ctx.fillRect(ox, oy, TILE, 2)
   }
 
-  // Top tile — hinge at top-right of opening, swings counter-clockwise
-  ctx.save()
-  ctx.translate(wallX + TILE, gapY1)
-  ctx.rotate(-angle)
-  drawWallGlowTile()
-  ctx.restore()
+  if (!flip) {
+    ctx.save()
+    ctx.translate(wallX + TILE, gapY1)
+    ctx.rotate(-angle)
+    drawWallTile(-TILE, 0)
+    ctx.restore()
 
-  // Bottom tile — hinge at bottom-right of opening, swings clockwise
-  ctx.save()
-  ctx.translate(wallX + TILE, gapY2)
-  ctx.rotate(angle)
-  ctx.translate(0, -TILE)
-  drawWallGlowTile()
-  ctx.restore()
+    ctx.save()
+    ctx.translate(wallX + TILE, gapY2 - TILE)
+    ctx.rotate(angle)
+    drawWallTile(-TILE, 0)
+    ctx.restore()
+  } else {
+    ctx.save()
+    ctx.translate(wallX, gapY1)
+    ctx.rotate(angle)
+    drawWallTile(0, 0)
+    ctx.restore()
+
+    ctx.save()
+    ctx.translate(wallX, gapY2 - TILE)
+    ctx.rotate(-angle)
+    drawWallTile(0, 0)
+    ctx.restore()
+  }
 }

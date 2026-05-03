@@ -17,7 +17,7 @@ export const SPEED = 80;            // px/s (logical)
 //   Right room (side):  cols RIGHT_START..TOTAL_W-1              — elf + table
 // Each room has its own complete set of walls. No shared wall.
 export const LEFT_W  = 16   // left room width in tiles
-export const GAP_W   = 4    // void gap between rooms
+export const GAP_W   = 2    // void gap between rooms
 export const MID_W   = 14   // middle room width in tiles
 export const RIGHT_W = 14   // right room width in tiles
 export const ROOM_H  = 14   // shared height in tiles
@@ -116,11 +116,11 @@ export const TORCHES = [
   { c: LEFT_W - 1, r: DOOR_R + DOOR_H  },  // bottom — lit by colors
 ]
 
-// ── Torch positions — door 2 torches (right wall of mid room) ────────────────
+// ── Torch positions — door 2 torches (left wall of mid room) ─────────────────
 // both light when player approaches door 2
 export const TORCHES2 = [
-  { c: DOOR2_C, r: DOOR2_R - 1      },  // top
-  { c: DOOR2_C, r: DOOR2_R + DOOR2_H }, // bottom
+  { c: MID_START, r: DOOR2_R - 1      },  // top
+  { c: MID_START, r: DOOR2_R + DOOR2_H }, // bottom
 ]
 
 // ── Colour palettes (defined in palette.js) ───────────────────────────────────

@@ -26,18 +26,17 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
     const world = buildWorld(playerStateRef)
     let { map, player } = world
 
-    // Mutable loop state
-    let torchPhase        = 0
-    let last              = 0
-    let prevShift         = isKeyDown('ShiftLeft') || isKeyDown('ShiftRight')
-    let prevSpace         = isKeyDown('Space')
-    let elapsed           = 0
-    let guidance          = null
-    let mirrorOpened      = false
+    let torchPhase         = 0
+    let last               = 0
+    let prevShift          = isKeyDown('ShiftLeft') || isKeyDown('ShiftRight')
+    let prevSpace          = isKeyDown('Space')
+    let elapsed            = 0
+    let guidance           = null
+    let mirrorOpened       = false
     let hasMovedToCorridor = false
-    let log               = []
-    let door1             = { open: false, progress: 0 }
-    let door2             = { open: false, progress: 0 }
+    let log                = []
+    let door1              = { open: false, progress: 0 }
+    let door2              = { open: false, progress: 0 }
 
     function loop(ts) {
       const dt = Math.min((ts - last) / 1000, 0.05)
@@ -46,19 +45,15 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
       if (playerRef) playerRef.current = player
 
       if (!pausedRef.current) {
-        // Player movement + jump
         prevShift = updatePlayer(player, map, dt, prevShift)
         elapsed  += dt
 
-        // Doors
         ;({ door1, door2, map } = updateDoors(door1, door2, player, world, !!doorUnlockedRef?.current, dt, map))
 
-        // Guidance
         const g = resolveGuidance(player, elapsed, mirrorOpened, hasMovedToCorridor)
-        guidance          = g.text
+        guidance           = g.text
         hasMovedToCorridor = g.movedToCorridor
 
-        // Interaction
         const spaceNow = isKeyDown('Space')
         if (spaceNow && !prevSpace) {
           const target = resolveInteract(player, world)

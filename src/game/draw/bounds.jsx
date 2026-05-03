@@ -63,24 +63,31 @@ function drawRoomBounds(ctx, rx, ry, rw, rh, pcx, pcy, phase) {
 }
 
 // rooms: array of { x, y, w, h } in world pixels
-// rightWallGap: optional { y1, y2 } to skip the right-wall band of rooms[0] between those y coords
-export function drawBoundsOfLight(ctx, rooms, phase, pcx, pcy, rightWallGap) {
+// rightWallGap: optional { y1, y2 } — skips right-wall band of rooms[0] in that y range
+// leftWallGap2: optional { y1, y2 } — skips left-wall band of rooms[1] in that y range
+export function drawBoundsOfLight(ctx, rooms, phase, pcx, pcy, rightWallGap, leftWallGap2) {
   ctx.save()
   for (let i = 0; i < rooms.length; i++) {
     const room = rooms[i]
     if (i === 0 && rightWallGap) {
       const { y1, y2 } = rightWallGap
-      // Draw the room twice: clipped above and below the gap, so the right-wall band is split
+      // Clip out the gap strip on the right edge only
       ctx.save()
       ctx.beginPath()
-      ctx.rect(room.x, room.y, room.w, y1 - room.y)
-      ctx.clip()
+      ctx.rect(room.x, room.y, room.w, room.h)               // full room
+      ctx.rect(room.x + room.w - GLOW - PROX_GLOW, y1,       // punch out gap on right side
+               GLOW + PROX_GLOW, y2 - y1)
+      ctx.clip('evenodd')
       drawRoomBounds(ctx, room.x, room.y, room.w, room.h, pcx, pcy, phase)
       ctx.restore()
+    } else if (i === 1 && leftWallGap2) {
+      const { y1, y2 } = leftWallGap2
+      // Clip out the gap strip on the left edge only
       ctx.save()
       ctx.beginPath()
-      ctx.rect(room.x, y2, room.w, room.y + room.h - y2)
-      ctx.clip()
+      ctx.rect(room.x, room.y, room.w, room.h)               // full room
+      ctx.rect(room.x, y1, GLOW + PROX_GLOW, y2 - y1)       // punch out gap on left side
+      ctx.clip('evenodd')
       drawRoomBounds(ctx, room.x, room.y, room.w, room.h, pcx, pcy, phase)
       ctx.restore()
     } else {

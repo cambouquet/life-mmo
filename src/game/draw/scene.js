@@ -60,9 +60,9 @@ export function renderScene(ctx, world, state, player, torchPhase, charColors, r
   drawProximityAura(ctx, MIRROR2_CX, MIRROR2_CY, pcx, pcy, 56, '168,85,247')
 
   // World tiles
-  drawRoom(ctx, map, torchPhase)
+  drawRoom(ctx, world.layers, map)
   drawDoorCorridor(ctx, door1Progress, wallX,  gapY1,  gapY2)
-  drawDoorCorridor(ctx, door2Progress, wall2X, gap2Y1, gap2Y2)
+  drawDoorCorridor(ctx, door2Progress, wall2X, gap2Y1, gap2Y2, true)
 
   // Mirror reflections
   const refl1 = reflectionData(player, MIRROR_CX,  MIRROR_CY,  charColors)
@@ -97,8 +97,9 @@ export function renderScene(ctx, world, state, player, torchPhase, charColors, r
   }
 
   // Wall glow + torches
-  const gap = door1Progress > 0 ? { y1: gapY1, y2: gapY2 } : null
-  drawBoundsOfLight(ctx, ROOMS, torchPhase, pcx, pcy, gap)
+  const gap1 = door1Progress > 0 ? { y1: gapY1,  y2: gapY2  } : null
+  const gap2 = door2Progress > 0 ? { y1: gap2Y1, y2: gap2Y2 } : null
+  drawBoundsOfLight(ctx, ROOMS, torchPhase, pcx, pcy, gap1, gap2)
   drawTorch(ctx, TORCHES[0].c,  TORCHES[0].r,  torchPhase, refs.nameSet)
   drawTorch(ctx, TORCHES[1].c,  TORCHES[1].r,  torchPhase, refs.colorsSet)
   drawTorch(ctx, TORCHES2[0].c, TORCHES2[0].r, torchPhase, near2)
