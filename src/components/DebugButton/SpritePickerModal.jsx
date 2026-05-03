@@ -1,5 +1,6 @@
 import './SpritePickerModal.scss'
 import SPRITESHEETS_DATA from '../../game/config/spritesheets.json'
+import spriteColors from '../../game/config/spriteColors.json'
 
 const SPRITESHEETS = {
   0x00: SPRITESHEETS_DATA['0x00'],
@@ -14,6 +15,7 @@ const SPRITE_NAMES = {
   '0x00_1': 'floor_b',
   '0x00_2': 'void',
   '0x00_3': 'floor_red',
+  '0x00_4': 'floor_darkred',
   '0x01_0': 'wall_solid',
   '0x01_1': 'wall_top',
   '0x01_2': 'wall_face',
@@ -27,10 +29,16 @@ const SPRITE_NAMES = {
   '0x04_3': 'torch_d2_bot',
 }
 
-export default function SpritePickerModal({ category, onSelect, onClose }) {
+export default function SpritePickerModal({ category, currentSprite, onSelect, onClose }) {
   const getCategoryId = (cat) => {
     const map = { floor: 0x00, wall: 0x01, mirror: 0x02, table: 0x03, torch: 0x04 }
     return map[cat]
+  }
+
+  const getSpriteColor = (ss, row) => {
+    if (ss === 0x00) return spriteColors.floor[row] ?? spriteColors.floor[0]
+    if (ss === 0x01) return spriteColors.wall[row] ?? spriteColors.wall[0]
+    return '#0a0612'
   }
 
   const ssId = getCategoryId(category)
@@ -47,24 +55,14 @@ export default function SpritePickerModal({ category, onSelect, onClose }) {
         <div className="sprite-picker__grid">
           {Array.from({ length: ss.rows }).map((_, row) => {
             const spriteName = SPRITE_NAMES[`${ssId.toString(16).padStart(2, '0')}_${row}`] || `row_${row}`
+            const isSelected = currentSprite?.ss === ssId && currentSprite?.row === row
             return (
               <button
                 key={row}
-                className="sprite-picker__item"
+                className={`sprite-picker__item ${isSelected ? 'sprite-picker__item--selected' : ''}`}
                 onClick={() => onSelect({ ss: ssId, row, name: spriteName })}
               >
-                <div className="sprite-picker__preview" style={{ backgroundSize: `${ss.tileSize}px ${ss.tileSize}px` }}>
-                  <img
-                    src={`/src/assets/sprites/${ss.file}`}
-                    alt={spriteName}
-                    style={{
-                      objectPosition: `0 ${row * -ss.tileSize}px`,
-                      backgroundColor: '#06040e',
-                      width: ss.tileSize,
-                      height: ss.tileSize,
-                    }}
-                  />
-                </div>
+                <div className="sprite-picker__preview" style={{ backgroundColor: getSpriteColor(ssId, row) }} />
                 <div className="sprite-picker__name">{spriteName}</div>
                 <div className="sprite-picker__desc">Row {row}</div>
               </button>

@@ -10,7 +10,7 @@ import RecordButton          from './RecordButton/RecordButton.jsx'
 import VideoGallery          from './VideoGallery/VideoGallery.jsx'
 import DebugConsole          from './HUD/DebugConsole.jsx'
 import MapEditButton         from './DebugButton/MapEditButton.jsx'
-import CellInfo              from './DebugButton/DebugPanel.jsx'
+import MapEditorPanel        from './DebugButton/MapEditorPanel.jsx'
 import { useRecorder }       from '../playback/useRecorder.js'
 import { PlaybackEngine }    from '../playback/PlaybackEngine.js'
 import { mirrorVisit }       from '../playback/scenarios/mirrorVisit.js'
@@ -331,7 +331,7 @@ export default function App() {
           setShowHoroscope(false)
         }}
       />
-      {debugActive && <CellInfo hoveredTile={hoveredTile} layers={worldData?.layers} collMap={worldData?.collMap} />}
+      {debugActive && <MapEditorPanel hoveredTile={hoveredTile} layers={worldData?.layers} collMap={worldData?.collMap} />}
       <div className="record-wrap-with-tools">
         <RecordButton
           status={recorder.status}

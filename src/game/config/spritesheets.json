@@ -3,7 +3,7 @@
     "name": "Floor",
     "file": "ss00_floor.png",
     "tileSize": 16,
-    "rows": 4
+    "rows": 5
   },
   "0x01": {
     "name": "Wall",

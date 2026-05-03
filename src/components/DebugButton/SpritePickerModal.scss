@@ -71,6 +71,12 @@
     background: rgba(100, 180, 255, 0.15);
     border-color: rgba(100, 180, 255, 0.4);
   }
+
+  &--selected {
+    background: rgba(100, 220, 255, 0.3);
+    border-color: rgba(100, 220, 255, 0.8);
+    box-shadow: 0 0 8px rgba(100, 180, 255, 0.4);
+  }
 }
 
 .sprite-picker__preview {

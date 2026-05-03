@@ -1,7 +1,8 @@
 import { useState } from 'react'
-import './DebugPanel.scss'
+import './MapEditorPanel.scss'
 import SpritePickerModal from './SpritePickerModal.jsx'
 import SPRITESHEETS_DATA from '../../game/config/spritesheets.json'
+import spriteColors from '../../game/config/spriteColors.json'
 
 const COLL_VALUES = {
   0: 'floor',
@@ -18,23 +19,31 @@ const SPRITESHEET_VALUES = {
   0x04: SPRITESHEETS_DATA['0x04'].name,
 }
 
-export default function CellInfo({ hoveredTile, layers, collMap }) {
+export default function MapEditorPanel({ hoveredTile, layers, collMap }) {
   const [editingField, setEditingField] = useState(null)
   const [pickerOpen, setPickerOpen] = useState(null)
+  const [layerOverrides, setLayerOverrides] = useState({})
 
   if (!hoveredTile || !layers) return null
 
   const { c, r } = hoveredTile
+  const tileKey = `${c},${r}`
   const collValue = collMap[r]?.[c] ?? '?'
   const collName = COLL_VALUES[collValue] || `${collValue}`
-  const ground = layers.ground[r]?.[c]
-  const wall = layers.walls[r]?.[c]
-  const obj = layers.objects[r]?.[c]
-  const entity = layers.entities?.[r]?.[c]
+
+  const ground = layerOverrides[tileKey]?.ground ?? layers.ground[r]?.[c]
+  const wall = layerOverrides[tileKey]?.wall ?? layers.walls[r]?.[c]
+  const obj = layerOverrides[tileKey]?.obj ?? layers.objects[r]?.[c]
+  const entity = layerOverrides[tileKey]?.entity ?? layers.entities?.[r]?.[c]
 
   const handleSpriteSelect = (field, sprite) => {
-    console.log(`Edited ${field} at (${c},${r}):`, sprite)
-    // TODO: Save sprite to map data
+    setLayerOverrides(prev => ({
+      ...prev,
+      [tileKey]: {
+        ...prev[tileKey],
+        [field]: sprite
+      }
+    }))
     setPickerOpen(null)
   }
 
@@ -64,6 +73,12 @@ export default function CellInfo({ hoveredTile, layers, collMap }) {
     return 16 // floor, wall, torch
   }
 
+  const getSpriteColor = (ss, row) => {
+    if (ss === 0x00) return spriteColors.floor[row] ?? spriteColors.floor[0]
+    if (ss === 0x01) return spriteColors.wall[row] ?? spriteColors.wall[0]
+    return '#0a0612'
+  }
+
   return (
     <div className="cell-info">
       <div className="cell-info__header">({c}, {r})</div>
@@ -75,7 +90,7 @@ export default function CellInfo({ hoveredTile, layers, collMap }) {
             <button className="cell-info__preview-item" onClick={() => setPickerOpen('floor')}>
               <strong>Ground</strong>
               {ground ? (
-                <div className="cell-info__sprite-large" style={{ backgroundImage: `url(${getSpriteUrl(ground.ss)})`, backgroundPosition: `0 ${ground.row * -16}px` }} />
+                <div className="cell-info__sprite-large" style={{ backgroundColor: getSpriteColor(ground.ss, ground.row) }} />
               ) : (
                 <div className="cell-info__sprite-large cell-info__sprite-empty" />
               )}
@@ -84,7 +99,7 @@ export default function CellInfo({ hoveredTile, layers, collMap }) {
             <button className="cell-info__preview-item" onClick={() => setPickerOpen('wall')}>
               <strong>Wall</strong>
               {wall ? (
-                <div className="cell-info__sprite-large" style={{ backgroundImage: `url(${getSpriteUrl(wall.ss)})`, backgroundPosition: `0 ${wall.row * -16}px` }} />
+                <div className="cell-info__sprite-large" style={{ backgroundColor: getSpriteColor(wall.ss, wall.row) }} />
               ) : (
                 <div className="cell-info__sprite-large cell-info__sprite-empty" />
               )}
@@ -135,6 +150,13 @@ export default function CellInfo({ hoveredTile, layers, collMap }) {
       {pickerOpen && (
         <SpritePickerModal
           category={pickerOpen}
+          currentSprite={
+            pickerOpen === 'floor' ? ground :
+            pickerOpen === 'wall' ? wall :
+            pickerOpen === 'table' ? obj :
+            pickerOpen === 'torch' ? entity :
+            null
+          }
           onSelect={(sprite) => handleSpriteSelect(pickerOpen, sprite)}
           onClose={() => setPickerOpen(null)}
         />

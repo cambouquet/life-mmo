@@ -152,8 +152,6 @@ function genLayer0() {
 
       // Encode actual sprite data in RGBA (used by mapData.js)
       setPixel(png, c, r, ss, row, DEFAULT)
-      // But overwrite with visualization color for the PNG (for visual debugging)
-      setPixelFromColor(png, c, r, visualColor)
     }
   }
   save(png, 'layer0_ground')
@@ -163,7 +161,6 @@ function genLayer0() {
 // ── Layer 1: Walls ─────────────────────────────────────────────────────────
 function genLayer1() {
   const png = makePNG(TOTAL_W, TOTAL_H)
-  const spriteSheets = COLORS.spritesheets
 
   for (let r = 0; r < TOTAL_H; r++) {
     for (let c = 0; c < TOTAL_W; c++) {
@@ -172,7 +169,6 @@ function genLayer1() {
         if (c === DOOR_C || c === MID_START) continue
         const row = wallRow(c, r)
         setPixel(png, c, r, SS_WALL, row, DEFAULT)
-        setPixelFromColor(png, c, r, spriteSheets['0x01'])
       }
     }
   }
@@ -183,47 +179,35 @@ function genLayer1() {
 // ── Layer 2: Objects ───────────────────────────────────────────────────────
 function genLayer2() {
   const png = makePNG(TOTAL_W, TOTAL_H)
-  const spriteSheets = COLORS.spritesheets
 
   // Mirror 1 — left room, origin tile (top-left of 2×2)
   const m1c = Math.floor(LEFT_W / 2) - 1
   setPixel(png, m1c, 1, SS_MIRROR, 0x00, DEFAULT)
-  setPixelFromColor(png, m1c, 1, spriteSheets['0x02'])
 
   // Mirror 2 — mid room, origin tile
   const m2c = MID_START + Math.floor(MID_W / 2) - 1
   setPixel(png, m2c, 1, SS_MIRROR, 0x01, DEFAULT)
-  setPixelFromColor(png, m2c, 1, spriteSheets['0x02'])
 
   // Table — right room, 2×1, origin tile
   const tableC = RIGHT_START + 3
   const tableR = Math.floor(ROOM_H / 2) - 2
   setPixel(png, tableC, tableR, SS_TABLE, 0x00, DEFAULT)
-  setPixelFromColor(png, tableC, tableR, spriteSheets['0x03'])
 
   // Torches — door 1 (col DOOR_C, flanking the opening)
   setPixel(png, DOOR_C, DOOR_R - 1,      SS_TORCH, 0x00, DEFAULT)
-  setPixelFromColor(png, DOOR_C, DOOR_R - 1, spriteSheets['0x04'])
   setPixel(png, DOOR_C, DOOR_R + DOOR_H, SS_TORCH, 0x01, DEFAULT)
-  setPixelFromColor(png, DOOR_C, DOOR_R + DOOR_H, spriteSheets['0x04'])
 
   // Torches — door 2 (left wall of mid room, col MID_START)
   setPixel(png, MID_START, DOOR2_R - 1,       SS_TORCH, 0x02, DEFAULT)
-  setPixelFromColor(png, MID_START, DOOR2_R - 1, spriteSheets['0x04'])
   setPixel(png, MID_START, DOOR2_R + DOOR2_H, SS_TORCH, 0x03, DEFAULT)
-  setPixelFromColor(png, MID_START, DOOR2_R + DOOR2_H, spriteSheets['0x04'])
 
   // Door 1 opening tiles
   setPixel(png, DOOR_C, DOOR_R,     SS_DOOR, 0x00, DEFAULT)
-  setPixelFromColor(png, DOOR_C, DOOR_R, spriteSheets['0x05'])
   setPixel(png, DOOR_C, DOOR_R + 1, SS_DOOR, 0x01, DEFAULT)
-  setPixelFromColor(png, DOOR_C, DOOR_R + 1, spriteSheets['0x05'])
 
   // Door 2 opening tiles (left wall of mid room)
   setPixel(png, MID_START, DOOR2_R,     SS_DOOR, 0x02, DEFAULT)
-  setPixelFromColor(png, MID_START, DOOR2_R, spriteSheets['0x05'])
   setPixel(png, MID_START, DOOR2_R + 1, SS_DOOR, 0x03, DEFAULT)
-  setPixelFromColor(png, MID_START, DOOR2_R + 1, spriteSheets['0x05'])
 
   save(png, 'layer2_objects')
   return png
@@ -232,18 +216,15 @@ function genLayer2() {
 // ── Layer 3: Entities (spawn points) ──────────────────────────────────────
 function genLayer3() {
   const png = makePNG(TOTAL_W, TOTAL_H)
-  const spriteSheets = COLORS.spritesheets
 
   // Player spawn — left room, near mirror
   const m1c = Math.floor(LEFT_W / 2) - 1
   setPixel(png, m1c, Math.floor(TOTAL_H / 2), SS_WARRIOR, 0x02 /* up_idle */, DEFAULT)
-  setPixelFromColor(png, m1c, Math.floor(TOTAL_H / 2), spriteSheets['0x06'])
 
   // NPC — right room, next to table
   const npcC = RIGHT_START + 5
   const npcR = Math.floor(ROOM_H / 2) - 2
   setPixel(png, npcC, npcR, SS_NPC_ELF, 0x00 /* down_idle */, DEFAULT)
-  setPixelFromColor(png, npcC, npcR, spriteSheets['0x07'])
 
   save(png, 'layer3_entities')
   return png
