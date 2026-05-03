@@ -1,3 +1,5 @@
+import spriteColors from '../config/spriteColors.json'
+
 // Iterates through all tiles, calling callback for each tile's draw decision
 export function iterateTiles(ctx, layers, collMap, onTile) {
   const rows = layers.height
@@ -44,13 +46,8 @@ export function drawShadow(ctx, x, y, jumpFactor = 0) {
 
 const TILE = 16
 
-// Spritesheet color palettes indexed by (ss, row)
-// These must match the colors used in generate-spritesheets.mjs
-const FLOOR_COLORS = ['#0e0b1a', '#0b0917', '#06040e', '#ff0000']
-const WALL_COLORS  = ['#0c0a14', '#1e1a38', '#100e1c', '#0e0c1c']
-
-function floorColor(row) { return FLOOR_COLORS[row] ?? '#0e0b1a' }
-function wallColor(row)  { return WALL_COLORS[row]  ?? '#0c0a14' }
+function floorColor(row) { return spriteColors.floor[row] ?? spriteColors.floor[0] }
+function wallColor(row)  { return spriteColors.wall[row]  ?? spriteColors.wall[0] }
 
 // Draws the full world tile-by-tile from map layer data.
 // layers:  { ground, walls, objects } — 2D grids of { ss, row, variant } | null

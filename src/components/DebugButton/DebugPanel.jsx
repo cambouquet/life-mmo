@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import './DebugPanel.scss'
 import SpritePickerModal from './SpritePickerModal.jsx'
+import SPRITESHEETS_DATA from '../../game/config/spritesheets.json'
 
 const COLL_VALUES = {
   0: 'floor',
@@ -10,11 +11,11 @@ const COLL_VALUES = {
 }
 
 const SPRITESHEET_VALUES = {
-  0x00: 'tiles',
-  0x01: 'sprites',
-  0x02: 'mirror',
-  0x03: 'table',
-  0x04: 'torch',
+  0x00: SPRITESHEETS_DATA['0x00'].name,
+  0x01: SPRITESHEETS_DATA['0x01'].name,
+  0x02: SPRITESHEETS_DATA['0x02'].name,
+  0x03: SPRITESHEETS_DATA['0x03'].name,
+  0x04: SPRITESHEETS_DATA['0x04'].name,
 }
 
 export default function CellInfo({ hoveredTile, layers, collMap }) {
@@ -52,15 +53,9 @@ export default function CellInfo({ hoveredTile, layers, collMap }) {
   const collOptions = Object.values(COLL_VALUES)
 
   const getSpriteUrl = (ss) => {
-    const ssHex = ss.toString(16).padStart(2, '0')
-    const ssNames = {
-      '00': 'ss00_floor.png',
-      '01': 'ss01_wall.png',
-      '02': 'ss02_mirror.png',
-      '03': 'ss03_table.png',
-      '04': 'ss04_torch.png',
-    }
-    return `/src/assets/sprites/${ssNames[ssHex] || ''}`
+    const ssHex = `0x${ss.toString(16).padStart(2, '0')}`
+    const ssData = SPRITESHEETS_DATA[ssHex]
+    return `/src/assets/sprites/${ssData?.file || ''}`
   }
 
   const getSpriteSize = (ss) => {

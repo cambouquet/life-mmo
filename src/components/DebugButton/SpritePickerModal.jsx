@@ -1,11 +1,12 @@
 import './SpritePickerModal.scss'
+import SPRITESHEETS_DATA from '../../game/config/spritesheets.json'
 
 const SPRITESHEETS = {
-  0x00: { name: 'Floor', file: 'ss00_floor.png', tileSize: 16, rows: 4 },
-  0x01: { name: 'Wall', file: 'ss01_wall.png', tileSize: 16, rows: 4 },
-  0x02: { name: 'Mirror', file: 'ss02_mirror.png', tileSize: 32, rows: 2 },
-  0x03: { name: 'Table', file: 'ss03_table.png', tileSize: 32, rows: 1 },
-  0x04: { name: 'Torch', file: 'ss04_torch.png', tileSize: 16, rows: 4 },
+  0x00: SPRITESHEETS_DATA['0x00'],
+  0x01: SPRITESHEETS_DATA['0x01'],
+  0x02: SPRITESHEETS_DATA['0x02'],
+  0x03: SPRITESHEETS_DATA['0x03'],
+  0x04: SPRITESHEETS_DATA['0x04'],
 }
 
 const SPRITE_NAMES = {
