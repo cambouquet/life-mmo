@@ -98,6 +98,8 @@ export default function MapEditorPanel({ hoveredTile, layers, collMap, layerEdit
   }
 
   const getSpriteColor = (ss, row) => {
+    const overrideKey = `${ss}_${row}`
+    if (spriteColorOverrides?.[overrideKey]) return spriteColorOverrides[overrideKey]
     if (ss === 0x00) return spriteColors.floor[row] ?? spriteColors.floor[0]
     if (ss === 0x01) return spriteColors.wall[row] ?? spriteColors.wall[0]
     return '#0a0612'
@@ -204,89 +206,103 @@ export default function MapEditorPanel({ hoveredTile, layers, collMap, layerEdit
         </div>
       </div>
       ) : (
-      <div style={{ padding: '12px 8px' }}>
-        <div style={{ fontSize: '10px', color: '#7ab8ff', marginBottom: '12px', fontWeight: '600' }}>
-          Sprite Colors
-        </div>
-        <div style={{ marginBottom: '12px' }}>
-          <label style={{ fontSize: '10px', color: '#7ab8ff', display: 'block', marginBottom: '6px' }}>Select Sprite Type</label>
-          <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
-            {['floor', 'wall'].map(type => (
-              <button
-                key={type}
-                onClick={() => {
-                  // Set up to select a sprite of this type
-                  setPickerOpen(type)
-                }}
-                style={{
-                  padding: '4px 8px',
-                  fontSize: '9px',
-                  background: 'rgba(100, 180, 255, 0.1)',
-                  border: '1px solid rgba(100, 180, 255, 0.3)',
-                  color: '#7ab8ff',
-                  borderRadius: '2px',
-                  cursor: 'pointer',
-                  textTransform: 'capitalize',
-                }}
-              >
-                {type}
-              </button>
-            ))}
-          </div>
-        </div>
-        {!selectedSpriteForColor ? (
-          <div style={{ padding: '8px', background: 'rgba(100, 180, 255, 0.05)', borderRadius: '2px', fontSize: '9px', color: 'rgba(122, 184, 255, 0.7)' }}>
-            Click a sprite type above to select a sprite color to edit
-          </div>
-        ) : (
-          <div style={{ padding: '8px', background: 'rgba(100, 180, 255, 0.05)', borderRadius: '2px', marginBottom: '12px' }}>
-            <div style={{ fontSize: '10px', color: '#7ab8ff', marginBottom: '4px' }}>
-              {selectedSpriteForColor.name}
+      <div style={{ padding: '8px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+          {/* Floor sprites */}
+          <div>
+            <div className="cell-info__layer-label">Floor</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+              {spriteColors.floor.map((_, row) => {
+                const color = getSpriteColor(0, row)
+                const isSelected = selectedSpriteForColor?.ss === 0 && selectedSpriteForColor?.row === row
+                return (
+                  <button
+                    key={`floor-${row}`}
+                    onClick={() => setSelectedSpriteForColor({ ss: 0, row, name: `floor_${row}` })}
+                    style={{
+                      display: 'flex',
+                      gap: '6px',
+                      alignItems: 'center',
+                      padding: '4px 6px',
+                      background: isSelected ? 'rgba(100, 220, 255, 0.15)' : 'transparent',
+                      border: isSelected ? '1px solid rgba(100, 220, 255, 0.6)' : '1px solid rgba(100, 180, 255, 0.2)',
+                      borderRadius: '2px',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s',
+                    }}
+                  >
+                    <div style={{ width: '32px', height: '32px', backgroundColor: color, border: '1px solid rgba(100, 180, 255, 0.3)', borderRadius: '2px' }} />
+                    <div style={{ fontSize: '9px', color: '#7ab8ff', flex: 1, textAlign: 'left' }}>Row {row}</div>
+                  </button>
+                )
+              })}
             </div>
-            <button
-              onClick={() => setSelectedSpriteForColor(null)}
+          </div>
+
+          {/* Wall sprites */}
+          <div>
+            <div className="cell-info__layer-label">Wall</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+              {spriteColors.wall.map((_, row) => {
+                const color = getSpriteColor(1, row)
+                const isSelected = selectedSpriteForColor?.ss === 1 && selectedSpriteForColor?.row === row
+                return (
+                  <button
+                    key={`wall-${row}`}
+                    onClick={() => setSelectedSpriteForColor({ ss: 1, row, name: `wall_${row}` })}
+                    style={{
+                      display: 'flex',
+                      gap: '6px',
+                      alignItems: 'center',
+                      padding: '4px 6px',
+                      background: isSelected ? 'rgba(100, 220, 255, 0.15)' : 'transparent',
+                      border: isSelected ? '1px solid rgba(100, 220, 255, 0.6)' : '1px solid rgba(100, 180, 255, 0.2)',
+                      borderRadius: '2px',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s',
+                    }}
+                  >
+                    <div style={{ width: '32px', height: '32px', backgroundColor: color, border: '1px solid rgba(100, 180, 255, 0.3)', borderRadius: '2px' }} />
+                    <div style={{ fontSize: '9px', color: '#7ab8ff', flex: 1, textAlign: 'left' }}>Row {row}</div>
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+        </div>
+
+        {selectedSpriteForColor && (
+          <div style={{ marginTop: '12px', paddingTop: '8px', borderTop: '1px solid rgba(100, 180, 255, 0.2)' }}>
+            <div style={{ fontSize: '10px', color: '#7ab8ff', fontWeight: '600', marginBottom: '6px', textTransform: 'uppercase' }}>
+              Edit Color
+            </div>
+            <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '8px' }}>
+              <div style={{ width: '48px', height: '48px', backgroundColor: getSpriteColor(selectedSpriteForColor.ss, selectedSpriteForColor.row), border: '1px solid rgba(100, 180, 255, 0.3)', borderRadius: '2px' }} />
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: '9px', color: 'rgba(122, 184, 255, 0.7)', textTransform: 'uppercase' }}>Selected</div>
+                <div style={{ fontSize: '10px', color: '#7ab8ff', fontWeight: '600' }}>Row {selectedSpriteForColor.row}</div>
+              </div>
+            </div>
+            <input
+              type="color"
+              value={spriteColorOverrides[`${selectedSpriteForColor.ss}_${selectedSpriteForColor.row}`]?.substring(0, 7) || getSpriteColor(selectedSpriteForColor.ss, selectedSpriteForColor.row)}
+              onChange={(e) => {
+                const key = `${selectedSpriteForColor.ss}_${selectedSpriteForColor.row}`
+                onSpriteColorChange(prev => ({
+                  ...prev,
+                  [key]: e.target.value
+                }))
+              }}
               style={{
-                padding: '4px 8px',
-                fontSize: '9px',
-                background: 'rgba(100, 180, 255, 0.1)',
+                width: '100%',
+                height: '32px',
                 border: '1px solid rgba(100, 180, 255, 0.3)',
-                color: '#7ab8ff',
                 borderRadius: '2px',
                 cursor: 'pointer',
               }}
-            >
-              Change Sprite
-            </button>
+            />
           </div>
         )}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-          {selectedSpriteForColor && (
-            <div>
-              <label style={{ fontSize: '10px', color: '#7ab8ff', display: 'block', marginBottom: '4px' }}>Color</label>
-              <input
-                type="color"
-                value={spriteColorOverrides[`${selectedSpriteForColor.ss}_${selectedSpriteForColor.row}`]?.substring(0, 7) || '#ff0000'}
-                onChange={(e) => {
-                  const key = `${selectedSpriteForColor.ss}_${selectedSpriteForColor.row}`
-                  onSpriteColorChange(prev => ({
-                    ...prev,
-                    [key]: e.target.value
-                  }))
-                }}
-                style={{
-                  width: '100%',
-                  height: '32px',
-                  border: '1px solid rgba(100, 180, 255, 0.3)',
-                  borderRadius: '2px',
-                  cursor: 'pointer',
-                }}
-              />
-              <div style={{ fontSize: '9px', color: 'rgba(122, 184, 255, 0.6)', marginTop: '4px', textAlign: 'center' }}>
-                {selectedSpriteForColor.name}
-              </div>
-            </div>
-          )}
-        </div>
       </div>
       )}
 
@@ -304,6 +320,7 @@ export default function MapEditorPanel({ hoveredTile, layers, collMap, layerEdit
               selectedSpriteForColor
             )
           }
+          spriteColorOverrides={spriteColorOverrides}
           onSelect={(sprite) => {
             if (activeTab === 'colors') {
               setSelectedSpriteForColor(sprite)

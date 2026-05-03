@@ -29,13 +29,15 @@ const SPRITE_NAMES = {
   '0x04_3': 'torch_d2_bot',
 }
 
-export default function SpritePickerModal({ category, currentSprite, onSelect, onClose }) {
+export default function SpritePickerModal({ category, currentSprite, onSelect, onClose, spriteColorOverrides = {} }) {
   const getCategoryId = (cat) => {
     const map = { floor: 0x00, wall: 0x01, mirror: 0x02, table: 0x03, torch: 0x04 }
     return map[cat]
   }
 
   const getSpriteColor = (ss, row) => {
+    const overrideKey = `${ss}_${row}`
+    if (spriteColorOverrides?.[overrideKey]) return spriteColorOverrides[overrideKey]
     if (ss === 0x00) return spriteColors.floor[row] ?? spriteColors.floor[0]
     if (ss === 0x01) return spriteColors.wall[row] ?? spriteColors.wall[0]
     return '#0a0612'
