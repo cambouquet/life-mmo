@@ -53,6 +53,7 @@ export default function App() {
   const [debugActive,   setDebugActive]   = useState(false)
   const [hoveredTile,   setHoveredTile]   = useState(null)
   const [worldData,     setWorldData]     = useState(null)
+  const [layerEdits,    setLayerEdits]    = useState({})
 
   const wrapRef          = useViewportScale()
   const gameRef          = useRef(null)
@@ -243,6 +244,7 @@ export default function App() {
           nameSetRef={nameSetRef}
           colorsSetRef={colorsSetRef}
           debugActive={debugActive}
+          layerEdits={layerEdits}
           onHoveredTileChange={setHoveredTile}
           onWorldDataChange={setWorldData}
         />
@@ -331,7 +333,15 @@ export default function App() {
           setShowHoroscope(false)
         }}
       />
-      {debugActive && <MapEditorPanel hoveredTile={hoveredTile} layers={worldData?.layers} collMap={worldData?.collMap} />}
+      {debugActive && (
+        <MapEditorPanel
+          hoveredTile={hoveredTile}
+          layers={worldData?.layers}
+          collMap={worldData?.collMap}
+          layerEdits={layerEdits}
+          onEditSprite={setLayerEdits}
+        />
+      )}
       <div className="record-wrap-with-tools">
         <RecordButton
           status={recorder.status}

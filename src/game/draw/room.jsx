@@ -52,12 +52,15 @@ function wallColor(row)  { return spriteColors.wall[row]  ?? spriteColors.wall[0
 // Draws the full world tile-by-tile from map layer data.
 // layers:  { ground, walls, objects } — 2D grids of { ss, row, variant } | null
 // collMap: 2D collision array (0=floor, 1=wall, 5=void, 6=door-open)
-export function drawRoom(ctx, layers, collMap) {
+// layerEdits: map of edits from the editor { "c,r": { ground, wall, obj, entity } }
+export function drawRoom(ctx, layers, collMap, layerEdits = {}) {
   iterateTiles(ctx, layers, collMap, (ctx, c, r, px, py, coll, layers) => {
     // Skip void (walls/bounds-of-light handles those tiles)
     if (coll === 5 || coll === 1) return
 
-    const groundPixel = layers.ground[r]?.[c]
+    const tileKey = `${c},${r}`
+    const edit = layerEdits[tileKey]
+    const groundPixel = edit?.ground ?? layers.ground[r]?.[c]
     const color = groundPixel
       ? floorColor(groundPixel.row)
       : '#0e0b1a'

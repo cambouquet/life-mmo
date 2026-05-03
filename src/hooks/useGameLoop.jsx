@@ -8,12 +8,13 @@ import { resolveInteract }      from '../game/systems/interact.js'
 import { renderScene }          from '../game/draw/scene.js'
 import { mouseTile } from '../game/draw/debug.js'
 
-export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, charColors, playerRef, playerStateRef, doorUnlockedRef, nameSetRef, colorsSetRef, debugActive, onHoveredTileChange, onWorldDataChange }) {
+export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, charColors, playerRef, playerStateRef, doorUnlockedRef, nameSetRef, colorsSetRef, debugActive, layerEdits, onHoveredTileChange, onWorldDataChange }) {
   const pausedRef     = useRef(paused)
   const onInteractRef = useRef(onInteract)
   const onStateRef    = useRef(onStateChange)
   const charColorsRef = useRef(charColors)
   const debugActiveRef = useRef(debugActive)
+  const layerEditsRef = useRef(layerEdits)
   const onHoveredTileRef = useRef(onHoveredTileChange)
   const onWorldDataRef = useRef(onWorldDataChange)
 
@@ -22,6 +23,7 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
   useEffect(() => { onStateRef.current    = onStateChange }, [onStateChange])
   useEffect(() => { charColorsRef.current = charColors },    [charColors])
   useEffect(() => { debugActiveRef.current = debugActive },  [debugActive])
+  useEffect(() => { layerEditsRef.current = layerEdits },    [layerEdits])
   useEffect(() => { onHoveredTileRef.current = onHoveredTileChange }, [onHoveredTileChange])
   useEffect(() => { onWorldDataRef.current = onWorldDataChange }, [onWorldDataChange])
 
@@ -98,7 +100,7 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
       }
 
       const near2 = door2.open || isNearDoor(player, world.DOOR2_WX, world.DOOR2_WY)
-      renderScene(ctx, world, { map, door1Progress: door1.progress, door2Progress: door2.progress, near2, hoveredTile, selectedTile }, player, torchPhase, charColorsRef.current, {
+      renderScene(ctx, world, { map, door1Progress: door1.progress, door2Progress: door2.progress, near2, hoveredTile, selectedTile, layerEdits: layerEditsRef.current }, player, torchPhase, charColorsRef.current, {
         paused:    pausedRef.current,
         nameSet:   !!nameSetRef?.current,
         colorsSet: !!colorsSetRef?.current,

@@ -19,10 +19,9 @@ const SPRITESHEET_VALUES = {
   0x04: SPRITESHEETS_DATA['0x04'].name,
 }
 
-export default function MapEditorPanel({ hoveredTile, layers, collMap }) {
+export default function MapEditorPanel({ hoveredTile, layers, collMap, layerEdits, onEditSprite }) {
   const [editingField, setEditingField] = useState(null)
   const [pickerOpen, setPickerOpen] = useState(null)
-  const [layerOverrides, setLayerOverrides] = useState({})
 
   if (!hoveredTile || !layers) return null
 
@@ -31,13 +30,15 @@ export default function MapEditorPanel({ hoveredTile, layers, collMap }) {
   const collValue = collMap[r]?.[c] ?? '?'
   const collName = COLL_VALUES[collValue] || `${collValue}`
 
-  const ground = layerOverrides[tileKey]?.ground ?? layers.ground[r]?.[c]
-  const wall = layerOverrides[tileKey]?.wall ?? layers.walls[r]?.[c]
-  const obj = layerOverrides[tileKey]?.obj ?? layers.objects[r]?.[c]
-  const entity = layerOverrides[tileKey]?.entity ?? layers.entities?.[r]?.[c]
+  const ground = layerEdits[tileKey]?.ground ?? layers.ground[r]?.[c]
+  const wall = layerEdits[tileKey]?.wall ?? layers.walls[r]?.[c]
+  const obj = layerEdits[tileKey]?.obj ?? layers.objects[r]?.[c]
+  const entity = layerEdits[tileKey]?.entity ?? layers.entities?.[r]?.[c]
 
-  const handleSpriteSelect = (field, sprite) => {
-    setLayerOverrides(prev => ({
+  const handleSpriteSelect = (category, sprite) => {
+    const fieldMap = { floor: 'ground', wall: 'wall', table: 'obj', torch: 'entity', mirror: 'obj' }
+    const field = fieldMap[category]
+    onEditSprite(prev => ({
       ...prev,
       [tileKey]: {
         ...prev[tileKey],

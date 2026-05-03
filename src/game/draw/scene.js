@@ -30,7 +30,7 @@ function reflectionData(player, mirrorCX, mirrorCY, charColors) {
 // charColors:  object
 // refs:        { paused, nameSet, colorsSet }
 export function renderScene(ctx, world, state, player, torchPhase, charColors, refs) {
-  const { map, door1Progress, door2Progress, near2, hoveredTile, selectedTile } = state
+  const { map, door1Progress, door2Progress, near2, hoveredTile, selectedTile, layerEdits } = state
   const {
     wallX, gapY1, gapY2,
     wall2X, gap2Y1, gap2Y2,
@@ -60,7 +60,7 @@ export function renderScene(ctx, world, state, player, torchPhase, charColors, r
   drawProximityAura(ctx, MIRROR2_CX, MIRROR2_CY, pcx, pcy, 56, '168,85,247')
 
   // World tiles
-  drawRoom(ctx, world.layers, map)
+  drawRoom(ctx, world.layers, map, layerEdits)
   drawDoorCorridor(ctx, door1Progress, wallX,  gapY1,  gapY2)
   drawDoorCorridor(ctx, door2Progress, wall2X, gap2Y1, gap2Y2, true)
 
