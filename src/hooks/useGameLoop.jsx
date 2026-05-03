@@ -51,6 +51,7 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
     let door2              = { open: false, progress: 0 }
     let hoveredTile = null
     let selectedTile = null
+    let selectedTiles = []
 
     const canvas = canvasRef.current
     const onMouseMove = e => {
@@ -59,7 +60,23 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
     }
     const onClick = e => {
       if (!debugActiveRef.current) return
-      selectedTile = mouseTile(e, canvas, player.x + 8, player.y + 8)
+      const tile = mouseTile(e, canvas, player.x + 8, player.y + 8)
+
+      if (e.ctrlKey) {
+        // Multi-select: add/remove tile from selection
+        const key = `${tile.c},${tile.r}`
+        const existingIndex = selectedTiles.findIndex(t => `${t.c},${t.r}` === key)
+        if (existingIndex >= 0) {
+          selectedTiles.splice(existingIndex, 1)
+        } else {
+          selectedTiles.push(tile)
+        }
+        selectedTile = selectedTiles.length > 0 ? { tiles: selectedTiles } : null
+      } else {
+        // Single select
+        selectedTile = tile
+        selectedTiles = [tile]
+      }
       onHoveredTileRef.current?.(selectedTile)
     }
     canvas.addEventListener('mousemove', onMouseMove)
@@ -100,7 +117,8 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
       }
 
       const near2 = door2.open || isNearDoor(player, world.DOOR2_WX, world.DOOR2_WY)
-      renderScene(ctx, world, { map, door1Progress: door1.progress, door2Progress: door2.progress, near2, hoveredTile, selectedTile, layerEdits: layerEditsRef.current }, player, torchPhase, charColorsRef.current, {
+      const selectedTiles = selectedTile?.tiles || (selectedTile ? [selectedTile] : [])
+      renderScene(ctx, world, { map, door1Progress: door1.progress, door2Progress: door2.progress, near2, hoveredTile, selectedTile, selectedTiles, layerEdits: layerEditsRef.current }, player, torchPhase, charColorsRef.current, {
         paused:    pausedRef.current,
         nameSet:   !!nameSetRef?.current,
         colorsSet: !!colorsSetRef?.current,

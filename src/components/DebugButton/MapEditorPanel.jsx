@@ -25,26 +25,47 @@ export default function MapEditorPanel({ hoveredTile, layers, collMap, layerEdit
 
   if (!hoveredTile || !layers) return null
 
-  const { c, r } = hoveredTile
+  const isMultiSelect = hoveredTile.tiles && hoveredTile.tiles.length > 1
+  const tiles = isMultiSelect ? hoveredTile.tiles : [hoveredTile]
+  const firstTile = tiles[0]
+  const { c, r } = firstTile
+
+  // For multi-select, check if all tiles have the same sprite
+  const getSpriteForTiles = (field) => {
+    const sprites = tiles.map(tile => {
+      const tileKey = `${tile.c},${tile.r}`
+      return layerEdits[tileKey]?.[field] ?? layers[fieldToLayerMap[field]]?.[tile.r]?.[tile.c]
+    })
+    // Return sprite if all are the same, otherwise return null
+    const first = sprites[0]
+    const allSame = sprites.every(s => s === first || (s && first && s.ss === first.ss && s.row === first.row))
+    return allSame ? first : null
+  }
+
+  const fieldToLayerMap = { ground: 'ground', wall: 'walls', obj: 'objects', entity: 'entities' }
+
   const tileKey = `${c},${r}`
   const collValue = collMap[r]?.[c] ?? '?'
   const collName = COLL_VALUES[collValue] || `${collValue}`
 
-  const ground = layerEdits[tileKey]?.ground ?? layers.ground[r]?.[c]
-  const wall = layerEdits[tileKey]?.wall ?? layers.walls[r]?.[c]
-  const obj = layerEdits[tileKey]?.obj ?? layers.objects[r]?.[c]
-  const entity = layerEdits[tileKey]?.entity ?? layers.entities?.[r]?.[c]
+  const ground = getSpriteForTiles('ground')
+  const wall = getSpriteForTiles('wall')
+  const obj = getSpriteForTiles('obj')
+  const entity = getSpriteForTiles('entity')
 
   const handleSpriteSelect = (category, sprite) => {
     const fieldMap = { floor: 'ground', wall: 'wall', table: 'obj', torch: 'entity', mirror: 'obj' }
     const field = fieldMap[category]
-    onEditSprite(prev => ({
-      ...prev,
-      [tileKey]: {
-        ...prev[tileKey],
-        [field]: sprite
-      }
-    }))
+
+    // Apply sprite to all selected tiles
+    onEditSprite(prev => {
+      const next = { ...prev }
+      tiles.forEach(tile => {
+        const key = `${tile.c},${tile.r}`
+        next[key] = { ...next[key], [field]: sprite }
+      })
+      return next
+    })
     setPickerOpen(null)
   }
 
@@ -82,7 +103,9 @@ export default function MapEditorPanel({ hoveredTile, layers, collMap, layerEdit
 
   return (
     <div className="cell-info">
-      <div className="cell-info__header">({c}, {r})</div>
+      <div className="cell-info__header">
+        {isMultiSelect ? `${tiles.length} tiles selected` : `(${c}, ${r})`}
+      </div>
 
       <div className="cell-info__preview">
         <div className="cell-info__preview-layers">
@@ -92,6 +115,8 @@ export default function MapEditorPanel({ hoveredTile, layers, collMap, layerEdit
               <strong>Ground</strong>
               {ground ? (
                 <div className="cell-info__sprite-large" style={{ backgroundColor: getSpriteColor(ground.ss, ground.row) }} />
+              ) : isMultiSelect ? (
+                <div className="cell-info__sprite-large" style={{ backgroundColor: '#0a0612', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#7ab8ff', fontSize: '24px' }}>≠</div>
               ) : (
                 <div className="cell-info__sprite-large cell-info__sprite-empty" />
               )}
@@ -101,6 +126,8 @@ export default function MapEditorPanel({ hoveredTile, layers, collMap, layerEdit
               <strong>Wall</strong>
               {wall ? (
                 <div className="cell-info__sprite-large" style={{ backgroundColor: getSpriteColor(wall.ss, wall.row) }} />
+              ) : isMultiSelect ? (
+                <div className="cell-info__sprite-large" style={{ backgroundColor: '#0a0612', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#7ab8ff', fontSize: '24px' }}>≠</div>
               ) : (
                 <div className="cell-info__sprite-large cell-info__sprite-empty" />
               )}
