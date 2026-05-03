@@ -134,6 +134,8 @@ function genLayer1() {
   for (let r = 0; r < TOTAL_H; r++) {
     for (let c = 0; c < TOTAL_W; c++) {
       if (tileKind(c, r) === 'wall') {
+        // Door columns carry torches — no wall tile, torches stand alone
+        if (c === DOOR_C || c === MID_START) continue
         setPixel(png, c, r, SS_WALL, wallRow(c, r), DEFAULT)
       }
     }

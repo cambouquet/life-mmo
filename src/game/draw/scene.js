@@ -24,7 +24,7 @@ function reflectionData(player, mirrorCX, mirrorCY, charColors) {
 
 // ctx:         canvas 2d context
 // world:       built by buildWorld()
-// state:       { map, door1Progress, door2Progress, near2 }
+// state:       { map, door1Progress, door2Progress, near2, debug, hoveredTile }
 // player:      player object
 // torchPhase:  number
 // charColors:  object

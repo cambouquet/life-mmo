@@ -9,6 +9,8 @@ import CharacterEditor       from './CharacterEditor/CharacterEditor.jsx'
 import RecordButton          from './RecordButton/RecordButton.jsx'
 import VideoGallery          from './VideoGallery/VideoGallery.jsx'
 import DebugConsole          from './HUD/DebugConsole.jsx'
+import MapEditButton         from './DebugButton/MapEditButton.jsx'
+import DebugPanel            from './DebugButton/DebugPanel.jsx'
 import { useRecorder }       from '../playback/useRecorder.js'
 import { PlaybackEngine }    from '../playback/PlaybackEngine.js'
 import { mirrorVisit }       from '../playback/scenarios/mirrorVisit.js'
@@ -48,6 +50,9 @@ export default function App() {
   const [charColors,    setCharColors]    = useState(() => load(LS_COLORS, DEFAULT_COLORS))
   const [birthData,     setBirthData]     = useState(() => load(LS_BIRTH,  DEFAULT_BIRTH))
   const [charName,      setCharName]      = useState(() => load(LS_NAME,   null))
+  const [debugActive,   setDebugActive]   = useState(false)
+  const [hoveredTile,   setHoveredTile]   = useState(null)
+  const [worldData,     setWorldData]     = useState(null)
 
   const wrapRef          = useViewportScale()
   const gameRef          = useRef(null)
@@ -237,6 +242,9 @@ export default function App() {
           doorUnlockedRef={doorUnlockedRef}
           nameSetRef={nameSetRef}
           colorsSetRef={colorsSetRef}
+          debugActive={debugActive}
+          onHoveredTileChange={setHoveredTile}
+          onWorldDataChange={setWorldData}
         />
         <div className="ui-overlay" ref={uiOverlayRef}>
           {!showDialog && !showHoroscope && <GuidanceVoice text={guidance} />}
@@ -323,15 +331,22 @@ export default function App() {
           setShowHoroscope(false)
         }}
       />
-      <RecordButton
-        status={recorder.status}
-        progress={recorder.progress}
-        recordingCount={recordings.length}
-        onRecord={handleRecord}
-        onRecordGate={handleRecordGate}
-        onStop={handleStop}
-        onOpenGallery={() => setShowGallery(true)}
-      />
+      {debugActive && <DebugPanel hoveredTile={hoveredTile} layers={worldData?.layers} collMap={worldData?.collMap} />}
+      <div className="record-wrap-with-tools">
+        <RecordButton
+          status={recorder.status}
+          progress={recorder.progress}
+          recordingCount={recordings.length}
+          onRecord={handleRecord}
+          onRecordGate={handleRecordGate}
+          onStop={handleStop}
+          onOpenGallery={() => setShowGallery(true)}
+        />
+        <MapEditButton
+          active={debugActive}
+          onToggle={() => setDebugActive(!debugActive)}
+        />
+      </div>
       {showGallery && (
         <VideoGallery
           videos={recordings}

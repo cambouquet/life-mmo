@@ -6,17 +6,24 @@ import { updateDoors, isNearDoor } from '../game/systems/door.js'
 import { resolveGuidance }      from '../game/systems/guidance.js'
 import { resolveInteract }      from '../game/systems/interact.js'
 import { renderScene }          from '../game/draw/scene.js'
+import { mouseTile } from '../game/draw/debug.js'
 
-export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, charColors, playerRef, playerStateRef, doorUnlockedRef, nameSetRef, colorsSetRef }) {
+export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, charColors, playerRef, playerStateRef, doorUnlockedRef, nameSetRef, colorsSetRef, debugActive, onHoveredTileChange, onWorldDataChange }) {
   const pausedRef     = useRef(paused)
   const onInteractRef = useRef(onInteract)
   const onStateRef    = useRef(onStateChange)
   const charColorsRef = useRef(charColors)
+  const debugActiveRef = useRef(debugActive)
+  const onHoveredTileRef = useRef(onHoveredTileChange)
+  const onWorldDataRef = useRef(onWorldDataChange)
 
   useEffect(() => { pausedRef.current     = paused },        [paused])
   useEffect(() => { onInteractRef.current = onInteract },    [onInteract])
   useEffect(() => { onStateRef.current    = onStateChange }, [onStateChange])
   useEffect(() => { charColorsRef.current = charColors },    [charColors])
+  useEffect(() => { debugActiveRef.current = debugActive },  [debugActive])
+  useEffect(() => { onHoveredTileRef.current = onHoveredTileChange }, [onHoveredTileChange])
+  useEffect(() => { onWorldDataRef.current = onWorldDataChange }, [onWorldDataChange])
 
   useEffect(() => {
     const cleanupInput = initInput()
@@ -25,6 +32,9 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
 
     const world = buildWorld(playerStateRef)
     let { map, player } = world
+
+    // Send world data to debug panel
+    onWorldDataRef.current?.({ layers: world.layers, collMap: map })
 
     let torchPhase         = 0
     let last               = 0
@@ -37,6 +47,14 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
     let log                = []
     let door1              = { open: false, progress: 0 }
     let door2              = { open: false, progress: 0 }
+    let hoveredTile = null
+
+    const canvas = canvasRef.current
+    const onMouseMove = e => {
+      hoveredTile = mouseTile(e, canvas, player.x + 8, player.y + 8)
+      onHoveredTileRef.current?.(hoveredTile)
+    }
+    canvas.addEventListener('mousemove', onMouseMove)
 
     function loop(ts) {
       const dt = Math.min((ts - last) / 1000, 0.05)
@@ -85,6 +103,7 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
     let rafId = requestAnimationFrame(loop)
     return () => {
       cleanupInput()
+      canvas.removeEventListener('mousemove', onMouseMove)
       cancelAnimationFrame(rafId)
       if (playerStateRef) playerStateRef.current = { x: player.x, y: player.y, facing: player.facing }
     }

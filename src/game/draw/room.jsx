@@ -1,3 +1,19 @@
+// Iterates through all tiles, calling callback for each tile's draw decision
+export function iterateTiles(ctx, layers, collMap, onTile) {
+  const rows = layers.height
+  const cols = layers.width
+
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      const px = c * TILE
+      const py = r * TILE
+      const coll = collMap[r]?.[c] ?? 5
+
+      onTile(ctx, c, r, px, py, coll, layers)
+    }
+  }
+}
+
 export function drawAura(ctx, cx, cy, rgb, alpha, rx, ry) {
   ctx.save()
   ctx.translate(Math.floor(cx), Math.floor(cy))
@@ -40,25 +56,16 @@ function wallColor(row)  { return WALL_COLORS[row]  ?? '#0c0a14' }
 // layers:  { ground, walls, objects } — 2D grids of { ss, row, variant } | null
 // collMap: 2D collision array (0=floor, 1=wall, 5=void, 6=door-open)
 export function drawRoom(ctx, layers, collMap) {
-  const rows = layers.height
-  const cols = layers.width
+  iterateTiles(ctx, layers, collMap, (ctx, c, r, px, py, coll, layers) => {
+    // Skip void (walls/bounds-of-light handles those tiles)
+    if (coll === 5 || coll === 1) return
 
-  for (let r = 0; r < rows; r++) {
-    for (let c = 0; c < cols; c++) {
-      const px = c * TILE
-      const py = r * TILE
-      const coll = collMap[r]?.[c] ?? 5
+    const groundPixel = layers.ground[r]?.[c]
+    const color = groundPixel
+      ? floorColor(groundPixel.row)
+      : '#0e0b1a'
 
-      // Skip void (walls/bounds-of-light handles those tiles)
-      if (coll === 5 || coll === 1) continue
-
-      const groundPixel = layers.ground[r]?.[c]
-      const color = groundPixel
-        ? floorColor(groundPixel.row)
-        : '#0e0b1a'
-
-      ctx.fillStyle = color
-      ctx.fillRect(px, py, TILE, TILE)
-    }
-  }
+    ctx.fillStyle = color
+    ctx.fillRect(px, py, TILE, TILE)
+  })
 }
