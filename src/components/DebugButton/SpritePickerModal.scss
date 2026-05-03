@@ -1,0 +1,110 @@
+.sprite-picker-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.sprite-picker {
+  background: rgba(6, 4, 14, 0.95);
+  border: 1px solid rgba(100, 180, 255, 0.4);
+  border-radius: 4px;
+  padding: 16px;
+  max-width: 500px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.sprite-picker__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  color: #7ab8ff;
+
+  h3 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+  }
+}
+
+.sprite-picker__close {
+  background: none;
+  border: none;
+  color: #7ab8ff;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 0;
+
+  &:hover {
+    color: #64d9ff;
+  }
+}
+
+.sprite-picker__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 12px;
+}
+
+.sprite-picker__item {
+  background: rgba(100, 180, 255, 0.05);
+  border: 1px solid rgba(100, 180, 255, 0.2);
+  border-radius: 4px;
+  padding: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: #7ab8ff;
+  font-family: 'Outfit', system-ui, -apple-system, sans-serif;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  &:hover {
+    background: rgba(100, 180, 255, 0.15);
+    border-color: rgba(100, 180, 255, 0.4);
+  }
+}
+
+.sprite-picker__preview {
+  width: 100%;
+  height: 80px;
+  background: #0a0612;
+  border: 1px solid rgba(100, 180, 255, 0.2);
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+
+  img {
+    width: 16px;
+    height: 16px;
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
+  }
+}
+
+.sprite-picker__name {
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sprite-picker__desc {
+  font-size: 9px;
+  color: rgba(122, 184, 255, 0.6);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
