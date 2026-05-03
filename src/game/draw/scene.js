@@ -30,7 +30,7 @@ function reflectionData(player, mirrorCX, mirrorCY, charColors) {
 // charColors:  object
 // refs:        { paused, nameSet, colorsSet }
 export function renderScene(ctx, world, state, player, torchPhase, charColors, refs) {
-  const { map, door1Progress, door2Progress, near2, hoveredTile, selectedTile, selectedTiles, layerEdits } = state
+  const { map, door1Progress, door2Progress, near2, hoveredTile, selectedTile, selectedTiles, layerEdits, highlightColors, spriteColorOverrides } = state
   const {
     wallX, gapY1, gapY2,
     wall2X, gap2Y1, gap2Y2,
@@ -60,7 +60,7 @@ export function renderScene(ctx, world, state, player, torchPhase, charColors, r
   drawProximityAura(ctx, MIRROR2_CX, MIRROR2_CY, pcx, pcy, 56, '168,85,247')
 
   // World tiles
-  drawRoom(ctx, world.layers, map, layerEdits)
+  drawRoom(ctx, world.layers, map, layerEdits, spriteColorOverrides)
   drawDoorCorridor(ctx, door1Progress, wallX,  gapY1,  gapY2)
   drawDoorCorridor(ctx, door2Progress, wall2X, gap2Y1, gap2Y2, true)
 
@@ -105,15 +105,15 @@ export function renderScene(ctx, world, state, player, torchPhase, charColors, r
   drawTorch(ctx, TORCHES2[0].c, TORCHES2[0].r, torchPhase, near2)
   drawTorch(ctx, TORCHES2[1].c, TORCHES2[1].r, torchPhase, near2)
 
-  // Highlight selected tiles (brightest) - on top
+  // Highlight selected tiles - on top
   if (selectedTiles && selectedTiles.length > 0) {
     selectedTiles.forEach(tile => {
       const x = tile.c * TILE
       const y = tile.r * TILE
-      ctx.fillStyle = 'rgba(100,200,255,0.35)'
+      ctx.fillStyle = highlightColors?.selectedFill || 'rgba(100,200,255,0.15)'
       ctx.fillRect(x, y, TILE, TILE)
-      ctx.strokeStyle = 'rgba(100,255,255,0.8)'
-      ctx.lineWidth = 1
+      ctx.strokeStyle = highlightColors?.selectedStroke || 'rgba(100,220,255,0.5)'
+      ctx.lineWidth = 0.5
       ctx.strokeRect(x, y, TILE, TILE)
     })
   }
@@ -122,9 +122,9 @@ export function renderScene(ctx, world, state, player, torchPhase, charColors, r
   if (hoveredTile && !selectedTiles?.some(t => t.c === hoveredTile.c && t.r === hoveredTile.r)) {
     const x = hoveredTile.c * TILE
     const y = hoveredTile.r * TILE
-    ctx.fillStyle = 'rgba(100,200,255,0.15)'
+    ctx.fillStyle = highlightColors?.hoveredFill || 'rgba(100,200,255,0.15)'
     ctx.fillRect(x, y, TILE, TILE)
-    ctx.strokeStyle = 'rgba(100,220,255,0.4)'
+    ctx.strokeStyle = highlightColors?.hoveredStroke || 'rgba(100,220,255,0.4)'
     ctx.lineWidth = 0.5
     ctx.strokeRect(x, y, TILE, TILE)
   }

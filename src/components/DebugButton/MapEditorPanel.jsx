@@ -19,9 +19,11 @@ const SPRITESHEET_VALUES = {
   0x04: SPRITESHEETS_DATA['0x04'].name,
 }
 
-export default function MapEditorPanel({ hoveredTile, layers, collMap, layerEdits, onEditSprite }) {
+export default function MapEditorPanel({ hoveredTile, layers, collMap, layerEdits, onEditSprite, highlightColors, onHighlightColorsChange, spriteColorOverrides, onSpriteColorChange }) {
   const [editingField, setEditingField] = useState(null)
   const [pickerOpen, setPickerOpen] = useState(null)
+  const [activeTab, setActiveTab] = useState('tiles') // 'tiles' or 'colors'
+  const [selectedSpriteForColor, setSelectedSpriteForColor] = useState(null) // { type: 'floor'|'wall', row: 0, ss: 0x00 }
 
   if (!hoveredTile || !layers) return null
 
@@ -104,9 +106,40 @@ export default function MapEditorPanel({ hoveredTile, layers, collMap, layerEdit
   return (
     <div className="cell-info">
       <div className="cell-info__header">
-        {isMultiSelect ? `${tiles.length} tiles selected` : `(${c}, ${r})`}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span>{isMultiSelect ? `${tiles.length} tiles selected` : `(${c}, ${r})`}</span>
+          <div style={{ display: 'flex', gap: '8px', fontSize: '11px' }}>
+            <button
+              onClick={() => setActiveTab('tiles')}
+              style={{
+                background: activeTab === 'tiles' ? 'rgba(100, 220, 255, 0.3)' : 'transparent',
+                border: activeTab === 'tiles' ? '1px solid rgba(100, 220, 255, 0.8)' : '1px solid rgba(100, 180, 255, 0.2)',
+                color: '#7ab8ff',
+                padding: '4px 8px',
+                borderRadius: '2px',
+                cursor: 'pointer',
+              }}
+            >
+              Tiles
+            </button>
+            <button
+              onClick={() => setActiveTab('colors')}
+              style={{
+                background: activeTab === 'colors' ? 'rgba(100, 220, 255, 0.3)' : 'transparent',
+                border: activeTab === 'colors' ? '1px solid rgba(100, 220, 255, 0.8)' : '1px solid rgba(100, 180, 255, 0.2)',
+                color: '#7ab8ff',
+                padding: '4px 8px',
+                borderRadius: '2px',
+                cursor: 'pointer',
+              }}
+            >
+              Colors
+            </button>
+          </div>
+        </div>
       </div>
 
+      {activeTab === 'tiles' ? (
       <div className="cell-info__preview">
         <div className="cell-info__preview-layers">
           <div className="cell-info__preview-col">
@@ -170,19 +203,115 @@ export default function MapEditorPanel({ hoveredTile, layers, collMap, layerEdit
           </div>
         </div>
       </div>
-
+      ) : (
+      <div style={{ padding: '12px 8px' }}>
+        <div style={{ fontSize: '10px', color: '#7ab8ff', marginBottom: '12px', fontWeight: '600' }}>
+          Sprite Colors
+        </div>
+        <div style={{ marginBottom: '12px' }}>
+          <label style={{ fontSize: '10px', color: '#7ab8ff', display: 'block', marginBottom: '6px' }}>Select Sprite Type</label>
+          <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
+            {['floor', 'wall'].map(type => (
+              <button
+                key={type}
+                onClick={() => {
+                  // Set up to select a sprite of this type
+                  setPickerOpen(type)
+                }}
+                style={{
+                  padding: '4px 8px',
+                  fontSize: '9px',
+                  background: 'rgba(100, 180, 255, 0.1)',
+                  border: '1px solid rgba(100, 180, 255, 0.3)',
+                  color: '#7ab8ff',
+                  borderRadius: '2px',
+                  cursor: 'pointer',
+                  textTransform: 'capitalize',
+                }}
+              >
+                {type}
+              </button>
+            ))}
+          </div>
+        </div>
+        {!selectedSpriteForColor ? (
+          <div style={{ padding: '8px', background: 'rgba(100, 180, 255, 0.05)', borderRadius: '2px', fontSize: '9px', color: 'rgba(122, 184, 255, 0.7)' }}>
+            Click a sprite type above to select a sprite color to edit
+          </div>
+        ) : (
+          <div style={{ padding: '8px', background: 'rgba(100, 180, 255, 0.05)', borderRadius: '2px', marginBottom: '12px' }}>
+            <div style={{ fontSize: '10px', color: '#7ab8ff', marginBottom: '4px' }}>
+              {selectedSpriteForColor.name}
+            </div>
+            <button
+              onClick={() => setSelectedSpriteForColor(null)}
+              style={{
+                padding: '4px 8px',
+                fontSize: '9px',
+                background: 'rgba(100, 180, 255, 0.1)',
+                border: '1px solid rgba(100, 180, 255, 0.3)',
+                color: '#7ab8ff',
+                borderRadius: '2px',
+                cursor: 'pointer',
+              }}
+            >
+              Change Sprite
+            </button>
+          </div>
+        )}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          {selectedSpriteForColor && (
+            <div>
+              <label style={{ fontSize: '10px', color: '#7ab8ff', display: 'block', marginBottom: '4px' }}>Color</label>
+              <input
+                type="color"
+                value={spriteColorOverrides[`${selectedSpriteForColor.ss}_${selectedSpriteForColor.row}`]?.substring(0, 7) || '#ff0000'}
+                onChange={(e) => {
+                  const key = `${selectedSpriteForColor.ss}_${selectedSpriteForColor.row}`
+                  onSpriteColorChange(prev => ({
+                    ...prev,
+                    [key]: e.target.value
+                  }))
+                }}
+                style={{
+                  width: '100%',
+                  height: '32px',
+                  border: '1px solid rgba(100, 180, 255, 0.3)',
+                  borderRadius: '2px',
+                  cursor: 'pointer',
+                }}
+              />
+              <div style={{ fontSize: '9px', color: 'rgba(122, 184, 255, 0.6)', marginTop: '4px', textAlign: 'center' }}>
+                {selectedSpriteForColor.name}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+      )}
 
       {pickerOpen && (
         <SpritePickerModal
           category={pickerOpen}
           currentSprite={
-            pickerOpen === 'floor' ? ground :
-            pickerOpen === 'wall' ? wall :
-            pickerOpen === 'table' ? obj :
-            pickerOpen === 'torch' ? entity :
-            null
+            activeTab === 'tiles' ? (
+              pickerOpen === 'floor' ? ground :
+              pickerOpen === 'wall' ? wall :
+              pickerOpen === 'table' ? obj :
+              pickerOpen === 'torch' ? entity :
+              null
+            ) : (
+              selectedSpriteForColor
+            )
           }
-          onSelect={(sprite) => handleSpriteSelect(pickerOpen, sprite)}
+          onSelect={(sprite) => {
+            if (activeTab === 'colors') {
+              setSelectedSpriteForColor(sprite)
+              setPickerOpen(null)
+            } else {
+              handleSpriteSelect(pickerOpen, sprite)
+            }
+          }}
           onClose={() => setPickerOpen(null)}
         />
       )}

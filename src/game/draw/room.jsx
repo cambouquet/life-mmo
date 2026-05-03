@@ -53,7 +53,8 @@ function wallColor(row)  { return spriteColors.wall[row]  ?? spriteColors.wall[0
 // layers:  { ground, walls, objects } — 2D grids of { ss, row, variant } | null
 // collMap: 2D collision array (0=floor, 1=wall, 5=void, 6=door-open)
 // layerEdits: map of edits from the editor { "c,r": { ground, wall, obj, entity } }
-export function drawRoom(ctx, layers, collMap, layerEdits = {}) {
+// spriteColorOverrides: map of color overrides { "ss_row": "#hexcolor" }
+export function drawRoom(ctx, layers, collMap, layerEdits = {}, spriteColorOverrides = {}) {
   iterateTiles(ctx, layers, collMap, (ctx, c, r, px, py, coll, layers) => {
     // Skip void (walls/bounds-of-light handles those tiles)
     if (coll === 5 || coll === 1) return
@@ -61,9 +62,18 @@ export function drawRoom(ctx, layers, collMap, layerEdits = {}) {
     const tileKey = `${c},${r}`
     const edit = layerEdits[tileKey]
     const groundPixel = edit?.ground ?? layers.ground[r]?.[c]
-    const color = groundPixel
+
+    let color = groundPixel
       ? floorColor(groundPixel.row)
       : '#0e0b1a'
+
+    // Apply color override if it exists
+    if (groundPixel) {
+      const overrideKey = `${groundPixel.ss}_${groundPixel.row}`
+      if (spriteColorOverrides[overrideKey]) {
+        color = spriteColorOverrides[overrideKey]
+      }
+    }
 
     ctx.fillStyle = color
     ctx.fillRect(px, py, TILE, TILE)

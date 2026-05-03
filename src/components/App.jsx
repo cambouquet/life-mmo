@@ -20,6 +20,7 @@ const LS_COLORS = 'life-mmo-colors-v3'
 const LS_BIRTH  = 'life-mmo-birth'
 const LS_NAME   = 'life-mmo-name'
 const LS_MAP_EDITS = 'life-mmo-map-edits'
+const LS_SPRITE_COLORS = 'life-mmo-sprite-colors'
 
 const DEFAULT_COLORS = { hair: '#ffffff', skin: '#ffffff', eyes: '#ffffff', outfit: '#ffffff', stick: '#ffffff' }
 const DEFAULT_BIRTH = {
@@ -55,6 +56,13 @@ export default function App() {
   const [hoveredTile,   setHoveredTile]   = useState(null)
   const [worldData,     setWorldData]     = useState(null)
   const [layerEdits,    setLayerEdits]    = useState(() => load(LS_MAP_EDITS, {}))
+  const [spriteColorOverrides, setSpriteColorOverrides] = useState(() => load(LS_SPRITE_COLORS, {}))
+  const [highlightColors, setHighlightColors] = useState({
+    selectedFill: 'rgba(100,200,255,0.15)',
+    selectedStroke: 'rgba(100,220,255,0.5)',
+    hoveredFill: 'rgba(100,200,255,0.15)',
+    hoveredStroke: 'rgba(100,220,255,0.4)',
+  })
 
   const wrapRef          = useViewportScale()
   const gameRef          = useRef(null)
@@ -76,6 +84,13 @@ export default function App() {
       localStorage.setItem(LS_MAP_EDITS, JSON.stringify(layerEdits))
     }
   }, [layerEdits])
+
+  // Save sprite color overrides to localStorage
+  useEffect(() => {
+    if (Object.keys(spriteColorOverrides).length > 0) {
+      localStorage.setItem(LS_SPRITE_COLORS, JSON.stringify(spriteColorOverrides))
+    }
+  }, [spriteColorOverrides])
 
   const recorder      = useRecorder({
     onReady: (blob, filename) => {
@@ -254,6 +269,8 @@ export default function App() {
           colorsSetRef={colorsSetRef}
           debugActive={debugActive}
           layerEdits={layerEdits}
+          highlightColors={highlightColors}
+          spriteColorOverrides={spriteColorOverrides}
           onHoveredTileChange={setHoveredTile}
           onWorldDataChange={setWorldData}
         />
@@ -349,6 +366,10 @@ export default function App() {
           collMap={worldData?.collMap}
           layerEdits={layerEdits}
           onEditSprite={setLayerEdits}
+          highlightColors={highlightColors}
+          onHighlightColorsChange={setHighlightColors}
+          spriteColorOverrides={spriteColorOverrides}
+          onSpriteColorChange={setSpriteColorOverrides}
         />
       )}
       <div className="record-wrap-with-tools">
