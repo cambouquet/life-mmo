@@ -48,13 +48,20 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
     let door1              = { open: false, progress: 0 }
     let door2              = { open: false, progress: 0 }
     let hoveredTile = null
+    let selectedTile = null
 
     const canvas = canvasRef.current
     const onMouseMove = e => {
       hoveredTile = mouseTile(e, canvas, player.x + 8, player.y + 8)
-      onHoveredTileRef.current?.(hoveredTile)
+      onHoveredTileRef.current?.(selectedTile || hoveredTile)
+    }
+    const onClick = e => {
+      if (!debugActiveRef.current) return
+      selectedTile = mouseTile(e, canvas, player.x + 8, player.y + 8)
+      onHoveredTileRef.current?.(selectedTile)
     }
     canvas.addEventListener('mousemove', onMouseMove)
+    canvas.addEventListener('click', onClick)
 
     function loop(ts) {
       const dt = Math.min((ts - last) / 1000, 0.05)
@@ -91,7 +98,7 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
       }
 
       const near2 = door2.open || isNearDoor(player, world.DOOR2_WX, world.DOOR2_WY)
-      renderScene(ctx, world, { map, door1Progress: door1.progress, door2Progress: door2.progress, near2 }, player, torchPhase, charColorsRef.current, {
+      renderScene(ctx, world, { map, door1Progress: door1.progress, door2Progress: door2.progress, near2, hoveredTile, selectedTile }, player, torchPhase, charColorsRef.current, {
         paused:    pausedRef.current,
         nameSet:   !!nameSetRef?.current,
         colorsSet: !!colorsSetRef?.current,
@@ -104,6 +111,7 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
     return () => {
       cleanupInput()
       canvas.removeEventListener('mousemove', onMouseMove)
+      canvas.removeEventListener('click', onClick)
       cancelAnimationFrame(rafId)
       if (playerStateRef) playerStateRef.current = { x: player.x, y: player.y, facing: player.facing }
     }

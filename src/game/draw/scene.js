@@ -1,4 +1,4 @@
-import { DRAW_SCALE } from '../constants.jsx'
+import { DRAW_SCALE, TILE } from '../constants.jsx'
 import { drawRoom }          from './room.jsx'
 import { drawTable }         from './table.jsx'
 import { drawWarriorSprite } from './warrior.jsx'
@@ -30,7 +30,7 @@ function reflectionData(player, mirrorCX, mirrorCY, charColors) {
 // charColors:  object
 // refs:        { paused, nameSet, colorsSet }
 export function renderScene(ctx, world, state, player, torchPhase, charColors, refs) {
-  const { map, door1Progress, door2Progress, near2 } = state
+  const { map, door1Progress, door2Progress, near2, hoveredTile, selectedTile } = state
   const {
     wallX, gapY1, gapY2,
     wall2X, gap2Y1, gap2Y2,
@@ -104,6 +104,28 @@ export function renderScene(ctx, world, state, player, torchPhase, charColors, r
   drawTorch(ctx, TORCHES[1].c,  TORCHES[1].r,  torchPhase, refs.colorsSet)
   drawTorch(ctx, TORCHES2[0].c, TORCHES2[0].r, torchPhase, near2)
   drawTorch(ctx, TORCHES2[1].c, TORCHES2[1].r, torchPhase, near2)
+
+  // Highlight hovered cell (dimmer) - always show if hovering
+  if (hoveredTile && (!selectedTile || (hoveredTile.c !== selectedTile.c || hoveredTile.r !== selectedTile.r))) {
+    const x = hoveredTile.c * TILE
+    const y = hoveredTile.r * TILE
+    ctx.fillStyle = 'rgba(100,200,255,0.15)'
+    ctx.fillRect(x, y, TILE, TILE)
+    ctx.strokeStyle = 'rgba(100,220,255,0.4)'
+    ctx.lineWidth = 0.5
+    ctx.strokeRect(x, y, TILE, TILE)
+  }
+
+  // Highlight selected cell (brighter) - on top
+  if (selectedTile) {
+    const x = selectedTile.c * TILE
+    const y = selectedTile.r * TILE
+    ctx.fillStyle = 'rgba(100,200,255,0.35)'
+    ctx.fillRect(x, y, TILE, TILE)
+    ctx.strokeStyle = 'rgba(100,255,255,0.8)'
+    ctx.lineWidth = 1
+    ctx.strokeRect(x, y, TILE, TILE)
+  }
 
   ctx.restore()
 }
