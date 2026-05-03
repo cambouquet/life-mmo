@@ -46,7 +46,7 @@ const TILE = 16
 
 // Spritesheet color palettes indexed by (ss, row)
 // These must match the colors used in generate-spritesheets.mjs
-const FLOOR_COLORS = ['#0e0b1a', '#0b0917', '#06040e', '#0e0b1a']
+const FLOOR_COLORS = ['#0e0b1a', '#0b0917', '#06040e', '#ff0000']
 const WALL_COLORS  = ['#0c0a14', '#1e1a38', '#100e1c', '#0e0c1c']
 
 function floorColor(row) { return FLOOR_COLORS[row] ?? '#0e0b1a' }
