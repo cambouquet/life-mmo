@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from 'react'
+import { useState, useCallback, useRef, useEffect } from 'react'
 import { useViewportScale }  from '../hooks/useViewportScale.jsx'
 import HUD                   from './HUD/HUD.jsx'
 import Game                  from './Game/Game.jsx'
@@ -19,6 +19,7 @@ import { gateRun }           from '../playback/scenarios/gateRun.js'
 const LS_COLORS = 'life-mmo-colors-v3'
 const LS_BIRTH  = 'life-mmo-birth'
 const LS_NAME   = 'life-mmo-name'
+const LS_MAP_EDITS = 'life-mmo-map-edits'
 
 const DEFAULT_COLORS = { hair: '#ffffff', skin: '#ffffff', eyes: '#ffffff', outfit: '#ffffff', stick: '#ffffff' }
 const DEFAULT_BIRTH = {
@@ -53,7 +54,7 @@ export default function App() {
   const [debugActive,   setDebugActive]   = useState(false)
   const [hoveredTile,   setHoveredTile]   = useState(null)
   const [worldData,     setWorldData]     = useState(null)
-  const [layerEdits,    setLayerEdits]    = useState({})
+  const [layerEdits,    setLayerEdits]    = useState(() => load(LS_MAP_EDITS, {}))
 
   const wrapRef          = useViewportScale()
   const gameRef          = useRef(null)
@@ -68,6 +69,14 @@ export default function App() {
   nameSetRef.current   = !!charName
   colorsSetRef.current = Object.values(charColors).every(v => v !== '#ffffff')
   doorUnlockedRef.current = nameSetRef.current && colorsSetRef.current
+
+  // Save layer edits to localStorage
+  useEffect(() => {
+    if (Object.keys(layerEdits).length > 0) {
+      localStorage.setItem(LS_MAP_EDITS, JSON.stringify(layerEdits))
+    }
+  }, [layerEdits])
+
   const recorder      = useRecorder({
     onReady: (blob, filename) => {
       const url = URL.createObjectURL(blob)

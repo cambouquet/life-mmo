@@ -130,18 +130,15 @@ export default function MapEditorPanel({ hoveredTile, layers, collMap, layerEdit
 
         <div className="cell-info__render">
           <div className="cell-info__render-title">Cell Render</div>
-          <div className="cell-info__render-view" style={{ position: 'relative' }}>
-            {ground && (
-              <div style={{ position: 'absolute', width: '96px', height: '96px', backgroundImage: `url(${getSpriteUrl(ground.ss)})`, backgroundPosition: `0 ${ground.row * -16}px`, backgroundSize: '16px 16px', backgroundRepeat: 'no-repeat', backgroundOrigin: 'content-box' }} />
-            )}
+          <div className="cell-info__render-view" style={{ position: 'relative', backgroundColor: ground ? getSpriteColor(ground.ss, ground.row) : '#0a0612' }}>
             {wall && (
-              <div style={{ position: 'absolute', width: '96px', height: '96px', backgroundImage: `url(${getSpriteUrl(wall.ss)})`, backgroundPosition: `0 ${wall.row * -16}px`, backgroundSize: '16px 16px', backgroundRepeat: 'no-repeat', backgroundOrigin: 'content-box' }} />
+              <div style={{ position: 'absolute', top: 0, left: 0, width: '96px', height: '96px', backgroundColor: getSpriteColor(wall.ss, wall.row), opacity: 0.8 }} />
             )}
             {obj && (
-              <div style={{ position: 'absolute', width: '96px', height: '96px', backgroundImage: `url(${getSpriteUrl(obj.ss)})`, backgroundPosition: `0 ${obj.row * -32}px`, backgroundSize: '32px 32px', backgroundRepeat: 'no-repeat', backgroundOrigin: 'content-box' }} />
+              <div style={{ position: 'absolute', top: '32px', left: '32px', width: '32px', height: '32px', backgroundColor: getSpriteColor(obj.ss, obj.row) }} />
             )}
             {entity && (
-              <div style={{ position: 'absolute', width: '96px', height: '96px', backgroundImage: `url(${getSpriteUrl(entity.ss)})`, backgroundPosition: `0 ${entity.row * -16}px`, backgroundSize: '16px 16px', backgroundRepeat: 'no-repeat', backgroundOrigin: 'content-box' }} />
+              <div style={{ position: 'absolute', top: '40px', left: '40px', width: '16px', height: '16px', backgroundColor: getSpriteColor(entity.ss, entity.row) }} />
             )}
           </div>
         </div>
