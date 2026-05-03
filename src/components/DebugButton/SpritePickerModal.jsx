@@ -1,85 +1,74 @@
 import './SpritePickerModal.scss'
 
-const SPRITE_CATALOG = {
-  floor: {
-    name: 'Floor',
-    spritesheet: 0x00,
-    options: [
-      { name: 'floor_a', row: 0, desc: 'Checkerboard even' },
-      { name: 'floor_b', row: 1, desc: 'Checkerboard odd' },
-      { name: 'void', row: 2, desc: 'Void gap' },
-    ]
-  },
-  wall: {
-    name: 'Wall',
-    spritesheet: 0x01,
-    options: [
-      { name: 'wall_solid', row: 0, desc: 'Side walls' },
-      { name: 'wall_top', row: 1, desc: 'Top edge' },
-      { name: 'wall_face', row: 2, desc: 'Bottom edge' },
-      { name: 'wall_corner', row: 3, desc: 'Corner' },
-    ]
-  },
-  mirror: {
-    name: 'Mirror',
-    spritesheet: 0x02,
-    options: [
-      { name: 'mirror_left', row: 0, desc: 'Limited (left room)' },
-      { name: 'mirror_full', row: 1, desc: 'Full (mid room)' },
-    ]
-  },
-  table: {
-    name: 'Table',
-    spritesheet: 0x03,
-    options: [
-      { name: 'table', row: 0, desc: 'Divination table' },
-    ]
-  },
-  torch: {
-    name: 'Torch',
-    spritesheet: 0x04,
-    options: [
-      { name: 'torch_d1_top', row: 0, desc: 'Door 1 top' },
-      { name: 'torch_d1_bot', row: 1, desc: 'Door 1 bottom' },
-      { name: 'torch_d2_top', row: 2, desc: 'Door 2 top' },
-      { name: 'torch_d2_bot', row: 3, desc: 'Door 2 bottom' },
-    ]
-  },
+const SPRITESHEETS = {
+  0x00: { name: 'Floor', file: 'ss00_floor.png', tileSize: 16, rows: 4 },
+  0x01: { name: 'Wall', file: 'ss01_wall.png', tileSize: 16, rows: 4 },
+  0x02: { name: 'Mirror', file: 'ss02_mirror.png', tileSize: 32, rows: 2 },
+  0x03: { name: 'Table', file: 'ss03_table.png', tileSize: 32, rows: 1 },
+  0x04: { name: 'Torch', file: 'ss04_torch.png', tileSize: 16, rows: 4 },
+}
+
+const SPRITE_NAMES = {
+  '0x00_0': 'floor_a',
+  '0x00_1': 'floor_b',
+  '0x00_2': 'void',
+  '0x00_3': 'floor_red',
+  '0x01_0': 'wall_solid',
+  '0x01_1': 'wall_top',
+  '0x01_2': 'wall_face',
+  '0x01_3': 'wall_corner',
+  '0x02_0': 'mirror_left',
+  '0x02_1': 'mirror_full',
+  '0x03_0': 'table',
+  '0x04_0': 'torch_d1_top',
+  '0x04_1': 'torch_d1_bot',
+  '0x04_2': 'torch_d2_top',
+  '0x04_3': 'torch_d2_bot',
 }
 
 export default function SpritePickerModal({ category, onSelect, onClose }) {
-  const sprites = SPRITE_CATALOG[category]
-  if (!sprites) return null
+  const getCategoryId = (cat) => {
+    const map = { floor: 0x00, wall: 0x01, mirror: 0x02, table: 0x03, torch: 0x04 }
+    return map[cat]
+  }
+
+  const ssId = getCategoryId(category)
+  const ss = SPRITESHEETS[ssId]
+  if (!ss) return null
 
   return (
     <div className="sprite-picker-overlay" onClick={onClose}>
       <div className="sprite-picker" onClick={(e) => e.stopPropagation()}>
         <div className="sprite-picker__header">
-          <h3>{sprites.name}</h3>
+          <h3>{ss.name}</h3>
           <button className="sprite-picker__close" onClick={onClose}>✕</button>
         </div>
         <div className="sprite-picker__grid">
-          {sprites.options.map((sprite) => (
-            <button
-              key={sprite.name}
-              className="sprite-picker__item"
-              onClick={() => onSelect(sprite)}
-              title={sprite.desc}
-            >
-              <div className="sprite-picker__preview">
-                <img
-                  src={`/src/assets/sprites/ss${sprites.spritesheet.toString(16).padStart(2, '0')}_*.png`}
-                  alt={sprite.name}
-                  style={{
-                    objectPosition: `0 ${sprite.row * -16}px`,
-                    backgroundColor: '#06040e'
-                  }}
-                />
-              </div>
-              <div className="sprite-picker__name">{sprite.name}</div>
-              <div className="sprite-picker__desc">{sprite.desc}</div>
-            </button>
-          ))}
+          {Array.from({ length: ss.rows }).map((_, row) => {
+            const spriteName = SPRITE_NAMES[`${ssId.toString(16).padStart(2, '0')}_${row}`] || `row_${row}`
+            return (
+              <button
+                key={row}
+                className="sprite-picker__item"
+                onClick={() => onSelect({ ss: ssId, row, name: spriteName })}
+              >
+                <div className="sprite-picker__preview" style={{ backgroundSize: `${ss.tileSize}px ${ss.tileSize}px` }}>
+                  <img
+                    src={`/src/assets/sprites/${ss.file}`}
+                    alt={spriteName}
+                    style={{
+                      objectPosition: `0 ${row * -ss.tileSize}px`,
+                      backgroundColor: '#06040e',
+                      width: ss.tileSize,
+                      height: ss.tileSize,
+                    }}
+                  />
+                </div>
+                <div className="sprite-picker__name">{spriteName}</div>
+                <div className="sprite-picker__desc">Row {row}</div>
+              </button>
+            )
+          })}
         </div>
       </div>
     </div>

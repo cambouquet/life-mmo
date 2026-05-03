@@ -51,13 +51,14 @@ function save(png, name) {
   console.log(`  wrote ${name}  (${png.width}×${png.height})`)
 }
 
-// ── SS00: Floor (16×16 × 3 rows) ──────────────────────────────────────────
+// ── SS00: Floor (16×16 × 4 rows) ──────────────────────────────────────────
 // Row 0: floor_a (checkerboard even)
 // Row 1: floor_b (checkerboard odd)
 // Row 2: floor_void (void gap — impassable darkness)
+// Row 3: floor_red (red floor for testing)
 function genFloor() {
   const T = 16
-  const png = makePNG(T, T * 3)
+  const png = makePNG(T, T * 4)
 
   // Row 0 — floor_a
   fillRect(png, 0, 0, T, T, '#0e0b1a')
@@ -74,6 +75,12 @@ function genFloor() {
 
   // Row 2 — void
   fillRect(png, 0, T*2, T, T, '#06040e')
+
+  // Row 3 — floor_red (bright red for testing)
+  fillRect(png, 0, T*3, T, T, '#ff0000')
+  for (let y = 0; y < T; y++)
+    for (let x = 0; x < T; x++)
+      if ((x + y) % 7 === 0) pxh(png, x, T*3 + y, '#cc0000')
 
   save(png, 'ss00_floor.png')
 }

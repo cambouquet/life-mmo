@@ -16,8 +16,115 @@
 
 .cell-info__header {
   font-weight: bold;
-  margin-bottom: 2px;
+  margin-bottom: 8px;
   line-height: 1;
+}
+
+.cell-info__preview {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.cell-info__preview-layers {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.cell-info__preview-col {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cell-info__layer-label {
+  font-size: 8px;
+  font-weight: 600;
+  color: rgba(122, 184, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.cell-info__preview-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: center;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  strong {
+    font-size: 9px;
+  }
+
+  &:hover .cell-info__sprite-large {
+    border-color: rgba(100, 220, 255, 0.8);
+    box-shadow: 0 0 8px rgba(100, 180, 255, 0.3);
+  }
+}
+
+.cell-info__sprite-large {
+  width: 48px;
+  height: 48px;
+  background-size: 16px 16px;
+  background-repeat: no-repeat;
+  background-color: #0a0612;
+  border: 1px solid rgba(100, 180, 255, 0.3);
+  border-radius: 2px;
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cell-info__sprite-empty {
+  background-color: #06040e !important;
+  color: rgba(100, 180, 255, 0.3);
+  font-size: 16px;
+}
+
+.cell-info__sprite-empty::before {
+  content: '—';
+}
+
+.cell-info__render {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cell-info__render-title {
+  font-size: 9px;
+  font-weight: 600;
+  color: #7ab8ff;
+}
+
+.cell-info__render-view {
+  width: 96px;
+  height: 96px;
+  background-color: #0a0612;
+  border: 1px solid rgba(100, 180, 255, 0.3);
+  border-radius: 2px;
+  position: relative;
+  overflow: hidden;
+
+  > div {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-repeat: no-repeat;
+    background-position: center;
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
+  }
 }
 
 .cell-info__line {

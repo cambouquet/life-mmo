@@ -33,6 +33,7 @@ export default function CellInfo({ hoveredTile, layers, collMap }) {
 
   const handleSpriteSelect = (field, sprite) => {
     console.log(`Edited ${field} at (${c},${r}):`, sprite)
+    // TODO: Save sprite to map data
     setPickerOpen(null)
   }
 
@@ -50,49 +51,91 @@ export default function CellInfo({ hoveredTile, layers, collMap }) {
 
   const collOptions = Object.values(COLL_VALUES)
 
+  const getSpriteUrl = (ss) => {
+    const ssHex = ss.toString(16).padStart(2, '0')
+    const ssNames = {
+      '00': 'ss00_floor.png',
+      '01': 'ss01_wall.png',
+      '02': 'ss02_mirror.png',
+      '03': 'ss03_table.png',
+      '04': 'ss04_torch.png',
+    }
+    return `/src/assets/sprites/${ssNames[ssHex] || ''}`
+  }
+
+  const getSpriteSize = (ss) => {
+    if (ss === 0x02) return 32 // mirror
+    if (ss === 0x03) return 32 // table
+    return 16 // floor, wall, torch
+  }
+
   return (
     <div className="cell-info">
       <div className="cell-info__header">({c}, {r})</div>
 
-      <div className="cell-info__line">
-        <strong>Collision type:</strong>
-        <select
-          value={collName}
-          onChange={(e) => console.log('Changed collision to', e.target.value)}
-          className="cell-info__select"
-        >
-          {collOptions.map((opt) => (
-            <option key={opt} value={opt}>
-              {opt}
-            </option>
-          ))}
-        </select>
+      <div className="cell-info__preview">
+        <div className="cell-info__preview-layers">
+          <div className="cell-info__preview-col">
+            <div className="cell-info__layer-label">Layer 0</div>
+            <button className="cell-info__preview-item" onClick={() => setPickerOpen('floor')}>
+              <strong>Ground</strong>
+              {ground ? (
+                <div className="cell-info__sprite-large" style={{ backgroundImage: `url(${getSpriteUrl(ground.ss)})`, backgroundPosition: `0 ${ground.row * -16}px` }} />
+              ) : (
+                <div className="cell-info__sprite-large cell-info__sprite-empty" />
+              )}
+            </button>
+            <div className="cell-info__layer-label">Layer 1</div>
+            <button className="cell-info__preview-item" onClick={() => setPickerOpen('wall')}>
+              <strong>Wall</strong>
+              {wall ? (
+                <div className="cell-info__sprite-large" style={{ backgroundImage: `url(${getSpriteUrl(wall.ss)})`, backgroundPosition: `0 ${wall.row * -16}px` }} />
+              ) : (
+                <div className="cell-info__sprite-large cell-info__sprite-empty" />
+              )}
+            </button>
+          </div>
+          <div className="cell-info__preview-col">
+            <div className="cell-info__layer-label">Layer 2</div>
+            <button className="cell-info__preview-item" onClick={() => setPickerOpen('table')}>
+              <strong>Object</strong>
+              {obj ? (
+                <div className="cell-info__sprite-large" style={{ backgroundImage: `url(${getSpriteUrl(obj.ss)})`, backgroundPosition: `0 ${obj.row * -32}px` }} />
+              ) : (
+                <div className="cell-info__sprite-large cell-info__sprite-empty" />
+              )}
+            </button>
+            <div className="cell-info__layer-label">Layer 3</div>
+            <button className="cell-info__preview-item" onClick={() => setPickerOpen('torch')}>
+              <strong>Entity</strong>
+              {entity ? (
+                <div className="cell-info__sprite-large" style={{ backgroundImage: `url(${getSpriteUrl(entity.ss)})`, backgroundPosition: `0 ${entity.row * -16}px` }} />
+              ) : (
+                <div className="cell-info__sprite-large cell-info__sprite-empty" />
+              )}
+            </button>
+          </div>
+        </div>
+
+        <div className="cell-info__render">
+          <div className="cell-info__render-title">Cell Render</div>
+          <div className="cell-info__render-view" style={{ position: 'relative' }}>
+            {ground && (
+              <div style={{ position: 'absolute', width: '96px', height: '96px', backgroundImage: `url(${getSpriteUrl(ground.ss)})`, backgroundPosition: `0 ${ground.row * -16}px`, backgroundSize: '16px 16px', backgroundRepeat: 'no-repeat', backgroundOrigin: 'content-box' }} />
+            )}
+            {wall && (
+              <div style={{ position: 'absolute', width: '96px', height: '96px', backgroundImage: `url(${getSpriteUrl(wall.ss)})`, backgroundPosition: `0 ${wall.row * -16}px`, backgroundSize: '16px 16px', backgroundRepeat: 'no-repeat', backgroundOrigin: 'content-box' }} />
+            )}
+            {obj && (
+              <div style={{ position: 'absolute', width: '96px', height: '96px', backgroundImage: `url(${getSpriteUrl(obj.ss)})`, backgroundPosition: `0 ${obj.row * -32}px`, backgroundSize: '32px 32px', backgroundRepeat: 'no-repeat', backgroundOrigin: 'content-box' }} />
+            )}
+            {entity && (
+              <div style={{ position: 'absolute', width: '96px', height: '96px', backgroundImage: `url(${getSpriteUrl(entity.ss)})`, backgroundPosition: `0 ${entity.row * -16}px`, backgroundSize: '16px 16px', backgroundRepeat: 'no-repeat', backgroundOrigin: 'content-box' }} />
+            )}
+          </div>
+        </div>
       </div>
 
-      <EditableField
-        label="Ground"
-        value={ground ? `${SPRITESHEET_VALUES[ground.ss] || ground.ss}` : '—'}
-        field="ground"
-        onEdit={() => setPickerOpen('floor')}
-      />
-      <EditableField
-        label="Wall"
-        value={wall ? `${SPRITESHEET_VALUES[wall.ss] || wall.ss}` : '—'}
-        field="wall"
-        onEdit={() => setPickerOpen('wall')}
-      />
-      <EditableField
-        label="Object"
-        value={obj ? `${SPRITESHEET_VALUES[obj.ss] || obj.ss}` : '—'}
-        field="object"
-        onEdit={() => setPickerOpen('table')}
-      />
-      <EditableField
-        label="Entity"
-        value={entity ? `${SPRITESHEET_VALUES[entity.ss] || entity.ss}` : '—'}
-        field="entity"
-        onEdit={() => setPickerOpen('torch')}
-      />
 
       {pickerOpen && (
         <SpritePickerModal

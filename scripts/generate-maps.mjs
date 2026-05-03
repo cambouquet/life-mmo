@@ -54,6 +54,7 @@ const SS_NPC_ELF = 0x07
 const FLOOR_A    = 0x00
 const FLOOR_B    = 0x01
 const FLOOR_VOID = 0x02
+const FLOOR_RED  = 0x03
 
 // Wall row IDs
 const WALL_TOP    = 0x01
@@ -118,6 +119,9 @@ function genLayer0() {
       const kind = tileKind(c, r)
       if (kind === 'void') {
         setPixel(png, c, r, SS_FLOOR, FLOOR_VOID, DEFAULT)
+      } else if (c === 5 && r === 7) {
+        // Single red floor tile for testing
+        setPixel(png, c, r, SS_FLOOR, FLOOR_RED, DEFAULT)
       } else {
         // Both floor and wall tiles get a checkerboard ground beneath them
         setPixel(png, c, r, SS_FLOOR, (c + r) % 2 === 0 ? FLOOR_A : FLOOR_B, DEFAULT)
