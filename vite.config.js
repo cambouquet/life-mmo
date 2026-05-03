@@ -16,6 +16,12 @@ export default defineConfig({
       'Cross-Origin-Embedder-Policy': 'credentialless',
       'Content-Security-Policy':      "media-src 'self' blob:",
     },
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3001',
+        changeOrigin: true,
+      },
+    },
   },
   preview: {
     headers: {

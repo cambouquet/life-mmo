@@ -78,19 +78,19 @@ export default function App() {
   colorsSetRef.current = Object.values(charColors).every(v => v !== '#ffffff')
   doorUnlockedRef.current = nameSetRef.current && colorsSetRef.current
 
-  // Save layer edits to localStorage
+  // Save layer edits to both localStorage and backend
   useEffect(() => {
-    if (Object.keys(layerEdits).length > 0) {
-      localStorage.setItem(LS_MAP_EDITS, JSON.stringify(layerEdits))
-    }
-  }, [layerEdits])
+    localStorage.setItem(LS_MAP_EDITS, JSON.stringify(layerEdits))
 
-  // Save sprite color overrides to localStorage
-  useEffect(() => {
-    if (Object.keys(spriteColorOverrides).length > 0) {
-      localStorage.setItem(LS_SPRITE_COLORS, JSON.stringify(spriteColorOverrides))
+    // Save to backend if there are edits
+    if (Object.keys(layerEdits).length > 0) {
+      fetch('/api/map/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ layerEdits, spriteColorOverrides }),
+      }).catch(err => console.error('Failed to save map edits:', err))
     }
-  }, [spriteColorOverrides])
+  }, [layerEdits, spriteColorOverrides])
 
   const recorder      = useRecorder({
     onReady: (blob, filename) => {
