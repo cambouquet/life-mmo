@@ -7,7 +7,6 @@ import { resolveGuidance }      from '../game/systems/guidance.js'
 import { resolveInteract }      from '../game/systems/interact.js'
 import { renderScene }          from '../game/draw/scene.js'
 import { mouseTile } from '../game/draw/debug.js'
-import LogStore from '../utils/logger.js'
 
 export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, charColors, playerRef, playerStateRef, doorUnlockedRef, nameSetRef, colorsSetRef, debugActive, layerEdits, highlightColors, spriteColorOverrides, onHoveredTileChange, onWorldDataChange, onEditSprite }) {
   const pausedRef     = useRef(paused)
@@ -115,20 +114,13 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
 
       if (e.altKey && selectedTile) {
         // Alt+Click: paste the selected tile's data to the clicked tile
-        const sourceC = selectedTiles[0].c
-        const sourceR = selectedTiles[0].r
-        const sourceKey = `${sourceC},${sourceR}`
-        // Get data from edited tiles OR from the original world data
+        const sourceKey = `${selectedTiles[0].c},${selectedTiles[0].r}`
         const editedData = layerEditsRef.current[sourceKey]
 
-        console.log(`📋 Paste: (${sourceC},${sourceR})->(${tile.c},${tile.r})`)
-
         if (!editedData || Object.keys(editedData).length === 0) {
-          console.log(`⚠️ Source tile has no custom edits`)
           return
         }
 
-        console.log(`✅ Pasting:`, editedData)
         if (onEditSpriteRef.current) {
           onEditSpriteRef.current(prev => ({
             ...prev,
@@ -152,11 +144,6 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
         // Single select
         selectedTile = tile
         selectedTiles = [tile]
-        const tileKey = `${tile.c},${tile.r}`
-        const tileData = layerEditsRef.current[tileKey]
-        console.log(`🎯 Selected (${tile.c},${tile.r})`)
-        console.log(`  layerEditsRef.current[${tileKey}]:`, tileData)
-        console.log(`  All layerEditsRef.current keys:`, Object.keys(layerEditsRef.current))
       }
       onHoveredTileRef.current?.(selectedTile)
     }
