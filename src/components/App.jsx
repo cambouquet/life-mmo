@@ -78,6 +78,7 @@ export default function App() {
   colorsSetRef.current = Object.values(charColors).every(v => v !== '#ffffff')
   doorUnlockedRef.current = nameSetRef.current && colorsSetRef.current
 
+
   // Save layer edits to both localStorage and backend
   useEffect(() => {
     localStorage.setItem(LS_MAP_EDITS, JSON.stringify(layerEdits))
@@ -273,6 +274,7 @@ export default function App() {
           spriteColorOverrides={spriteColorOverrides}
           onHoveredTileChange={setHoveredTile}
           onWorldDataChange={setWorldData}
+          onEditSprite={setLayerEdits}
         />
         <div className="ui-overlay" ref={uiOverlayRef}>
           {!showDialog && !showHoroscope && <GuidanceVoice text={guidance} />}

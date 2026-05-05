@@ -7,8 +7,9 @@ import { resolveGuidance }      from '../game/systems/guidance.js'
 import { resolveInteract }      from '../game/systems/interact.js'
 import { renderScene }          from '../game/draw/scene.js'
 import { mouseTile } from '../game/draw/debug.js'
+import LogStore from '../utils/logger.js'
 
-export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, charColors, playerRef, playerStateRef, doorUnlockedRef, nameSetRef, colorsSetRef, debugActive, layerEdits, highlightColors, spriteColorOverrides, onHoveredTileChange, onWorldDataChange }) {
+export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, charColors, playerRef, playerStateRef, doorUnlockedRef, nameSetRef, colorsSetRef, debugActive, layerEdits, highlightColors, spriteColorOverrides, onHoveredTileChange, onWorldDataChange, onEditSprite }) {
   const pausedRef     = useRef(paused)
   const onInteractRef = useRef(onInteract)
   const onStateRef    = useRef(onStateChange)
@@ -19,6 +20,7 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
   const spriteColorOverridesRef = useRef(spriteColorOverrides)
   const onHoveredTileRef = useRef(onHoveredTileChange)
   const onWorldDataRef = useRef(onWorldDataChange)
+  const onEditSpriteRef = useRef(null)
 
   useEffect(() => { pausedRef.current     = paused },        [paused])
   useEffect(() => { onInteractRef.current = onInteract },    [onInteract])
@@ -30,6 +32,7 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
   useEffect(() => { spriteColorOverridesRef.current = spriteColorOverrides }, [spriteColorOverrides])
   useEffect(() => { onHoveredTileRef.current = onHoveredTileChange }, [onHoveredTileChange])
   useEffect(() => { onWorldDataRef.current = onWorldDataChange }, [onWorldDataChange])
+  useEffect(() => { onEditSpriteRef.current = onEditSprite }, [onEditSprite])
 
   useEffect(() => {
     const cleanupInput = initInput()
@@ -59,9 +62,11 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
     let dragStart = null
     let isDragging = false
     let dragMoved = false
+    let altHeldDown = false
 
     const canvas = canvasRef.current
     const onMouseMove = e => {
+      altHeldDown = e.altKey
       hoveredTile = mouseTile(e, canvas, player.x + 8, player.y + 8)
 
       if (isDragging && dragStart && debugActiveRef.current) {
@@ -88,6 +93,10 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
 
     const onMouseDown = e => {
       if (!debugActiveRef.current) return
+
+      // Don't start drag for Alt+Click (paste mode)
+      if (e.altKey) return
+
       dragMoved = false
       const tile = mouseTile(e, canvas, player.x + 8, player.y + 8)
       dragStart = tile
@@ -97,33 +106,70 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
     const onMouseUp = e => {
       isDragging = false
       dragStart = null
+      dragMoved = false
     }
 
     const onClick = e => {
       if (!debugActiveRef.current || dragMoved) return
       const tile = mouseTile(e, canvas, player.x + 8, player.y + 8)
 
-      if (e.ctrlKey) {
-        // Toggle tile in selection
+      if (e.altKey && selectedTile) {
+        // Alt+Click: paste the selected tile's data to the clicked tile
+        const sourceC = selectedTiles[0].c
+        const sourceR = selectedTiles[0].r
+        const sourceKey = `${sourceC},${sourceR}`
+        // Get data from edited tiles OR from the original world data
+        const editedData = layerEditsRef.current[sourceKey]
+
+        console.log(`📋 Paste: (${sourceC},${sourceR})->(${tile.c},${tile.r})`)
+
+        if (!editedData || Object.keys(editedData).length === 0) {
+          console.log(`⚠️ Source tile has no custom edits`)
+          return
+        }
+
+        console.log(`✅ Pasting:`, editedData)
+        if (onEditSpriteRef.current) {
+          onEditSpriteRef.current(prev => ({
+            ...prev,
+            [`${tile.c},${tile.r}`]: { ...editedData }
+          }))
+        }
+        return
+      } else if (e.ctrlKey) {
+        // Ctrl+Click: toggle tile in multi-select
         const key = `${tile.c},${tile.r}`
         const existingIndex = selectedTiles.findIndex(t => `${t.c},${t.r}` === key)
         if (existingIndex >= 0) {
           selectedTiles.splice(existingIndex, 1)
+          console.log('➖ Deselect:', `(${tile.c},${tile.r})`)
         } else {
           selectedTiles.push(tile)
+          console.log('➕ Select:', `(${tile.c},${tile.r})`)
         }
         selectedTile = selectedTiles.length > 0 ? { tiles: selectedTiles } : null
       } else {
         // Single select
         selectedTile = tile
         selectedTiles = [tile]
+        const tileKey = `${tile.c},${tile.r}`
+        const tileData = layerEditsRef.current[tileKey]
+        console.log(`🎯 Selected (${tile.c},${tile.r})`)
+        console.log(`  layerEditsRef.current[${tileKey}]:`, tileData)
+        console.log(`  All layerEditsRef.current keys:`, Object.keys(layerEditsRef.current))
       }
       onHoveredTileRef.current?.(selectedTile)
     }
+
+    const onKeyDown = e => {
+      if (!debugActiveRef.current) return
+    }
+
     canvas.addEventListener('mousemove', onMouseMove)
     canvas.addEventListener('mousedown', onMouseDown)
     canvas.addEventListener('mouseup', onMouseUp)
     canvas.addEventListener('click', onClick)
+    document.addEventListener('keydown', onKeyDown)
 
     function loop(ts) {
       const dt = Math.min((ts - last) / 1000, 0.05)
@@ -161,7 +207,12 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
 
       const near2 = door2.open || isNearDoor(player, world.DOOR2_WX, world.DOOR2_WY)
       const selectedTiles = selectedTile?.tiles || (selectedTile ? [selectedTile] : [])
-      renderScene(ctx, world, { map, door1Progress: door1.progress, door2Progress: door2.progress, near2, hoveredTile, selectedTile, selectedTiles, layerEdits: layerEditsRef.current, highlightColors: highlightColorsRef.current, spriteColorOverrides: spriteColorOverridesRef.current }, player, torchPhase, charColorsRef.current, {
+      const pastePreviewData = altHeldDown && selectedTile ? {
+        sourceC: selectedTiles[0].c,
+        sourceR: selectedTiles[0].r,
+        sourceData: layerEditsRef.current[`${selectedTiles[0].c},${selectedTiles[0].r}`]
+      } : null
+      renderScene(ctx, world, { map, door1Progress: door1.progress, door2Progress: door2.progress, near2, hoveredTile, selectedTile, selectedTiles, layerEdits: layerEditsRef.current, highlightColors: highlightColorsRef.current, spriteColorOverrides: spriteColorOverridesRef.current, pastePreviewData }, player, torchPhase, charColorsRef.current, {
         paused:    pausedRef.current,
         nameSet:   !!nameSetRef?.current,
         colorsSet: !!colorsSetRef?.current,
@@ -177,6 +228,7 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
       canvas.removeEventListener('mousedown', onMouseDown)
       canvas.removeEventListener('mouseup', onMouseUp)
       canvas.removeEventListener('click', onClick)
+      document.removeEventListener('keydown', onKeyDown)
       cancelAnimationFrame(rafId)
       if (playerStateRef) playerStateRef.current = { x: player.x, y: player.y, facing: player.facing }
     }

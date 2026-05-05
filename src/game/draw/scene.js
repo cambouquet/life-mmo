@@ -30,7 +30,7 @@ function reflectionData(player, mirrorCX, mirrorCY, charColors) {
 // charColors:  object
 // refs:        { paused, nameSet, colorsSet }
 export function renderScene(ctx, world, state, player, torchPhase, charColors, refs) {
-  const { map, door1Progress, door2Progress, near2, hoveredTile, selectedTile, selectedTiles, layerEdits, highlightColors, spriteColorOverrides } = state
+  const { map, door1Progress, door2Progress, near2, hoveredTile, selectedTile, selectedTiles, layerEdits, highlightColors, spriteColorOverrides, pastePreviewData } = state
   const {
     wallX, gapY1, gapY2,
     wall2X, gap2Y1, gap2Y2,
@@ -118,8 +118,27 @@ export function renderScene(ctx, world, state, player, torchPhase, charColors, r
     })
   }
 
-  // Highlight hovered cell (dimmer) - only if not in selection
-  if (hoveredTile && !selectedTiles?.some(t => t.c === hoveredTile.c && t.r === hoveredTile.r)) {
+  // Alt+Hover paste preview
+  if (pastePreviewData) {
+    // Show source tile with purple border
+    const sx = pastePreviewData.sourceC * TILE
+    const sy = pastePreviewData.sourceR * TILE
+    ctx.strokeStyle = 'rgba(200,100,255,0.9)'
+    ctx.lineWidth = 2
+    ctx.strokeRect(sx, sy, TILE, TILE)
+
+    // Show target tile with green preview (if different from source)
+    if (hoveredTile && !(pastePreviewData.sourceC === hoveredTile.c && pastePreviewData.sourceR === hoveredTile.r)) {
+      const x = hoveredTile.c * TILE
+      const y = hoveredTile.r * TILE
+      ctx.fillStyle = 'rgba(100,255,150,0.3)'
+      ctx.fillRect(x, y, TILE, TILE)
+      ctx.strokeStyle = 'rgba(100,255,150,0.9)'
+      ctx.lineWidth = 2
+      ctx.strokeRect(x, y, TILE, TILE)
+    }
+  } else if (hoveredTile && !selectedTiles?.some(t => t.c === hoveredTile.c && t.r === hoveredTile.r)) {
+    // Normal hovered cell highlight
     const x = hoveredTile.c * TILE
     const y = hoveredTile.r * TILE
     ctx.fillStyle = highlightColors?.hoveredFill || 'rgba(255,150,100,0.15)'

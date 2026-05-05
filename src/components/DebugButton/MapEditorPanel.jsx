@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import './MapEditorPanel.scss'
 import SpritePickerModal from './SpritePickerModal.jsx'
 import SPRITESHEETS_DATA from '../../game/config/spritesheets.json'
@@ -77,13 +77,17 @@ export default function MapEditorPanel({ hoveredTile, layers, collMap, layerEdit
     const fieldMap = { floor: 'ground', wall: 'wall', table: 'obj', torch: 'entity', mirror: 'obj' }
     const field = fieldMap[category]
 
+    console.log(`🎨 Editing ${category}`, { field, sprite, tiles: tiles.map(t => `(${t.c},${t.r})`) })
+
     // Apply sprite to all selected tiles
     onEditSprite(prev => {
       const next = { ...prev }
       tiles.forEach(tile => {
         const key = `${tile.c},${tile.r}`
+        console.log(`  Setting ${key}.${field} =`, sprite)
         next[key] = { ...next[key], [field]: sprite }
       })
+      console.log('  Final layerEdits:', next)
       return next
     })
     setPickerOpen(null)
@@ -156,9 +160,9 @@ export default function MapEditorPanel({ hoveredTile, layers, collMap, layerEdit
   return (
     <div className="cell-info">
       <div className="cell-info__header">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', marginBottom: '8px' }}>
           <span>{isMultiSelect ? `${tiles.length} tiles selected` : `(${c}, ${r})`}</span>
-          <div style={{ display: 'flex', gap: '8px', fontSize: '11px', position: 'relative' }}>
+          <div style={{ display: 'flex', gap: '8px', fontSize: '11px' }}>
             <button
               onClick={() => setActiveTab('tiles')}
               style={{

@@ -13,16 +13,17 @@
     "@ffmpeg/core": "^0.12.10",
     "@ffmpeg/ffmpeg": "^0.12.15",
     "@ffmpeg/util": "^0.12.2",
-    "html2canvas": "^1.4.1",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
     "cors": "^2.8.5",
     "express": "^4.18.2",
-    "pngjs": "^7.0.0"
+    "html2canvas": "^1.4.1",
+    "pngjs": "^7.0.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.3.1",
     "jimp": "^1.6.1",
+    "playwright": "^1.59.1",
     "sass": "^1.77.8",
     "vite": "^5.4.0"
   }
