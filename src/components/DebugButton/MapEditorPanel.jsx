@@ -140,10 +140,10 @@ export default function MapEditorPanel({ hoveredTile, layers, collMap, layerEdit
   }
 
   const restoreBackup = (backup) => {
-    onEditSprite(() => backup.layerEdits)
-    onSpriteColorChange(() => backup.spriteColorOverrides)
-    setFloorColors(backup.floorColors)
-    spriteColors.floor = backup.floorColors
+    onEditSprite(() => JSON.parse(JSON.stringify(backup.layerEdits)))
+    onSpriteColorChange(() => JSON.parse(JSON.stringify(backup.spriteColorOverrides)))
+    setFloorColors([...backup.floorColors])
+    spriteColors.floor = [...backup.floorColors]
     setShowBackupMenu(false)
   }
 
