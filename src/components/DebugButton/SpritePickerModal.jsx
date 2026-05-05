@@ -35,11 +35,14 @@ export default function SpritePickerModal({ category, currentSprite, onSelect, o
     return map[cat]
   }
 
-  const getSpriteColor = (ss, row) => {
-    const overrideKey = `${ss}_${row}`
+  const getSpriteColor = (ss, row, variant = 0) => {
+    // For floor (ss=0), use variant for color index
+    const colorKey = ss === 0x00 ? variant : row
+    const overrideKey = ss === 0x00 ? `${ss}_v${variant}` : `${ss}_${row}`
+
     if (spriteColorOverrides?.[overrideKey]) return spriteColorOverrides[overrideKey]
-    if (ss === 0x00) return spriteColors.floor[row] ?? spriteColors.floor[0]
-    if (ss === 0x01) return spriteColors.wall[row] ?? spriteColors.wall[0]
+    if (ss === 0x00) return spriteColors.floor[colorKey] ?? spriteColors.floor[0]
+    if (ss === 0x01) return spriteColors.wall[colorKey] ?? spriteColors.wall[0]
     return '#0a0612'
   }
 

@@ -97,11 +97,14 @@ export default function MapEditorPanel({ hoveredTile, layers, collMap, layerEdit
     return 16 // floor, wall, torch
   }
 
-  const getSpriteColor = (ss, row) => {
-    const overrideKey = `${ss}_${row}`
+  const getSpriteColor = (ss, row, variant) => {
+    // For floor (ss=0), use variant for color index, not row
+    const colorKey = ss === 0x00 ? variant : row
+    const overrideKey = ss === 0x00 ? `${ss}_v${variant}` : `${ss}_${row}`
+
     if (spriteColorOverrides?.[overrideKey]) return spriteColorOverrides[overrideKey]
-    if (ss === 0x00) return spriteColors.floor[row] ?? spriteColors.floor[0]
-    if (ss === 0x01) return spriteColors.wall[row] ?? spriteColors.wall[0]
+    if (ss === 0x00) return spriteColors.floor[colorKey] ?? spriteColors.floor[0]
+    if (ss === 0x01) return spriteColors.wall[colorKey] ?? spriteColors.wall[0]
     return '#0a0612'
   }
 
@@ -149,7 +152,7 @@ export default function MapEditorPanel({ hoveredTile, layers, collMap, layerEdit
             <button className="cell-info__preview-item" onClick={() => setPickerOpen('floor')}>
               <strong>Ground</strong>
               {ground ? (
-                <div className="cell-info__sprite-large" style={{ backgroundColor: getSpriteColor(ground.ss, ground.row) }} />
+                <div className="cell-info__sprite-large" style={{ backgroundColor: getSpriteColor(ground.ss, ground.row, ground.variant) }} />
               ) : isMultiSelect ? (
                 <div className="cell-info__sprite-large" style={{ backgroundColor: '#0a0612', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#7ab8ff', fontSize: '24px' }}>≠</div>
               ) : (
@@ -208,17 +211,18 @@ export default function MapEditorPanel({ hoveredTile, layers, collMap, layerEdit
       ) : (
       <div style={{ padding: '8px' }}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-          {/* Floor sprites */}
+          {/* Floor color variants */}
           <div>
-            <div className="cell-info__layer-label">Floor</div>
+            <div className="cell-info__layer-label">Floor Colors</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-              {spriteColors.floor.map((_, row) => {
-                const color = getSpriteColor(0, row)
-                const isSelected = selectedSpriteForColor?.ss === 0 && selectedSpriteForColor?.row === row
+              {spriteColors.floor.map((_, variant) => {
+                const color = getSpriteColor(0, 0, variant)
+                const isSelected = selectedSpriteForColor?.ss === 0 && selectedSpriteForColor?.variant === variant
+                const variantNames = ['var_a', 'var_b', 'var_red']
                 return (
                   <button
-                    key={`floor-${row}`}
-                    onClick={() => setSelectedSpriteForColor({ ss: 0, row, name: `floor_${row}` })}
+                    key={`floor-${variant}`}
+                    onClick={() => setSelectedSpriteForColor({ ss: 0, row: 0, variant, name: `floor_${variantNames[variant]}` })}
                     style={{
                       display: 'flex',
                       gap: '6px',
@@ -232,16 +236,16 @@ export default function MapEditorPanel({ hoveredTile, layers, collMap, layerEdit
                     }}
                   >
                     <div style={{ width: '32px', height: '32px', backgroundColor: color, border: '1px solid rgba(100, 180, 255, 0.3)', borderRadius: '2px' }} />
-                    <div style={{ fontSize: '9px', color: '#7ab8ff', flex: 1, textAlign: 'left' }}>Row {row}</div>
+                    <div style={{ fontSize: '9px', color: '#7ab8ff', flex: 1, textAlign: 'left' }}>{variantNames[variant]}</div>
                   </button>
                 )
               })}
             </div>
           </div>
 
-          {/* Wall sprites */}
+          {/* Wall color rows */}
           <div>
-            <div className="cell-info__layer-label">Wall</div>
+            <div className="cell-info__layer-label">Wall Colors</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
               {spriteColors.wall.map((_, row) => {
                 const color = getSpriteColor(1, row)
@@ -249,7 +253,7 @@ export default function MapEditorPanel({ hoveredTile, layers, collMap, layerEdit
                 return (
                   <button
                     key={`wall-${row}`}
-                    onClick={() => setSelectedSpriteForColor({ ss: 1, row, name: `wall_${row}` })}
+                    onClick={() => setSelectedSpriteForColor({ ss: 1, row, variant: 0, name: `wall_${row}` })}
                     style={{
                       display: 'flex',
                       gap: '6px',
@@ -277,17 +281,17 @@ export default function MapEditorPanel({ hoveredTile, layers, collMap, layerEdit
               Edit Color
             </div>
             <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '8px' }}>
-              <div style={{ width: '48px', height: '48px', backgroundColor: getSpriteColor(selectedSpriteForColor.ss, selectedSpriteForColor.row), border: '1px solid rgba(100, 180, 255, 0.3)', borderRadius: '2px' }} />
+              <div style={{ width: '48px', height: '48px', backgroundColor: getSpriteColor(selectedSpriteForColor.ss, selectedSpriteForColor.row, selectedSpriteForColor.variant), border: '1px solid rgba(100, 180, 255, 0.3)', borderRadius: '2px' }} />
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: '9px', color: 'rgba(122, 184, 255, 0.7)', textTransform: 'uppercase' }}>Selected</div>
-                <div style={{ fontSize: '10px', color: '#7ab8ff', fontWeight: '600' }}>Row {selectedSpriteForColor.row}</div>
+                <div style={{ fontSize: '10px', color: '#7ab8ff', fontWeight: '600' }}>{selectedSpriteForColor.name}</div>
               </div>
             </div>
             <input
               type="color"
-              value={spriteColorOverrides[`${selectedSpriteForColor.ss}_${selectedSpriteForColor.row}`]?.substring(0, 7) || getSpriteColor(selectedSpriteForColor.ss, selectedSpriteForColor.row)}
+              value={spriteColorOverrides[`${selectedSpriteForColor.ss}_${selectedSpriteForColor.ss === 0x00 ? `v${selectedSpriteForColor.variant}` : selectedSpriteForColor.row}`]?.substring(0, 7) || getSpriteColor(selectedSpriteForColor.ss, selectedSpriteForColor.row, selectedSpriteForColor.variant)}
               onChange={(e) => {
-                const key = `${selectedSpriteForColor.ss}_${selectedSpriteForColor.row}`
+                const key = selectedSpriteForColor.ss === 0x00 ? `${selectedSpriteForColor.ss}_v${selectedSpriteForColor.variant}` : `${selectedSpriteForColor.ss}_${selectedSpriteForColor.row}`
                 onSpriteColorChange(prev => ({
                   ...prev,
                   [key]: e.target.value

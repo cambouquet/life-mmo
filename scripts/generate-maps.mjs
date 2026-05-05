@@ -59,11 +59,14 @@ const SS_DOOR    = 0x05
 const SS_WARRIOR = 0x06
 const SS_NPC_ELF = 0x07
 
-// Floor row IDs
-const FLOOR_A    = 0x00
-const FLOOR_B    = 0x01
-const FLOOR_VOID = 0x02
-const FLOOR_RED  = 0x03
+// Floor row IDs (row only indicates type, color is in variant channel)
+const FLOOR      = 0x00
+const FLOOR_VOID = 0x01
+
+// Floor color variants (in B channel)
+const FLOOR_VAR_A   = 0x00
+const FLOOR_VAR_B   = 0x01
+const FLOOR_VAR_RED = 0x02
 
 // Wall row IDs
 const WALL_TOP    = 0x01
@@ -133,25 +136,29 @@ function genLayer0() {
   for (let r = 0; r < TOTAL_H; r++) {
     for (let c = 0; c < TOTAL_W; c++) {
       const kind = tileKind(c, r)
-      let ss, row, visualColor
+      let ss, row, variant, visualColor
 
       if (kind === 'void') {
         ss = SS_FLOOR
         row = FLOOR_VOID
+        variant = FLOOR_VAR_A
         visualColor = '#000000'
       } else if (c === 5 && r === 7) {
         // Single red floor tile for testing
         ss = SS_FLOOR
-        row = FLOOR_RED
+        row = FLOOR
+        variant = FLOOR_VAR_RED
         visualColor = '#ff0000'
       } else {
         ss = SS_FLOOR
-        row = (c + r) % 2 === 0 ? FLOOR_A : FLOOR_B
+        row = FLOOR
+        variant = (c + r) % 2 === 0 ? FLOOR_VAR_A : FLOOR_VAR_B
         visualColor = spriteSheets['0x00']
       }
 
       // Encode actual sprite data in RGBA (used by mapData.js)
-      setPixel(png, c, r, ss, row, DEFAULT)
+      // R=spritesheet, G=row, B=variant, A=opaque
+      setPixel(png, c, r, ss, row, variant)
     }
   }
   save(png, 'layer0_ground')

@@ -64,12 +64,12 @@ export function drawRoom(ctx, layers, collMap, layerEdits = {}, spriteColorOverr
     const groundPixel = edit?.ground ?? layers.ground[r]?.[c]
 
     let color = groundPixel
-      ? floorColor(groundPixel.row)
+      ? floorColor(groundPixel.variant ?? groundPixel.row)
       : '#0e0b1a'
 
     // Apply color override if it exists
     if (groundPixel) {
-      const overrideKey = `${groundPixel.ss}_${groundPixel.row}`
+      const overrideKey = `${groundPixel.ss}_v${groundPixel.variant ?? groundPixel.row}`
       if (spriteColorOverrides[overrideKey]) {
         color = spriteColorOverrides[overrideKey]
       }

@@ -18,7 +18,7 @@ export function buildCollisionMap(layers, door1Open, door2Open) {
       const o = layers.objects[r][c]
       if (w) {
         map[r][c] = 1   // wall
-      } else if (g?.row === 0x02) {
+      } else if (g?.row === 0x01) {
         map[r][c] = 5   // void (FLOOR_VOID row)
       } else if (o?.ss === SS_MIRROR || o?.ss === SS_TABLE) {
         // Origin pixel only — footprint expansion done in post-pass below
