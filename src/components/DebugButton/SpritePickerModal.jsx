@@ -50,6 +50,8 @@ export default function SpritePickerModal({ category, currentSprite, onSelect, o
   const ss = SPRITESHEETS[ssId]
   if (!ss) return null
 
+  const colorCount = category === 'floor' ? spriteColors.floor.length : ss.rows
+
   return (
     <div className="sprite-picker-overlay" onClick={onClose}>
       <div className="sprite-picker" onClick={(e) => e.stopPropagation()}>
@@ -58,18 +60,22 @@ export default function SpritePickerModal({ category, currentSprite, onSelect, o
           <button className="sprite-picker__close" onClick={onClose}>✕</button>
         </div>
         <div className="sprite-picker__grid">
-          {Array.from({ length: ss.rows }).map((_, row) => {
-            const spriteName = SPRITE_NAMES[`${ssId.toString(16).padStart(2, '0')}_${row}`] || `row_${row}`
-            const isSelected = currentSprite?.ss === ssId && currentSprite?.row === row
+          {Array.from({ length: colorCount }).map((_, index) => {
+            const isFloor = category === 'floor'
+            const isSelected = isFloor
+              ? currentSprite?.ss === ssId && currentSprite?.variant === index
+              : currentSprite?.ss === ssId && currentSprite?.row === index
             return (
               <button
-                key={row}
+                key={index}
                 className={`sprite-picker__item ${isSelected ? 'sprite-picker__item--selected' : ''}`}
-                onClick={() => onSelect({ ss: ssId, row, name: spriteName })}
+                onClick={() => isFloor
+                  ? onSelect({ ss: ssId, row: 0, variant: index })
+                  : onSelect({ ss: ssId, row: index })
+                }
               >
-                <div className="sprite-picker__preview" style={{ backgroundColor: getSpriteColor(ssId, row) }} />
-                <div className="sprite-picker__name">{spriteName}</div>
-                <div className="sprite-picker__desc">Row {row}</div>
+                <div className="sprite-picker__preview" style={{ backgroundColor: getSpriteColor(ssId, isFloor ? index : 0, isFloor ? index : undefined) }} />
+                <div className="sprite-picker__desc">{index + 1}</div>
               </button>
             )
           })}

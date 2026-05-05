@@ -56,18 +56,55 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
     let hoveredTile = null
     let selectedTile = null
     let selectedTiles = []
+    let dragStart = null
+    let isDragging = false
+    let dragMoved = false
 
     const canvas = canvasRef.current
     const onMouseMove = e => {
       hoveredTile = mouseTile(e, canvas, player.x + 8, player.y + 8)
-      onHoveredTileRef.current?.(selectedTile || hoveredTile)
+
+      if (isDragging && dragStart && debugActiveRef.current) {
+        dragMoved = true
+        // Update selection while dragging
+        const current = hoveredTile
+        const minC = Math.min(dragStart.c, current.c)
+        const maxC = Math.max(dragStart.c, current.c)
+        const minR = Math.min(dragStart.r, current.r)
+        const maxR = Math.max(dragStart.r, current.r)
+
+        selectedTiles = []
+        for (let c = minC; c <= maxC; c++) {
+          for (let r = minR; r <= maxR; r++) {
+            selectedTiles.push({ c, r })
+          }
+        }
+        selectedTile = selectedTiles.length > 0 ? { tiles: selectedTiles } : null
+        onHoveredTileRef.current?.(selectedTile)
+      } else {
+        onHoveredTileRef.current?.(selectedTile || hoveredTile)
+      }
     }
-    const onClick = e => {
+
+    const onMouseDown = e => {
       if (!debugActiveRef.current) return
+      dragMoved = false
+      const tile = mouseTile(e, canvas, player.x + 8, player.y + 8)
+      dragStart = tile
+      isDragging = true
+    }
+
+    const onMouseUp = e => {
+      isDragging = false
+      dragStart = null
+    }
+
+    const onClick = e => {
+      if (!debugActiveRef.current || dragMoved) return
       const tile = mouseTile(e, canvas, player.x + 8, player.y + 8)
 
       if (e.ctrlKey) {
-        // Multi-select: add/remove tile from selection
+        // Toggle tile in selection
         const key = `${tile.c},${tile.r}`
         const existingIndex = selectedTiles.findIndex(t => `${t.c},${t.r}` === key)
         if (existingIndex >= 0) {
@@ -84,6 +121,8 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
       onHoveredTileRef.current?.(selectedTile)
     }
     canvas.addEventListener('mousemove', onMouseMove)
+    canvas.addEventListener('mousedown', onMouseDown)
+    canvas.addEventListener('mouseup', onMouseUp)
     canvas.addEventListener('click', onClick)
 
     function loop(ts) {
@@ -135,6 +174,8 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
     return () => {
       cleanupInput()
       canvas.removeEventListener('mousemove', onMouseMove)
+      canvas.removeEventListener('mousedown', onMouseDown)
+      canvas.removeEventListener('mouseup', onMouseUp)
       canvas.removeEventListener('click', onClick)
       cancelAnimationFrame(rafId)
       if (playerStateRef) playerStateRef.current = { x: player.x, y: player.y, facing: player.facing }

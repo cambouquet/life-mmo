@@ -110,10 +110,10 @@ export function renderScene(ctx, world, state, player, torchPhase, charColors, r
     selectedTiles.forEach(tile => {
       const x = tile.c * TILE
       const y = tile.r * TILE
-      ctx.fillStyle = highlightColors?.selectedFill || 'rgba(100,200,255,0.15)'
+      ctx.fillStyle = highlightColors?.selectedFill || 'rgba(100,220,255,0.25)'
       ctx.fillRect(x, y, TILE, TILE)
-      ctx.strokeStyle = highlightColors?.selectedStroke || 'rgba(100,220,255,0.5)'
-      ctx.lineWidth = 0.5
+      ctx.strokeStyle = highlightColors?.selectedStroke || 'rgba(100,220,255,0.7)'
+      ctx.lineWidth = 1
       ctx.strokeRect(x, y, TILE, TILE)
     })
   }
@@ -122,9 +122,9 @@ export function renderScene(ctx, world, state, player, torchPhase, charColors, r
   if (hoveredTile && !selectedTiles?.some(t => t.c === hoveredTile.c && t.r === hoveredTile.r)) {
     const x = hoveredTile.c * TILE
     const y = hoveredTile.r * TILE
-    ctx.fillStyle = highlightColors?.hoveredFill || 'rgba(100,200,255,0.15)'
+    ctx.fillStyle = highlightColors?.hoveredFill || 'rgba(255,150,100,0.15)'
     ctx.fillRect(x, y, TILE, TILE)
-    ctx.strokeStyle = highlightColors?.hoveredStroke || 'rgba(100,220,255,0.4)'
+    ctx.strokeStyle = highlightColors?.hoveredStroke || 'rgba(255,150,100,0.5)'
     ctx.lineWidth = 0.5
     ctx.strokeRect(x, y, TILE, TILE)
   }

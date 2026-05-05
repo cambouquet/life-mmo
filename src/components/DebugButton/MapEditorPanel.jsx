@@ -4,6 +4,21 @@ import SpritePickerModal from './SpritePickerModal.jsx'
 import SPRITESHEETS_DATA from '../../game/config/spritesheets.json'
 import spriteColors from '../../game/config/spriteColors.json'
 
+const LS_MAP_BACKUPS = 'life-mmo-map-backups'
+
+function loadBackups() {
+  try {
+    const data = localStorage.getItem(LS_MAP_BACKUPS)
+    return data ? JSON.parse(data) : []
+  } catch {
+    return []
+  }
+}
+
+function saveBackups(backups) {
+  localStorage.setItem(LS_MAP_BACKUPS, JSON.stringify(backups))
+}
+
 const COLL_VALUES = {
   0: 'floor',
   1: 'wall',
@@ -24,6 +39,9 @@ export default function MapEditorPanel({ hoveredTile, layers, collMap, layerEdit
   const [pickerOpen, setPickerOpen] = useState(null)
   const [activeTab, setActiveTab] = useState('tiles') // 'tiles' or 'colors'
   const [selectedSpriteForColor, setSelectedSpriteForColor] = useState(null) // { type: 'floor'|'wall', row: 0, ss: 0x00 }
+  const [floorColors, setFloorColors] = useState(spriteColors.floor)
+  const [backups, setBackups] = useState(loadBackups)
+  const [showBackupMenu, setShowBackupMenu] = useState(false)
 
   if (!hoveredTile || !layers) return null
 
@@ -108,12 +126,39 @@ export default function MapEditorPanel({ hoveredTile, layers, collMap, layerEdit
     return '#0a0612'
   }
 
+  const createBackup = () => {
+    const backup = {
+      id: Date.now(),
+      timestamp: new Date().toLocaleString(),
+      layerEdits: JSON.parse(JSON.stringify(layerEdits)),
+      spriteColorOverrides: JSON.parse(JSON.stringify(spriteColorOverrides)),
+      floorColors: [...floorColors]
+    }
+    const newBackups = [backup, ...backups].slice(0, 5)
+    setBackups(newBackups)
+    saveBackups(newBackups)
+  }
+
+  const restoreBackup = (backup) => {
+    onEditSprite(backup.layerEdits)
+    onSpriteColorChange(backup.spriteColorOverrides)
+    setFloorColors(backup.floorColors)
+    spriteColors.floor = backup.floorColors
+    setShowBackupMenu(false)
+  }
+
+  const deleteBackup = (id) => {
+    const newBackups = backups.filter(b => b.id !== id)
+    setBackups(newBackups)
+    saveBackups(newBackups)
+  }
+
   return (
     <div className="cell-info">
       <div className="cell-info__header">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
           <span>{isMultiSelect ? `${tiles.length} tiles selected` : `(${c}, ${r})`}</span>
-          <div style={{ display: 'flex', gap: '8px', fontSize: '11px' }}>
+          <div style={{ display: 'flex', gap: '8px', fontSize: '11px', position: 'relative' }}>
             <button
               onClick={() => setActiveTab('tiles')}
               style={{
@@ -140,6 +185,96 @@ export default function MapEditorPanel({ hoveredTile, layers, collMap, layerEdit
             >
               Colors
             </button>
+            <button
+              onClick={createBackup}
+              style={{
+                background: 'rgba(100, 220, 100, 0.1)',
+                border: '1px solid rgba(100, 220, 100, 0.3)',
+                color: '#7ab8ff',
+                padding: '4px 8px',
+                borderRadius: '2px',
+                cursor: 'pointer',
+              }}
+              title="Create backup of current map"
+            >
+              ✓ Backup
+            </button>
+            <div style={{ position: 'relative' }}>
+              <button
+                onClick={() => setShowBackupMenu(!showBackupMenu)}
+                style={{
+                  background: backups.length > 0 ? 'rgba(100, 180, 255, 0.1)' : 'rgba(100, 100, 100, 0.1)',
+                  border: '1px solid rgba(100, 180, 255, 0.2)',
+                  color: '#7ab8ff',
+                  padding: '4px 8px',
+                  borderRadius: '2px',
+                  cursor: 'pointer',
+                }}
+                title={`${backups.length} backup(s) available`}
+              >
+                ↩ Restore ({backups.length})
+              </button>
+              {showBackupMenu && backups.length > 0 && (
+                <div style={{
+                  position: 'absolute',
+                  top: '100%',
+                  right: 0,
+                  background: 'rgba(6, 4, 14, 0.95)',
+                  border: '1px solid rgba(100, 180, 255, 0.4)',
+                  borderRadius: '2px',
+                  marginTop: '4px',
+                  zIndex: 1000,
+                  minWidth: '200px',
+                  maxHeight: '200px',
+                  overflowY: 'auto',
+                }}>
+                  {backups.map(backup => (
+                    <div
+                      key={backup.id}
+                      style={{
+                        padding: '8px',
+                        borderBottom: '1px solid rgba(100, 180, 255, 0.1)',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        gap: '8px',
+                      }}
+                    >
+                      <button
+                        onClick={() => restoreBackup(backup)}
+                        style={{
+                          flex: 1,
+                          background: 'rgba(100, 220, 100, 0.1)',
+                          border: '1px solid rgba(100, 220, 100, 0.3)',
+                          color: '#7ab8ff',
+                          padding: '4px 6px',
+                          borderRadius: '2px',
+                          cursor: 'pointer',
+                          fontSize: '9px',
+                          textAlign: 'left',
+                        }}
+                      >
+                        {backup.timestamp}
+                      </button>
+                      <button
+                        onClick={() => deleteBackup(backup.id)}
+                        style={{
+                          background: 'rgba(255, 100, 100, 0.1)',
+                          border: '1px solid rgba(255, 100, 100, 0.3)',
+                          color: '#ff6464',
+                          padding: '4px 6px',
+                          borderRadius: '2px',
+                          cursor: 'pointer',
+                          fontSize: '9px',
+                        }}
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -215,14 +350,13 @@ export default function MapEditorPanel({ hoveredTile, layers, collMap, layerEdit
           <div>
             <div className="cell-info__layer-label">Floor Colors</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-              {spriteColors.floor.map((_, variant) => {
+              {floorColors.map((_, variant) => {
                 const color = getSpriteColor(0, 0, variant)
                 const isSelected = selectedSpriteForColor?.ss === 0 && selectedSpriteForColor?.variant === variant
-                const variantNames = ['var_a', 'var_b', 'var_red']
                 return (
                   <button
                     key={`floor-${variant}`}
-                    onClick={() => setSelectedSpriteForColor({ ss: 0, row: 0, variant, name: `floor_${variantNames[variant]}` })}
+                    onClick={() => setSelectedSpriteForColor({ ss: 0, row: 0, variant })}
                     style={{
                       display: 'flex',
                       gap: '6px',
@@ -236,10 +370,34 @@ export default function MapEditorPanel({ hoveredTile, layers, collMap, layerEdit
                     }}
                   >
                     <div style={{ width: '32px', height: '32px', backgroundColor: color, border: '1px solid rgba(100, 180, 255, 0.3)', borderRadius: '2px' }} />
-                    <div style={{ fontSize: '9px', color: '#7ab8ff', flex: 1, textAlign: 'left' }}>{variantNames[variant]}</div>
+                    <div style={{ fontSize: '9px', color: '#7ab8ff', flex: 1, textAlign: 'left' }}>{variant + 1}</div>
                   </button>
                 )
               })}
+              <button
+                onClick={() => {
+                  const newFloorColors = [...floorColors, '#000000']
+                  setFloorColors(newFloorColors)
+                  spriteColors.floor = newFloorColors
+                  setSelectedSpriteForColor({ ss: 0, row: 0, variant: newFloorColors.length - 1 })
+                }}
+                style={{
+                  display: 'flex',
+                  gap: '6px',
+                  alignItems: 'center',
+                  padding: '4px 6px',
+                  background: 'rgba(100, 220, 255, 0.05)',
+                  border: '1px dashed rgba(100, 180, 255, 0.4)',
+                  borderRadius: '2px',
+                  cursor: 'pointer',
+                  color: '#7ab8ff',
+                  fontSize: '9px',
+                  fontWeight: '600',
+                  marginTop: '4px'
+                }}
+              >
+                + Add Color
+              </button>
             </div>
           </div>
 
@@ -253,7 +411,7 @@ export default function MapEditorPanel({ hoveredTile, layers, collMap, layerEdit
                 return (
                   <button
                     key={`wall-${row}`}
-                    onClick={() => setSelectedSpriteForColor({ ss: 1, row, variant: 0, name: `wall_${row}` })}
+                    onClick={() => setSelectedSpriteForColor({ ss: 1, row, variant: 0 })}
                     style={{
                       display: 'flex',
                       gap: '6px',
@@ -267,7 +425,7 @@ export default function MapEditorPanel({ hoveredTile, layers, collMap, layerEdit
                     }}
                   >
                     <div style={{ width: '32px', height: '32px', backgroundColor: color, border: '1px solid rgba(100, 180, 255, 0.3)', borderRadius: '2px' }} />
-                    <div style={{ fontSize: '9px', color: '#7ab8ff', flex: 1, textAlign: 'left' }}>Row {row}</div>
+                    <div style={{ fontSize: '9px', color: '#7ab8ff', flex: 1, textAlign: 'left' }}>{row + 1}</div>
                   </button>
                 )
               })}
@@ -284,7 +442,7 @@ export default function MapEditorPanel({ hoveredTile, layers, collMap, layerEdit
               <div style={{ width: '48px', height: '48px', backgroundColor: getSpriteColor(selectedSpriteForColor.ss, selectedSpriteForColor.row, selectedSpriteForColor.variant), border: '1px solid rgba(100, 180, 255, 0.3)', borderRadius: '2px' }} />
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: '9px', color: 'rgba(122, 184, 255, 0.7)', textTransform: 'uppercase' }}>Selected</div>
-                <div style={{ fontSize: '10px', color: '#7ab8ff', fontWeight: '600' }}>{selectedSpriteForColor.name}</div>
+                <div style={{ fontSize: '10px', color: '#7ab8ff', fontWeight: '600' }}>Color {selectedSpriteForColor.ss === 0 ? selectedSpriteForColor.variant + 1 : selectedSpriteForColor.row + 1}</div>
               </div>
             </div>
             <input
