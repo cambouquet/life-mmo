@@ -9,7 +9,7 @@ import { renderScene }          from '../game/draw/scene.js'
 import { mouseTile } from '../game/draw/debug.js'
 import { DRAW_SCALE } from '../game/constants.jsx'
 
-export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, charColors, playerRef, playerStateRef, doorUnlockedRef, nameSetRef, colorsSetRef, debugActive, layerEdits, highlightColors, spriteColorOverrides, hoverPreview, onHoveredTileChange, onWorldDataChange, onEditSprite, onZoomChange }) {
+export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, charColors, playerRef, playerStateRef, doorUnlockedRef, nameSetRef, colorsSetRef, debugActive, layerEdits, highlightColors, spriteColorOverrides, hoverPreview, onHoveredTileChange, onWorldDataChange, onEditSprite, activeSprite, onZoomChange }) {
   const pausedRef     = useRef(paused)
   const onInteractRef = useRef(onInteract)
   const onStateRef    = useRef(onStateChange)
@@ -22,6 +22,7 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
   const onHoveredTileRef = useRef(onHoveredTileChange)
   const onWorldDataRef = useRef(onWorldDataChange)
   const onEditSpriteRef = useRef(null)
+  const activeSpriteRef = useRef(activeSprite)
   const onZoomChangeRef = useRef(onZoomChange)
   const zoomRef = useRef(DRAW_SCALE)
 
@@ -37,6 +38,7 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
   useEffect(() => { onHoveredTileRef.current = onHoveredTileChange }, [onHoveredTileChange])
   useEffect(() => { onWorldDataRef.current = onWorldDataChange }, [onWorldDataChange])
   useEffect(() => { onEditSpriteRef.current = onEditSprite }, [onEditSprite])
+  useEffect(() => { activeSpriteRef.current = activeSprite }, [activeSprite])
   useEffect(() => { onZoomChangeRef.current = onZoomChange }, [onZoomChange])
 
   useEffect(() => {
@@ -144,6 +146,20 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
     const onClick = e => {
       if (!debugActiveRef.current || dragMoved) return
       const tile = mouseTile(e, canvas, player.x + 8, player.y + 8, zoomRef.current)
+
+      // Paint with active sprite
+      if (activeSpriteRef.current?.sprite) {
+        const fieldMap = { floor: 'ground', wall: 'wall', table: 'obj', torch: 'entity' }
+        const field = fieldMap[activeSpriteRef.current.category]
+
+        if (onEditSpriteRef.current) {
+          onEditSpriteRef.current(prev => ({
+            ...prev,
+            [`${tile.c},${tile.r}`]: { ...prev[`${tile.c},${tile.r}`], [field]: activeSpriteRef.current.sprite }
+          }))
+        }
+        return
+      }
 
       if (e.altKey && selectedTile) {
         // Alt+Click: paste the selected tile's data to the clicked tile

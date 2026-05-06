@@ -57,6 +57,7 @@ export default function App() {
   const [hoveredTile,   setHoveredTile]   = useState(null)
   const [hoverPreview,  setHoverPreview]  = useState(null)
   const [pickerState,   setPickerState]   = useState({ pickerOpen: null, activeTab: 'tiles', selectedSpriteForColor: null, ground: null, wall: null, obj: null, entity: null })
+  const [activeSprite,  setActiveSprite]  = useState({ category: 'ground', sprite: null })
   const [worldData,     setWorldData]     = useState(null)
   const [layerEdits,    setLayerEdits]    = useState(() => load(LS_MAP_EDITS, {}))
   const [spriteColorOverrides, setSpriteColorOverrides] = useState(() => load(LS_SPRITE_COLORS, {}))
@@ -271,7 +272,7 @@ export default function App() {
   }, [recorder])
 
   return (
-    <div className="game-wrap" ref={wrapRef} style={{ transform: `scale(${zoom})`, transformOrigin: '0 0' }}>
+    <div className={`game-wrap ${debugActive ? 'debug-active' : ''}`} ref={wrapRef} style={{ transform: `scale(${zoom})`, transformOrigin: '0 0' }}>
       <HUD facing={facing} moving={moving} logEntries={logEntries} charColors={charColors} charName={charName} playerPos={playerPos} exploredTiles={exploredTiles} worldData={worldData} />
       {!showEditor && (
         <div className="canvas-wrap">
@@ -293,6 +294,7 @@ export default function App() {
           onHoveredTileChange={setHoveredTile}
           onWorldDataChange={setWorldData}
           onEditSprite={setLayerEdits}
+          activeSprite={activeSprite}
         />
         <div className="ui-overlay" ref={uiOverlayRef}>
           {!showDialog && !showHoroscope && <GuidanceVoice text={guidance} />}
@@ -394,21 +396,18 @@ export default function App() {
             )
           }
           spriteColorOverrides={spriteColorOverrides}
+          activeSprite={activeSprite}
+          onActiveSpriteChange={(newActive) => {
+            setActiveSprite(newActive)
+            if (newActive.sprite === null) {
+              setPickerState(prev => ({ ...prev, pickerOpen: newActive.category }))
+            }
+          }}
           onSelect={(sprite) => {
             if (pickerState.activeTab === 'colors') {
               setPickerState(prev => ({ ...prev, selectedSpriteForColor: sprite, pickerOpen: null }))
             } else {
-              const fieldMap = { floor: 'ground', wall: 'wall', table: 'obj', torch: 'entity', mirror: 'obj' }
-              const field = fieldMap[pickerState.pickerOpen]
-              setLayerEdits(prev => {
-                const next = { ...prev }
-                const selectedTiles = hoveredTile.tiles || [hoveredTile]
-                selectedTiles.forEach(tile => {
-                  const key = `${tile.c},${tile.r}`
-                  next[key] = { ...next[key], [field]: sprite }
-                })
-                return next
-              })
+              setActiveSprite({ category: pickerState.pickerOpen, sprite })
               setPickerState(prev => ({ ...prev, pickerOpen: null }))
             }
           }}
@@ -417,6 +416,7 @@ export default function App() {
             setHoverPreview(null)
           }}
           onHoverPreview={setHoverPreview}
+          onSpriteColorChange={setSpriteColorOverrides}
         />
       )}
       {debugActive && (
@@ -432,6 +432,8 @@ export default function App() {
           onSpriteColorChange={setSpriteColorOverrides}
           onHoverPreview={setHoverPreview}
           onPickerStateChange={setPickerState}
+          activeSprite={activeSprite}
+          onActiveSpriteChange={setActiveSprite}
         />
       )}
       <div className="record-wrap-with-tools">

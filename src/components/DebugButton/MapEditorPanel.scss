@@ -1,23 +1,9 @@
 .cell-info {
-  position: fixed;
-  bottom: 45px;
-  right: 0;
-  left: 0;
-  background: rgba(6, 4, 14, 0.9);
-  border-top: 1px solid rgba(100, 180, 255, 0.4);
-  padding: 6px 8px;
-  font-family: 'Outfit', system-ui, -apple-system, sans-serif;
-  font-size: 12px;
-  color: #7ab8ff;
-  z-index: 10;
-  pointer-events: auto;
-  height: fit-content;
+  display: none;
 }
 
 .cell-info__header {
-  font-weight: bold;
-  margin-bottom: 8px;
-  line-height: 1;
+  display: none;
 }
 
 .cell-info__preview {
