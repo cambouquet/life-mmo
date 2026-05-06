@@ -11,6 +11,7 @@ import VideoGallery          from './VideoGallery/VideoGallery.jsx'
 import DebugConsole          from './HUD/DebugConsole.jsx'
 import MapEditButton         from './DebugButton/MapEditButton.jsx'
 import MapEditorPanel        from './DebugButton/MapEditorPanel.jsx'
+import SpritePickerModal     from './DebugButton/SpritePickerModal.jsx'
 import { useRecorder }       from '../playback/useRecorder.js'
 import { PlaybackEngine }    from '../playback/PlaybackEngine.js'
 import { mirrorVisit }       from '../playback/scenarios/mirrorVisit.js'
@@ -54,6 +55,8 @@ export default function App() {
   const [charName,      setCharName]      = useState(() => load(LS_NAME,   null))
   const [debugActive,   setDebugActive]   = useState(false)
   const [hoveredTile,   setHoveredTile]   = useState(null)
+  const [hoverPreview,  setHoverPreview]  = useState(null)
+  const [pickerState,   setPickerState]   = useState({ pickerOpen: null, activeTab: 'tiles', selectedSpriteForColor: null, ground: null, wall: null, obj: null, entity: null })
   const [worldData,     setWorldData]     = useState(null)
   const [layerEdits,    setLayerEdits]    = useState(() => load(LS_MAP_EDITS, {}))
   const [spriteColorOverrides, setSpriteColorOverrides] = useState(() => load(LS_SPRITE_COLORS, {}))
@@ -286,6 +289,7 @@ export default function App() {
           layerEdits={layerEdits}
           highlightColors={highlightColors}
           spriteColorOverrides={spriteColorOverrides}
+          hoverPreview={hoverPreview}
           onHoveredTileChange={setHoveredTile}
           onWorldDataChange={setWorldData}
           onEditSprite={setLayerEdits}
@@ -375,6 +379,46 @@ export default function App() {
           setShowHoroscope(false)
         }}
       />
+      {debugActive && pickerState.pickerOpen && (
+        <SpritePickerModal
+          category={pickerState.pickerOpen}
+          currentSprite={
+            pickerState.activeTab === 'tiles' ? (
+              pickerState.pickerOpen === 'floor' ? pickerState.ground :
+              pickerState.pickerOpen === 'wall' ? pickerState.wall :
+              pickerState.pickerOpen === 'table' ? pickerState.obj :
+              pickerState.pickerOpen === 'torch' ? pickerState.entity :
+              null
+            ) : (
+              pickerState.selectedSpriteForColor
+            )
+          }
+          spriteColorOverrides={spriteColorOverrides}
+          onSelect={(sprite) => {
+            if (pickerState.activeTab === 'colors') {
+              setPickerState(prev => ({ ...prev, selectedSpriteForColor: sprite, pickerOpen: null }))
+            } else {
+              const fieldMap = { floor: 'ground', wall: 'wall', table: 'obj', torch: 'entity', mirror: 'obj' }
+              const field = fieldMap[pickerState.pickerOpen]
+              setLayerEdits(prev => {
+                const next = { ...prev }
+                const selectedTiles = hoveredTile.tiles || [hoveredTile]
+                selectedTiles.forEach(tile => {
+                  const key = `${tile.c},${tile.r}`
+                  next[key] = { ...next[key], [field]: sprite }
+                })
+                return next
+              })
+              setPickerState(prev => ({ ...prev, pickerOpen: null }))
+            }
+          }}
+          onClose={() => {
+            setPickerState(prev => ({ ...prev, pickerOpen: null }))
+            setHoverPreview(null)
+          }}
+          onHoverPreview={setHoverPreview}
+        />
+      )}
       {debugActive && (
         <MapEditorPanel
           hoveredTile={hoveredTile}
@@ -386,6 +430,8 @@ export default function App() {
           onHighlightColorsChange={setHighlightColors}
           spriteColorOverrides={spriteColorOverrides}
           onSpriteColorChange={setSpriteColorOverrides}
+          onHoverPreview={setHoverPreview}
+          onPickerStateChange={setPickerState}
         />
       )}
       <div className="record-wrap-with-tools">

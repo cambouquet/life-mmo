@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
 import './MapEditorPanel.scss'
-import SpritePickerModal from './SpritePickerModal.jsx'
 import SPRITESHEETS_DATA from '../../game/config/spritesheets.json'
 import spriteColors from '../../game/config/spriteColors.json'
 
@@ -34,7 +33,7 @@ const SPRITESHEET_VALUES = {
   0x04: SPRITESHEETS_DATA['0x04'].name,
 }
 
-export default function MapEditorPanel({ hoveredTile, layers, collMap, layerEdits, onEditSprite, highlightColors, onHighlightColorsChange, spriteColorOverrides, onSpriteColorChange }) {
+export default function MapEditorPanel({ hoveredTile, layers, collMap, layerEdits, onEditSprite, highlightColors, onHighlightColorsChange, spriteColorOverrides, onSpriteColorChange, onHoverPreview, onPickerStateChange }) {
   const [editingField, setEditingField] = useState(null)
   const [pickerOpen, setPickerOpen] = useState(null)
   const [activeTab, setActiveTab] = useState('tiles') // 'tiles' or 'colors'
@@ -51,6 +50,8 @@ export default function MapEditorPanel({ hoveredTile, layers, collMap, layerEdit
   const firstTile = tiles[0]
   const { c, r } = firstTile
 
+  const fieldToLayerMap = { ground: 'ground', wall: 'walls', obj: 'objects', entity: 'entities' }
+
   // For multi-select, check if all tiles have the same sprite
   const getSpriteForTiles = (field) => {
     const sprites = tiles.map(tile => {
@@ -63,8 +64,6 @@ export default function MapEditorPanel({ hoveredTile, layers, collMap, layerEdit
     return allSame ? first : null
   }
 
-  const fieldToLayerMap = { ground: 'ground', wall: 'walls', obj: 'objects', entity: 'entities' }
-
   const tileKey = `${c},${r}`
   const collValue = collMap[r]?.[c] ?? '?'
   const collName = COLL_VALUES[collValue] || `${collValue}`
@@ -73,6 +72,11 @@ export default function MapEditorPanel({ hoveredTile, layers, collMap, layerEdit
   const wall = getSpriteForTiles('wall')
   const obj = getSpriteForTiles('obj')
   const entity = getSpriteForTiles('entity')
+
+  // Expose picker state to parent
+  useEffect(() => {
+    onPickerStateChange?.({ pickerOpen, activeTab, selectedSpriteForColor, ground, wall, obj, entity })
+  }, [pickerOpen, activeTab, selectedSpriteForColor, ground, wall, obj, entity, onPickerStateChange])
 
   const handleSpriteSelect = (category, sprite) => {
     const fieldMap = { floor: 'ground', wall: 'wall', table: 'obj', torch: 'entity', mirror: 'obj' }
@@ -495,32 +499,6 @@ export default function MapEditorPanel({ hoveredTile, layers, collMap, layerEdit
       </div>
       )}
 
-      {pickerOpen && (
-        <SpritePickerModal
-          category={pickerOpen}
-          currentSprite={
-            activeTab === 'tiles' ? (
-              pickerOpen === 'floor' ? ground :
-              pickerOpen === 'wall' ? wall :
-              pickerOpen === 'table' ? obj :
-              pickerOpen === 'torch' ? entity :
-              null
-            ) : (
-              selectedSpriteForColor
-            )
-          }
-          spriteColorOverrides={spriteColorOverrides}
-          onSelect={(sprite) => {
-            if (activeTab === 'colors') {
-              setSelectedSpriteForColor(sprite)
-              setPickerOpen(null)
-            } else {
-              handleSpriteSelect(pickerOpen, sprite)
-            }
-          }}
-          onClose={() => setPickerOpen(null)}
-        />
-      )}
     </div>
   )
 }

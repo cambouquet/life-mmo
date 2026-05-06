@@ -10,6 +10,7 @@ import { drawTorch }         from './torch.jsx'
 import { drawDoorCorridor }  from './corridor.js'
 import { drawBadge }         from './badge.js'
 import { nearMirror, nearNpc } from '../systems/interact.js'
+import spriteColors from '../config/spriteColors.json'
 
 function reflectionData(player, mirrorCX, mirrorCY, charColors) {
   const dist  = Math.hypot(player.x + 8 - mirrorCX, player.y + 8 - mirrorCY)
@@ -30,7 +31,7 @@ function reflectionData(player, mirrorCX, mirrorCY, charColors) {
 // charColors:  object
 // refs:        { paused, nameSet, colorsSet }
 export function renderScene(ctx, world, state, player, torchPhase, charColors, refs, zoom = DRAW_SCALE, cameraOffset = { x: 0, y: 0 }) {
-  const { map, door1Progress, door2Progress, near2, hoveredTile, selectedTile, selectedTiles, layerEdits, highlightColors, spriteColorOverrides, pastePreviewData } = state
+  const { map, door1Progress, door2Progress, near2, hoveredTile, selectedTile, selectedTiles, layerEdits, highlightColors, spriteColorOverrides, hoverPreview, pastePreviewData } = state
   const {
     wallX, gapY1, gapY2,
     wall2X, gap2Y1, gap2Y2,
@@ -146,6 +147,24 @@ export function renderScene(ctx, world, state, player, torchPhase, charColors, r
     ctx.strokeStyle = highlightColors?.hoveredStroke || 'rgba(255,150,100,0.5)'
     ctx.lineWidth = 0.5
     ctx.strokeRect(x, y, TILE, TILE)
+  }
+
+  // Sprite picker hover preview on hovered tile
+  if (hoverPreview && hoveredTile) {
+    const x = hoveredTile.c * TILE
+    const y = hoveredTile.r * TILE
+    let color = '#0a0612'
+
+    if (hoverPreview.ss === 0x00) {
+      const overrideKey = `${hoverPreview.ss}_v${hoverPreview.variant}`
+      color = spriteColorOverrides?.[overrideKey] || spriteColors.floor[hoverPreview.variant] || spriteColors.floor[0]
+    } else if (hoverPreview.ss === 0x01) {
+      const overrideKey = `${hoverPreview.ss}_${hoverPreview.row}`
+      color = spriteColorOverrides?.[overrideKey] || spriteColors.wall[hoverPreview.row] || spriteColors.wall[0]
+    }
+
+    ctx.fillStyle = color
+    ctx.fillRect(x, y, TILE, TILE)
   }
 
   ctx.restore()

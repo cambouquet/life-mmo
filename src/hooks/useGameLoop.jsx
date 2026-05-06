@@ -9,7 +9,7 @@ import { renderScene }          from '../game/draw/scene.js'
 import { mouseTile } from '../game/draw/debug.js'
 import { DRAW_SCALE } from '../game/constants.jsx'
 
-export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, charColors, playerRef, playerStateRef, doorUnlockedRef, nameSetRef, colorsSetRef, debugActive, layerEdits, highlightColors, spriteColorOverrides, onHoveredTileChange, onWorldDataChange, onEditSprite, onZoomChange }) {
+export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, charColors, playerRef, playerStateRef, doorUnlockedRef, nameSetRef, colorsSetRef, debugActive, layerEdits, highlightColors, spriteColorOverrides, hoverPreview, onHoveredTileChange, onWorldDataChange, onEditSprite, onZoomChange }) {
   const pausedRef     = useRef(paused)
   const onInteractRef = useRef(onInteract)
   const onStateRef    = useRef(onStateChange)
@@ -18,6 +18,7 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
   const layerEditsRef = useRef(layerEdits)
   const highlightColorsRef = useRef(highlightColors)
   const spriteColorOverridesRef = useRef(spriteColorOverrides)
+  const hoverPreviewRef = useRef(hoverPreview)
   const onHoveredTileRef = useRef(onHoveredTileChange)
   const onWorldDataRef = useRef(onWorldDataChange)
   const onEditSpriteRef = useRef(null)
@@ -32,6 +33,7 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
   useEffect(() => { layerEditsRef.current = layerEdits },    [layerEdits])
   useEffect(() => { highlightColorsRef.current = highlightColors }, [highlightColors])
   useEffect(() => { spriteColorOverridesRef.current = spriteColorOverrides }, [spriteColorOverrides])
+  useEffect(() => { hoverPreviewRef.current = hoverPreview }, [hoverPreview])
   useEffect(() => { onHoveredTileRef.current = onHoveredTileChange }, [onHoveredTileChange])
   useEffect(() => { onWorldDataRef.current = onWorldDataChange }, [onWorldDataChange])
   useEffect(() => { onEditSpriteRef.current = onEditSprite }, [onEditSprite])
@@ -250,7 +252,7 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
         sourceR: selectedTiles[0].r,
         sourceData: layerEditsRef.current[`${selectedTiles[0].c},${selectedTiles[0].r}`]
       } : null
-      renderScene(ctx, world, { map, door1Progress: door1.progress, door2Progress: door2.progress, near2, hoveredTile, selectedTile, selectedTiles, layerEdits: layerEditsRef.current, highlightColors: highlightColorsRef.current, spriteColorOverrides: spriteColorOverridesRef.current, pastePreviewData }, player, torchPhase, charColorsRef.current, {
+      renderScene(ctx, world, { map, door1Progress: door1.progress, door2Progress: door2.progress, near2, hoveredTile, selectedTile, selectedTiles, layerEdits: layerEditsRef.current, highlightColors: highlightColorsRef.current, spriteColorOverrides: spriteColorOverridesRef.current, hoverPreview: hoverPreviewRef.current, pastePreviewData }, player, torchPhase, charColorsRef.current, {
         paused:    pausedRef.current,
         nameSet:   !!nameSetRef?.current,
         colorsSet: !!colorsSetRef?.current,
