@@ -8,9 +8,9 @@ export default function HUD({ facing, moving, logEntries, charColors, charName, 
   return (
     <div className="hud">
       <Logo />
-      <Minimap playerPos={playerPos} exploredTiles={exploredTiles} worldData={worldData} />
       <CharPanel facing={facing} moving={moving} charColors={charColors} charName={charName} />
       <LogPanel entries={logEntries} />
+      <Minimap playerPos={playerPos} exploredTiles={exploredTiles} worldData={worldData} />
       <Clock />
     </div>
   )
