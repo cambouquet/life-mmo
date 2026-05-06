@@ -38,7 +38,7 @@ const WALL_LABELS = {
 }
 
 function WallPreview({ row, color }) {
-  const size = 80
+  const size = 24
   const canvasRef = React.useRef(null)
 
   React.useEffect(() => {
@@ -51,11 +51,8 @@ function WallPreview({ row, color }) {
     ctx.fillStyle = color
     ctx.fillRect(0, 0, size, size)
 
-    const glowSize = 12
+    const glowSize = 3
     const glowColor = 'rgba(180, 230, 255, 0.8)'
-
-    ctx.shadowColor = 'rgba(100, 170, 255, 0.6)'
-    ctx.shadowBlur = 12
 
     if (row === 0) {
       ctx.fillStyle = color
