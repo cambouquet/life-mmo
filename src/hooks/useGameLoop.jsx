@@ -9,7 +9,7 @@ import { renderScene }          from '../game/draw/scene.js'
 import { mouseTile } from '../game/draw/debug.js'
 import { DRAW_SCALE } from '../game/constants.jsx'
 
-export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, charColors, playerRef, playerStateRef, doorUnlockedRef, nameSetRef, colorsSetRef, debugActive, layerEdits, highlightColors, spriteColorOverrides, onHoveredTileChange, onWorldDataChange, onEditSprite }) {
+export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, charColors, playerRef, playerStateRef, doorUnlockedRef, nameSetRef, colorsSetRef, debugActive, layerEdits, highlightColors, spriteColorOverrides, onHoveredTileChange, onWorldDataChange, onEditSprite, onZoomChange }) {
   const pausedRef     = useRef(paused)
   const onInteractRef = useRef(onInteract)
   const onStateRef    = useRef(onStateChange)
@@ -21,6 +21,7 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
   const onHoveredTileRef = useRef(onHoveredTileChange)
   const onWorldDataRef = useRef(onWorldDataChange)
   const onEditSpriteRef = useRef(null)
+  const onZoomChangeRef = useRef(onZoomChange)
   const zoomRef = useRef(DRAW_SCALE)
 
   useEffect(() => { pausedRef.current     = paused },        [paused])
@@ -34,6 +35,7 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
   useEffect(() => { onHoveredTileRef.current = onHoveredTileChange }, [onHoveredTileChange])
   useEffect(() => { onWorldDataRef.current = onWorldDataChange }, [onWorldDataChange])
   useEffect(() => { onEditSpriteRef.current = onEditSprite }, [onEditSprite])
+  useEffect(() => { onZoomChangeRef.current = onZoomChange }, [onZoomChange])
 
   useEffect(() => {
     const cleanupInput = initInput()
@@ -78,8 +80,8 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
       if (isPanning && debugActiveRef.current) {
         const deltaX = e.clientX - lastMouseX
         const deltaY = e.clientY - lastMouseY
-        cameraOffsetX += deltaX / zoomRef.current
-        cameraOffsetY += deltaY / zoomRef.current
+        cameraOffsetX -= deltaX / zoomRef.current
+        cameraOffsetY -= deltaY / zoomRef.current
       }
       lastMouseX = e.clientX
       lastMouseY = e.clientY
@@ -192,10 +194,11 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
         const maxZoom = 4
         zoomRef.current += e.deltaY < 0 ? step : -step
         zoomRef.current = Math.max(minZoom, Math.min(maxZoom, zoomRef.current))
+        onZoomChangeRef.current?.(zoomRef.current)
       } else {
         // Scroll without shift: pan camera
-        cameraOffsetX += e.deltaX / zoomRef.current
-        cameraOffsetY += e.deltaY / zoomRef.current
+        cameraOffsetX -= e.deltaX / zoomRef.current
+        cameraOffsetY -= e.deltaY / zoomRef.current
       }
     }
 

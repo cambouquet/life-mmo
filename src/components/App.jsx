@@ -64,6 +64,8 @@ export default function App() {
     hoveredStroke: 'rgba(100,220,255,0.4)',
   })
   const [exploredTiles, setExploredTiles] = useState(new Set())
+  const [zoom, setZoom] = useState(1)
+  const [playerPos, setPlayerPos] = useState(null)
 
   const wrapRef          = useViewportScale()
   const gameRef          = useRef(null)
@@ -102,17 +104,18 @@ export default function App() {
       setShowGallery(true)
     }
   })
-  const handleStateChange = useCallback(({ facing, moving, log, guidance, playerPos }) => {
+  const handleStateChange = useCallback(({ facing, moving, log, guidance, playerPos: newPlayerPos }) => {
     setFacing(facing)
     setMoving(moving)
     setLogEntries(log)
     setGuidance(guidance ?? null)
+    setPlayerPos(newPlayerPos)
 
     // Track explored tiles
-    if (playerPos) {
+    if (newPlayerPos) {
       const TILE = 16
-      const tileR = Math.floor(playerPos.y / TILE)
-      const tileC = Math.floor(playerPos.x / TILE)
+      const tileR = Math.floor(newPlayerPos.y / TILE)
+      const tileC = Math.floor(newPlayerPos.x / TILE)
       const tileKey = `${tileR},${tileC}`
       setExploredTiles(prev => new Set(prev).add(tileKey))
     }
@@ -265,8 +268,8 @@ export default function App() {
   }, [recorder])
 
   return (
-    <div className="game-wrap" ref={wrapRef}>
-      <HUD facing={facing} moving={moving} logEntries={logEntries} charColors={charColors} charName={charName} playerPos={playerStateRef.current} exploredTiles={exploredTiles} worldData={worldData} />
+    <div className="game-wrap" ref={wrapRef} style={{ transform: `scale(${zoom})`, transformOrigin: '0 0' }}>
+      <HUD facing={facing} moving={moving} logEntries={logEntries} charColors={charColors} charName={charName} playerPos={playerPos} exploredTiles={exploredTiles} worldData={worldData} />
       {!showEditor && (
         <div className="canvas-wrap">
         <Game
@@ -286,6 +289,7 @@ export default function App() {
           onHoveredTileChange={setHoveredTile}
           onWorldDataChange={setWorldData}
           onEditSprite={setLayerEdits}
+          onZoomChange={setZoom}
         />
         <div className="ui-overlay" ref={uiOverlayRef}>
           {!showDialog && !showHoroscope && <GuidanceVoice text={guidance} />}
