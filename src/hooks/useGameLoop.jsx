@@ -7,6 +7,7 @@ import { resolveGuidance }      from '../game/systems/guidance.js'
 import { resolveInteract }      from '../game/systems/interact.js'
 import { renderScene }          from '../game/draw/scene.js'
 import { mouseTile } from '../game/draw/debug.js'
+import { DRAW_SCALE } from '../game/constants.jsx'
 
 export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, charColors, playerRef, playerStateRef, doorUnlockedRef, nameSetRef, colorsSetRef, debugActive, layerEdits, highlightColors, spriteColorOverrides, onHoveredTileChange, onWorldDataChange, onEditSprite }) {
   const pausedRef     = useRef(paused)
@@ -20,6 +21,7 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
   const onHoveredTileRef = useRef(onHoveredTileChange)
   const onWorldDataRef = useRef(onWorldDataChange)
   const onEditSpriteRef = useRef(null)
+  const zoomRef = useRef(DRAW_SCALE)
 
   useEffect(() => { pausedRef.current     = paused },        [paused])
   useEffect(() => { onInteractRef.current = onInteract },    [onInteract])
@@ -66,7 +68,7 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
     const canvas = canvasRef.current
     const onMouseMove = e => {
       altHeldDown = e.altKey
-      hoveredTile = mouseTile(e, canvas, player.x + 8, player.y + 8)
+      hoveredTile = mouseTile(e, canvas, player.x + 8, player.y + 8, zoomRef.current)
 
       if (isDragging && dragStart && debugActiveRef.current) {
         dragMoved = true
@@ -97,7 +99,7 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
       if (e.altKey) return
 
       dragMoved = false
-      const tile = mouseTile(e, canvas, player.x + 8, player.y + 8)
+      const tile = mouseTile(e, canvas, player.x + 8, player.y + 8, zoomRef.current)
       dragStart = tile
       isDragging = true
     }
@@ -110,7 +112,7 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
 
     const onClick = e => {
       if (!debugActiveRef.current || dragMoved) return
-      const tile = mouseTile(e, canvas, player.x + 8, player.y + 8)
+      const tile = mouseTile(e, canvas, player.x + 8, player.y + 8, zoomRef.current)
 
       if (e.altKey && selectedTile) {
         // Alt+Click: paste the selected tile's data to the clicked tile
@@ -152,10 +154,20 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
       if (!debugActiveRef.current) return
     }
 
+    const onWheel = e => {
+      e.preventDefault()
+      const step = 0.25
+      const minZoom = 1
+      const maxZoom = 4
+      zoomRef.current += e.deltaY < 0 ? step : -step
+      zoomRef.current = Math.max(minZoom, Math.min(maxZoom, zoomRef.current))
+    }
+
     canvas.addEventListener('mousemove', onMouseMove)
     canvas.addEventListener('mousedown', onMouseDown)
     canvas.addEventListener('mouseup', onMouseUp)
     canvas.addEventListener('click', onClick)
+    canvas.addEventListener('wheel', onWheel, { passive: false })
     document.addEventListener('keydown', onKeyDown)
 
     function loop(ts) {
@@ -203,7 +215,7 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
         paused:    pausedRef.current,
         nameSet:   !!nameSetRef?.current,
         colorsSet: !!colorsSetRef?.current,
-      })
+      }, zoomRef.current)
 
       rafId = requestAnimationFrame(loop)
     }
@@ -215,6 +227,7 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
       canvas.removeEventListener('mousedown', onMouseDown)
       canvas.removeEventListener('mouseup', onMouseUp)
       canvas.removeEventListener('click', onClick)
+      canvas.removeEventListener('wheel', onWheel)
       document.removeEventListener('keydown', onKeyDown)
       cancelAnimationFrame(rafId)
       if (playerStateRef) playerStateRef.current = { x: player.x, y: player.y, facing: player.facing }

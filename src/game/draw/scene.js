@@ -29,7 +29,7 @@ function reflectionData(player, mirrorCX, mirrorCY, charColors) {
 // torchPhase:  number
 // charColors:  object
 // refs:        { paused, nameSet, colorsSet }
-export function renderScene(ctx, world, state, player, torchPhase, charColors, refs) {
+export function renderScene(ctx, world, state, player, torchPhase, charColors, refs, zoom = DRAW_SCALE) {
   const { map, door1Progress, door2Progress, near2, hoveredTile, selectedTile, selectedTiles, layerEdits, highlightColors, spriteColorOverrides, pastePreviewData } = state
   const {
     wallX, gapY1, gapY2,
@@ -51,7 +51,7 @@ export function renderScene(ctx, world, state, player, torchPhase, charColors, r
 
   ctx.save()
   ctx.translate(cw / 2, ch / 2)
-  ctx.scale(DRAW_SCALE, DRAW_SCALE)
+  ctx.scale(zoom, zoom)
   ctx.translate(-pcx, -pcy)
 
   // Proximity auras
