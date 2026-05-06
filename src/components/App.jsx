@@ -79,12 +79,13 @@ export default function App() {
   doorUnlockedRef.current = nameSetRef.current && colorsSetRef.current
 
 
-  // Save layer edits to both localStorage and backend
+  // Save layer edits and sprite colors to both localStorage and backend
   useEffect(() => {
     localStorage.setItem(LS_MAP_EDITS, JSON.stringify(layerEdits))
+    localStorage.setItem(LS_SPRITE_COLORS, JSON.stringify(spriteColorOverrides))
 
     // Save to backend if there are edits
-    if (Object.keys(layerEdits).length > 0) {
+    if (Object.keys(layerEdits).length > 0 || Object.keys(spriteColorOverrides).length > 0) {
       fetch('/api/map/save', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
