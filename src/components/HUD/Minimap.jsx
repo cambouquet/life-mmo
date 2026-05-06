@@ -5,7 +5,7 @@ const MINIMAP_WIDTH = 120
 const MINIMAP_HEIGHT = 84
 const VIEW_RADIUS = 5
 
-export default function Minimap({ playerPos, worldData }) {
+export default function Minimap({ playerPos, worldData, charColors }) {
   const canvasRef = useRef(null)
 
   useEffect(() => {
@@ -116,27 +116,37 @@ export default function Minimap({ playerPos, worldData }) {
       }
     }
 
-    // Draw player at center
+    // Draw player light glow
     const playerRadius = 2
-    ctx.fillStyle = 'rgba(255, 200, 50, 1)'
+    const outfitColor = charColors?.outfit || '#ffffff'
+    const brightColor = adjustBrightness(outfitColor, 2.5)
+
+    // Outer glow
+    ctx.fillStyle = brightColor.replace('0.7)', '0.3)')
+    ctx.beginPath()
+    ctx.arc(centerX, centerY, playerRadius * 3, 0, Math.PI * 2)
+    ctx.fill()
+
+    // Inner bright dot
+    ctx.fillStyle = brightColor
     ctx.beginPath()
     ctx.arc(centerX, centerY, playerRadius, 0, Math.PI * 2)
     ctx.fill()
 
-    // Player outline
-    ctx.strokeStyle = 'rgba(255, 220, 100, 0.7)'
-    ctx.lineWidth = 1
+    // Bright outline
+    ctx.strokeStyle = brightColor
+    ctx.lineWidth = 1.5
     ctx.stroke()
 
     // Direction indicator (pointing north)
-    ctx.strokeStyle = 'rgba(255, 220, 100, 0.9)'
+    ctx.strokeStyle = brightColor
     ctx.lineWidth = 1
     ctx.beginPath()
     ctx.moveTo(centerX, centerY - playerRadius - 1)
     ctx.lineTo(centerX, centerY - playerRadius - 5)
     ctx.stroke()
 
-  }, [playerPos, worldData])
+  }, [playerPos, worldData, charColors])
 
   return (
     <div className="minimap-container">
@@ -150,7 +160,6 @@ export default function Minimap({ playerPos, worldData }) {
   )
 }
 
-// Helper function to draw rounded rectangles
 function roundRect(ctx, x, y, w, h, r) {
   ctx.beginPath()
   ctx.moveTo(x + r, y)
@@ -163,4 +172,12 @@ function roundRect(ctx, x, y, w, h, r) {
   ctx.lineTo(x, y + r)
   ctx.quadraticCurveTo(x, y, x + r, y)
   ctx.closePath()
+}
+
+function adjustBrightness(color, factor) {
+  const hex = color.replace('#', '')
+  const r = Math.min(255, Math.floor(parseInt(hex.substring(0, 2), 16) * factor))
+  const g = Math.min(255, Math.floor(parseInt(hex.substring(2, 4), 16) * factor))
+  const b = Math.min(255, Math.floor(parseInt(hex.substring(4, 6), 16) * factor))
+  return `rgba(${r}, ${g}, ${b}, 0.7)`
 }

@@ -40,6 +40,7 @@ export default function MapEditorPanel({ hoveredTile, layers, collMap, layerEdit
   const [activeTab, setActiveTab] = useState('tiles') // 'tiles' or 'colors'
   const [selectedSpriteForColor, setSelectedSpriteForColor] = useState(null) // { type: 'floor'|'wall', row: 0, ss: 0x00 }
   const [floorColors, setFloorColors] = useState(spriteColors.floor)
+  const [wallColors, setWallColors] = useState(spriteColors.wall)
   const [backups, setBackups] = useState(loadBackups)
   const [showBackupMenu, setShowBackupMenu] = useState(false)
 
@@ -77,7 +78,6 @@ export default function MapEditorPanel({ hoveredTile, layers, collMap, layerEdit
     const fieldMap = { floor: 'ground', wall: 'wall', table: 'obj', torch: 'entity', mirror: 'obj' }
     const field = fieldMap[category]
 
-    // Apply sprite to all selected tiles
     onEditSprite(prev => {
       const next = { ...prev }
       tiles.forEach(tile => {
@@ -132,7 +132,8 @@ export default function MapEditorPanel({ hoveredTile, layers, collMap, layerEdit
       timestamp: new Date().toLocaleString(),
       layerEdits: JSON.parse(JSON.stringify(layerEdits)),
       spriteColorOverrides: JSON.parse(JSON.stringify(spriteColorOverrides)),
-      floorColors: [...floorColors]
+      floorColors: [...floorColors],
+      wallColors: [...wallColors]
     }
     const newBackups = [backup, ...backups].slice(0, 5)
     setBackups(newBackups)
@@ -144,6 +145,8 @@ export default function MapEditorPanel({ hoveredTile, layers, collMap, layerEdit
     onSpriteColorChange(() => JSON.parse(JSON.stringify(backup.spriteColorOverrides)))
     setFloorColors([...backup.floorColors])
     spriteColors.floor = [...backup.floorColors]
+    setWallColors([...backup.wallColors])
+    spriteColors.wall = [...backup.wallColors]
     setShowBackupMenu(false)
   }
 
@@ -283,7 +286,7 @@ export default function MapEditorPanel({ hoveredTile, layers, collMap, layerEdit
       <div className="cell-info__preview">
         <div className="cell-info__preview-layers">
           <div className="cell-info__preview-col">
-            <div className="cell-info__layer-label">Layer 0</div>
+            <div className="cell-info__layer-label">Layer 1</div>
             <button className="cell-info__preview-item" onClick={() => setPickerOpen('floor')}>
               <strong>Ground</strong>
               {ground ? (
@@ -294,7 +297,18 @@ export default function MapEditorPanel({ hoveredTile, layers, collMap, layerEdit
                 <div className="cell-info__sprite-large cell-info__sprite-empty" />
               )}
             </button>
-            <div className="cell-info__layer-label">Layer 1</div>
+            <div className="cell-info__layer-label">Layer 3</div>
+            <button className="cell-info__preview-item" onClick={() => setPickerOpen('table')}>
+              <strong>Object</strong>
+              {obj ? (
+                <div className="cell-info__sprite-large" style={{ backgroundImage: `url(${getSpriteUrl(obj.ss)})`, backgroundPosition: `0 ${obj.row * -32}px` }} />
+              ) : (
+                <div className="cell-info__sprite-large cell-info__sprite-empty" />
+              )}
+            </button>
+          </div>
+          <div className="cell-info__preview-col">
+            <div className="cell-info__layer-label">Layer 2</div>
             <button className="cell-info__preview-item" onClick={() => setPickerOpen('wall')}>
               <strong>Wall</strong>
               {wall ? (
@@ -305,18 +319,7 @@ export default function MapEditorPanel({ hoveredTile, layers, collMap, layerEdit
                 <div className="cell-info__sprite-large cell-info__sprite-empty" />
               )}
             </button>
-          </div>
-          <div className="cell-info__preview-col">
-            <div className="cell-info__layer-label">Layer 2</div>
-            <button className="cell-info__preview-item" onClick={() => setPickerOpen('table')}>
-              <strong>Object</strong>
-              {obj ? (
-                <div className="cell-info__sprite-large" style={{ backgroundImage: `url(${getSpriteUrl(obj.ss)})`, backgroundPosition: `0 ${obj.row * -32}px` }} />
-              ) : (
-                <div className="cell-info__sprite-large cell-info__sprite-empty" />
-              )}
-            </button>
-            <div className="cell-info__layer-label">Layer 3</div>
+            <div className="cell-info__layer-label">Layer 4</div>
             <button className="cell-info__preview-item" onClick={() => setPickerOpen('torch')}>
               <strong>Entity</strong>
               {entity ? (
@@ -405,7 +408,7 @@ export default function MapEditorPanel({ hoveredTile, layers, collMap, layerEdit
           <div>
             <div className="cell-info__layer-label">Wall Colors</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-              {spriteColors.wall.map((_, row) => {
+              {wallColors.map((_, row) => {
                 const color = getSpriteColor(1, row)
                 const isSelected = selectedSpriteForColor?.ss === 1 && selectedSpriteForColor?.row === row
                 return (
@@ -429,6 +432,30 @@ export default function MapEditorPanel({ hoveredTile, layers, collMap, layerEdit
                   </button>
                 )
               })}
+              <button
+                onClick={() => {
+                  const newWallColors = [...wallColors, '#000000']
+                  setWallColors(newWallColors)
+                  spriteColors.wall = newWallColors
+                  setSelectedSpriteForColor({ ss: 1, row: newWallColors.length - 1, variant: 0 })
+                }}
+                style={{
+                  display: 'flex',
+                  gap: '6px',
+                  alignItems: 'center',
+                  padding: '4px 6px',
+                  background: 'rgba(100, 220, 255, 0.05)',
+                  border: '1px dashed rgba(100, 180, 255, 0.4)',
+                  borderRadius: '2px',
+                  cursor: 'pointer',
+                  color: '#7ab8ff',
+                  fontSize: '9px',
+                  fontWeight: '600',
+                  marginTop: '4px'
+                }}
+              >
+                + Add Color
+              </button>
             </div>
           </div>
         </div>
