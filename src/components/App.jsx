@@ -289,7 +289,6 @@ export default function App() {
           onHoveredTileChange={setHoveredTile}
           onWorldDataChange={setWorldData}
           onEditSprite={setLayerEdits}
-          onZoomChange={setZoom}
         />
         <div className="ui-overlay" ref={uiOverlayRef}>
           {!showDialog && !showHoroscope && <GuidanceVoice text={guidance} />}

@@ -15,8 +15,8 @@ export default function Minimap({ playerPos, worldData }) {
     const ctx = canvas.getContext('2d')
     if (!ctx) return
 
-    // Clear background
-    ctx.fillStyle = 'rgba(15, 15, 25, 1)'
+    // Clear background - match HUD header color
+    ctx.fillStyle = 'rgba(8, 6, 18, 0.8)'
     ctx.fillRect(0, 0, MINIMAP_WIDTH, MINIMAP_HEIGHT)
 
     const playerTileX = playerPos.x / TILE
@@ -136,10 +136,6 @@ export default function Minimap({ playerPos, worldData }) {
     ctx.lineTo(centerX, centerY - playerRadius - 5)
     ctx.stroke()
 
-    // Outer border
-    ctx.strokeStyle = 'rgba(100, 140, 180, 0.6)'
-    ctx.lineWidth = 1
-    ctx.strokeRect(0.5, 0.5, MINIMAP_WIDTH - 1, MINIMAP_HEIGHT - 1)
   }, [playerPos, worldData])
 
   return (
