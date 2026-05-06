@@ -63,6 +63,7 @@ export default function App() {
     hoveredFill: 'rgba(100,200,255,0.15)',
     hoveredStroke: 'rgba(100,220,255,0.4)',
   })
+  const [exploredTiles, setExploredTiles] = useState(new Set())
 
   const wrapRef          = useViewportScale()
   const gameRef          = useRef(null)
@@ -101,11 +102,20 @@ export default function App() {
       setShowGallery(true)
     }
   })
-  const handleStateChange = useCallback(({ facing, moving, log, guidance }) => {
+  const handleStateChange = useCallback(({ facing, moving, log, guidance, playerPos }) => {
     setFacing(facing)
     setMoving(moving)
     setLogEntries(log)
     setGuidance(guidance ?? null)
+
+    // Track explored tiles
+    if (playerPos) {
+      const TILE = 16
+      const tileR = Math.floor(playerPos.y / TILE)
+      const tileC = Math.floor(playerPos.x / TILE)
+      const tileKey = `${tileR},${tileC}`
+      setExploredTiles(prev => new Set(prev).add(tileKey))
+    }
   }, [])
 
   const handleInteract = useCallback((target) => {
@@ -256,7 +266,7 @@ export default function App() {
 
   return (
     <div className="game-wrap" ref={wrapRef}>
-      <HUD facing={facing} moving={moving} logEntries={logEntries} charColors={charColors} charName={charName} />
+      <HUD facing={facing} moving={moving} logEntries={logEntries} charColors={charColors} charName={charName} playerPos={playerStateRef.current} exploredTiles={exploredTiles} worldData={worldData} />
       {!showEditor && (
         <div className="canvas-wrap">
         <Game

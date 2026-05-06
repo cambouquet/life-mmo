@@ -64,11 +64,27 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
     let isDragging = false
     let dragMoved = false
     let altHeldDown = false
+    let cameraOffsetX = 0
+    let cameraOffsetY = 0
+    let lastMouseX = 0
+    let lastMouseY = 0
+    let isPanning = false
 
     const canvas = canvasRef.current
     const onMouseMove = e => {
       altHeldDown = e.altKey
-      hoveredTile = mouseTile(e, canvas, player.x + 8, player.y + 8, zoomRef.current)
+
+      // Handle camera panning in debug mode (middle mouse or spacebar drag)
+      if (isPanning && debugActiveRef.current) {
+        const deltaX = e.clientX - lastMouseX
+        const deltaY = e.clientY - lastMouseY
+        cameraOffsetX += deltaX / zoomRef.current
+        cameraOffsetY += deltaY / zoomRef.current
+      }
+      lastMouseX = e.clientX
+      lastMouseY = e.clientY
+
+      hoveredTile = mouseTile(e, canvas, player.x + 8 + cameraOffsetX, player.y + 8 + cameraOffsetY, zoomRef.current)
 
       if (isDragging && dragStart && debugActiveRef.current) {
         dragMoved = true
@@ -95,16 +111,27 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
     const onMouseDown = e => {
       if (!debugActiveRef.current) return
 
+      // Middle mouse button or space+click: start panning
+      if (e.button === 1) {
+        isPanning = true
+        lastMouseX = e.clientX
+        lastMouseY = e.clientY
+        return
+      }
+
       // Don't start drag for Alt+Click (paste mode)
       if (e.altKey) return
 
       dragMoved = false
-      const tile = mouseTile(e, canvas, player.x + 8, player.y + 8, zoomRef.current)
+      const tile = mouseTile(e, canvas, player.x + 8 + cameraOffsetX, player.y + 8 + cameraOffsetY, zoomRef.current)
       dragStart = tile
       isDragging = true
     }
 
     const onMouseUp = e => {
+      if (e.button === 1) {
+        isPanning = false
+      }
       isDragging = false
       dragStart = null
       dragMoved = false
@@ -155,12 +182,21 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
     }
 
     const onWheel = e => {
+      if (!debugActiveRef.current) return
       e.preventDefault()
-      const step = 0.25
-      const minZoom = 1
-      const maxZoom = 4
-      zoomRef.current += e.deltaY < 0 ? step : -step
-      zoomRef.current = Math.max(minZoom, Math.min(maxZoom, zoomRef.current))
+
+      if (e.shiftKey) {
+        // Shift+Scroll: zoom
+        const step = 0.25
+        const minZoom = 1
+        const maxZoom = 4
+        zoomRef.current += e.deltaY < 0 ? step : -step
+        zoomRef.current = Math.max(minZoom, Math.min(maxZoom, zoomRef.current))
+      } else {
+        // Scroll without shift: pan camera
+        cameraOffsetX += e.deltaX / zoomRef.current
+        cameraOffsetY += e.deltaY / zoomRef.current
+      }
     }
 
     canvas.addEventListener('mousemove', onMouseMove)
@@ -197,7 +233,7 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
         }
         prevSpace = spaceNow
 
-        onStateRef.current?.({ facing: player.facing, moving: player.moving, log, guidance, doorOpen: door1.open, door2Open: door2.open })
+        onStateRef.current?.({ facing: player.facing, moving: player.moving, log, guidance, doorOpen: door1.open, door2Open: door2.open, playerPos: { x: player.x, y: player.y } })
       } else {
         const spaceNow = isKeyDown('Space')
         if (spaceNow && !prevSpace) onInteractRef.current?.()
@@ -215,7 +251,7 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
         paused:    pausedRef.current,
         nameSet:   !!nameSetRef?.current,
         colorsSet: !!colorsSetRef?.current,
-      }, zoomRef.current)
+      }, zoomRef.current, debugActiveRef.current ? { x: cameraOffsetX, y: cameraOffsetY } : { x: 0, y: 0 })
 
       rafId = requestAnimationFrame(loop)
     }
