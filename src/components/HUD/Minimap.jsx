@@ -22,13 +22,13 @@ export default function Minimap({ playerPos, worldData }) {
     const playerTileX = playerPos.x / TILE
     const playerTileY = playerPos.y / TILE
 
-    const tileSize = Math.min(
+    const tileSize = Math.floor(Math.min(
       MINIMAP_WIDTH / (VIEW_RADIUS * 2),
       MINIMAP_HEIGHT / (VIEW_RADIUS * 2)
-    )
+    ))
 
-    const centerX = MINIMAP_WIDTH / 2
-    const centerY = MINIMAP_HEIGHT / 2
+    const centerX = Math.round(MINIMAP_WIDTH / 2)
+    const centerY = Math.round(MINIMAP_HEIGHT / 2)
 
     const collMap = worldData.collMap
     const rows = collMap.length
@@ -43,10 +43,10 @@ export default function Minimap({ playerPos, worldData }) {
         if (tileDistX > VIEW_RADIUS || tileDistY > VIEW_RADIUS) continue
 
         const tile = collMap[r][c]
-        const offsetX = (c - playerTileX) * tileSize
-        const offsetY = (r - playerTileY) * tileSize
-        const x = centerX + offsetX
-        const y = centerY + offsetY
+        const offsetX = Math.round((c - playerTileX) * tileSize)
+        const offsetY = Math.round((r - playerTileY) * tileSize)
+        const x = Math.round(centerX + offsetX)
+        const y = Math.round(centerY + offsetY)
 
         if (tile === 0) {
           // Floor - light blue with rounded corners
@@ -66,10 +66,10 @@ export default function Minimap({ playerPos, worldData }) {
         if (tileDistX > VIEW_RADIUS || tileDistY > VIEW_RADIUS) continue
 
         const tile = collMap[r][c]
-        const offsetX = (c - playerTileX) * tileSize
-        const offsetY = (r - playerTileY) * tileSize
-        const x = centerX + offsetX
-        const y = centerY + offsetY
+        const offsetX = Math.round((c - playerTileX) * tileSize)
+        const offsetY = Math.round((r - playerTileY) * tileSize)
+        const x = Math.round(centerX + offsetX)
+        const y = Math.round(centerY + offsetY)
 
         if (tile === 1) {
           // Wall - dark with border
