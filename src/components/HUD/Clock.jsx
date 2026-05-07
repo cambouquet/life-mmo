@@ -27,7 +27,6 @@ export default function Clock() {
   return (
     <div className="clock-panel">
       <div className="clock-panel__time">{formatTime(now)}</div>
-      <div className="clock-panel__date">{formatDate(now)}</div>
     </div>
   )
 }

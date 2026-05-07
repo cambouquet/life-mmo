@@ -20,13 +20,13 @@
 
 .game-canvas {
   display: block;
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
 }
 
 .guidance {
   position: absolute;
-  top: 76px;
+  top: 104px;
   left: 0;
   right: 0;
   height: 20px;
@@ -74,7 +74,7 @@
 .record-wrap-with-tools {
   position: fixed;
   bottom: 16px;
-  right: 50px;
+  right: 16px;
   z-index: 1000;
   display: flex;
   gap: 6px;

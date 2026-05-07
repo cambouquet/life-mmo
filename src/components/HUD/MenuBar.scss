@@ -1,0 +1,81 @@
+.menu-bar {
+  position: fixed;
+  top: 2px;
+  right: 16px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  height: 40px;
+  flex-wrap: wrap;
+  max-width: calc(100% - 32px);
+}
+
+.menu-bar__clock {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+}
+
+.clock-svg {
+  width: 100%;
+  height: 100%;
+}
+
+.clock-numeral {
+  font-family: 'Lora', Georgia, serif;
+  font-size: 6px;
+  font-weight: 400;
+  fill: rgba(100, 180, 255, 0.8);
+  letter-spacing: 0;
+}
+
+.clock-center {
+  fill: rgba(100, 180, 255, 0.8);
+}
+
+.hour-hand {
+  stroke: rgba(100, 180, 255, 0.9);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+}
+
+.minute-hand {
+  stroke: rgba(100, 220, 255, 0.9);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+}
+
+.menu-bar__season {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+}
+
+.season-svg {
+  width: 100%;
+  height: 100%;
+}
+
+.sun {
+  transition: fill 0.3s ease, filter 0.3s ease;
+  stroke: rgba(100, 180, 255, 0.5);
+  stroke-width: 0.5;
+
+  &--bright {
+    fill: rgba(255, 200, 0, 1);
+    filter: drop-shadow(0 0 3px rgba(255, 200, 0, 0.8));
+  }
+
+  &--dim {
+    fill: rgba(50, 80, 140, 0.8);
+    filter: drop-shadow(0 0 2px rgba(50, 80, 140, 0.6));
+  }
+}

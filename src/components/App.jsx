@@ -12,6 +12,7 @@ import DebugConsole          from './HUD/DebugConsole.jsx'
 import MapEditButton         from './DebugButton/MapEditButton.jsx'
 import MapEditorPanel        from './DebugButton/MapEditorPanel.jsx'
 import SpritePickerModal     from './DebugButton/SpritePickerModal.jsx'
+import AdminMenu             from './HUD/AdminMenu.jsx'
 import { useRecorder }       from '../playback/useRecorder.js'
 import { PlaybackEngine }    from '../playback/PlaybackEngine.js'
 import { mirrorVisit }       from '../playback/scenarios/mirrorVisit.js'
@@ -437,6 +438,7 @@ export default function App() {
         />
       )}
       <div className="record-wrap-with-tools">
+        <AdminMenu />
         <RecordButton
           status={recorder.status}
           progress={recorder.progress}

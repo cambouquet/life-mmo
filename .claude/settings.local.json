@@ -10,7 +10,10 @@
       "Bash(curl -s http://localhost:5174/src/components/HUD/Minimap.jsx)",
       "Bash(Get-ChildItem -Path . -Filter \"*.ts\" -Recurse -ErrorAction SilentlyContinue)",
       "Bash(Select-Object -First 20 FullName)",
-      "PowerShell(head -20)"
+      "PowerShell(head -20)",
+      "Bash(npm test *)",
+      "Bash(mv src/tests/layout.spec.js tests/layout.spec.js)",
+      "Bash(cp src/tests/layout.spec.js tests/layout.spec.js)"
     ]
   }
 }

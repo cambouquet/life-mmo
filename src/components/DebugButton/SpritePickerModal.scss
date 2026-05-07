@@ -1,6 +1,6 @@
 .sprite-picker-overlay {
   position: fixed;
-  top: 96px;
+  top: 124px;
   left: 0;
   right: 0;
   background: rgba(6, 4, 14, 0.95);
@@ -8,22 +8,13 @@
   z-index: 10;
   padding: 4px 8px;
   display: block;
-  overflow-x: auto;
+  overflow-x: scroll;
   overflow-y: hidden;
-  scrollbar-width: thin;
+  scrollbar-width: none;
   height: auto;
 
   &::-webkit-scrollbar {
-    height: 4px;
-  }
-
-  &::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: rgba(100, 180, 255, 0.3);
-    border-radius: 2px;
+    display: none;
   }
 }
 
