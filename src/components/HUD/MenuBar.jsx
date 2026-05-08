@@ -1,7 +1,12 @@
 import { useEffect, useState } from 'react'
 import './MenuBar.scss'
 
-const ROMAN_NUMERALS = ['XII', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI']
+const ROMAN_NUMERALS = {
+  0:  'XII',
+  3:  'III',
+  6:  'VI',
+  9:  'IX'
+}
 
 function getSeasonProgress() {
   const now = new Date()
@@ -47,7 +52,8 @@ export default function MenuBar() {
       <div className="menu-bar__clock">
         <svg viewBox="0 0 100 100" className="clock-svg">
           {/* Roman numerals */}
-          {ROMAN_NUMERALS.map((numeral, i) => {
+          {Object.entries(ROMAN_NUMERALS).map(([index, numeral]) => {
+            const i = parseInt(index)
             const angle = (i * 30 - 90) * Math.PI / 180
             const x = 50 + 35 * Math.cos(angle)
             const y = 50 + 35 * Math.sin(angle)
