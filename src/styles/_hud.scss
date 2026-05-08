@@ -12,8 +12,19 @@
 }
 
 // ── HUD header — floats over the game ────────────────────────────────────────
+.hud-header {
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  pointer-events: none; // Let Clicks pass to game if not on a child
+
+  & > * {
+    pointer-events: auto; // Re-enable for children
+  }
+}
+
 .hud {
-  z-index: 10;
   display: flex;
   align-items: stretch;
   width: 100%;
@@ -21,7 +32,6 @@
   background: rgba(8, 6, 18, 0.80);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  overflow: hidden;
   flex-shrink: 0;
 }
 

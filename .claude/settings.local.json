@@ -15,7 +15,8 @@
       "Bash(mv src/tests/layout.spec.js tests/layout.spec.js)",
       "Bash(cp src/tests/layout.spec.js tests/layout.spec.js)",
       "Bash(Get-ChildItem -Force)",
-      "Bash(start http://localhost:5176)"
+      "Bash(start http://localhost:5176)",
+      "Bash(grep -n \"showGameTests\\\\|InteractionPlayground\" c:\\\\\\\\Users\\\\\\\\bouqu\\\\\\\\gitclones\\\\\\\\life-mmo\\\\\\\\src\\\\\\\\components\\\\\\\\App.jsx)"
     ]
   }
 }

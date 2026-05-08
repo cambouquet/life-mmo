@@ -432,53 +432,84 @@ export default function App() {
         />
       )}
       {debugActive && (
-        <MapEditorPanel
-          hoveredTile={hoveredTile}
-          layers={worldData?.layers}
-          collMap={worldData?.collMap}
-          layerEdits={layerEdits}
-          onEditSprite={setLayerEdits}
-          highlightColors={highlightColors}
-          onHighlightColorsChange={setHighlightColors}
-          spriteColorOverrides={spriteColorOverrides}
-          onSpriteColorChange={setSpriteColorOverrides}
-          onHoverPreview={setHoverPreview}
-          onPickerStateChange={setPickerState}
-          activeSprite={activeSprite}
-          onActiveSpriteChange={setActiveSprite}
-        />
+        <>
+          <MapEditorPanel
+            hoveredTile={hoveredTile}
+            layers={worldData?.layers}
+            collMap={worldData?.collMap}
+            layerEdits={layerEdits}
+            onEditSprite={setLayerEdits}
+            highlightColors={highlightColors}
+            onHighlightColorsChange={setHighlightColors}
+            spriteColorOverrides={spriteColorOverrides}
+            onSpriteColorChange={setSpriteColorOverrides}
+            onHoverPreview={setHoverPreview}
+            onPickerStateChange={setPickerState}
+            activeSprite={activeSprite}
+            onActiveSpriteChange={setActiveSprite}
+          />
+          {showGameTests && (
+            <InteractionPlayground
+              playerStateRef={playerStateRef}
+              worldDataRef={worldDataRef}
+              onMovePlayer={(direction) => {
+                const keyMap = { up: 'KeyW', down: 'KeyS', left: 'KeyA', right: 'KeyD' }
+                const event = new KeyboardEvent('keydown', { code: keyMap[direction] })
+                window.dispatchEvent(event)
+              }}
+              onInteract={() => {
+                const event = new KeyboardEvent('keydown', { code: 'KeyE' })
+                window.dispatchEvent(event)
+              }}
+            />
+          )}
+        </>
       )}
-      {showGameTests && (
-        <InteractionPlayground
-          playerStateRef={playerStateRef}
-          worldDataRef={worldDataRef}
-          onMovePlayer={(direction) => {
-            const keyMap = { up: 'KeyW', down: 'KeyS', left: 'KeyA', right: 'KeyD' }
-            const event = new KeyboardEvent('keydown', { code: keyMap[direction] })
-            window.dispatchEvent(event)
-          }}
-          onInteract={() => {
-            const event = new KeyboardEvent('keydown', { code: 'KeyE' })
-            window.dispatchEvent(event)
-          }}
-        />
-      )}
-      <div className="record-wrap-with-tools">
-        <AdminMenu onToggleGameTests={() => setShowGameTests(prev => !prev)} />
-        <RecordButton
-          status={recorder.status}
-          progress={recorder.progress}
-          recordingCount={recordings.length}
-          onRecord={handleRecord}
-          onRecordGate={handleRecordGate}
-          onStop={handleStop}
-          onOpenGallery={() => setShowGallery(true)}
-        />
-        <MapEditButton
-          active={debugActive}
-          onToggle={() => setDebugActive(!debugActive)}
-        />
+      <div className="bottom-toolbar">
+        <button
+          className="toolbar-btn toolbar-btn--record"
+          onClick={() => setShowGallery(prev => !prev)}
+          title="Record scenarios"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="10" />
+            <circle cx="12" cy="12" r="3" fill="currentColor" />
+          </svg>
+        </button>
+        <button
+          className={`toolbar-btn toolbar-btn--debug ${debugActive ? 'toolbar-btn--active' : ''}`}
+          onClick={() => setDebugActive(!debugActive)}
+          title="Toggle map editor"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M4 4h7v7H4z" />
+            <path d="M13 4h7v7h-7z" />
+            <path d="M4 13h7v7H4z" />
+            <path d="M13 13h7v7h-7z" />
+          </svg>
+        </button>
+        <button
+          className={`toolbar-btn toolbar-btn--admin ${showGameTests ? 'toolbar-btn--active' : ''}`}
+          onClick={() => setShowGameTests(prev => !prev)}
+          title="Toggle game interactions"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="1" />
+            <circle cx="19" cy="12" r="1" />
+            <circle cx="5" cy="12" r="1" />
+          </svg>
+        </button>
       </div>
+      <RecordButton
+        status={recorder.status}
+        progress={recorder.progress}
+        recordingCount={recordings.length}
+        onRecord={handleRecord}
+        onRecordGate={handleRecordGate}
+        onStop={handleStop}
+        onOpenGallery={() => setShowGallery(true)}
+        isOpen={showGallery}
+      />
       {showGallery && (
         <VideoGallery
           videos={recordings}

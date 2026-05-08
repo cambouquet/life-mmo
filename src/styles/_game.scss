@@ -71,12 +71,55 @@
   letter-spacing: 0.3px;
 }
 
-.record-wrap-with-tools {
+.bottom-toolbar {
   position: fixed;
-  bottom: 16px;
-  right: 16px;
+  bottom: 0;
+  right: 0;
   z-index: 1000;
   display: flex;
-  gap: 6px;
+  flex-direction: column;
+  gap: 0;
+  align-items: stretch;
+  border: 1px solid rgba(100, 180, 255, 0.3);
+  border-bottom: none;
+  border-right: none;
+}
+
+.toolbar-btn {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: none;
+  border-right: 1px solid rgba(100, 180, 255, 0.2);
+  background: transparent;
+  color: #7ab8ff;
+  cursor: pointer;
+  display: flex;
   align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.15s;
+
+  svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  &:hover {
+    background: rgba(100, 180, 255, 0.15);
+    color: #64d9ff;
+  }
+
+  &--active {
+    background: rgba(100, 180, 255, 0.2);
+    color: #64d9ff;
+
+    &:hover {
+      background: rgba(100, 180, 255, 0.25);
+    }
+  }
+
+  &:last-child {
+    border-right: none;
+  }
 }

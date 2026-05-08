@@ -7,7 +7,7 @@ import MenuBar   from './MenuBar.jsx'
 
 export default function HUD({ facing, moving, logEntries, charColors, charName, playerPos, exploredTiles, worldData }) {
   return (
-    <>
+    <div className="hud-header">
       <MenuBar />
       <div className="hud">
         <Logo />
@@ -15,6 +15,6 @@ export default function HUD({ facing, moving, logEntries, charColors, charName, 
         <LogPanel entries={logEntries} />
         <Minimap playerPos={playerPos} exploredTiles={exploredTiles} worldData={worldData} charColors={charColors} />
       </div>
-    </>
+    </div>
   )
 }

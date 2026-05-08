@@ -8,37 +8,68 @@ const ROMAN_NUMERALS = {
   9:  'IX'
 }
 
-function getSeasonProgress() {
+function getSeasonData(overrideDay) {
   const now = new Date()
   const year = now.getFullYear()
-  const dayOfYear = Math.floor((now - new Date(year, 0, 0)) / 86400000)
+  const dayOfYear = overrideDay !== undefined ? overrideDay : Math.floor((now - new Date(year, 0, 0)) / 86400000)
 
-  const summerSolstice = 172
-  const winterSolstice = 355
+  // Approximate solstices
+  const summerSolstice = 172 // June 21
+  const winterSolstice = 355 // Dec 21
 
-  let progress
-  if (dayOfYear < summerSolstice) {
-    progress = (dayOfYear - 1) / (summerSolstice - 1)
-  } else if (dayOfYear < winterSolstice) {
-    progress = 1 - ((dayOfYear - summerSolstice) / (winterSolstice - summerSolstice))
+  // Calculate light progress (0 = darkest/Winter, 1 = brightest/Summer)
+  let lightProgress
+  if (dayOfYear <= summerSolstice) {
+    const totalDays = summerSolstice + (365 - winterSolstice)
+    const daysSinceWinter = dayOfYear + (365 - winterSolstice)
+    lightProgress = daysSinceWinter / totalDays
+  } else if (dayOfYear <= winterSolstice) {
+    const totalDays = winterSolstice - summerSolstice
+    const daysSinceSummer = dayOfYear - summerSolstice
+    lightProgress = 1 - (daysSinceSummer / totalDays)
   } else {
-    progress = (365 - dayOfYear) / (365 - winterSolstice)
+    const totalDays = summerSolstice + (365 - winterSolstice)
+    const daysSinceWinter = dayOfYear - winterSolstice
+    lightProgress = daysSinceWinter / totalDays
   }
 
-  return Math.max(0, Math.min(1, progress))
+  // yearProgress for the full 360 rotation (0-1)
+  const yearProgress = dayOfYear / 365
+  
+  // Format date for display
+  const date = new Date(year, 0); // Jan 1st
+  date.setDate(dayOfYear + 1);
+  const dateString = date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+
+  return {
+    light: Math.max(0, Math.min(1, lightProgress)),
+    year:  yearProgress,
+    isRising: dayOfYear > winterSolstice || dayOfYear < summerSolstice,
+    day: dayOfYear,
+    dateString
+  }
 }
 
 export default function MenuBar() {
   const [now, setNow] = useState(new Date())
-  const [seasonProgress, setSeasonProgress] = useState(getSeasonProgress())
+  const [overridenDay, setOverridenDay] = useState(172) // Default to June 21 (Summer Solstice)
+  const [season, setSeason] = useState(getSeasonData(172))
 
   useEffect(() => {
     const id = setInterval(() => {
       setNow(new Date())
-      setSeasonProgress(getSeasonProgress())
-    }, 1000)
+      if (overridenDay === undefined) {
+        setSeason(getSeasonData())
+      }
+    }, 1000 * 60)
     return () => clearInterval(id)
-  }, [])
+  }, [overridenDay])
+
+  const handleDayChange = (e) => {
+    const day = parseInt(e.target.value)
+    setOverridenDay(day)
+    setSeason(getSeasonData(day))
+  }
 
   const hours = now.getHours() % 12
   const minutes = now.getMinutes()
@@ -98,15 +129,51 @@ export default function MenuBar() {
       </div>
 
       <div className="menu-bar__season">
+        <div className="menu-bar__time-tooltip">
+          {season.dateString} — {season.isRising ? 'Rising' : 'Falling'}
+        </div>
         <svg viewBox="0 0 80 80" className="season-svg">
-          {/* Sun/Moon circle that rotates */}
+          {/* Background Orbit/Sky */}
+          <circle cx="40" cy="40" r="30" className="season-sky-bg" />
+          
+          {/* Horizon Line */}
+          <line x1="10" y1="40" x2="70" y2="40" className="season-horizon" />
+
+          {/* The Sun / Moon Indicator */}
           <circle
-            cx={40 + 25 * Math.cos(seasonProgress * Math.PI * 2 - Math.PI / 2)}
-            cy={40 + 25 * Math.sin(seasonProgress * Math.PI * 2 - Math.PI / 2)}
-            r="10"
-            className={seasonProgress > 0.5 ? 'sun sun--bright' : 'sun sun--dim'}
+            cx={40 + 30 * Math.cos(season.year * Math.PI * 2 - Math.PI / 2)}
+            cy={40 + 30 * Math.sin(season.year * Math.PI * 2 - Math.PI / 2)}
+            r={10}
+            className="season-sun"
+            style={{
+              fill: season.light > 0.5 ? '#ffff00' : '#88ccff',
+              filter: `drop-shadow(0 0 ${12 * season.light}px ${season.light > 0.5 ? 'gold' : '#7ab8ff'}) brightness(1.5)`
+            }}
+          />
+
+          {/* Glowing Aura depending on light level */}
+          <circle 
+            cx="40" 
+            cy="40" 
+            r="30" 
+            className="season-aura"
+            style={{
+              strokeDasharray: `${season.light * 188.5} 188.5`,
+              stroke: season.light > 0.5 ? 'rgba(255, 215, 0, 0.4)' : 'rgba(122, 184, 255, 0.4)'
+            }}
           />
         </svg>
+
+        <div className="season-tester" style={{ display: 'flex' }}>
+          <input 
+            type="range" 
+            min="0" 
+            max="364" 
+            value={season.day} 
+            onChange={handleDayChange} 
+          />
+          <span className="season-tester__label">{season.dateString}</span>
+        </div>
       </div>
     </div>
   )
