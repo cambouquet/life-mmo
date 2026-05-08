@@ -160,7 +160,7 @@
     gap: 2px;
   }
 
-  &__name {
+  &__class {
     font-family: $font-ui;
     font-size: 16px;
     font-weight: 600;
@@ -169,7 +169,7 @@
     line-height: 1.2;
   }
 
-  &__class {
+  &__level {
     font-family: $font-ui;
     font-size: 13px;
     font-weight: 400;
@@ -237,12 +237,12 @@
   gap: 1px;
   padding: 0 12px;
   min-width: 0;
-  max-width: 100px;
-  overflow: hidden;
+  max-width: 140px;
+  overflow: visible;
 
   &__time {
     font-family: $font-ui;
-    font-size: 18px;
+    font-size: 14px;
     font-weight: 500;
     color: #f4f0ff;
     letter-spacing: 0;
@@ -251,7 +251,7 @@
     white-space: nowrap;
 
     @media (max-width: 400px) {
-      font-size: 14px;
+      font-size: 12px;
     }
   }
 

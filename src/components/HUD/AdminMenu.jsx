@@ -56,9 +56,9 @@ export default function AdminMenu({ onToggleGameTests }) {
           <button
             className="admin-menu__item admin-menu__item--primary"
             onClick={() => onToggleGameTests?.()}
-            title="Toggle in-game test runner"
+            title="Toggle game interactions playground"
           >
-            🎮 Game Test Runner
+            🎮 Game Interactions
           </button>
 
           {gameTests.length > 0 && (

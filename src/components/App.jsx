@@ -12,7 +12,7 @@ import DebugConsole          from './HUD/DebugConsole.jsx'
 import MapEditButton         from './DebugButton/MapEditButton.jsx'
 import MapEditorPanel        from './DebugButton/MapEditorPanel.jsx'
 import SpritePickerModal     from './DebugButton/SpritePickerModal.jsx'
-import GameTestPanel         from './DebugButton/GameTestPanel.jsx'
+import InteractionPlayground from './DebugButton/InteractionPlayground.jsx'
 import AdminMenu             from './HUD/AdminMenu.jsx'
 import { useRecorder }       from '../playback/useRecorder.js'
 import { PlaybackEngine }    from '../playback/PlaybackEngine.js'
@@ -449,11 +449,10 @@ export default function App() {
         />
       )}
       {showGameTests && (
-        <GameTestPanel
+        <InteractionPlayground
           playerStateRef={playerStateRef}
           worldDataRef={worldDataRef}
           onMovePlayer={(direction) => {
-            // Dispatch keyboard event to move player
             const keyMap = { up: 'KeyW', down: 'KeyS', left: 'KeyA', right: 'KeyD' }
             const event = new KeyboardEvent('keydown', { code: keyMap[direction] })
             window.dispatchEvent(event)

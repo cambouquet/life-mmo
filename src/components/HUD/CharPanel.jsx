@@ -41,8 +41,8 @@ export default function CharPanel({ facing, charColors, charName }) {
     <div className="char-panel">
       <canvas ref={canvasRef} width={32} height={32} />
       <div className="char-panel__info">
-        <div className="char-panel__name">{charName ?? '?'}</div>
-        <div className="char-panel__class">Novice · Lv 1</div>
+        <div className="char-panel__class">Novice</div>
+        <div className="char-panel__level">Lv 1</div>
       </div>
     </div>
   )
