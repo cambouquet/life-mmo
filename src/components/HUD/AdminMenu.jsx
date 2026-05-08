@@ -7,16 +7,8 @@ const TESTS = [
   { name: 'layout-vscode.spec.js', category: 'app' },
   { name: 'layout-mobile.spec.js', category: 'app' },
   { name: 'layout-debug.spec.js', category: 'app' },
-  { name: 'sprite-picker-no-scroll.spec.js', category: 'app' },
-  { name: 'document-scroll-test.spec.js', category: 'app' },
-  { name: 'vscode-preview-sizes.spec.js', category: 'app' },
-  { name: 'find-overflow.spec.js', category: 'app' },
-  { name: 'find-overflow-detailed.spec.js', category: 'app' },
-  { name: 'find-overflow-320.spec.js', category: 'app' },
   { name: 'mapBackup.spec.js', category: 'app' },
   { name: 'mapBackupRestore.spec.js', category: 'app' },
-  { name: 'game-interactions.spec.js', category: 'game' },
-  { name: 'game-scenarios.spec.js', category: 'game' },
 ]
 
 export default function AdminMenu({ onToggleGameTests }) {

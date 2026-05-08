@@ -20,7 +20,7 @@ $cols:         20;
 $rows:         14;
 $game-w:       $tile * $cols * $scale;   // 640px
 $game-h:       $tile * $rows * $scale;   // 448px
-$hud-h:        76px;
+$hud-h:        54px;
 $font:         'Outfit', system-ui, -apple-system, sans-serif;
 $font-ui:      'Outfit', system-ui, -apple-system, sans-serif;
 $font-logo:    'Inter', system-ui, -apple-system, sans-serif;
