@@ -14,7 +14,6 @@ export default function HUD({ facing, moving, logEntries, charColors, charName, 
         <CharPanel facing={facing} moving={moving} charColors={charColors} charName={charName} />
         <LogPanel entries={logEntries} />
         <Minimap playerPos={playerPos} exploredTiles={exploredTiles} worldData={worldData} charColors={charColors} />
-        <Clock />
       </div>
     </>
   )

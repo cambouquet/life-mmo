@@ -47,9 +47,12 @@ export default function MenuBar() {
   const hourAngle = (hours * 30) + (minutes * 0.5)
   const minuteAngle = (minutes * 6) + (seconds * 0.1)
 
+  const timeString = now.toLocaleTimeString('en-GB', { hour12: false, hour: '2-digit', minute: '2-digit' })
+
   return (
     <div className="menu-bar">
       <div className="menu-bar__clock">
+        <div className="menu-bar__time-tooltip">{timeString}</div>
         <svg viewBox="0 0 100 100" className="clock-svg">
           {/* Roman numerals */}
           {Object.entries(ROMAN_NUMERALS).map(([index, numeral]) => {

@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from 'react'
+import { useState, useCallback, useRef, useEffect } from 'react'
 import './InteractionPlayground.scss'
 import { InteractionPlayground as Playground } from '../../game/interactions/InteractionPlayground.js'
 
@@ -56,7 +56,7 @@ export default function InteractionPlayground({ playerStateRef, worldDataRef, on
   }, [playground, playerStateRef, worldDataRef])
 
   // Scroll to bottom when logs update
-  useState(() => {
+  useEffect(() => {
     logsEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [logs])
 
@@ -144,40 +144,33 @@ export default function InteractionPlayground({ playerStateRef, worldDataRef, on
 
   return (
     <div className="interaction-playground">
-      <div className="interaction-playground__header">
-        <h3>Game Interactions</h3>
+      <div className="interaction-playground__toolbar">
+        {interactions.map(interaction => (
+          <button
+            key={interaction.id}
+            className={`interaction-playground__toolbar-button ${selectedInteraction === interaction.id ? 'active' : ''}`}
+            onClick={() => {
+              setSelectedInteraction(interaction.id)
+              executeInteraction(interaction.id)
+            }}
+            title={interaction.description}
+          >
+            {interaction.icon}
+          </button>
+        ))}
       </div>
 
-      <div className="interaction-playground__content">
-        <div className="interaction-playground__buttons">
-          {interactions.map(interaction => (
-            <button
-              key={interaction.id}
-              className={`interaction-playground__button ${selectedInteraction === interaction.id ? 'active' : ''}`}
-              onClick={() => {
-                setSelectedInteraction(interaction.id)
-                executeInteraction(interaction.id)
-              }}
-              title={interaction.description}
-            >
-              {interaction.icon}
-              {interaction.label}
-            </button>
-          ))}
-        </div>
-
-        <div className="interaction-playground__log">
-          {logs.map((log, i) => (
-            <div
-              key={i}
-              className={`interaction-playground__log-entry log-${log.type}`}
-            >
-              <span className="interaction-playground__log-time">{log.timestamp}</span>
-              <span className="interaction-playground__log-message">{log.message}</span>
-            </div>
-          ))}
-          <div ref={logsEndRef} />
-        </div>
+      <div className="interaction-playground__log">
+        {logs.map((log, i) => (
+          <div
+            key={i}
+            className={`interaction-playground__log-entry log-${log.type}`}
+          >
+            <span className="interaction-playground__log-time">{log.timestamp}</span>
+            <span className="interaction-playground__log-message">{log.message}</span>
+          </div>
+        ))}
+        <div ref={logsEndRef} />
       </div>
     </div>
   )
