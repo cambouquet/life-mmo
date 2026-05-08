@@ -1,11 +1,11 @@
 .interaction-playground {
   position: fixed;
-  bottom: 0;
+  top: 0;
   left: 0;
   right: 0;
   max-height: 40vh;
   background: rgba(6, 4, 14, 0.95);
-  border-top: 1px solid rgba(100, 180, 255, 0.3);
+  border-bottom: 1px solid rgba(100, 180, 255, 0.3);
   display: flex;
   flex-direction: column;
   font-size: 12px;

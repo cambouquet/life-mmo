@@ -1,8 +1,8 @@
 @use 'variables' as *;
 
 .canvas-wrap {
-  position: absolute;
-  inset: 0;
+  position: relative;
+  flex: 1;
   overflow: hidden;
   line-height: 0;
 }
@@ -26,7 +26,7 @@
 
 .guidance {
   position: absolute;
-  top: 104px;
+  top: 16px;
   left: 0;
   right: 0;
   height: 20px;
