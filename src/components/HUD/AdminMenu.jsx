@@ -19,7 +19,7 @@ const TESTS = [
   { name: 'game-scenarios.spec.js', category: 'game' },
 ]
 
-export default function AdminMenu() {
+export default function AdminMenu({ onToggleGameTests }) {
   const [open, setOpen] = useState(false)
   const [selectedTest, setSelectedTest] = useState(null)
   const [running, setRunning] = useState(false)
@@ -52,6 +52,14 @@ export default function AdminMenu() {
       {open && (
         <div className="admin-menu__panel">
           <div className="admin-menu__header">Unit Tests</div>
+
+          <button
+            className="admin-menu__item admin-menu__item--primary"
+            onClick={() => onToggleGameTests?.()}
+            title="Toggle in-game test runner"
+          >
+            🎮 Game Test Runner
+          </button>
 
           {gameTests.length > 0 && (
             <>

@@ -12,6 +12,7 @@ import DebugConsole          from './HUD/DebugConsole.jsx'
 import MapEditButton         from './DebugButton/MapEditButton.jsx'
 import MapEditorPanel        from './DebugButton/MapEditorPanel.jsx'
 import SpritePickerModal     from './DebugButton/SpritePickerModal.jsx'
+import GameTestPanel         from './DebugButton/GameTestPanel.jsx'
 import AdminMenu             from './HUD/AdminMenu.jsx'
 import { useRecorder }       from '../playback/useRecorder.js'
 import { PlaybackEngine }    from '../playback/PlaybackEngine.js'
@@ -71,12 +72,14 @@ export default function App() {
   const [exploredTiles, setExploredTiles] = useState(new Set())
   const [zoom, setZoom] = useState(1)
   const [playerPos, setPlayerPos] = useState(null)
+  const [showGameTests, setShowGameTests] = useState(false)
 
   const wrapRef          = useViewportScale()
   const gameRef          = useRef(null)
   const uiOverlayRef     = useRef(null)
   const engineRef        = useRef(null)
   const playerStateRef   = useRef(null)
+  const worldDataRef     = useRef(null)
   const doorUnlockedRef  = useRef(false)
   const nameSetRef       = useRef(!!charName)
   const colorsSetRef     = useRef(Object.values(charColors).every(v => v !== '#ffffff'))
@@ -298,7 +301,10 @@ export default function App() {
           spriteColorOverrides={spriteColorOverrides}
           hoverPreview={hoverPreview}
           onHoveredTileChange={setHoveredTile}
-          onWorldDataChange={setWorldData}
+          onWorldDataChange={(data) => {
+            setWorldData(data)
+            worldDataRef.current = data
+          }}
           onEditSprite={setLayerEdits}
           activeSprite={activeSprite}
         />
@@ -442,8 +448,24 @@ export default function App() {
           onActiveSpriteChange={setActiveSprite}
         />
       )}
+      {showGameTests && (
+        <GameTestPanel
+          playerStateRef={playerStateRef}
+          worldDataRef={worldDataRef}
+          onMovePlayer={(direction) => {
+            // Dispatch keyboard event to move player
+            const keyMap = { up: 'KeyW', down: 'KeyS', left: 'KeyA', right: 'KeyD' }
+            const event = new KeyboardEvent('keydown', { code: keyMap[direction] })
+            window.dispatchEvent(event)
+          }}
+          onInteract={() => {
+            const event = new KeyboardEvent('keydown', { code: 'KeyE' })
+            window.dispatchEvent(event)
+          }}
+        />
+      )}
       <div className="record-wrap-with-tools">
-        <AdminMenu />
+        <AdminMenu onToggleGameTests={() => setShowGameTests(prev => !prev)} />
         <RecordButton
           status={recorder.status}
           progress={recorder.progress}
