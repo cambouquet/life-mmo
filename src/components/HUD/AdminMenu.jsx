@@ -2,17 +2,21 @@ import { useState } from 'react'
 import './AdminMenu.scss'
 
 const TESTS = [
-  'layout.spec.js',
-  'layout-small.spec.js',
-  'layout-vscode.spec.js',
-  'layout-mobile.spec.js',
-  'layout-debug.spec.js',
-  'sprite-picker-no-scroll.spec.js',
-  'document-scroll-test.spec.js',
-  'vscode-preview-sizes.spec.js',
-  'find-overflow.spec.js',
-  'find-overflow-detailed.spec.js',
-  'find-overflow-320.spec.js',
+  { name: 'layout.spec.js', category: 'app' },
+  { name: 'layout-small.spec.js', category: 'app' },
+  { name: 'layout-vscode.spec.js', category: 'app' },
+  { name: 'layout-mobile.spec.js', category: 'app' },
+  { name: 'layout-debug.spec.js', category: 'app' },
+  { name: 'sprite-picker-no-scroll.spec.js', category: 'app' },
+  { name: 'document-scroll-test.spec.js', category: 'app' },
+  { name: 'vscode-preview-sizes.spec.js', category: 'app' },
+  { name: 'find-overflow.spec.js', category: 'app' },
+  { name: 'find-overflow-detailed.spec.js', category: 'app' },
+  { name: 'find-overflow-320.spec.js', category: 'app' },
+  { name: 'mapBackup.spec.js', category: 'app' },
+  { name: 'mapBackupRestore.spec.js', category: 'app' },
+  { name: 'game-interactions.spec.js', category: 'game' },
+  { name: 'game-scenarios.spec.js', category: 'game' },
 ]
 
 export default function AdminMenu() {
@@ -31,6 +35,10 @@ export default function AdminMenu() {
     }
   }
 
+  // Group tests by category
+  const gameTests = TESTS.filter(t => t.category === 'game')
+  const appTests = TESTS.filter(t => t.category === 'app')
+
   return (
     <div className="admin-menu">
       <button
@@ -43,23 +51,46 @@ export default function AdminMenu() {
 
       {open && (
         <div className="admin-menu__panel">
-          <div className="admin-menu__header">Tests</div>
+          <div className="admin-menu__header">Unit Tests</div>
 
-          {TESTS.map(test => (
-            <button
-              key={test}
-              className="admin-menu__item"
-              onClick={() => runTest(test)}
-              disabled={running}
-              title={`Run ${test}`}
-            >
-              {test.replace('.spec.js', '')}
-            </button>
-          ))}
+          {gameTests.length > 0 && (
+            <>
+              <div className="admin-menu__category">Game Tests</div>
+              {gameTests.map(test => (
+                <button
+                  key={test.name}
+                  className="admin-menu__item"
+                  onClick={() => runTest(test.name)}
+                  disabled={running}
+                  title={`Run ${test.name}`}
+                >
+                  {test.name.replace('.spec.js', '')}
+                </button>
+              ))}
+            </>
+          )}
+
+          {appTests.length > 0 && (
+            <>
+              <div className="admin-menu__category">App Tests</div>
+              {appTests.map(test => (
+                <button
+                  key={test.name}
+                  className="admin-menu__item"
+                  onClick={() => runTest(test.name)}
+                  disabled={running}
+                  title={`Run ${test.name}`}
+                >
+                  {test.name.replace('.spec.js', '')}
+                </button>
+              ))}
+            </>
+          )}
 
           <div className="admin-menu__footer">
             Run tests in terminal:<br/>
-            <code>npm test</code>
+            <code>npm test</code><br/>
+            Or run all: <code>npm test</code>
           </div>
         </div>
       )}

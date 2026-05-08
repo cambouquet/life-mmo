@@ -13,7 +13,8 @@
       "PowerShell(head -20)",
       "Bash(npm test *)",
       "Bash(mv src/tests/layout.spec.js tests/layout.spec.js)",
-      "Bash(cp src/tests/layout.spec.js tests/layout.spec.js)"
+      "Bash(cp src/tests/layout.spec.js tests/layout.spec.js)",
+      "Bash(Get-ChildItem -Force)"
     ]
   }
 }

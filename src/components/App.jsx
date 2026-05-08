@@ -86,6 +86,11 @@ export default function App() {
   colorsSetRef.current = Object.values(charColors).every(v => v !== '#ffffff')
   doorUnlockedRef.current = nameSetRef.current && colorsSetRef.current
 
+  // Expose game API for testing
+  useEffect(() => {
+    window.__gameRef = gameRef.current
+    window.__exploredTiles = exploredTiles
+  }, [exploredTiles])
 
   // Save layer edits and sprite colors to both localStorage and backend
   useEffect(() => {

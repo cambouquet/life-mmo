@@ -49,6 +49,16 @@
   border-bottom: 1px solid rgba(100, 180, 255, 0.2);
 }
 
+.admin-menu__category {
+  padding: 8px 8px 4px;
+  font-size: 7px;
+  font-weight: 600;
+  color: rgba(100, 180, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.2px;
+  margin-top: 4px;
+}
+
 .admin-menu__item {
   display: block;
   width: 100%;
