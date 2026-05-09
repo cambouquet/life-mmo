@@ -33,7 +33,7 @@ const SPRITESHEET_VALUES = {
   0x04: SPRITESHEETS_DATA['0x04'].name,
 }
 
-export default function MapEditorPanel({ hoveredTile, layers, collMap, layerEdits, onEditSprite, highlightColors, onHighlightColorsChange, spriteColorOverrides, onSpriteColorChange, onHoverPreview, onPickerStateChange, activeSprite, onActiveSpriteChange }) {
+export default function MapEditorPanel({ activeMenu, onMenuChange, hoveredTile, layers, collMap, layerEdits, onEditSprite, highlightColors, onHighlightColorsChange, spriteColorOverrides, onSpriteColorChange, onHoverPreview, onPickerStateChange, activeSprite, onActiveSpriteChange }) {
   const [floorColors, setFloorColors] = useState(spriteColors.floor)
   const [wallColors, setWallColors] = useState(spriteColors.wall)
   const [backups, setBackups] = useState(loadBackups)
@@ -43,67 +43,8 @@ export default function MapEditorPanel({ hoveredTile, layers, collMap, layerEdit
   const firstTile = tiles[0]
   const { c, r } = firstTile || { c: null, r: null }
 
-  const fieldToLayerMap = { ground: 'ground', wall: 'walls', obj: 'objects', entity: 'entities' }
-
-  const getSpriteForTiles = (field) => {
-    const sprites = tiles.map(tile => {
-      const tileKey = `${tile.c},${tile.r}`
-      return layerEdits[tileKey]?.[field] ?? layers[fieldToLayerMap[field]]?.[tile.r]?.[tile.c]
-    })
-    const first = sprites[0]
-    const allSame = sprites.every(s => s === first || (s && first && s.ss === first.ss && s.row === first.row))
-    return allSame ? first : null
-  }
-
-  const collValue = hoveredTile && c !== null && r !== null ? collMap[r]?.[c] ?? '?' : '?'
-  const collName = COLL_VALUES[collValue] || `${collValue}`
-
-  const ground = getSpriteForTiles('ground')
-  const wall = getSpriteForTiles('wall')
-  const obj = getSpriteForTiles('obj')
-  const entity = getSpriteForTiles('entity')
-
-  // No longer needed - picker is controlled by App parent
-
   const openPicker = (category) => {
     onPickerStateChange?.(prev => ({ ...prev, pickerOpen: category, activeTab: 'tiles' }))
-  }
-
-  const EditableField = ({ label, value, field, onEdit }) => (
-    <div className="cell-info__line">
-      <strong>{label}:</strong>
-      <span
-        className="cell-info__value"
-        onClick={() => onEdit(field)}
-      >
-        {value || '—'}
-      </span>
-    </div>
-  )
-
-  const collOptions = Object.values(COLL_VALUES)
-
-  const getSpriteUrl = (ss) => {
-    const ssHex = `0x${ss.toString(16).padStart(2, '0')}`
-    const ssData = SPRITESHEETS_DATA[ssHex]
-    return `/src/assets/sprites/${ssData?.file || ''}`
-  }
-
-  const getSpriteSize = (ss) => {
-    if (ss === 0x02) return 32 // mirror
-    if (ss === 0x03) return 32 // table
-    return 16 // floor, wall, torch
-  }
-
-  const getSpriteColor = (ss, row, variant) => {
-    // For floor (ss=0), use variant for color index, not row
-    const colorKey = ss === 0x00 ? variant : row
-    const overrideKey = ss === 0x00 ? `${ss}_v${variant}` : `${ss}_${row}`
-
-    if (spriteColorOverrides?.[overrideKey]) return spriteColorOverrides[overrideKey]
-    if (ss === 0x00) return spriteColors.floor[colorKey] ?? spriteColors.floor[0]
-    if (ss === 0x01) return spriteColors.wall[colorKey] ?? spriteColors.wall[0]
-    return '#0a0612'
   }
 
   const createBackup = () => {
@@ -134,12 +75,6 @@ export default function MapEditorPanel({ hoveredTile, layers, collMap, layerEdit
     const newBackups = backups.filter(b => b.id !== id)
     setBackups(newBackups)
     saveBackups(newBackups)
-  }
-
-  const getActiveSpriteDisplay = () => {
-    if (!activeSprite.sprite) return null
-    const { ss, row, variant } = activeSprite.sprite
-    return getSpriteColor(ss, row, variant)
   }
 
   const CategoryIcon = ({ type }) => {
@@ -175,41 +110,37 @@ export default function MapEditorPanel({ hoveredTile, layers, collMap, layerEdit
     return icons[type]
   }
 
-  const categories = [
-    { key: 'floor', label: 'Ground' },
-    { key: 'wall', label: 'Wall' },
-    { key: 'table', label: 'Object' },
-    { key: 'torch', label: 'Entity' }
+  const menuItems = [
+    { key: 'tiles', label: 'Tiles' },
+    { key: 'animations', label: 'Animations' }
   ]
 
   return (
-    <div className="cell-info">
-      <div className="cell-info__header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '6px', padding: '0 4px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flex: 1 }}>
-          {categories.map(cat => (
-            <button
-              key={cat.key}
-              onClick={() => openPicker(cat.key)}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '28px',
-                height: '28px',
-                padding: 0,
-                background: activeSprite.category === cat.key && activeSprite.sprite ? 'rgba(100, 220, 255, 0.25)' : 'rgba(100, 180, 255, 0.08)',
-                border: activeSprite.category === cat.key ? '1px solid rgba(100, 220, 255, 0.6)' : '1px solid rgba(100, 180, 255, 0.3)',
-                borderRadius: '2px',
-                cursor: 'pointer',
-                color: '#7ab8ff',
-              }}
-              title={cat.label}
-            >
-              <CategoryIcon type={cat.key} />
-            </button>
-          ))}
-        </div>
-        <div style={{ display: 'flex', gap: '4px' }}>
+    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '6px', width: '100%' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flex: 1 }}>
+        {menuItems.map(item => (
+          <button
+            key={item.key}
+            onClick={() => onMenuChange?.(item.key)}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '4px 12px',
+              background: activeMenu === item.key ? 'rgba(100, 220, 255, 0.25)' : 'rgba(100, 180, 255, 0.08)',
+              border: activeMenu === item.key ? '1px solid rgba(100, 220, 255, 0.6)' : '1px solid rgba(100, 180, 255, 0.3)',
+              borderRadius: '2px',
+              cursor: 'pointer',
+              color: '#7ab8ff',
+              fontSize: '12px',
+            }}
+            title={item.label}
+          >
+            {item.label}
+          </button>
+        ))}
+      </div>
+      <div style={{ display: 'flex', gap: '4px' }}>
           <button
             onClick={createBackup}
             style={{
@@ -302,6 +233,5 @@ export default function MapEditorPanel({ hoveredTile, layers, collMap, layerEdit
           </div>
         </div>
       </div>
-    </div>
   )
 }

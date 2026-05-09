@@ -21,6 +21,7 @@ export const SHEETS = {
       { g: 0x01, name: 'floor_b',     color: '#0b0917' },  // checkerboard odd
       { g: 0x02, name: 'floor_void',  color: '#06040e' },  // void/gap (impassable)
       { g: 0x03, name: 'floor_door',  color: '#0e0b1a' },  // door corridor floor
+      { g: 0x04, name: 'floor_stone', color: '#5c5c5c' },  // stone floor
     ],
   },
 

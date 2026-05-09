@@ -81,6 +81,8 @@ export default function App() {
   const engineRef        = useRef(null)
   const playerStateRef   = useRef(null)
   const worldDataRef     = useRef(null)
+  const editorBarsRef    = useRef(null)
+  const canvasWrapRef    = useRef(null)
   const doorUnlockedRef  = useRef(false)
   const nameSetRef       = useRef(!!charName)
   const colorsSetRef     = useRef(Object.values(charColors).every(v => v !== '#ffffff'))
@@ -95,6 +97,18 @@ export default function App() {
     window.__gameRef = gameRef.current
     window.__exploredTiles = exploredTiles
   }, [exploredTiles])
+
+  // Offset canvas when editor panel opens
+  useEffect(() => {
+    if (debugActive && editorBarsRef.current && canvasWrapRef.current) {
+      const height = editorBarsRef.current.offsetHeight
+      canvasWrapRef.current.style.position = 'relative'
+      canvasWrapRef.current.style.top = `-${height}px`
+    } else if (canvasWrapRef.current) {
+      canvasWrapRef.current.style.position = 'relative'
+      canvasWrapRef.current.style.top = '0'
+    }
+  }, [debugActive])
 
   // Save layer edits and sprite colors to both localStorage and backend
   useEffect(() => {
@@ -282,21 +296,41 @@ export default function App() {
   }, [recorder])
 
   return (
-    <>
-      <div className={`game-wrap ${debugActive ? 'debug-active' : ''}`} ref={wrapRef} style={{ transform: `scale(${zoom})`, transformOrigin: '0 0' }}>
-        <HUD facing={facing} moving={moving} logEntries={logEntries} charColors={charColors} charName={charName} playerPos={playerPos} exploredTiles={exploredTiles} worldData={worldData} />
-        <RecordButton
-          status={recorder.status}
-          progress={recorder.progress}
-          recordingCount={recordings.length}
-          onRecord={handleRecord}
-          onRecordGate={handleRecordGate}
-          onStop={handleStop}
-          onOpenGallery={() => setShowGallery(true)}
-          isOpen={showGallery}
+    <div className={`game-wrap ${debugActive ? 'debug-active' : ''}`} ref={wrapRef} style={{ transform: `scale(${zoom})`, transformOrigin: '0 0' }}>
+      <HUD facing={facing} moving={moving} logEntries={logEntries} charColors={charColors} charName={charName} playerPos={playerPos} exploredTiles={exploredTiles} worldData={worldData} />
+      <div className="guidance-bar">
+        {!showDialog && !showHoroscope && <GuidanceVoice text={guidance} />}
+      </div>
+      <div ref={editorBarsRef}>
+        <MapEditorPanelWrapper
+          isOpen={debugActive}
+          hoveredTile={hoveredTile}
+          layers={worldData?.layers}
+          collMap={worldData?.collMap}
+          layerEdits={layerEdits}
+          onEditSprite={setLayerEdits}
+          highlightColors={highlightColors}
+          onHighlightColorsChange={setHighlightColors}
+          spriteColorOverrides={spriteColorOverrides}
+          onSpriteColorChange={setSpriteColorOverrides}
+          onHoverPreview={setHoverPreview}
+          onPickerStateChange={setPickerState}
+          activeSprite={activeSprite}
+          onActiveSpriteChange={setActiveSprite}
         />
+      </div>
+      <RecordButton
+        status={recorder.status}
+        progress={recorder.progress}
+        recordingCount={recordings.length}
+        onRecord={handleRecord}
+        onRecordGate={handleRecordGate}
+        onStop={handleStop}
+        onOpenGallery={() => setShowGallery(true)}
+        isOpen={showGallery}
+      />
       {!showEditor && (
-        <div className="canvas-wrap">
+        <div className="canvas-wrap" ref={canvasWrapRef}>
         <Game
           ref={gameRef}
           onStateChange={handleStateChange}
@@ -321,8 +355,6 @@ export default function App() {
           activeSprite={activeSprite}
         />
         <div className="ui-overlay" ref={uiOverlayRef}>
-          {!showDialog && !showHoroscope && <GuidanceVoice text={guidance} />}
-
           {showDialog && (
             <DialogModal
               onClose={() => setShowDialog(false)}
@@ -471,22 +503,5 @@ export default function App() {
         />
       )}
     </div>
-    <MapEditorPanelWrapper
-      isOpen={debugActive}
-      hoveredTile={hoveredTile}
-      layers={worldData?.layers}
-      collMap={worldData?.collMap}
-      layerEdits={layerEdits}
-      onEditSprite={setLayerEdits}
-      highlightColors={highlightColors}
-      onHighlightColorsChange={setHighlightColors}
-      spriteColorOverrides={spriteColorOverrides}
-      onSpriteColorChange={setSpriteColorOverrides}
-      onHoverPreview={setHoverPreview}
-      onPickerStateChange={setPickerState}
-      activeSprite={activeSprite}
-      onActiveSpriteChange={setActiveSprite}
-    />
-    </>
   )
 }

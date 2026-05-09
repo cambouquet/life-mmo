@@ -24,11 +24,21 @@
   height: 100%;
 }
 
+.guidance-bar {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 30px;
+  flex-shrink: 0;
+  pointer-events: none;
+
+  & > * {
+    pointer-events: auto;
+  }
+}
+
 .guidance {
-  position: absolute;
-  top: 16px;
-  left: 0;
-  right: 0;
   height: 20px;
   display: flex;
   align-items: center;
