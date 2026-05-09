@@ -128,39 +128,96 @@ export default function MenuBar() {
         </svg>
       </div>
 
-      <div className="menu-bar__season">
+      <div 
+        className="menu-bar__season"
+        style={{ '--season-color': season.light > 0.5 ? 'gold' : '#7ab8ff' }}
+      >
         <div className="menu-bar__time-tooltip">
-          {season.dateString} — {season.isRising ? 'Rising' : 'Falling'}
+          <b>{season.dateString}</b>
         </div>
         <svg viewBox="0 0 80 80" className="season-svg">
-          {/* Background Orbit/Sky */}
-          <circle cx="40" cy="40" r="30" className="season-sky-bg" />
-          
-          {/* Horizon Line */}
-          <line x1="10" y1="40" x2="70" y2="40" className="season-horizon" />
+          <defs>
+            <linearGradient id="season-gradient" x1="0%" y1="100%" x2="0%" y2="0%">
+              <stop offset="0%" stopColor="#7ab8ff" />
+              <stop offset="50%" stopColor="#ffffff" stopOpacity="0.1" />
+              <stop offset="100%" stopColor="#ffd700" />
+            </linearGradient>
+          </defs>
 
-          {/* The Sun / Moon Indicator */}
-          <circle
-            cx={40 + 30 * Math.cos(season.year * Math.PI * 2 - Math.PI / 2)}
-            cy={40 + 30 * Math.sin(season.year * Math.PI * 2 - Math.PI / 2)}
-            r={10}
-            className="season-sun"
-            style={{
-              fill: season.light > 0.5 ? '#ffff00' : '#88ccff',
-              filter: `drop-shadow(0 0 ${12 * season.light}px ${season.light > 0.5 ? 'gold' : '#7ab8ff'}) brightness(1.5)`
-            }}
-          />
-
-          {/* Glowing Aura depending on light level */}
+          {/* Background fill representing light level gradient */}
           <circle 
             cx="40" 
             cy="40" 
-            r="30" 
-            className="season-aura"
+            r="25" 
+            fill="url(#season-gradient)" 
+            fillOpacity={0.15 + (season.light * 0.1)} 
+          />
+
+          {/* Vertical seasonality axis (Winter to Summer) */}
+          <line x1="40" y1="15" x2="40" y2="65" stroke="rgba(255,255,255,0.15)" strokeWidth="0.5" />
+          
+          {/* Visual markers (Dots) for the 4 cardinal points of the year */}
+          {/* Summer Solstice - Bright Gold */}
+          <circle cx="40" cy="15" r="3" fill="#ffd700">
+            <animate attributeName="r" values="3;3.5;3" dur="2s" repeatCount="indefinite" />
+          </circle>
+          <circle cx="40" cy="15" r="5" fill="gold" fillOpacity="0.2" />
+          
+          {/* Winter Solstice - Deep Blue/Dark */}
+          <circle cx="40" cy="65" r="3" fill="#1a2a44" stroke="#7ab8ff" strokeWidth="1" />
+          
+          {/* Spring Equinox (Right) - Half horizontal fill */}
+          <g transform="translate(65, 40)">
+            <circle cx="0" cy="0" r="3" fill="#1a2a44" />
+            <path d="M 0,-3 A 3,3 0 0,1 0,3 Z" fill="#ffd700" />
+            <circle cx="0" cy="0" r="3" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="0.5" />
+          </g>
+
+          {/* Autumn Equinox (Left) - Half horizontal fill */}
+          <g transform="translate(15, 40)">
+            <circle cx="0" cy="0" r="3" fill="#ffd700" />
+            <path d="M 0,-3 A 3,3 0 0,1 0,3 Z" fill="#1a2a44" />
+            <circle cx="0" cy="0" r="3" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="0.5" />
+          </g>
+
+          {/* Central Sun */}
+          <circle 
+            cx="40" 
+            cy="40" 
+            r="8" 
+            fill="gold" 
             style={{
-              strokeDasharray: `${season.light * 188.5} 188.5`,
-              stroke: season.light > 0.5 ? 'rgba(255, 215, 0, 0.4)' : 'rgba(122, 184, 255, 0.4)'
+              filter: `drop-shadow(0 0 ${20 * season.light}px gold) brightness(1.2)`
             }}
+          />
+          <circle cx="40" cy="40" r="8" fill="white" fillOpacity="0.1" />
+          
+          {/* Earth's Orbit Path */}
+          <circle cx="40" cy="40" r="25" className="season-track" />
+
+          {/* Earth Rotating Around Sun */}
+          <circle
+            cx={40 + 25 * Math.cos(season.year * Math.PI * 2 + Math.PI / 2)}
+            cy={40 + 25 * Math.sin(season.year * Math.PI * 2 + Math.PI / 2)}
+            r={5}
+            className="season-earth"
+            style={{
+              fill: '#4a9eff',
+              filter: 'drop-shadow(0 0 6px rgba(74, 158, 255, 0.8))',
+              stroke: 'white',
+              strokeWidth: 1
+            }}
+          />
+
+          {/* Vertical progress bar inside the orbit showing current sunlight height */}
+          <rect 
+            x="39" 
+            y={15 + (1 - season.light) * 50} 
+            width="2" 
+            height={season.light * 50} 
+            fill="gold" 
+            fillOpacity="0.75"
+            style={{ transition: 'all 0.1s linear' }}
           />
         </svg>
 

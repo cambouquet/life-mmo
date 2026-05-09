@@ -79,7 +79,6 @@
   display: flex;
   flex-direction: column;
   gap: 0;
-  align-items: stretch;
   border: 1px solid rgba(100, 180, 255, 0.3);
   border-bottom: none;
   border-right: none;
@@ -90,7 +89,7 @@
   height: 28px;
   padding: 0;
   border: none;
-  border-right: 1px solid rgba(100, 180, 255, 0.2);
+  border-bottom: 1px solid rgba(100, 180, 255, 0.2);
   background: transparent;
   color: #7ab8ff;
   cursor: pointer;
@@ -120,6 +119,6 @@
   }
 
   &:last-child {
-    border-right: none;
+    border-bottom: none;
   }
 }

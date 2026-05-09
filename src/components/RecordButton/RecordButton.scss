@@ -3,7 +3,7 @@
   top: 0;
   left: 0;
   right: 0;
-  background: rgba(6, 4, 14, 0.95);
+  background: rgba(6, 4, 14, 0.6);
   border-bottom: 1px solid rgba(100, 180, 255, 0.3);
   display: flex;
   flex-direction: column;
@@ -11,12 +11,13 @@
   color: #7ab8ff;
   z-index: 998;
   max-height: 40vh;
+  backdrop-filter: blur(4px);
 }
 
 .record-panel__header {
   padding: 10px 12px;
   border-bottom: 1px solid rgba(100, 180, 255, 0.2);
-  background: rgba(0, 0, 0, 0.2);
+  background: rgba(0, 0, 0, 0.1);
 
   h3 {
     margin: 0;
