@@ -189,9 +189,10 @@ export function HouseWheel({ placements, houseCusps, size = 300, hideStellium, s
           const sMid     = sStart + 15
           const [sx, sy] = polarToXY(sMid, (SIGN_R1 + SIGN_R2) / 2)
           const isHov    = hovered?.type === 'sign' && hovered.id === signName
+          const signPlanets = rows.filter(pn => placements[pn]?.sign === signName)
           return (
             <g key={signName}
-               onMouseEnter={() => setHovered({ type:'sign', id:signName, label:signName, desc:SIGN_DESC_LONG[signName], color:signCol })}
+               onMouseEnter={() => setHovered({ type:'sign', id:signName, label:signName, desc:SIGN_DESC_LONG[signName], color:signCol, planets:signPlanets })}
                onMouseLeave={() => setHovered(null)}
                style={{ cursor:'default' }}>
               <path d={arc(sStart, sEnd, SIGN_R1, SIGN_R2)}
@@ -222,7 +223,7 @@ export function HouseWheel({ placements, houseCusps, size = 300, hideStellium, s
 
           return (
             <g key={h}
-               onMouseEnter={() => setHovered({ type:'house', id:h, label:`House ${h}`, theme:HOUSE_THEMES[h], desc:HOUSE_LONG[h] })}
+               onMouseEnter={() => setHovered({ type:'house', id:h, label:`House ${h}`, theme:HOUSE_THEMES[h], desc:HOUSE_LONG[h], planets:housePlanets })}
                onMouseLeave={() => setHovered(null)}
                style={{ cursor:'default' }}>
 
@@ -243,6 +244,7 @@ export function HouseWheel({ placements, houseCusps, size = 300, hideStellium, s
                 const [px, py] = polarToXY(pDeg, ringR)
                 const isPHov = hovered?.type === 'planet' && hovered.id === pName
                 const isPLocked = lockedPoint === pName
+                const isHighlighted = (hovered?.type === 'house' && hovered.id === h) || (hovered?.type === 'sign' && hovered.planets?.includes(pName))
                 return (
                   <g key={pName}
                      onMouseEnter={e => {
@@ -254,16 +256,16 @@ export function HouseWheel({ placements, houseCusps, size = 300, hideStellium, s
                          summary:PLANET_SUMMARY[pName],
                          glyph:PLANET_GLYPHS[pName],
                          color:col,
-                         desc: getInterpretation(pName) // Add interpretation even to hover
+                         desc: getInterpretation(pName)
                        })
                      }}
                      onMouseLeave={() => setHovered(null)}
                      onClick={e => { e.stopPropagation(); setLockedPoint(lockedPoint === pName ? null : pName) }}
                      style={{ cursor:'pointer' }}>
-                    <circle cx={px} cy={py} r={isPHov || isPLocked ? 7 : 5}
-                      fill={`${col}${isPHov || isPLocked ? '33' : '15'}`}
-                      stroke={`${col}${isPHov || isPLocked ? '66' : '33'}`}
-                      strokeWidth={isPHov || isPLocked ? '1.5' : '0.5'} />
+                    <circle cx={px} cy={py} r={isPHov || isPLocked ? 7 : isHighlighted ? 6 : 5}
+                      fill={`${col}${isPHov || isPLocked ? '33' : isHighlighted ? '25' : '15'}`}
+                      stroke={`${col}${isPHov || isPLocked ? '66' : isHighlighted ? '55' : '33'}`}
+                      strokeWidth={isPHov || isPLocked ? '1.5' : isHighlighted ? '1.2' : '0.5'} />
                     <text x={px} y={py} textAnchor="middle" dominantBaseline="middle"
                       fontSize={isPHov ? 10 : 8} fill={col} fontWeight="900" style={{ pointerEvents:'none' }}>
                       {PLANET_GLYPHS[pName]}
@@ -316,10 +318,43 @@ export function HouseWheel({ placements, houseCusps, size = 300, hideStellium, s
               {(active.locked || lockedPoint === active.id) && <div style={{ fontSize:11, color:'rgba(232,212,255,0.8)', lineHeight:'1.5' }}>{active.desc}</div>}
             </>) : active.type === 'sign' ? (<>
               <div style={{ color:active.color, fontWeight:700, fontSize:13, marginBottom:4 }}>{active.label}</div>
-              <div style={{ fontSize:11, color:'rgba(232,212,255,0.8)', lineHeight:'1.4' }}>{active.desc}</div>
+              <div style={{ fontSize:11, color:'rgba(232,212,255,0.8)', lineHeight:'1.4', marginBottom:8 }}>{active.desc}</div>
+              {active.planets && active.planets.length > 0 && (
+                <div style={{ fontSize:10, color:'rgba(232,212,255,0.7)', marginTop:8, paddingTop:8, borderTop:'1px solid rgba(232,212,255,0.2)' }}>
+                  <div style={{ fontWeight:600, marginBottom:4 }}>Placements in {active.label}:</div>
+                  {active.planets.map(pName => {
+                    const pd = placements[pName]
+                    const col = ELEMENT_COLOR[SIGN_META[pd.sign]?.element] ?? '#fff'
+                    const deg = Math.floor(pd.degrees)
+                    const theme = HOUSE_THEMES[pd.house]
+                    return (
+                      <div key={pName} style={{ display:'flex', justifyContent:'space-between', paddingLeft:8, marginBottom:3 }}>
+                        <span style={{ color:col }}>{PLANET_GLYPHS[pName]} {PLANET_NAMES[pName] ?? pName}</span>
+                        <span style={{ color:'rgba(232,212,255,0.5)', fontSize:9 }}>H{pd.house}{theme ? ` (${theme})` : ''}</span>
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
             </>) : (<>
               <div style={{ color:'#e8d4ff', fontWeight:700, fontSize:13, marginBottom:4 }}>{HOUSE_NAMES[active.id]}</div>
-              <div style={{ fontSize:11, color:'rgba(232,212,255,0.8)', lineHeight:'1.4' }}>{active.desc}</div>
+              <div style={{ fontSize:11, color:'rgba(232,212,255,0.8)', lineHeight:'1.4', marginBottom:8 }}>{active.desc}</div>
+              {active.planets && active.planets.length > 0 && (
+                <div style={{ fontSize:10, color:'rgba(232,212,255,0.7)', marginTop:8, paddingTop:8, borderTop:'1px solid rgba(232,212,255,0.2)' }}>
+                  <div style={{ fontWeight:600, marginBottom:4 }}>Placements in House {active.id}:</div>
+                  {active.planets.map(pName => {
+                    const pd = placements[pName]
+                    const col = ELEMENT_COLOR[SIGN_META[pd.sign]?.element] ?? '#fff'
+                    const deg = Math.floor(pd.degrees)
+                    return (
+                      <div key={pName} style={{ display:'flex', justifyContent:'space-between', paddingLeft:8, marginBottom:3 }}>
+                        <span style={{ color:col }}>{PLANET_GLYPHS[pName]} {PLANET_NAMES[pName] ?? pName}</span>
+                        <span style={{ color:'rgba(232,212,255,0.5)', fontSize:9 }}>{pd.sign} {deg}°</span>
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
             </>)}
           </div>
         )
