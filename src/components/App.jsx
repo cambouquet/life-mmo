@@ -14,6 +14,7 @@ import MapEditorPanel        from './DebugButton/MapEditorPanel.jsx'
 import SpritePickerModal     from './DebugButton/SpritePickerModal.jsx'
 import InteractionPlayground from './DebugButton/InteractionPlayground.jsx'
 import BottomToolbar         from './DebugButton/BottomToolbar.jsx'
+import MapEditorPanelWrapper from './DebugButton/MapEditorPanelWrapper.jsx'
 import { useRecorder }       from '../playback/useRecorder.js'
 import { PlaybackEngine }    from '../playback/PlaybackEngine.js'
 import { mirrorVisit }       from '../playback/scenarios/mirrorVisit.js'
@@ -283,6 +284,32 @@ export default function App() {
   return (
     <div className={`game-wrap ${debugActive ? 'debug-active' : ''}`} ref={wrapRef} style={{ transform: `scale(${zoom})`, transformOrigin: '0 0' }}>
       <HUD facing={facing} moving={moving} logEntries={logEntries} charColors={charColors} charName={charName} playerPos={playerPos} exploredTiles={exploredTiles} worldData={worldData} />
+      <RecordButton
+        status={recorder.status}
+        progress={recorder.progress}
+        recordingCount={recordings.length}
+        onRecord={handleRecord}
+        onRecordGate={handleRecordGate}
+        onStop={handleStop}
+        onOpenGallery={() => setShowGallery(true)}
+        isOpen={showGallery}
+      />
+      <MapEditorPanelWrapper
+        isOpen={debugActive}
+        hoveredTile={hoveredTile}
+        layers={worldData?.layers}
+        collMap={worldData?.collMap}
+        layerEdits={layerEdits}
+        onEditSprite={setLayerEdits}
+        highlightColors={highlightColors}
+        onHighlightColorsChange={setHighlightColors}
+        spriteColorOverrides={spriteColorOverrides}
+        onSpriteColorChange={setSpriteColorOverrides}
+        onHoverPreview={setHoverPreview}
+        onPickerStateChange={setPickerState}
+        activeSprite={activeSprite}
+        onActiveSpriteChange={setActiveSprite}
+      />
       {!showEditor && (
         <div className="canvas-wrap">
         <Game
@@ -431,23 +458,6 @@ export default function App() {
           onSpriteColorChange={setSpriteColorOverrides}
         />
       )}
-      {debugActive && (
-        <MapEditorPanel
-          hoveredTile={hoveredTile}
-          layers={worldData?.layers}
-          collMap={worldData?.collMap}
-          layerEdits={layerEdits}
-          onEditSprite={setLayerEdits}
-          highlightColors={highlightColors}
-          onHighlightColorsChange={setHighlightColors}
-          spriteColorOverrides={spriteColorOverrides}
-          onSpriteColorChange={setSpriteColorOverrides}
-          onHoverPreview={setHoverPreview}
-          onPickerStateChange={setPickerState}
-          activeSprite={activeSprite}
-          onActiveSpriteChange={setActiveSprite}
-        />
-      )}
       {debugActive && showGameTests && (
         <InteractionPlayground
           playerStateRef={playerStateRef}
@@ -468,16 +478,6 @@ export default function App() {
         onAdminToggle={() => setDebugActive(!debugActive)}
         onEditMap={() => setDebugActive(!debugActive)}
         onRecord={() => setShowGallery(prev => !prev)}
-      />
-      <RecordButton
-        status={recorder.status}
-        progress={recorder.progress}
-        recordingCount={recordings.length}
-        onRecord={handleRecord}
-        onRecordGate={handleRecordGate}
-        onStop={handleStop}
-        onOpenGallery={() => setShowGallery(true)}
-        isOpen={showGallery}
       />
       {showGallery && (
         <VideoGallery

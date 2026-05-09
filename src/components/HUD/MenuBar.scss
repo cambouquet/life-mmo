@@ -21,9 +21,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
+  width: 28px;
+  height: 28px;
   flex-shrink: 0;
+  margin-right: 8px; /* Space between time and date clocks */
 
   &:hover {
     .menu-bar__time-tooltip {
@@ -176,44 +177,5 @@
   b {
     color: gold;
     text-transform: uppercase;
-  }
-}
-
-.season-tester {
-  position: fixed;
-  top: 100px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: #ff0000 !important;
-  color: white !important;
-  border: 5px solid yellow !important;
-  padding: 20px !important;
-  border-radius: 0 !important;
-  display: flex !important;
-  flex-direction: column;
-  gap: 10px;
-  z-index: 2000000 !important;
-  width: 300px;
-  opacity: 1 !important;
-  visibility: visible !important;
-  pointer-events: auto !important;
-  box-shadow: 0 0 50px rgba(0,0,0,1);
-
-  &__label {
-    display: block !important;
-    font-family: sans-serif !important;
-    font-size: 20px !important;
-    font-weight: bold !important;
-    color: white !important;
-    text-align: center;
-    background: black;
-    padding: 5px;
-  }
-
-  input[type="range"] {
-    display: block !important;
-    width: 100% !important;
-    cursor: pointer !important;
-    height: 40px !important;
   }
 }

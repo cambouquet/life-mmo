@@ -52,12 +52,13 @@ function getSeasonData(overrideDay) {
 
 export default function MenuBar() {
   const [now, setNow] = useState(new Date())
-  const [overridenDay, setOverridenDay] = useState(172) // Default to June 21 (Summer Solstice)
-  const [season, setSeason] = useState(getSeasonData(172))
+  const [overridenDay, setOverridenDay] = useState(undefined)
+  const [season, setSeason] = useState(getSeasonData())
 
   useEffect(() => {
     const id = setInterval(() => {
-      setNow(new Date())
+      const d = new Date()
+      setNow(d)
       if (overridenDay === undefined) {
         setSeason(getSeasonData())
       }
@@ -220,17 +221,6 @@ export default function MenuBar() {
             style={{ transition: 'all 0.1s linear' }}
           />
         </svg>
-
-        <div className="season-tester" style={{ display: 'flex' }}>
-          <input 
-            type="range" 
-            min="0" 
-            max="364" 
-            value={season.day} 
-            onChange={handleDayChange} 
-          />
-          <span className="season-tester__label">{season.dateString}</span>
-        </div>
       </div>
     </div>
   )
