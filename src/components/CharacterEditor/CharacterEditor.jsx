@@ -467,35 +467,35 @@ export default function CharacterEditor({ initialColors, initialBirthData, initi
         {!limited && (
           <div className="char-editor-astro">
             <div className="birth-trio">
-              {/* Left: earth globe fills height */}
-              <div className="birth-trio__earth">
-                <EarthGlobe city={birthCity} size={160} />
+              {/* Left: date picker */}
+              <div className="birth-trio__date">
+                <DateWheel
+                  value={birthDate}
+                  onChange={v => { setBirthDate(v); setHasDate(true); setPreviewDate(null) }}
+                  onPreview={v => setPreviewDate(v)}
+                  size={280} />
+              </div>
+
+              {/* Center: city search */}
+              <div className="birth-trio__center">
                 <CitySearch value={birthCity} onChange={setBirthCity} />
               </div>
-              {/* Right: time on left, date on right (exchanged) */}
-              <div className="birth-trio__pickers">
-                <div className="birth-trio__time">
-                  <TimeWheel
-                    value={birthTime}
-                    onChange={v => {
-                      if (v.daysDiff) {
-                        const d = new Date(birthDate.year, birthDate.month - 1, birthDate.day)
-                        d.setDate(d.getDate() + v.daysDiff)
-                        setBirthDate({ day: d.getDate(), month: d.getMonth() + 1, year: d.getFullYear() })
-                      }
-                      setBirthTime({ hour: v.hour, minute: v.minute })
-                      setPreviewTime(null)
-                    }}
-                    onPreview={v => setPreviewTime(v)}
-                    size={160} />
-                </div>
-                <div className="birth-trio__date">
-                  <DateWheel
-                    value={birthDate}
-                    onChange={v => { setBirthDate(v); setHasDate(true); setPreviewDate(null) }}
-                    onPreview={v => setPreviewDate(v)}
-                    size={160} />
-                </div>
+
+              {/* Right: time picker */}
+              <div className="birth-trio__time">
+                <TimeWheel
+                  value={birthTime}
+                  onChange={v => {
+                    if (v.daysDiff) {
+                      const d = new Date(birthDate.year, birthDate.month - 1, birthDate.day)
+                      d.setDate(d.getDate() + v.daysDiff)
+                      setBirthDate({ day: d.getDate(), month: d.getMonth() + 1, year: d.getFullYear() })
+                    }
+                    setBirthTime({ hour: v.hour, minute: v.minute })
+                    setPreviewTime(null)
+                  }}
+                  onPreview={v => setPreviewTime(v)}
+                  size={280} />
               </div>
             </div>
 

@@ -140,14 +140,15 @@ export function DateWheel({ value, onChange, onPreview, size = 220, style }) {
 
   const svgRef = useRef(null)
   const VB = 240, cx = 120, cy = 120
+  const scale = size / 220
 
   const maxDay = DAYS_IN_MONTH(month, year)
   const YEARS  = Array.from({length: 101}, (_, i) => 1930 + i)
 
-  const DAY_R1 = 28, DAY_R2 = 50
-  const MON_R1 = 54, MON_R2 = 76
-  const YR_R1  = 80, YR_R2  = 102
-  const NEEDLE_R1 = 101, NEEDLE_R2 = 113  // needle track just outside year ring
+  const DAY_R1 = 28 * scale, DAY_R2 = 50 * scale
+  const MON_R1 = 54 * scale, MON_R2 = 76 * scale
+  const YR_R1  = 80 * scale, YR_R2  = 102 * scale
+  const NEEDLE_R1 = 101 * scale, NEEDLE_R2 = 113 * scale
 
   const [hovDay,  setHovDay]  = useState(null)
   const [hovMon,  setHovMon]  = useState(null)
@@ -210,7 +211,7 @@ export function DateWheel({ value, onChange, onPreview, size = 220, style }) {
             const ang = (i / maxDay) * 360
             const isSelected = i + 1 === day
             const isHov = hovDay === i
-            const [tx, ty] = polarToXY(cx, cy, ang, (DAY_R1 + DAY_R2) / 2)
+            const [tx, ty] = polarToXY(cx, cy, ang, (DAY_R1 + DAY_R2) * 0.5)
             return (
               <g key={i}>
                 <path d={ringArc(cx, cy, DAY_R1, DAY_R2, ang, ang + 360/maxDay)}
@@ -219,7 +220,7 @@ export function DateWheel({ value, onChange, onPreview, size = 220, style }) {
                   strokeWidth={isSelected || isHov ? 1 : 0.5} />
                 {(isSelected || isHov || i % 5 === 0) && (
                   <text x={tx} y={ty} textAnchor="middle" dominantBaseline="middle"
-                    fontSize={isSelected ? 7 : isHov ? 6.5 : 5.5} fontFamily="monospace" fontWeight={isSelected || isHov ? 800 : 400}
+                    fontSize={isSelected ? 7 * scale : isHov ? 6.5 * scale : 5.5 * scale} fontFamily="monospace" fontWeight={isSelected || isHov ? 800 : 400}
                     fill={isSelected ? '#e8d4ff' : isHov ? '#fff' : 'rgba(255,255,255,0.35)'}>
                     {i + 1}
                   </text>
@@ -239,7 +240,7 @@ export function DateWheel({ value, onChange, onPreview, size = 220, style }) {
             const ang = i * 30
             const isSelected = i + 1 === month
             const isHov = hovMon === i
-            const [tx, ty] = polarToXY(cx, cy, ang + 15, (MON_R1 + MON_R2) / 2)
+            const [tx, ty] = polarToXY(cx, cy, ang + 15, (MON_R1 + MON_R2) * 0.5)
             return (
               <g key={m}>
                 <path d={ringArc(cx, cy, MON_R1, MON_R2, ang, ang + 30)}
@@ -247,7 +248,7 @@ export function DateWheel({ value, onChange, onPreview, size = 220, style }) {
                   stroke={isSelected ? `${ACCENT}0.9)` : isHov ? 'rgba(250,220,255,0.6)' : `${ACCENT}0.18)`}
                   strokeWidth={isSelected || isHov ? 1 : 0.5} />
                 <text x={tx} y={ty} textAnchor="middle" dominantBaseline="middle"
-                  fontSize={isSelected ? 7 : isHov ? 7 : 6} fontFamily="monospace" fontWeight={isSelected || isHov ? 800 : 400}
+                  fontSize={isSelected ? 7 * scale : isHov ? 7 * scale : 6 * scale} fontFamily="monospace" fontWeight={isSelected || isHov ? 800 : 400}
                   fill={isSelected ? '#e8d4ff' : isHov ? '#fff' : 'rgba(255,255,255,0.38)'}>
                   {m}
                 </text>
@@ -267,7 +268,7 @@ export function DateWheel({ value, onChange, onPreview, size = 220, style }) {
             const isSelected = y === year
             const isHov = hovYear === i
             const isNear = Math.abs(i - yearIdx) <= 2 || Math.abs(i - yearIdx) >= YEARS.length - 2
-            const [tx, ty] = polarToXY(cx, cy, ang + 360/YEARS.length/2, (YR_R1 + YR_R2) / 2)
+            const [tx, ty] = polarToXY(cx, cy, ang + 360/YEARS.length/2, (YR_R1 + YR_R2) * 0.5)
             return (
               <g key={y}>
                 <path d={ringArc(cx, cy, YR_R1, YR_R2, ang, ang + 360/YEARS.length)}
@@ -276,7 +277,7 @@ export function DateWheel({ value, onChange, onPreview, size = 220, style }) {
                   strokeWidth={isSelected || isHov ? 1 : 0.3} />
                 {(isSelected || isHov || isNear) && (
                   <text x={tx} y={ty} textAnchor="middle" dominantBaseline="middle"
-                    fontSize={isSelected ? 6.5 : isHov ? 6.5 : 5} fontFamily="monospace" fontWeight={isSelected || isHov ? 800 : 400}
+                    fontSize={isSelected ? 6.5 * scale : isHov ? 6.5 * scale : 5 * scale} fontFamily="monospace" fontWeight={isSelected || isHov ? 800 : 400}
                     fill={isSelected ? '#e8d4ff' : isHov ? '#fff' : 'rgba(255,255,255,0.3)'}>
                     {y}
                   </text>
@@ -294,25 +295,25 @@ export function DateWheel({ value, onChange, onPreview, size = 220, style }) {
         <circle cx={cx} cy={cy} r={NEEDLE_R2 + 4} fill="none" stroke="transparent" strokeWidth="22" />
         <g ref={needleRef}>
           <line x1={cx} y1={cy - NEEDLE_R1} x2={cx} y2={cy - NEEDLE_R2}
-            stroke="rgba(168,85,247,0.35)" strokeWidth="10" strokeLinecap="round" />
+            stroke="rgba(168,85,247,0.35)" strokeWidth={10 * scale} strokeLinecap="round" />
           <line x1={cx} y1={cy - NEEDLE_R1} x2={cx} y2={cy - NEEDLE_R2}
-            stroke="rgba(232,212,255,0.95)" strokeWidth="2" strokeLinecap="round" />
+            stroke="rgba(232,212,255,0.95)" strokeWidth={2 * scale} strokeLinecap="round" />
         </g>
       </g>
 
       {/* centre readout */}
       <text x={cx} y={cy - 7} textAnchor="middle" dominantBaseline="middle"
-        fontSize="13" fontFamily="monospace" fontWeight="700" fill="#e8d4ff">
+        fontSize={13 * scale} fontFamily="monospace" fontWeight="700" fill="#e8d4ff">
         {String(dDisp).padStart(2,'0')} {MONTHS_SHORT[mDisp-1]}
       </text>
       <text x={cx} y={cy + 9} textAnchor="middle" dominantBaseline="middle"
-        fontSize="11" fontFamily="monospace" fontWeight="500" fill="rgba(200,168,240,0.7)">
+        fontSize={11 * scale} fontFamily="monospace" fontWeight="500" fill="rgba(200,168,240,0.7)">
         {yDisp}
       </text>
 
       {/* 12-o'clock selector tick */}
       <line x1={cx} y1={cy - YR_R2 - 2} x2={cx} y2={cy - DAY_R1 + 2}
-        stroke="rgba(168,85,247,0.5)" strokeWidth="1" strokeDasharray="2,2" />
+        stroke="rgba(168,85,247,0.5)" strokeWidth={1 * scale} strokeDasharray={`${2 * scale},${2 * scale}`} />
     </svg>
   )
 }
@@ -321,18 +322,19 @@ export function DateWheel({ value, onChange, onPreview, size = 220, style }) {
 // value: committed { hour, minute }
 // onChange: called on click/drag-release
 // onPreview: called on hover with { hour, minute } or null (restore)
-export function TimeWheel({ value, onChange, onPreview, size = 180, style }) {
+export function TimeWheel({ value, onChange, onPreview, size = 220, style }) {
   const { hour, minute } = value
   const valRef = useRef({ hour, minute })
   useEffect(() => { valRef.current = { hour, minute } }, [hour, minute])
 
   const svgRef = useRef(null)
-  const VB = 200, cx = 100, cy = 100
+  const VB = 240, cx = 120, cy = 120
+  const scale = size / 220
 
-  const MN_R1 = 28, MN_R2 = 52
-  const HR_R1 = 60, HR_R2 = 84
+  const MN_R1 = 28 * scale, MN_R2 = 52 * scale
+  const HR_R1 = 60 * scale, HR_R2 = 84 * scale
 
-  const HR_NEEDLE_R1 = 85, HR_NEEDLE_R2 = 97
+  const HR_NEEDLE_R1 = 85 * scale, HR_NEEDLE_R2 = 97 * scale
 
   const [hovHour, setHovHour] = useState(null)
   const [hovMin,  setHovMin]  = useState(null)
@@ -381,16 +383,16 @@ export function TimeWheel({ value, onChange, onPreview, size = 180, style }) {
             const ang = i * 15
             const isSelected = i === hour
             const isHov = hovHour === i
-            const [tx, ty] = polarToXY(cx, cy, ang + 7.5, (HR_R1 + HR_R2) / 2)
+            const [tx, ty] = polarToXY(cx, cy, ang + 7.5, (HR_R1 + HR_R2) * 0.5)
             return (
               <g key={i}>
                 <path d={ringArc(cx, cy, HR_R1, HR_R2, ang, ang + 15)}
                   fill={isSelected ? `${ACCENT}0.6)` : isHov ? 'rgba(250,220,255,0.15)' : `${ACCENT}0.06)`}
                   stroke={isSelected ? `${ACCENT}0.9)` : isHov ? 'rgba(250,220,255,0.6)' : `${ACCENT}0.15)`}
-                  strokeWidth={isSelected || isHov ? 1 : 0.5} />
+                  strokeWidth={isSelected || isHov ? 1 * scale : 0.5 * scale} />
                 {(isSelected || isHov || i % 6 === 0) && (
                   <text x={tx} y={ty} textAnchor="middle" dominantBaseline="middle"
-                    fontSize={isSelected || isHov ? 7 : 6} fontFamily="monospace" fontWeight={isSelected || isHov ? 800 : 400}
+                    fontSize={isSelected || isHov ? 7 * scale : 6 * scale} fontFamily="monospace" fontWeight={isSelected || isHov ? 800 : 400}
                     fill={isSelected ? '#e8d4ff' : isHov ? '#fff' : 'rgba(255,255,255,0.35)'}>
                     {String(i).padStart(2,'0')}
                   </text>
@@ -411,16 +413,16 @@ export function TimeWheel({ value, onChange, onPreview, size = 180, style }) {
             const isSelected = i === minute
             const isHov = hovMin === i
             const isQuarter = i % 15 === 0
-            const [tx, ty] = polarToXY(cx, cy, ang + 3, (MN_R1 + MN_R2) / 2)
+            const [tx, ty] = polarToXY(cx, cy, ang + 3, (MN_R1 + MN_R2) * 0.5)
             return (
               <g key={i}>
                 <path d={ringArc(cx, cy, MN_R1, MN_R2, ang, ang + 6)}
                   fill={isSelected ? `${ACCENT}0.6)` : isHov ? 'rgba(250,220,255,0.15)' : `${ACCENT}0.05)`}
                   stroke={isSelected ? `${ACCENT}0.9)` : isHov ? 'rgba(250,220,255,0.6)' : `${ACCENT}0.12)`}
-                  strokeWidth={isSelected || isHov ? 1 : 0.3} />
+                  strokeWidth={isSelected || isHov ? 1 * scale : 0.3 * scale} />
                 {(isSelected || isHov || isQuarter) && (
                   <text x={tx} y={ty} textAnchor="middle" dominantBaseline="middle"
-                    fontSize={isSelected || isHov ? 6.5 : 5.5} fontFamily="monospace" fontWeight={isSelected || isHov ? 800 : 400}
+                    fontSize={isSelected || isHov ? 6.5 * scale : 5.5 * scale} fontFamily="monospace" fontWeight={isSelected || isHov ? 800 : 400}
                     fill={isSelected ? '#e8d4ff' : isHov ? '#fff' : 'rgba(255,255,255,0.3)'}>
                     {String(i).padStart(2,'0')}
                   </text>
@@ -434,24 +436,24 @@ export function TimeWheel({ value, onChange, onPreview, size = 180, style }) {
       {/* ── Hour needle (spin freely, 1 turn = 1 hour) ── */}
       <g onPointerDown={timeNeedle.onPointerDown} onPointerMove={timeNeedle.onPointerMove}
          onPointerUp={timeNeedle.onPointerUp} style={{ cursor:'grab' }}>
-        <circle cx={cx} cy={cy} r={HR_NEEDLE_R2 + 4} fill="none" stroke="transparent" strokeWidth="22" />
+        <circle cx={cx} cy={cy} r={HR_NEEDLE_R2 + 4 * scale} fill="none" stroke="transparent" strokeWidth={22 * scale} />
         <g ref={timeNeedleRef}>
           <line x1={cx} y1={cy - HR_NEEDLE_R1} x2={cx} y2={cy - HR_NEEDLE_R2}
-            stroke="rgba(168,85,247,0.35)" strokeWidth="10" strokeLinecap="round" />
+            stroke="rgba(168,85,247,0.35)" strokeWidth={10 * scale} strokeLinecap="round" />
           <line x1={cx} y1={cy - HR_NEEDLE_R1} x2={cx} y2={cy - HR_NEEDLE_R2}
-            stroke="rgba(232,212,255,0.95)" strokeWidth="2" strokeLinecap="round" />
+            stroke="rgba(232,212,255,0.95)" strokeWidth={2 * scale} strokeLinecap="round" />
         </g>
       </g>
 
       {/* centre readout */}
       <text x={cx} y={cy} textAnchor="middle" dominantBaseline="middle"
-        fontSize="14" fontFamily="monospace" fontWeight="700" fill="#e8d4ff">
+        fontSize={14 * scale} fontFamily="monospace" fontWeight="700" fill="#e8d4ff">
         {String(hovHour !== null ? hovHour : hour).padStart(2,'0')}:{String(hovMin !== null ? hovMin : minute).padStart(2,'0')}
       </text>
 
       {/* 12-o'clock selector tick */}
       <line x1={cx} y1={cy - HR_R2 - 2} x2={cx} y2={cy - MN_R1 + 2}
-        stroke="rgba(168,85,247,0.5)" strokeWidth="1" strokeDasharray="2,2" />
+        stroke="rgba(168,85,247,0.5)" strokeWidth={1 * scale} strokeDasharray={`${2 * scale},${2 * scale}`} />
     </svg>
   )
 }
