@@ -38,7 +38,7 @@
   position: absolute;
   top: 100%;
   left: 50%;
-  transform: translateX(-50%) translateY(4px);
+  transform: translateX(-50%) translateY(0);
   background: rgba(8, 6, 18, 0.9);
   border: 1px solid rgba(100, 180, 255, 0.3);
   color: #7ab8ff;
@@ -51,7 +51,7 @@
   opacity: 0;
   transition: all 0.2s ease;
   z-index: 20;
-  margin-top: 4px;
+  margin-top: 0px;
 }
 
 .clock-svg {
@@ -157,9 +157,9 @@
 
 .menu-bar__time-tooltip {
   position: absolute;
-  top: 120%;
+  top: 100%;
   left: 50%;
-  transform: translateX(-50%) translateY(5px);
+  transform: translateX(-50%) translateY(0);
   background: rgba(10, 10, 15, 0.95);
   padding: 6px 12px;
   border-radius: 4px;

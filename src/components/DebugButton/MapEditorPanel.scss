@@ -1,5 +1,9 @@
 .cell-info {
-  display: contents;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 8px;
+  padding: 0 8px;
 }
 
 .cell-info__header {
