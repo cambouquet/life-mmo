@@ -327,7 +327,7 @@ export function TimeWheel({ value, onChange, onPreview, size = 220, style }) {
 
   const svgRef = useRef(null)
   const VB = 240, cx = 120, cy = 120
-  const scale = 1 // Use internal SVG units
+  const scale = size / 220
 
   const MIN_R1 = 28 * scale, MIN_R2 = 50 * scale
   const HR_R1 = 54 * scale, HR_R2 = 76 * scale
