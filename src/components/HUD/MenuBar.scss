@@ -5,13 +5,13 @@
   align-items: center;
   justify-content: flex-end;
   gap: 8px;
-  min-height: auto;
+  height: 24px;
   flex-wrap: wrap;
   width: 100%;
   pointer-events: auto;
   background: transparent;
   backdrop-filter: none;
-  padding: 0;
+  padding: 0 16px;
   margin: 0;
   flex-shrink: 0;
   overflow: visible;

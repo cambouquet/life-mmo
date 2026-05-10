@@ -1,0 +1,68 @@
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="bg-small" cx="50%" cy="50%" r="75%">
+      <stop offset="0%" stop-color="#17233f"/>
+      <stop offset="55%" stop-color="#0b1327"/>
+      <stop offset="100%" stop-color="#060912"/>
+    </radialGradient>
+
+    <linearGradient id="cornerGlow-small" x1="0" y1="200" x2="200" y2="0">
+      <stop offset="0%" stop-color="#5f3bff" stop-opacity="0.35"/>
+      <stop offset="45%" stop-color="#1c55ff" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.05"/>
+    </linearGradient>
+
+    <linearGradient id="orbit-small" x1="40" y1="102" x2="160" y2="115">
+      <stop offset="0%" stop-color="#6d5cff" stop-opacity="0.25"/>
+      <stop offset="35%" stop-color="#dce8ff" stop-opacity="0.95"/>
+      <stop offset="70%" stop-color="#8098ff" stop-opacity="0.75"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.95"/>
+    </linearGradient>
+
+    <filter id="softGlow-small" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <filter id="bigGlow-small" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <filter id="shadow-small" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#000000" flood-opacity="0.45"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect x="12.5" y="12.5" width="175" height="175" rx="35" fill="url(#bg-small)" filter="url(#shadow-small)"/>
+  <rect x="12.5" y="12.5" width="175" height="175" rx="35" fill="url(#cornerGlow-small)"/>
+  <rect x="12.5" y="12.5" width="175" height="175" rx="35" stroke="#d9e5ff" stroke-opacity="0.24" stroke-width="1"/>
+
+  <!-- Main dashed orbital ring -->
+  <circle cx="100" cy="100" r="70" stroke="#9eb4ff" stroke-opacity="0.16" stroke-width="2" stroke-dasharray="3 4"/>
+
+  <!-- Stars and dots -->
+  <g filter="url(#softGlow-small)">
+    <path d="M158 42 L162 50 L170 52 L162 54 L158 62 L154 54 L146 52 L154 50 Z" fill="#ffffff"/>
+    <path d="M40 142 L42 148 L48 150 L42 152 L40 158 L38 152 L32 150 L38 148 Z" fill="#ffffff"/>
+    <path d="M165 103 L168 110 L175 112 L168 114 L165 121 L162 114 L155 112 L162 110 Z" fill="#ffffff"/>
+    <circle cx="45" cy="45" r="2" fill="#e7efff"/>
+    <circle cx="65" cy="68" r="1.5" fill="#e7efff"/>
+    <circle cx="155" cy="158" r="2" fill="#e7efff"/>
+  </g>
+
+  <!-- Wave separator -->
+  <g filter="url(#bigGlow-small)">
+    <path d="M35 103 C60 85 80 110 100 115 C125 122 150 113 167 103" stroke="url(#orbit-small)" stroke-width="2" stroke-linecap="round" fill="none"/>
+  </g>
+
+  <!-- Center sparkle -->
+  <circle cx="167" cy="103" r="2" fill="#ffffff" filter="url(#softGlow-small)"/>
+</svg>
