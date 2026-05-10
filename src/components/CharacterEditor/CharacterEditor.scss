@@ -113,13 +113,13 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: center; // Restore centering for the preview page
   gap: 20px;
   width: 280px;
   flex-shrink: 0;
   min-height: 0;
   overflow: hidden;
-  padding: 24px 20px;
+  padding: 32px 20px; // Increased top padding for better visual start
   box-sizing: border-box;
   background: rgba(255, 255, 255, 0.01);
 
@@ -181,13 +181,13 @@
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  justify-content: center;
+  justify-content: flex-start; // Start from top
   gap: 0;
   flex: 1;
   min-width: 0;
   min-height: 0;
   overflow: visible;
-  padding: 20px;
+  padding: 40px 20px; // Add substantial top padding to center pickers manually
   box-sizing: border-box;
   border: none;
 
@@ -212,12 +212,12 @@
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  width: 340px;
+  width: 360px; // Slightly wider for chart content
   flex-shrink: 0;
   align-self: stretch;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 20px 20px 28px;
+  padding: 40px 16px 28px; // Match top padding of astro column
   box-sizing: border-box;
 
   @media (max-width: 768px) {
@@ -238,13 +238,17 @@
   .char-editor-chart & {
     flex: 1;
     min-height: 0;
-    gap: 16px;
-    margin-top: 0;
+    gap: 8px; 
+    margin-top: 0; // Reset margin, using layout-level padding instead
   }
 
   &--mobile-only {
     @media (min-width: 769px) {
-      display: none;
+      display: flex;
+      flex-direction: column;
+      margin-top: 0; // Reset margin, space is controlled by padding above
+      position: relative;
+      z-index: 10;
     }
   }
 }
@@ -343,9 +347,9 @@
   align-items: center;
   justify-content: space-around;
   width: 100%;
-  flex: 1;
+  flex: 0 0 auto; 
   min-height: 0;
-  padding: 20px;
+  padding: 0 20px 10px 20px; // Very tight bottom padding
   box-sizing: border-box;
 
   &__date, &__time {
