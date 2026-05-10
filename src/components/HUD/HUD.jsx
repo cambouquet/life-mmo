@@ -4,11 +4,15 @@ import LogPanel  from './LogPanel.jsx'
 import Clock     from './Clock.jsx'
 import Minimap   from './Minimap.jsx'
 import MenuBar   from './MenuBar.jsx'
+import GuidanceVoice from '../GuidanceVoice/GuidanceVoice.jsx'
 
-export default function HUD({ facing, moving, logEntries, charColors, charName, playerPos, exploredTiles, worldData, debugActive, activeMapMenu, onMapMenuChange, hoveredTile, layers, collMap, layerEdits, onEditSprite, highlightColors, onHighlightColorsChange, spriteColorOverrides, onSpriteColorChange, onHoverPreview, onPickerStateChange, activeSprite, onActiveSpriteChange }) {
+export default function HUD({ facing, moving, logEntries, charColors, charName, playerPos, exploredTiles, worldData, debugActive, activeMapMenu, onMapMenuChange, hoveredTile, layers, collMap, layerEdits, onEditSprite, highlightColors, onHighlightColorsChange, spriteColorOverrides, onSpriteColorChange, onHoverPreview, onPickerStateChange, activeSprite, onActiveSpriteChange, guidance, showDialog, showHoroscope }) {
   return (
     <div className="hud-wrapper">
       <MenuBar debugActive={debugActive} activeMapMenu={activeMapMenu} onMapMenuChange={onMapMenuChange} hoveredTile={hoveredTile} layers={layers} collMap={collMap} layerEdits={layerEdits} onEditSprite={onEditSprite} highlightColors={highlightColors} onHighlightColorsChange={onHighlightColorsChange} spriteColorOverrides={spriteColorOverrides} onSpriteColorChange={onSpriteColorChange} onHoverPreview={onHoverPreview} onPickerStateChange={onPickerStateChange} activeSprite={activeSprite} onActiveSpriteChange={onActiveSpriteChange} />
+      <div className="guidance-bar">
+        {!showDialog && !showHoroscope && <GuidanceVoice text={guidance} />}
+      </div>
       <div className="hud">
         <Logo />
         <CharPanel facing={facing} moving={moving} charColors={charColors} charName={charName} />
