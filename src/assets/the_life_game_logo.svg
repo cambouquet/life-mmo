@@ -64,17 +64,16 @@
     <circle cx="935" cy="940" r="5" fill="#e7efff"/>
   </g>
 
+  <!-- Wave separator (behind text) -->
+  <g filter="url(#bigGlow)">
+    <path d="M200 620 C350 560 480 650 600 680 C750 720 900 680 1000 620" stroke="url(#orbit)" stroke-width="4" stroke-linecap="round" fill="none"/>
+  </g>
+
   <!-- Typography -->
   <g text-anchor="middle" font-family="Montserrat, Avenir Next, Arial, sans-serif" filter="url(#softGlow)">
     <text x="600" y="450" font-size="65" letter-spacing="54" fill="#edf4ff" opacity="0.95">THE</text>
-    <text x="600" y="690" font-size="192" font-weight="800" letter-spacing="12" fill="url(#letter)" stroke="#ffffff" stroke-opacity="0.35" stroke-width="1.5">LIFE</text>
-    <text x="600" y="810" font-size="72" letter-spacing="48" fill="#edf4ff" opacity="0.95">GAME</text>
-  </g>
-
-  <!-- Front orbit line -->
-  <g filter="url(#bigGlow)">
-    <path d="M230 623 C345 552 488 642 610 670 C770 706 900 690 1002 620" stroke="url(#orbit)" stroke-width="4" stroke-linecap="round" fill="none"/>
-    <path d="M230 623 C305 585 410 600 515 630" stroke="#584cff" stroke-opacity="0.45" stroke-width="3" stroke-linecap="round" fill="none"/>
+    <text x="600" y="700" font-size="192" font-weight="800" letter-spacing="12" fill="url(#letter)" stroke="#ffffff" stroke-opacity="0.35" stroke-width="1.5">LIFE</text>
+    <text x="600" y="820" font-size="72" letter-spacing="48" fill="#edf4ff" opacity="0.95">GAME</text>
   </g>
 
   <!-- Tiny orbit spark -->
