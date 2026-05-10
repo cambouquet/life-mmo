@@ -71,7 +71,7 @@
 
   <!-- Typography -->
   <g text-anchor="middle" font-family="Montserrat, Avenir Next, Arial, sans-serif" filter="url(#softGlow)">
-    <text x="600" y="450" font-size="65" letter-spacing="54" fill="#edf4ff" opacity="0.95">THE</text>
+    <text x="600" y="490" font-size="65" letter-spacing="54" fill="#edf4ff" opacity="0.95">THE</text>
     <text x="600" y="700" font-size="192" font-weight="800" letter-spacing="12" fill="url(#letter)" stroke="#ffffff" stroke-opacity="0.35" stroke-width="1.5">LIFE</text>
     <text x="600" y="820" font-size="72" letter-spacing="48" fill="#edf4ff" opacity="0.95">GAME</text>
   </g>
