@@ -136,8 +136,8 @@ export default function MapEditorPanel({ activeMenu, onMenuChange, hoveredTile, 
   ]
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '6px', width: '100%' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flex: 1 }}>
+    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '6px', width: '100%', pointerEvents: 'auto' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flex: 1, pointerEvents: 'auto' }}>
         {menuItems.map(item => (
           <button
             key={item.key}

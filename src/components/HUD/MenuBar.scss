@@ -5,8 +5,8 @@
   align-items: center;
   justify-content: flex-end;
   gap: 8px;
-  height: 24px;
-  flex-wrap: nowrap;
+  min-height: 24px;
+  flex-wrap: wrap;
   width: 100%;
   pointer-events: auto;
   background: rgba(8, 6, 18, 0.9);
@@ -14,6 +14,22 @@
   padding: 0 16px;
   flex-shrink: 0;
   overflow: visible;
+}
+
+.menu-bar__map-editor {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 0 1 auto;
+  order: -1;
+  margin-right: auto;
+  padding-right: 8px;
+  border-right: 1px solid rgba(100, 180, 255, 0.2);
+  pointer-events: auto;
+
+  button {
+    pointer-events: auto;
+  }
 }
 
 .menu-bar__clock {

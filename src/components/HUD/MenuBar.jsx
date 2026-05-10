@@ -1,6 +1,21 @@
 import { useEffect, useState } from 'react'
 import './MenuBar.scss'
 
+const LS_MAP_BACKUPS = 'life-mmo-map-backups'
+
+function loadBackups() {
+  try {
+    const data = localStorage.getItem(LS_MAP_BACKUPS)
+    return data ? JSON.parse(data) : []
+  } catch {
+    return []
+  }
+}
+
+function saveBackups(backups) {
+  localStorage.setItem(LS_MAP_BACKUPS, JSON.stringify(backups))
+}
+
 const ROMAN_NUMERALS = {
   0:  'XII',
   3:  'III',
@@ -50,10 +65,12 @@ function getSeasonData(overrideDay) {
   }
 }
 
-export default function MenuBar() {
+export default function MenuBar({ debugActive, activeMapMenu, onMapMenuChange, hoveredTile, layers, collMap, layerEdits, onEditSprite, highlightColors, onHighlightColorsChange, spriteColorOverrides, onSpriteColorChange, onHoverPreview, onPickerStateChange, activeSprite, onActiveSpriteChange }) {
   const [now, setNow] = useState(new Date())
   const [overridenDay, setOverridenDay] = useState(undefined)
   const [season, setSeason] = useState(getSeasonData())
+  const [backups, setBackups] = useState(loadBackups)
+  const [showBackupMenu, setShowBackupMenu] = useState(false)
 
   useEffect(() => {
     const id = setInterval(() => {
@@ -72,6 +89,30 @@ export default function MenuBar() {
     setSeason(getSeasonData(day))
   }
 
+  const createBackup = () => {
+    const backup = {
+      id: Date.now(),
+      timestamp: new Date().toLocaleString(),
+      layerEdits: JSON.parse(JSON.stringify(layerEdits)),
+      spriteColorOverrides: JSON.parse(JSON.stringify(spriteColorOverrides))
+    }
+    const newBackups = [backup, ...backups].slice(0, 5)
+    setBackups(newBackups)
+    saveBackups(newBackups)
+  }
+
+  const restoreBackup = (backup) => {
+    onEditSprite(() => JSON.parse(JSON.stringify(backup.layerEdits)))
+    onSpriteColorChange(() => JSON.parse(JSON.stringify(backup.spriteColorOverrides)))
+    setShowBackupMenu(false)
+  }
+
+  const deleteBackup = (id) => {
+    const newBackups = backups.filter(b => b.id !== id)
+    setBackups(newBackups)
+    saveBackups(newBackups)
+  }
+
   const hours = now.getHours() % 12
   const minutes = now.getMinutes()
   const seconds = now.getSeconds()
@@ -81,8 +122,170 @@ export default function MenuBar() {
 
   const timeString = now.toLocaleTimeString('en-GB', { hour12: false, hour: '2-digit', minute: '2-digit' })
 
+  const CategoryIcon = ({ type }) => {
+    const baseStyle = { width: '14px', height: '14px', display: 'block' }
+    const icons = {
+      tiles: (
+        <svg viewBox="0 0 16 16" fill="currentColor" style={baseStyle}>
+          <rect x="2" y="2" width="3" height="3" rx="0.3"/>
+          <rect x="6" y="2" width="3" height="3" rx="0.3"/>
+          <rect x="10" y="2" width="3" height="3" rx="0.3"/>
+          <rect x="2" y="6" width="3" height="3" rx="0.3"/>
+          <rect x="6" y="6" width="3" height="3" rx="0.3"/>
+          <rect x="10" y="6" width="3" height="3" rx="0.3"/>
+          <rect x="2" y="10" width="3" height="3" rx="0.3"/>
+          <rect x="6" y="10" width="3" height="3" rx="0.3"/>
+          <rect x="10" y="10" width="3" height="3" rx="0.3"/>
+        </svg>
+      ),
+      animations: (
+        <svg viewBox="0 0 16 16" fill="currentColor" style={baseStyle}>
+          <rect x="2" y="3" width="10" height="8" rx="0.5" fillOpacity="0.6"/>
+          <rect x="4" y="2" width="10" height="8" rx="0.5" fillOpacity="0.8"/>
+          <polygon points="7,7 12,9.5 7,12" fill="currentColor" opacity="0.9"/>
+        </svg>
+      )
+    }
+    return icons[type]
+  }
+
+  const mapMenuItems = [
+    { key: 'tiles', label: 'Tiles', icon: 'tiles', category: 'floor' },
+    { key: 'animations', label: 'Animations', icon: 'animations', tab: 'animations' }
+  ]
+
   return (
     <div className="menu-bar">
+      {debugActive && (
+        <div className="menu-bar__map-editor">
+          {mapMenuItems.map(item => (
+            <button
+              key={item.key}
+              onClick={() => {
+                onMapMenuChange?.(item.key)
+                if (item.category) {
+                  onPickerStateChange?.(prev => ({ ...prev, pickerOpen: item.category, activeTab: 'tiles' }))
+                } else if (item.tab) {
+                  onPickerStateChange?.(prev => ({ ...prev, activeTab: item.tab }))
+                }
+              }}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '4px 8px',
+                background: activeMapMenu === item.key ? 'rgba(100, 220, 255, 0.25)' : 'rgba(100, 180, 255, 0.08)',
+                border: activeMapMenu === item.key ? '1px solid rgba(100, 220, 255, 0.6)' : '1px solid rgba(100, 180, 255, 0.3)',
+                borderRadius: '2px',
+                cursor: 'pointer',
+                color: '#7ab8ff',
+                fontSize: '12px',
+                minHeight: '20px',
+                pointerEvents: 'auto',
+              }}
+              title={item.label}
+            >
+              <CategoryIcon type={item.icon} />
+            </button>
+          ))}
+          <div style={{ display: 'flex', gap: '4px', marginLeft: '4px' }}>
+            <button
+              onClick={createBackup}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '24px',
+                height: '24px',
+                padding: 0,
+                background: 'rgba(100, 220, 100, 0.1)',
+                border: '1px solid rgba(100, 220, 100, 0.3)',
+                color: '#7ab8ff',
+                borderRadius: '2px',
+                cursor: 'pointer',
+                pointerEvents: 'auto',
+              }}
+              title="Backup"
+            >
+              ✓
+            </button>
+            <div style={{ position: 'relative' }}>
+              <button
+                onClick={() => setShowBackupMenu(!showBackupMenu)}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: '24px',
+                  height: '24px',
+                  padding: 0,
+                  background: backups.length > 0 ? 'rgba(100, 180, 255, 0.1)' : 'rgba(100, 100, 100, 0.05)',
+                  border: '1px solid rgba(100, 180, 255, 0.2)',
+                  color: '#7ab8ff',
+                  borderRadius: '2px',
+                  cursor: 'pointer',
+                  pointerEvents: 'auto',
+                }}
+                title={`${backups.length} backup(s)`}
+              >
+                ↩
+              </button>
+              {showBackupMenu && backups.length > 0 && (
+                <div style={{
+                  position: 'absolute',
+                  top: '100%',
+                  right: 0,
+                  background: 'rgba(6, 4, 14, 0.95)',
+                  border: '1px solid rgba(100, 180, 255, 0.4)',
+                  borderRadius: '2px',
+                  marginTop: '4px',
+                  zIndex: 1000,
+                  minWidth: '140px',
+                  maxHeight: '200px',
+                  overflowY: 'auto',
+                }}>
+                  {backups.map(backup => (
+                    <div key={backup.id} style={{ display: 'flex', gap: '2px', padding: '3px', borderBottom: '1px solid rgba(100, 180, 255, 0.1)' }}>
+                      <button
+                        onClick={() => restoreBackup(backup)}
+                        style={{
+                          flex: 1,
+                          background: 'rgba(100, 220, 100, 0.1)',
+                          border: '1px solid rgba(100, 220, 100, 0.2)',
+                          color: '#7ab8ff',
+                          padding: '2px 3px',
+                          borderRadius: '2px',
+                          cursor: 'pointer',
+                          fontSize: '8px',
+                          textAlign: 'left',
+                          pointerEvents: 'auto',
+                        }}
+                      >
+                        {backup.timestamp.split(' ')[1]}
+                      </button>
+                      <button
+                        onClick={() => deleteBackup(backup.id)}
+                        style={{
+                          background: 'rgba(255, 100, 100, 0.1)',
+                          border: '1px solid rgba(255, 100, 100, 0.2)',
+                          color: '#ff6464',
+                          padding: '2px 3px',
+                          borderRadius: '2px',
+                          cursor: 'pointer',
+                          fontSize: '8px',
+                          pointerEvents: 'auto',
+                        }}
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
       <div className="menu-bar__clock">
         <div className="menu-bar__time-tooltip">{timeString}</div>
         <svg viewBox="0 0 100 100" className="clock-svg">

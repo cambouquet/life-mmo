@@ -12,7 +12,6 @@ export default function MapEditorPanelWrapper({ isOpen, ...props }) {
       <div className="map-editor-bar">
         <MapEditorPanel activeMenu={activeMenu} onMenuChange={setActiveMenu} {...props} />
       </div>
-      <div className="map-editor-submenu-bar" />
     </div>
   )
 }

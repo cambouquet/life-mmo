@@ -3,8 +3,10 @@
   flex-direction: column;
   width: 100%;
   flex-shrink: 0;
-  position: relative;
-  z-index: 10;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 100;
 }
 
 .map-editor-bar {

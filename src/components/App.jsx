@@ -10,11 +10,9 @@ import RecordButton          from './RecordButton/RecordButton.jsx'
 import VideoGallery          from './VideoGallery/VideoGallery.jsx'
 import DebugConsole          from './HUD/DebugConsole.jsx'
 import MapEditButton         from './DebugButton/MapEditButton.jsx'
-import MapEditorPanel        from './DebugButton/MapEditorPanel.jsx'
 import SpritePickerModal     from './DebugButton/SpritePickerModal.jsx'
 import InteractionPlayground from './DebugButton/InteractionPlayground.jsx'
 import BottomToolbar         from './DebugButton/BottomToolbar.jsx'
-import MapEditorPanelWrapper from './DebugButton/MapEditorPanelWrapper.jsx'
 import { useRecorder }       from '../playback/useRecorder.js'
 import { PlaybackEngine }    from '../playback/PlaybackEngine.js'
 import { mirrorVisit }       from '../playback/scenarios/mirrorVisit.js'
@@ -57,6 +55,7 @@ export default function App() {
   const [birthData,     setBirthData]     = useState(() => load(LS_BIRTH,  DEFAULT_BIRTH))
   const [charName,      setCharName]      = useState(() => load(LS_NAME,   null))
   const [debugActive,   setDebugActive]   = useState(false)
+  const [activeMapMenu, setActiveMapMenu] = useState('tiles')
   const [hoveredTile,   setHoveredTile]   = useState(null)
   const [hoverPreview,  setHoverPreview]  = useState(null)
   const [pickerState,   setPickerState]   = useState({ pickerOpen: null, activeTab: 'tiles', selectedSpriteForColor: null, ground: null, wall: null, obj: null, entity: null })
@@ -81,7 +80,6 @@ export default function App() {
   const engineRef        = useRef(null)
   const playerStateRef   = useRef(null)
   const worldDataRef     = useRef(null)
-  const editorBarsRef    = useRef(null)
   const canvasWrapRef    = useRef(null)
   const doorUnlockedRef  = useRef(false)
   const nameSetRef       = useRef(!!charName)
@@ -98,17 +96,6 @@ export default function App() {
     window.__exploredTiles = exploredTiles
   }, [exploredTiles])
 
-  // Offset canvas when editor panel opens
-  useEffect(() => {
-    if (debugActive && editorBarsRef.current && canvasWrapRef.current) {
-      const height = editorBarsRef.current.offsetHeight
-      canvasWrapRef.current.style.position = 'relative'
-      canvasWrapRef.current.style.top = `-${height}px`
-    } else if (canvasWrapRef.current) {
-      canvasWrapRef.current.style.position = 'relative'
-      canvasWrapRef.current.style.top = '0'
-    }
-  }, [debugActive])
 
   // Save layer edits and sprite colors to both localStorage and backend
   useEffect(() => {
@@ -297,27 +284,9 @@ export default function App() {
 
   return (
     <div className={`game-wrap ${debugActive ? 'debug-active' : ''}`} ref={wrapRef} style={{ transform: `scale(${zoom})`, transformOrigin: '0 0' }}>
-      <HUD facing={facing} moving={moving} logEntries={logEntries} charColors={charColors} charName={charName} playerPos={playerPos} exploredTiles={exploredTiles} worldData={worldData} />
+      <HUD facing={facing} moving={moving} logEntries={logEntries} charColors={charColors} charName={charName} playerPos={playerPos} exploredTiles={exploredTiles} worldData={worldData} debugActive={debugActive} activeMapMenu={activeMapMenu} onMapMenuChange={setActiveMapMenu} hoveredTile={hoveredTile} layers={worldData?.layers} collMap={worldData?.collMap} layerEdits={layerEdits} onEditSprite={setLayerEdits} highlightColors={highlightColors} onHighlightColorsChange={setHighlightColors} spriteColorOverrides={spriteColorOverrides} onSpriteColorChange={setSpriteColorOverrides} onHoverPreview={setHoverPreview} onPickerStateChange={setPickerState} activeSprite={activeSprite} onActiveSpriteChange={setActiveSprite} />
       <div className="guidance-bar">
         {!showDialog && !showHoroscope && <GuidanceVoice text={guidance} />}
-      </div>
-      <div ref={editorBarsRef}>
-        <MapEditorPanelWrapper
-          isOpen={debugActive}
-          hoveredTile={hoveredTile}
-          layers={worldData?.layers}
-          collMap={worldData?.collMap}
-          layerEdits={layerEdits}
-          onEditSprite={setLayerEdits}
-          highlightColors={highlightColors}
-          onHighlightColorsChange={setHighlightColors}
-          spriteColorOverrides={spriteColorOverrides}
-          onSpriteColorChange={setSpriteColorOverrides}
-          onHoverPreview={setHoverPreview}
-          onPickerStateChange={setPickerState}
-          activeSprite={activeSprite}
-          onActiveSpriteChange={setActiveSprite}
-        />
       </div>
       <RecordButton
         status={recorder.status}
