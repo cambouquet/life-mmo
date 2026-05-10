@@ -8,12 +8,16 @@ import MenuBar   from './MenuBar.jsx'
 export default function HUD({ facing, moving, logEntries, charColors, charName, playerPos, exploredTiles, worldData, debugActive, activeMapMenu, onMapMenuChange, hoveredTile, layers, collMap, layerEdits, onEditSprite, highlightColors, onHighlightColorsChange, spriteColorOverrides, onSpriteColorChange, onHoverPreview, onPickerStateChange, activeSprite, onActiveSpriteChange }) {
   return (
     <div className="hud-header">
-      <MenuBar debugActive={debugActive} activeMapMenu={activeMapMenu} onMapMenuChange={onMapMenuChange} hoveredTile={hoveredTile} layers={layers} collMap={collMap} layerEdits={layerEdits} onEditSprite={onEditSprite} highlightColors={highlightColors} onHighlightColorsChange={onHighlightColorsChange} spriteColorOverrides={spriteColorOverrides} onSpriteColorChange={onSpriteColorChange} onHoverPreview={onHoverPreview} onPickerStateChange={onPickerStateChange} activeSprite={activeSprite} onActiveSpriteChange={onActiveSpriteChange} />
       <div className="hud">
         <Logo />
-        <CharPanel facing={facing} moving={moving} charColors={charColors} charName={charName} />
-        <LogPanel entries={logEntries} />
-        <Minimap playerPos={playerPos} exploredTiles={exploredTiles} worldData={worldData} charColors={charColors} />
+        <div className="hud__right">
+          <MenuBar debugActive={debugActive} activeMapMenu={activeMapMenu} onMapMenuChange={onMapMenuChange} hoveredTile={hoveredTile} layers={layers} collMap={collMap} layerEdits={layerEdits} onEditSprite={onEditSprite} highlightColors={highlightColors} onHighlightColorsChange={onHighlightColorsChange} spriteColorOverrides={spriteColorOverrides} onSpriteColorChange={onSpriteColorChange} onHoverPreview={onHoverPreview} onPickerStateChange={onPickerStateChange} activeSprite={activeSprite} onActiveSpriteChange={onActiveSpriteChange} />
+          <div className="hud__content">
+            <CharPanel facing={facing} moving={moving} charColors={charColors} charName={charName} />
+            <LogPanel entries={logEntries} />
+            <Minimap playerPos={playerPos} exploredTiles={exploredTiles} worldData={worldData} charColors={charColors} />
+          </div>
+        </div>
       </div>
     </div>
   )
