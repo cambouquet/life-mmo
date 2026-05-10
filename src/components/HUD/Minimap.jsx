@@ -22,19 +22,19 @@ export default function Minimap({ playerPos, worldData, charColors }) {
     const playerTileX = playerPos.x / TILE
     const playerTileY = playerPos.y / TILE
 
-    const tileSize = Math.floor(Math.min(
+    const tileSize = Math.min(
       MINIMAP_WIDTH / (VIEW_RADIUS * 2),
       MINIMAP_HEIGHT / (VIEW_RADIUS * 2)
-    ))
+    )
 
-    const centerX = Math.round(MINIMAP_WIDTH / 2)
-    const centerY = Math.round(MINIMAP_HEIGHT / 2)
+    const centerX = MINIMAP_WIDTH / 2
+    const centerY = MINIMAP_HEIGHT / 2
 
     const collMap = worldData.collMap
     const rows = collMap.length
     const cols = collMap[0]?.length || 0
 
-    // First pass: Draw floor tiles with rounded corners
+    // First pass: Draw floor tiles
     for (let r = 0; r < rows; r++) {
       for (let c = 0; c < cols; c++) {
         const tileDistX = Math.abs(c - playerTileX)
@@ -43,15 +43,15 @@ export default function Minimap({ playerPos, worldData, charColors }) {
         if (tileDistX > VIEW_RADIUS || tileDistY > VIEW_RADIUS) continue
 
         const tile = collMap[r][c]
-        const offsetX = Math.round((c - playerTileX) * tileSize)
-        const offsetY = Math.round((r - playerTileY) * tileSize)
-        const x = Math.round(centerX + offsetX)
-        const y = Math.round(centerY + offsetY)
+        const offsetX = (c - playerTileX) * tileSize
+        const offsetY = (r - playerTileY) * tileSize
+        const x = centerX + offsetX
+        const y = centerY + offsetY
 
         if (tile === 0) {
           // Floor - light blue with rounded corners
           ctx.fillStyle = 'rgba(70, 110, 150, 0.7)'
-          roundRect(ctx, x + 1, y + 1, tileSize - 2, tileSize - 2, 1)
+          roundRect(ctx, x + 1, y + 1, tileSize - 2, tileSize - 2, 2)
           ctx.fill()
         }
       }
@@ -66,52 +66,48 @@ export default function Minimap({ playerPos, worldData, charColors }) {
         if (tileDistX > VIEW_RADIUS || tileDistY > VIEW_RADIUS) continue
 
         const tile = collMap[r][c]
-        const offsetX = Math.round((c - playerTileX) * tileSize)
-        const offsetY = Math.round((r - playerTileY) * tileSize)
-        const x = Math.round(centerX + offsetX)
-        const y = Math.round(centerY + offsetY)
+        const offsetX = (c - playerTileX) * tileSize
+        const offsetY = (r - playerTileY) * tileSize
+        const x = centerX + offsetX - tileSize / 2
+        const y = centerY + offsetY - tileSize / 2
 
         if (tile === 1) {
-          // Wall - dark with border
+          // Wall - dark with rounded corners
           ctx.fillStyle = 'rgba(25, 25, 40, 0.9)'
-          ctx.fillRect(x, y, tileSize, tileSize)
+          roundRect(ctx, x + 1, y + 1, tileSize - 2, tileSize - 2, 2)
+          ctx.fill()
           ctx.strokeStyle = 'rgba(50, 50, 70, 0.6)'
           ctx.lineWidth = 0.5
-          ctx.strokeRect(x, y, tileSize, tileSize)
+          ctx.stroke()
         } else if (tile === 4) {
-          // Mirror - bright cyan with glow effect
-          const mirrorSize = tileSize * 0.7
-          const mx = x + (tileSize - mirrorSize) / 2
-          const my = y + (tileSize - mirrorSize) / 2
+          // Mirror - bright cyan with rounded corners
           ctx.fillStyle = 'rgba(100, 220, 255, 0.9)'
-          roundRect(ctx, mx, my, mirrorSize, mirrorSize, 2)
+          roundRect(ctx, x + 1, y + 1, tileSize - 2, tileSize - 2, 2)
           ctx.fill()
           ctx.strokeStyle = 'rgba(150, 240, 255, 0.6)'
           ctx.lineWidth = 0.5
           ctx.stroke()
         } else if (tile === 3) {
-          // Table - orange with outline
-          const tableSize = tileSize * 0.8
-          const tx = x + (tileSize - tableSize) / 2
-          const ty = y + (tileSize - tableSize) / 2
+          // Table - orange with rounded corners
           ctx.fillStyle = 'rgba(220, 140, 80, 0.85)'
-          roundRect(ctx, tx, ty, tableSize, tableSize, 1.5)
+          roundRect(ctx, x + 1, y + 1, tileSize - 2, tileSize - 2, 2)
           ctx.fill()
           ctx.strokeStyle = 'rgba(240, 160, 100, 0.5)'
           ctx.lineWidth = 0.5
           ctx.stroke()
         } else if (tile === 6) {
-          // Door - bright blue opening
+          // Door - bright blue with rounded corners
           ctx.fillStyle = 'rgba(120, 180, 255, 0.75)'
-          roundRect(ctx, x + 1, y + 1, tileSize - 2, tileSize - 2, 1)
+          roundRect(ctx, x + 1, y + 1, tileSize - 2, tileSize - 2, 2)
           ctx.fill()
           ctx.strokeStyle = 'rgba(150, 200, 255, 0.7)'
           ctx.lineWidth = 0.5
           ctx.stroke()
         } else if (tile === 5) {
-          // Void - very dark
+          // Void - very dark with rounded corners
           ctx.fillStyle = 'rgba(10, 10, 20, 0.6)'
-          ctx.fillRect(x, y, tileSize, tileSize)
+          roundRect(ctx, x + 1, y + 1, tileSize - 2, tileSize - 2, 2)
+          ctx.fill()
         }
       }
     }
