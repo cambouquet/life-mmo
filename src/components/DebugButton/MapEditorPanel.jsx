@@ -105,14 +105,34 @@ export default function MapEditorPanel({ activeMenu, onMenuChange, hoveredTile, 
           <path d="M8 5.5 L5 9 L11 9 Z" fill="currentColor"/>
           <rect x="7" y="9" width="2" height="4" rx="0.5"/>
         </svg>
+      ),
+      tiles: (
+        <svg viewBox="0 0 16 16" fill="currentColor" style={baseStyle}>
+          <rect x="2" y="2" width="3" height="3" rx="0.3"/>
+          <rect x="6" y="2" width="3" height="3" rx="0.3"/>
+          <rect x="10" y="2" width="3" height="3" rx="0.3"/>
+          <rect x="2" y="6" width="3" height="3" rx="0.3"/>
+          <rect x="6" y="6" width="3" height="3" rx="0.3"/>
+          <rect x="10" y="6" width="3" height="3" rx="0.3"/>
+          <rect x="2" y="10" width="3" height="3" rx="0.3"/>
+          <rect x="6" y="10" width="3" height="3" rx="0.3"/>
+          <rect x="10" y="10" width="3" height="3" rx="0.3"/>
+        </svg>
+      ),
+      animations: (
+        <svg viewBox="0 0 16 16" fill="currentColor" style={baseStyle}>
+          <rect x="2" y="3" width="10" height="8" rx="0.5" fillOpacity="0.6"/>
+          <rect x="4" y="2" width="10" height="8" rx="0.5" fillOpacity="0.8"/>
+          <polygon points="7,7 12,9.5 7,12" fill="currentColor" opacity="0.9"/>
+        </svg>
       )
     }
     return icons[type]
   }
 
   const menuItems = [
-    { key: 'tiles', label: 'Tiles' },
-    { key: 'animations', label: 'Animations' }
+    { key: 'tiles', label: 'Tiles', icon: 'tiles' },
+    { key: 'animations', label: 'Animations', icon: 'animations' }
   ]
 
   return (
@@ -126,7 +146,7 @@ export default function MapEditorPanel({ activeMenu, onMenuChange, hoveredTile, 
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              padding: '4px 12px',
+              padding: '4px 8px',
               background: activeMenu === item.key ? 'rgba(100, 220, 255, 0.25)' : 'rgba(100, 180, 255, 0.08)',
               border: activeMenu === item.key ? '1px solid rgba(100, 220, 255, 0.6)' : '1px solid rgba(100, 180, 255, 0.3)',
               borderRadius: '2px',
@@ -136,7 +156,7 @@ export default function MapEditorPanel({ activeMenu, onMenuChange, hoveredTile, 
             }}
             title={item.label}
           >
-            {item.label}
+            <CategoryIcon type={item.icon} />
           </button>
         ))}
       </div>
