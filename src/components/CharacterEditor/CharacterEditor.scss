@@ -338,31 +338,17 @@
 // ── Birth trio: date · city · time in a row at the top ───────────────────────
 
 .birth-trio {
-  // Desktop: date left + time right aligned at top, city below center
-  display: grid;
-  grid-template-columns: 1fr auto auto 1fr;
-  grid-template-rows: auto auto;
-  align-items: start;
-  justify-items: center;
+  // Desktop: date left, city center, time right - all aligned vertically
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
   width: 100%;
   flex: 1;
   min-height: 0;
-  gap: 40px 40px;
   padding: 20px;
   box-sizing: border-box;
 
-  &__date {
-    grid-column: 2;
-    grid-row: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-  }
-
-  &__time {
-    grid-column: 3;
-    grid-row: 1;
+  &__date, &__time {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -370,8 +356,6 @@
   }
 
   &__center {
-    grid-column: 2 / 4;
-    grid-row: 2;
     display: flex;
     flex-direction: column;
     align-items: center;

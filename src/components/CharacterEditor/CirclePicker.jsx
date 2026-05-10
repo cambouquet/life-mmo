@@ -140,7 +140,7 @@ export function DateWheel({ value, onChange, onPreview, size = 220, style }) {
 
   const svgRef = useRef(null)
   const VB = 240, cx = 120, cy = 120
-  const scale = size / 220
+  const scale = 1 // Use internal SVG units; outer 'size' handles actual display scale
 
   const maxDay = DAYS_IN_MONTH(month, year)
   const YEARS  = Array.from({length: 101}, (_, i) => 1930 + i)
@@ -319,9 +319,7 @@ export function DateWheel({ value, onChange, onPreview, size = 220, style }) {
 }
 
 // ── Time Wheel ────────────────────────────────────────────────────────────────
-// value: committed { hour, minute }
-// onChange: called on click/drag-release
-// onPreview: called on hover with { hour, minute } or null (restore)
+// Identical structure to DateWheel but for hours and minutes
 export function TimeWheel({ value, onChange, onPreview, size = 220, style }) {
   const { hour, minute } = value
   const valRef = useRef({ hour, minute })
@@ -329,70 +327,90 @@ export function TimeWheel({ value, onChange, onPreview, size = 220, style }) {
 
   const svgRef = useRef(null)
   const VB = 240, cx = 120, cy = 120
-  const scale = size / 220
+  const scale = 1 // Use internal SVG units
 
-  const MN_R1 = 28 * scale, MN_R2 = 52 * scale
-  const HR_R1 = 60 * scale, HR_R2 = 84 * scale
+  const MIN_R1 = 28 * scale, MIN_R2 = 50 * scale
+  const HR_R1 = 54 * scale, HR_R2 = 76 * scale
+  const NEEDLE_R1 = 80 * scale, NEEDLE_R2 = 102 * scale
 
-  const HR_NEEDLE_R1 = 85 * scale, HR_NEEDLE_R2 = 97 * scale
-
-  const [hovHour, setHovHour] = useState(null)
   const [hovMin,  setHovMin]  = useState(null)
-  const timeNeedleRef  = useRef(null)
-  const timeNeedleAccum = useRef(0)
-  const timeNeedle = useNeedle(svgRef, cx, cy, timeNeedleRef, delta => {
-    // 360° = 60 minutes (1 hour scroll)
-    timeNeedleAccum.current += delta * (60 / 360)
-    const steps = Math.trunc(timeNeedleAccum.current)
+  const [hovHour, setHovHour] = useState(null)
+  const needleRef    = useRef(null)
+  const needleAccum  = useRef(0)
+  const minuteNeedle = useNeedle(svgRef, cx, cy, needleRef, delta => {
+    // 360° = 60 minutes (1 full rotation = 1 hour)
+    needleAccum.current += delta * (60 / 360)
+
+    const steps = Math.trunc(needleAccum.current)
     if (steps === 0) return
-    timeNeedleAccum.current -= steps
-    
-    // Calculate total minutes with rollover
+
+    needleAccum.current -= steps
     let totalMin = valRef.current.hour * 60 + valRef.current.minute + steps
     let daysDiff = Math.floor(totalMin / 1440)
     totalMin = ((totalMin % 1440) + 1440) % 1440
-    
-    const nextVal = { 
-      hour: Math.floor(totalMin / 60), 
+
+    const nextVal = {
+      hour: Math.floor(totalMin / 60),
       minute: totalMin % 60,
-      daysDiff 
+      daysDiff
     }
-    valRef.current = nextVal // Update ref immediately
+    valRef.current = nextVal
     onChange(nextVal)
   })
 
-  const hourRing = useImperativeRing(svgRef, cx, cy, 24,
-    idx => { setHovHour(idx); idx === null ? onPreview?.(null) : onPreview?.({ hour: idx, minute }) },
-    idx => { setHovHour(null); onChange({ hour: idx, minute }) }
-  )
   const minRing = useImperativeRing(svgRef, cx, cy, 60,
     idx => { setHovMin(idx); idx === null ? onPreview?.(null) : onPreview?.({ hour, minute: idx }) },
     idx => { setHovMin(null); onChange({ hour, minute: idx }) }
   )
 
+  const [amPm, setAmPm] = useState(hour >= 12 ? 'PM' : 'AM')
+  useEffect(() => {
+    setAmPm(hour >= 12 ? 'PM' : 'AM')
+  }, [hour])
+
+  const hourRing = useImperativeRing(svgRef, cx, cy, 12,
+    idx => { 
+      const h12 = idx === 0 ? 12 : idx
+      const h24 = amPm === 'AM' ? (idx === 0 ? 0 : idx) : (idx === 0 ? 12 : idx + 12)
+      setHovHour(idx)
+      idx === null ? onPreview?.(null) : onPreview?.({ hour: h24, minute }) 
+    },
+    idx => { 
+      const h24 = amPm === 'AM' ? (idx === 0 ? 0 : idx) : (idx === 0 ? 12 : idx + 12)
+      setHovHour(null)
+      onChange({ hour: h24, minute }) 
+    }
+  )
+
+  // Display values (preview on hover)
+  const mDisp = hovMin !== null ? hovMin : minute
+  let hDisp = hovHour !== null ? hovHour : (hour % 12)
+  if (hDisp === 0) hDisp = 0 // for logic, but we display it as 12 if needed below
+
   return (
     <svg ref={svgRef} width={size} height={size} viewBox={`0 0 ${VB} ${VB}`}
          style={{ display:'block', userSelect:'none', touchAction:'none', ...style }}>
 
-      {/* ── Hour ring ── */}
-      <g onPointerDown={hourRing.onPointerDown} onPointerMove={hourRing.onPointerMove}
-         onPointerUp={hourRing.onPointerUp} onPointerLeave={hourRing.onPointerLeave}
+      {/* ── Minute ring (innermost) ── */}
+      <g onPointerDown={minRing.onPointerDown} onPointerMove={minRing.onPointerMove}
+         onPointerUp={minRing.onPointerUp} onPointerLeave={minRing.onPointerLeave}
          style={{ cursor:'grab' }}>
-        <g ref={hourRing.groupRef}>
-          {Array.from({length: 24}, (_, i) => {
-            const ang = i * 15
-            const isSelected = i === hour
-            const isHov = hovHour === i
-            const [tx, ty] = polarToXY(cx, cy, ang + 7.5, (HR_R1 + HR_R2) * 0.5)
+        <g ref={minRing.groupRef}>
+          {Array.from({length: 60}, (_, i) => {
+            const ang = (i / 60) * 360
+            const isSelected = i === minute
+            const isHov = hovMin === i
+            const isQuarter = i % 15 === 0
+            const [tx, ty] = polarToXY(cx, cy, ang, (MIN_R1 + MIN_R2) * 0.5)
             return (
               <g key={i}>
-                <path d={ringArc(cx, cy, HR_R1, HR_R2, ang, ang + 15)}
+                <path d={ringArc(cx, cy, MIN_R1, MIN_R2, ang, ang + 6)}
                   fill={isSelected ? `${ACCENT}0.6)` : isHov ? 'rgba(250,220,255,0.15)' : `${ACCENT}0.06)`}
                   stroke={isSelected ? `${ACCENT}0.9)` : isHov ? 'rgba(250,220,255,0.6)' : `${ACCENT}0.15)`}
-                  strokeWidth={isSelected || isHov ? 1 * scale : 0.5 * scale} />
-                {(isSelected || isHov || i % 6 === 0) && (
+                  strokeWidth={isSelected || isHov ? 1 : 0.5} />
+                {(isSelected || isHov || isQuarter) && (
                   <text x={tx} y={ty} textAnchor="middle" dominantBaseline="middle"
-                    fontSize={isSelected || isHov ? 7 * scale : 6 * scale} fontFamily="monospace" fontWeight={isSelected || isHov ? 800 : 400}
+                    fontSize={isSelected ? 7 * scale : isHov ? 6.5 * scale : 5.5 * scale} fontFamily="monospace" fontWeight={isSelected || isHov ? 800 : 400}
                     fill={isSelected ? '#e8d4ff' : isHov ? '#fff' : 'rgba(255,255,255,0.35)'}>
                     {String(i).padStart(2,'0')}
                   </text>
@@ -403,44 +421,54 @@ export function TimeWheel({ value, onChange, onPreview, size = 220, style }) {
         </g>
       </g>
 
-      {/* ── Minute ring ── */}
-      <g onPointerDown={minRing.onPointerDown} onPointerMove={minRing.onPointerMove}
-         onPointerUp={minRing.onPointerUp} onPointerLeave={minRing.onPointerLeave}
+      {/* ── Hour ring (middle) ── */}
+      <g onPointerDown={hourRing.onPointerDown} onPointerMove={hourRing.onPointerMove}
+         onPointerUp={hourRing.onPointerUp} onPointerLeave={hourRing.onPointerLeave}
          style={{ cursor:'grab' }}>
-        <g ref={minRing.groupRef}>
-          {Array.from({length: 60}, (_, i) => {
-            const ang = i * 6
-            const isSelected = i === minute
-            const isHov = hovMin === i
-            const isQuarter = i % 15 === 0
-            const [tx, ty] = polarToXY(cx, cy, ang + 3, (MN_R1 + MN_R2) * 0.5)
+        <g ref={hourRing.groupRef}>
+          {Array.from({length: 12}, (_, i) => {
+            const ang = (i / 12) * 360
+            const isSelected = (hour % 12) === (i % 12)
+            const isHov = hovHour === i
+            const [tx, ty] = polarToXY(cx, cy, ang, (HR_R1 + HR_R2) * 0.5)
+            const label = i === 0 ? '12' : String(i)
             return (
               <g key={i}>
-                <path d={ringArc(cx, cy, MN_R1, MN_R2, ang, ang + 6)}
-                  fill={isSelected ? `${ACCENT}0.6)` : isHov ? 'rgba(250,220,255,0.15)' : `${ACCENT}0.05)`}
-                  stroke={isSelected ? `${ACCENT}0.9)` : isHov ? 'rgba(250,220,255,0.6)' : `${ACCENT}0.12)`}
-                  strokeWidth={isSelected || isHov ? 1 * scale : 0.3 * scale} />
-                {(isSelected || isHov || isQuarter) && (
-                  <text x={tx} y={ty} textAnchor="middle" dominantBaseline="middle"
-                    fontSize={isSelected || isHov ? 6.5 * scale : 5.5 * scale} fontFamily="monospace" fontWeight={isSelected || isHov ? 800 : 400}
-                    fill={isSelected ? '#e8d4ff' : isHov ? '#fff' : 'rgba(255,255,255,0.3)'}>
-                    {String(i).padStart(2,'0')}
-                  </text>
-                )}
+                <path d={ringArc(cx, cy, HR_R1, HR_R2, ang, ang + 30)}
+                  fill={isSelected ? `${ACCENT}0.55)` : isHov ? 'rgba(250,220,255,0.15)' : `${ACCENT}0.07)`}
+                  stroke={isSelected ? `${ACCENT}0.9)` : isHov ? 'rgba(250,220,255,0.6)' : `${ACCENT}0.18)`}
+                  strokeWidth={isSelected || isHov ? 1 : 0.5} />
+                <text x={tx} y={ty} textAnchor="middle" dominantBaseline="middle"
+                  fontSize={isSelected ? 8 * scale : isHov ? 8 * scale : 7 * scale} fontFamily="monospace" fontWeight={isSelected || isHov ? 800 : 400}
+                  fill={isSelected ? '#e8d4ff' : isHov ? '#fff' : 'rgba(255,255,255,0.38)'}>
+                  {label}
+                </text>
               </g>
             )
           })}
         </g>
       </g>
 
-      {/* ── Hour needle (spin freely, 1 turn = 1 hour) ── */}
-      <g onPointerDown={timeNeedle.onPointerDown} onPointerMove={timeNeedle.onPointerMove}
-         onPointerUp={timeNeedle.onPointerUp} style={{ cursor:'grab' }}>
-        <circle cx={cx} cy={cy} r={HR_NEEDLE_R2 + 4 * scale} fill="none" stroke="transparent" strokeWidth={22 * scale} />
-        <g ref={timeNeedleRef}>
-          <line x1={cx} y1={cy - HR_NEEDLE_R1} x2={cx} y2={cy - HR_NEEDLE_R2}
+      {/* AM/PM Toggles */}
+      <g transform={`translate(${cx + 45}, ${cy + 45})`} style={{ cursor: 'pointer' }} onClick={() => {
+        const nextHour = amPm === 'AM' ? (hour + 12) % 24 : hour % 12
+        onChange({ hour: nextHour, minute })
+      }}>
+        <rect x="-18" y="-8" width="36" height="16" rx="4" fill="rgba(168,85,247,0.15)" stroke="rgba(168,85,247,0.4)" strokeWidth="1" />
+        <text textAnchor="middle" dominantBaseline="middle" fontSize={8 * scale} fontFamily="monospace" fontWeight="700" fill="#e8d4ff">
+          {amPm}
+        </text>
+      </g>
+
+      {/* ── Minute needle (spin freely, 1 turn = 60 minutes) ── */}
+      <g onPointerDown={minuteNeedle.onPointerDown} onPointerMove={minuteNeedle.onPointerMove}
+         onPointerUp={minuteNeedle.onPointerUp} style={{ cursor:'grab' }}>
+        {/* invisible fat hit area — full donut around needle track */}
+        <circle cx={cx} cy={cy} r={NEEDLE_R2 + 4} fill="none" stroke="transparent" strokeWidth="22" />
+        <g ref={needleRef}>
+          <line x1={cx} y1={cy - NEEDLE_R1} x2={cx} y2={cy - NEEDLE_R2}
             stroke="rgba(168,85,247,0.35)" strokeWidth={10 * scale} strokeLinecap="round" />
-          <line x1={cx} y1={cy - HR_NEEDLE_R1} x2={cx} y2={cy - HR_NEEDLE_R2}
+          <line x1={cx} y1={cy - NEEDLE_R1} x2={cx} y2={cy - NEEDLE_R2}
             stroke="rgba(232,212,255,0.95)" strokeWidth={2 * scale} strokeLinecap="round" />
         </g>
       </g>
@@ -448,11 +476,11 @@ export function TimeWheel({ value, onChange, onPreview, size = 220, style }) {
       {/* centre readout */}
       <text x={cx} y={cy} textAnchor="middle" dominantBaseline="middle"
         fontSize={14 * scale} fontFamily="monospace" fontWeight="700" fill="#e8d4ff">
-        {String(hovHour !== null ? hovHour : hour).padStart(2,'0')}:{String(hovMin !== null ? hovMin : minute).padStart(2,'0')}
+        {hDisp === 0 ? '12' : hDisp}:{String(mDisp).padStart(2,'0')} {amPm}
       </text>
 
       {/* 12-o'clock selector tick */}
-      <line x1={cx} y1={cy - HR_R2 - 2} x2={cx} y2={cy - MN_R1 + 2}
+      <line x1={cx} y1={cy - NEEDLE_R2 - 2} x2={cx} y2={cy - MIN_R1 + 2}
         stroke="rgba(168,85,247,0.5)" strokeWidth={1 * scale} strokeDasharray={`${2 * scale},${2 * scale}`} />
     </svg>
   )
