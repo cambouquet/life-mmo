@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react'
 import { CharacterTemplate } from './CharacterTemplate'
 import { searchCities }      from '../../game/astro/cities.js'
-import { HouseWheel, HOUSE_THEMES }      from '../HouseWheel/HouseWheel.jsx'
+import { HouseWheel, HouseWheelWithInfo, HOUSE_THEMES }      from '../HouseWheel/HouseWheel.jsx'
 import { DateWheel, TimeWheel } from './CirclePicker.jsx'
 import { getAllPositions, getPlacidusHouses, getHouseNumber, longitudeToSign, longitudeToSymbol, degreesInSign, daysSinceJ2000 } from '../../game/astro/ephemeris.js'
 import { SIGN_META }         from '../../game/astro/horoscope.js'
@@ -89,7 +89,7 @@ function EarthGlobe({ city, size = 120, style }) {
   )
 }
 
-function CitySearch({ value, onChange }) {
+export function CitySearch({ value, onChange }) {
   const [query,   setQuery]   = useState(value?.name ?? '')
   const [results, setResults] = useState([])
   const [open,    setOpen]    = useState(false)
@@ -154,7 +154,7 @@ function CitySearch({ value, onChange }) {
 }
 
 
-function AstroSummary({ natalPlacements }) {
+export function AstroSummary({ natalPlacements }) {
   const tally = { Fire: 0, Earth: 0, Air: 0, Water: 0 }
   const modeTally = { Cardinal: 0, Fixed: 0, Mutable: 0 }
   Object.values(natalPlacements).forEach(p => {
@@ -284,12 +284,118 @@ function randomPalette() {
 }
 
 
+function parseDateFromString(dateStr) {
+  if (!dateStr) return { year: 1990, month: 1, day: 1 }
+  return {
+    year: +dateStr.slice(0, 4),
+    month: +dateStr.slice(5, 7),
+    day: +dateStr.slice(8, 10),
+  }
+}
+
+function parseTimeFromString(timeStr) {
+  if (!timeStr) return { hour: 12, minute: 0 }
+  return {
+    hour: +timeStr.slice(0, 2),
+    minute: +timeStr.slice(3, 5),
+  }
+}
+
+function formatDate(date) {
+  return `${date.year}-${String(date.month).padStart(2, '0')}-${String(date.day).padStart(2, '0')}`
+}
+
+function formatTime(time) {
+  return `${String(time.hour).padStart(2, '0')}:${String(time.minute).padStart(2, '0')}`
+}
+
+const PAGES = {
+  chart: { id: 'chart', order: 0, fullOnly: true },
+  location: { id: 'location', order: 1, fullOnly: true },
+  character: { id: 'character', order: 2, fullOnly: false },
+}
+
+function getPageSequence(limited) {
+  return Object.values(PAGES)
+    .filter(page => limited ? !page.fullOnly : true)
+    .sort((a, b) => a.order - b.order)
+    .map(page => page.id)
+}
+
+function getDefaultPage(limited) {
+  return limited ? PAGES.character.id : PAGES.location.id
+}
+
 export default function CharacterEditor({ initialColors, initialBirthData, initialName, scrollPage, limited, onSave, onClose, onChange }) {
-  const modalRef   = useRef(null)
-  const [activePage, setActivePage] = useState(0)
+  const modalRef = useRef(null)
+  const colorsRef = useRef(null)
+  const readyRef = useRef(false)
+
+  // Build page sequence based on mode
+  const pageSequence = useMemo(() => getPageSequence(limited), [limited])
+  const defaultPage = useMemo(() => getDefaultPage(limited), [limited])
+
+  // UI state
+  const [activePage, setActivePage] = useState(defaultPage)
   const [name, setName] = useState(initialName ?? '')
 
-  // External control of scrolling for automation/playback
+  // Birth data state
+  const [birthDate, setBirthDate] = useState(() => parseDateFromString(initialBirthData?.date))
+  const [birthTime, setBirthTime] = useState(() => parseTimeFromString(initialBirthData?.time))
+  const [hasDate, setHasDate] = useState(!!initialBirthData?.date)
+  const [birthCity, setBirthCity] = useState(initialBirthData?.city ?? null)
+  const [previewDate, setPreviewDate] = useState(null)
+  const [previewTime, setPreviewTime] = useState(null)
+
+  // Color state
+  const [colors, setColors] = useState(initialColors || {
+    hair: '#6030d0',
+    skin: '#f8c898',
+    eyes: '#8040e8',
+    outfit: '#4a1090',
+    stick: '#60a8ff',
+  })
+  const [previewColors, setPreviewColors] = useState(null)
+
+  useEffect(() => {
+    colorsRef.current = colors
+  }, [colors])
+
+  // Derived state
+  const chartDate = previewDate ?? birthDate
+  const chartTime = previewTime ?? birthTime
+  const displayColors = previewColors ?? colors
+  const trimmedName = name.trim() || null
+  const dateStr = formatDate(birthDate)
+  const timeStr = formatTime(birthTime)
+  const birthDataOutput = hasDate ? { date: dateStr, time: timeStr, city: birthCity } : null
+
+  useEffect(() => {
+    if (initialColors) setColors(initialColors)
+  }, [initialColors])
+
+  // Track scroll to update active page
+  useEffect(() => {
+    const el = modalRef.current
+    if (!el) return
+    const handleScroll = () => {
+      const index = Math.round(el.scrollLeft / el.clientWidth)
+      setActivePage(pageSequence[index] || defaultPage)
+    }
+    el.addEventListener('scroll', handleScroll, { passive: true })
+    return () => el.removeEventListener('scroll', handleScroll)
+  }, [pageSequence, defaultPage])
+
+  // Scroll to default page on mount
+  useEffect(() => {
+    const el = modalRef.current
+    if (el) {
+      const index = pageSequence.indexOf(defaultPage)
+      el.scrollTo({ left: index * el.clientWidth, behavior: 'auto' })
+    }
+  }, [])
+
+  // External scroll control for playback
   useEffect(() => {
     if (scrollPage !== undefined && modalRef.current) {
       const el = modalRef.current
@@ -297,95 +403,40 @@ export default function CharacterEditor({ initialColors, initialBirthData, initi
     }
   }, [scrollPage])
 
-  const [colors, setColors] = useState(initialColors || {
-    hair:   '#6030d0',
-    skin:   '#f8c898',
-    eyes:   '#8040e8',
-    outfit: '#4a1090',
-    stick:  '#60a8ff',
-  })
-
   useEffect(() => {
-    const el = modalRef.current
-    if (!el) return
-    const onScroll = () => {
-      const page = Math.round(el.scrollLeft / el.clientWidth)
-      setActivePage(page)
+    readyRef.current = false
+
+    const handleKeyUp = (e) => {
+      if (e.key === ' ' || e.key === 'Enter') readyRef.current = true
     }
-    el.addEventListener('scroll', onScroll, { passive: true })
-    return () => el.removeEventListener('scroll', onScroll)
-  }, [])
 
-  const colorsRef = useRef(colors)
-  useEffect(() => { colorsRef.current = colors }, [colors])
-
-  // Sync when parent pushes new colors (e.g. playback engine changing colors)
-  useEffect(() => {
-    if (initialColors) setColors(initialColors)
-  }, [initialColors])
-  const parsedDate = initialBirthData?.date
-    ? { year: +initialBirthData.date.slice(0,4), month: +initialBirthData.date.slice(5,7), day: +initialBirthData.date.slice(8,10) }
-    : { year: 1990, month: 1, day: 1 }
-  const parsedTime = initialBirthData?.time
-    ? { hour: +initialBirthData.time.slice(0,2), minute: +initialBirthData.time.slice(3,5) }
-    : { hour: 12, minute: 0 }
-
-  const [birthDate, setBirthDate] = useState(parsedDate)
-  const [birthTime, setBirthTime] = useState(parsedTime)
-  const [hasDate,   setHasDate]   = useState(!!initialBirthData?.date)
-  const [birthCity, setBirthCity] = useState(initialBirthData?.city ?? null)
-  const [previewDate, setPreviewDate] = useState(null)
-  const [previewTime, setPreviewTime] = useState(null)
-
-  // Use preview values for chart if hovering, else committed values
-  const chartDate = previewDate ?? birthDate
-  const chartTime = previewTime ?? birthTime
-
-  const [previewColors, setPreviewColors] = useState(null)
-  const displayColors = previewColors ?? colors
-
-  const updateColor = (key, val) => {
-    const next = { ...colors, [key]: val }
-    setColors(next)
-    onChange?.(next)
-  }
-
-  const dateStr = `${birthDate.year}-${String(birthDate.month).padStart(2,'0')}-${String(birthDate.day).padStart(2,'0')}`
-  const timeStr = `${String(birthTime.hour).padStart(2,'0')}:${String(birthTime.minute).padStart(2,'0')}`
-
-  const buildBirthData = () =>
-    hasDate ? { date: dateStr, time: timeStr, city: birthCity } : null
-
-  const trimmedName = name.trim() || null
-
-  useEffect(() => {
-    // Wait for Space/Enter to be physically released before accepting them,
-    // so the same keypress that opened the editor doesn't immediately confirm it.
-    let ready = false
-    const onKeyUp = e => { if (e.key === ' ' || e.key === 'Enter') ready = true }
-    const onKey = e => {
+    const handleKeyDown = (e) => {
       if (e.target.tagName === 'INPUT') return
+
       if (e.key === 'Enter' || e.key === ' ') {
-        if (!ready) return
+        if (!readyRef.current) return
         e.preventDefault()
-        onSave(colorsRef.current, buildBirthData(), trimmedName)
+        onSave(colorsRef.current, birthDataOutput, trimmedName)
       } else if (e.key === 'Escape') {
         onClose()
-      } else if (e.key === 'ArrowRight') {
+      } else if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
         const el = modalRef.current
-        if (el) el.scrollTo({ left: el.clientWidth, behavior: 'smooth' })
-      } else if (e.key === 'ArrowLeft') {
-        const el = modalRef.current
-        if (el) el.scrollTo({ left: 0, behavior: 'smooth' })
+        if (!el) return
+        const currentIndex = pageSequence.indexOf(activePage)
+        const nextIndex = e.key === 'ArrowRight'
+          ? Math.min(currentIndex + 1, pageSequence.length - 1)
+          : Math.max(currentIndex - 1, 0)
+        el.scrollTo({ left: nextIndex * el.clientWidth, behavior: 'smooth' })
       }
     }
-    window.addEventListener('keyup', onKeyUp)
-    window.addEventListener('keydown', onKey)
+
+    window.addEventListener('keyup', handleKeyUp)
+    window.addEventListener('keydown', handleKeyDown)
     return () => {
-      window.removeEventListener('keyup', onKeyUp)
-      window.removeEventListener('keydown', onKey)
+      window.removeEventListener('keyup', handleKeyUp)
+      window.removeEventListener('keydown', handleKeyDown)
     }
-  }, [hasDate, dateStr, timeStr, birthCity])
+  }, [onSave, onClose, birthDataOutput, trimmedName, activePage, pageSequence])
 
   // Live natal chart computation — uses preview values while hovering
   const { natalPlacements, houseCusps } = useMemo(() => {
@@ -419,107 +470,97 @@ export default function CharacterEditor({ initialColors, initialBirthData, initi
 
   return (
     <div className="char-editor-root">
-      {!limited && (
+      {pageSequence.length > 1 && (
         <div className="char-editor-dots" aria-hidden="true">
-          {[0, 1].map(i => (
-            <span key={i} className={`char-editor-dot${activePage === i ? ' char-editor-dot--active' : ''}`} />
+          {pageSequence.map((page) => (
+            <span key={page} className={`char-editor-dot${activePage === page ? ' char-editor-dot--active' : ''}`} />
           ))}
         </div>
       )}
       <div className="char-editor-modal" ref={modalRef}>
-      <div className={`char-editor-content${!limited && natalPlacements ? ' char-editor-content--wide' : ''}`}>
+      <div className="char-editor-content">
 
-        {/* Page 1: character + colors + actions */}
-        <div className="char-editor-preview">
-          <CharacterTemplate colors={displayColors} scale={5} />
-          {limited ? (
-            <input
-              className="char-editor-name-input"
-              type="text"
-              value={name}
-              onChange={e => setName(e.target.value)}
-              onKeyDown={e => { if (e.key === 'Enter') onSave(colorsRef.current, buildBirthData(), name.trim() || null) }}
-              placeholder="Your name"
-              maxLength={24}
-              autoFocus
-            />
-          ) : (
-            <div className="char-editor-preview-label">{initialName || '?'}</div>
-          )}
-          <CassiopeiaWheel
-            colors={colors}
-            onChange={next => { setColors(next); setPreviewColors(null); onChange?.(next) }}
-            onPreview={next => setPreviewColors(next)}
-            onRandom={() => {
-              const next = { ...colors, ...randomPalette() }
-              setColors(next)
-              setPreviewColors(null)
-              onChange?.(next)
-            }}
-          />
-          <div className="char-editor-actions">
-            <button className="btn-save" onClick={() => onSave(colors, buildBirthData(), trimmedName)}>Embody</button>
-            <button className="btn-cancel" onClick={onClose}>Cancel</button>
-          </div>
-        </div>
+        {pageSequence.map((page) => (
+          <div key={page} className="char-editor-page">
+            {page === 'chart' && (
+              natalPlacements ? (
+                <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, gap: '8px' }}>
+                  <div style={{ flex: 0.6, minHeight: 0, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                    <HouseWheelWithInfo
+                      placements={natalPlacements}
+                      houseCusps={houseCusps}
+                      hideStellium
+                      birthDate={birthDate}
+                      onBirthDateChange={v => { setBirthDate(v); setHasDate(true); setPreviewDate(null) }}
+                      birthTime={birthTime}
+                      onBirthTimeChange={v => {
+                        if (v.daysDiff) {
+                          const d = new Date(birthDate.year, birthDate.month - 1, birthDate.day)
+                          d.setDate(d.getDate() + v.daysDiff)
+                          setBirthDate({ day: d.getDate(), month: d.getMonth() + 1, year: d.getFullYear() })
+                        }
+                        setBirthTime({ hour: v.hour, minute: v.minute })
+                        setPreviewTime(null)
+                      }}
+                      size={200}
+                    />
+                  </div>
+                  <div style={{ flex: 0.4, minHeight: 0, overflow: 'auto', padding: '8px 12px', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+                    <AstroSummary natalPlacements={natalPlacements} />
+                  </div>
+                </div>
+              ) : (
+                <div style={{ padding: '20px', color: 'rgba(255,255,255,0.5)', textAlign: 'center' }}>
+                  Loading chart...
+                </div>
+              )
+            )}
 
-        {/* Page 2 (mobile) / column 2 (desktop): birth wheels — hidden in limited mode */}
-        {!limited && (
-          <div className="char-editor-astro">
-            <div className="birth-trio">
-              {/* Left: date picker */}
-              <div className="birth-trio__date">
-                <DateWheel
-                  value={birthDate}
-                  onChange={v => { setBirthDate(v); setHasDate(true); setPreviewDate(null) }}
-                  onPreview={v => setPreviewDate(v)}
-                  size={280} />
+            {page === 'location' && (
+              <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', gap: '20px', padding: '20px' }}>
+                <EarthGlobe city={birthCity} size={200} />
+                <div style={{ maxWidth: '300px' }}>
+                  <CitySearch value={birthCity} onChange={setBirthCity} />
+                </div>
               </div>
+            )}
 
-              {/* Center: city search */}
-              <div className="birth-trio__center">
-                <CitySearch value={birthCity} onChange={setBirthCity} />
-              </div>
-
-              {/* Right: time picker */}
-              <div className="birth-trio__time">
-                <TimeWheel
-                  value={birthTime}
-                  onChange={v => {
-                    if (v.daysDiff) {
-                      const d = new Date(birthDate.year, birthDate.month - 1, birthDate.day)
-                      d.setDate(d.getDate() + v.daysDiff)
-                      setBirthDate({ day: d.getDate(), month: d.getMonth() + 1, year: d.getFullYear() })
-                    }
-                    setBirthTime({ hour: v.hour, minute: v.minute })
-                    setPreviewTime(null)
+            {page === 'character' && (
+              <div className="char-editor-preview">
+                <CharacterTemplate colors={displayColors} scale={5} />
+                {limited ? (
+                  <input
+                    className="char-editor-name-input"
+                    type="text"
+                    value={name}
+                    onChange={e => setName(e.target.value)}
+                    onKeyDown={e => { if (e.key === 'Enter') onSave(colorsRef.current, birthDataOutput, name.trim() || null) }}
+                    placeholder="Your name"
+                    maxLength={24}
+                    autoFocus
+                  />
+                ) : (
+                  <div className="char-editor-preview-label">{initialName || '?'}</div>
+                )}
+                <CassiopeiaWheel
+                  colors={colors}
+                  onChange={next => { setColors(next); setPreviewColors(null); onChange?.(next) }}
+                  onPreview={next => setPreviewColors(next)}
+                  onRandom={() => {
+                    const next = { ...colors, ...randomPalette() }
+                    setColors(next)
+                    setPreviewColors(null)
+                    onChange?.(next)
                   }}
-                  onPreview={v => setPreviewTime(v)}
-                  size={280} />
-              </div>
-            </div>
-
-            {/* Mobile only: wheel + summary inline on page 2 */}
-            {natalPlacements && (
-              <div className="char-editor-wheel char-editor-wheel--mobile-only">
-                <AstroSummary natalPlacements={natalPlacements} />
-                <HouseWheel placements={natalPlacements} houseCusps={houseCusps} size={220} hideStellium />
+                />
+                <div className="char-editor-actions">
+                  <button className="btn-save" onClick={() => onSave(colors, birthDataOutput, trimmedName)}>Embody</button>
+                  <button className="btn-cancel" onClick={onClose}>Cancel</button>
+                </div>
               </div>
             )}
           </div>
-        )}
-
-        {/* Column 3 (desktop only): natal chart summary + house wheel — hidden in limited mode */}
-        {!limited && natalPlacements && (
-          <div className="char-editor-chart">
-            <div className="char-editor-wheel">
-              <AstroSummary natalPlacements={natalPlacements} />
-              <HouseWheel placements={natalPlacements} houseCusps={houseCusps} size={300} hideStellium
-                containerStyle={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}
-                style={{ width: '100%', height: 'auto', flexShrink: 0 }} />
-            </div>
-          </div>
-        )}
+        ))}
 
       </div>
       </div>

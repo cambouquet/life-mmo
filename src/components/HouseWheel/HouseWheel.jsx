@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { SIGN_META } from '../../game/astro/horoscope.js'
 
 const ELEMENT_COLOR = { Fire: '#fb923c', Earth: '#86efac', Air: '#fef08a', Water: '#60a5fa' }
@@ -84,9 +84,23 @@ const PLANET_SUMMARY = {
 //   placements — object from enrichPlacements() (has .longitude, .sign, .degrees, .house)
 //   houseCusps — array[12] of ecliptic longitudes from getPlacidusHouses()
 //   size       — optional SVG size in px (default 300)
-export function HouseWheel({ placements, houseCusps, size = 300, hideStellium, style, containerStyle }) {
+export function HouseWheelWithInfo({ onHoverInfoChange, ...props }) {
+  const [localHoverInfo, setLocalHoverInfo] = useState(null)
+
+  useEffect(() => {
+    onHoverInfoChange?.(localHoverInfo)
+  }, [localHoverInfo, onHoverInfoChange])
+
+  return <HouseWheel {...props} setHoverInfo={setLocalHoverInfo} />
+}
+
+export function HouseWheel({ placements, houseCusps, size = 300, hideStellium, style, containerStyle, birthTime, onBirthTimeChange, birthDate, onBirthDateChange, setHoverInfo }) {
   const [hovered,     setHovered]     = useState(null)
   const [lockedPoint, setLockedPoint] = useState(null)
+
+  useEffect(() => {
+    if (setHoverInfo) setHoverInfo(infoContent)
+  }, [lockedPoint, hovered, setHoverInfo])
 
   if (!placements) return null
 
@@ -97,6 +111,16 @@ export function HouseWheel({ placements, houseCusps, size = 300, hideStellium, s
   const HOUSE_R2 = 138  // house number band outer  (+12)
   const SIGN_R1  = 143  // sign band inner           (+5 gap)
   const SIGN_R2  = 158  // sign band outer           (+15)
+  const TIME_H_R1 = 163 // hour ring inner (time picker)
+  const TIME_H_R2 = 175 // hour ring outer
+  const TIME_M_R1 = 180 // minute ring inner
+  const TIME_M_R2 = 190 // minute ring outer
+  const DATE_M_R1 = 195 // month ring inner (date picker)
+  const DATE_M_R2 = 207 // month ring outer
+  const DATE_D_R1 = 212 // day ring inner
+  const DATE_D_R2 = 224 // day ring outer
+  const DATE_Y_R1 = 229 // year ring inner
+  const DATE_Y_R2 = 241 // year ring outer
   const INNER_R  = 20
   const GAP_DEG  = 1.0
 
@@ -151,7 +175,72 @@ export function HouseWheel({ placements, houseCusps, size = 300, hideStellium, s
     return `${pName} in ${pd.sign} at ${deg}° (${decan}), ${hName}. ${sLong} ${hLong}`
   }
 
+  const infoContent = (lockedPoint || hovered) && (() => {
+    const active = (hovered?.type === 'planet' && hovered.id === lockedPoint)
+      ? { ...hovered, locked: true }
+      : (hovered || {
+          type: 'planet',
+          id: lockedPoint,
+          label: PLANET_NAMES[lockedPoint] ?? lockedPoint,
+          glyph: PLANET_GLYPHS[lockedPoint],
+          color: ELEMENT_COLOR[SIGN_META[placements[lockedPoint]?.sign]?.element] ?? '#fff',
+          desc: getInterpretation(lockedPoint),
+          summary: PLANET_SUMMARY[lockedPoint],
+          locked: true
+        })
+
+    return (
+      <div style={{ color:'#e8d4ff', fontFamily:'inherit', lineHeight:'1.6', width:'100%' }}>
+        {active.type === 'planet' ? (<>
+          <div style={{ color:active.color, fontWeight:700, fontSize:13 }}>{active.glyph} {active.label}{(active.locked || (lockedPoint === active.id)) && placements[active.id]?.sign ? (() => { const pd = placements[active.id]; const deg = Math.floor(pd.degrees); const theme = HOUSE_THEMES[pd.house]; return ` · ${pd.sign} ${deg}°${pd.house ? ` · H${pd.house}${theme ? ` (${theme})` : ''}` : ''}` })() : ''}</div>
+          <div style={{ fontSize:11, color:'rgba(232,212,255,0.6)', fontStyle:'italic', marginBottom: (active.locked || lockedPoint === active.id) ? 4 : 0, lineHeight:'1.4' }}>{active.summary}</div>
+          {(active.locked || lockedPoint === active.id) && <div style={{ fontSize:11, color:'rgba(232,212,255,0.8)', lineHeight:'1.5' }}>{active.desc}</div>}
+        </>) : active.type === 'sign' ? (<>
+          <div style={{ color:active.color, fontWeight:700, fontSize:13, marginBottom:4 }}>{active.label}</div>
+          <div style={{ fontSize:11, color:'rgba(232,212,255,0.8)', lineHeight:'1.4', marginBottom:8 }}>{active.desc}</div>
+          {active.planets && active.planets.length > 0 && (
+            <div style={{ fontSize:10, color:'rgba(232,212,255,0.7)', marginTop:8, paddingTop:8, borderTop:'1px solid rgba(232,212,255,0.2)' }}>
+              <div style={{ fontWeight:600, marginBottom:4 }}>Placements in {active.label}:</div>
+              {active.planets.map(pName => {
+                const pd = placements[pName]
+                const col = ELEMENT_COLOR[SIGN_META[pd.sign]?.element] ?? '#fff'
+                const deg = Math.floor(pd.degrees)
+                const theme = HOUSE_THEMES[pd.house]
+                return (
+                  <div key={pName} style={{ display:'flex', justifyContent:'space-between', paddingLeft:8, marginBottom:3 }}>
+                    <span style={{ color:col }}>{PLANET_GLYPHS[pName]} {PLANET_NAMES[pName] ?? pName}</span>
+                    <span style={{ color:'rgba(232,212,255,0.5)', fontSize:9 }}>H{pd.house}{theme ? ` (${theme})` : ''}</span>
+                  </div>
+                )
+              })}
+            </div>
+          )}
+        </>) : (<>
+          <div style={{ color:'#e8d4ff', fontWeight:700, fontSize:13, marginBottom:4 }}>{HOUSE_NAMES[active.id]}</div>
+          <div style={{ fontSize:11, color:'rgba(232,212,255,0.8)', lineHeight:'1.4', marginBottom:8 }}>{active.desc}</div>
+          {active.planets && active.planets.length > 0 && (
+            <div style={{ fontSize:10, color:'rgba(232,212,255,0.7)', marginTop:8, paddingTop:8, borderTop:'1px solid rgba(232,212,255,0.2)' }}>
+              <div style={{ fontWeight:600, marginBottom:4 }}>Placements in House {active.id}:</div>
+              {active.planets.map(pName => {
+                const pd = placements[pName]
+                const col = ELEMENT_COLOR[SIGN_META[pd.sign]?.element] ?? '#fff'
+                const deg = Math.floor(pd.degrees)
+                return (
+                  <div key={pName} style={{ display:'flex', justifyContent:'space-between', paddingLeft:8, marginBottom:3 }}>
+                    <span style={{ color:col }}>{PLANET_GLYPHS[pName]} {PLANET_NAMES[pName] ?? pName}</span>
+                    <span style={{ color:'rgba(232,212,255,0.5)', fontSize:9 }}>{pd.sign} {deg}°</span>
+                  </div>
+                )
+              })}
+            </div>
+          )}
+        </>)}
+      </div>
+    )
+  })()
+
   return (
+    <>
     <div className="house-wheel-container" style={{
       position: 'relative',
       padding: '4px 0 0',
@@ -208,6 +297,138 @@ export function HouseWheel({ placements, houseCusps, size = 300, hideStellium, s
             </g>
           )
         })}
+
+        {/* time picker rings */}
+        {birthTime && onBirthTimeChange && (
+          <>
+            {/* Hour ring (12 segments) */}
+            {Array.from({length:12}, (_,i) => {
+              const hour = i === 0 ? 12 : i
+              const startDeg = i * 30
+              const endDeg = (i + 1) * 30
+              const isSelected = hour === birthTime.hour
+              const [hx, hy] = polarToXY(startDeg + 15, (TIME_H_R1 + TIME_H_R2) / 2)
+              return (
+                <g key={`hour-${i}`}
+                   onClick={() => onBirthTimeChange({ hour, minute: birthTime.minute })}
+                   style={{ cursor:'pointer' }}>
+                  <path d={arc(startDeg, endDeg, TIME_H_R1, TIME_H_R2)}
+                    fill={isSelected ? 'rgba(168,85,247,0.2)' : 'rgba(168,85,247,0.05)'}
+                    stroke={isSelected ? 'rgba(168,85,247,0.6)' : 'rgba(168,85,247,0.2)'}
+                    strokeWidth="0.8" />
+                  <text x={hx} y={hy} textAnchor="middle" dominantBaseline="middle"
+                    fontSize="6" fontWeight={isSelected ? '700' : '500'}
+                    fill={isSelected ? '#c084fc' : 'rgba(200,168,240,0.6)'}>
+                    {hour}
+                  </text>
+                </g>
+              )
+            })}
+
+            {/* Minute ring (12 segments, each = 5 min) */}
+            {Array.from({length:12}, (_,i) => {
+              const minute = i * 5
+              const startDeg = i * 30
+              const endDeg = (i + 1) * 30
+              const isSelected = minute === birthTime.minute
+              const [mx, my] = polarToXY(startDeg + 15, (TIME_M_R1 + TIME_M_R2) / 2)
+              return (
+                <g key={`min-${i}`}
+                   onClick={() => onBirthTimeChange({ hour: birthTime.hour, minute })}
+                   style={{ cursor:'pointer' }}>
+                  <path d={arc(startDeg, endDeg, TIME_M_R1, TIME_M_R2)}
+                    fill={isSelected ? 'rgba(168,85,247,0.2)' : 'rgba(168,85,247,0.05)'}
+                    stroke={isSelected ? 'rgba(168,85,247,0.6)' : 'rgba(168,85,247,0.2)'}
+                    strokeWidth="0.8" />
+                  {i % 3 === 0 && (
+                    <text x={mx} y={my} textAnchor="middle" dominantBaseline="middle"
+                      fontSize="5" fontWeight={isSelected ? '700' : '500'}
+                      fill={isSelected ? '#c084fc' : 'rgba(200,168,240,0.6)'}>
+                      {String(minute).padStart(2, '0')}
+                    </text>
+                  )}
+                </g>
+              )
+            })}
+          </>
+        )}
+
+        {/* date picker rings */}
+        {birthDate && onBirthDateChange && (
+          <>
+            {/* Month ring (12 segments) */}
+            {Array.from({length:12}, (_,i) => {
+              const month = i + 1
+              const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+              const startDeg = i * 30
+              const endDeg = (i + 1) * 30
+              const isSelected = month === birthDate.month
+              const [mx, my] = polarToXY(startDeg + 15, (DATE_M_R1 + DATE_M_R2) / 2)
+              return (
+                <g key={`month-${i}`}
+                   onClick={() => onBirthDateChange({ ...birthDate, month })}
+                   style={{ cursor:'pointer' }}>
+                  <path d={arc(startDeg, endDeg, DATE_M_R1, DATE_M_R2)}
+                    fill={isSelected ? 'rgba(168,85,247,0.2)' : 'rgba(168,85,247,0.05)'}
+                    stroke={isSelected ? 'rgba(168,85,247,0.6)' : 'rgba(168,85,247,0.2)'}
+                    strokeWidth="0.8" />
+                  <text x={mx} y={my} textAnchor="middle" dominantBaseline="middle"
+                    fontSize="5" fontWeight={isSelected ? '700' : '500'}
+                    fill={isSelected ? '#c084fc' : 'rgba(200,168,240,0.6)'}>
+                    {MONTHS[i]}
+                  </text>
+                </g>
+              )
+            })}
+
+            {/* Day ring (31 segments) */}
+            {Array.from({length:31}, (_,i) => {
+              const day = i + 1
+              const startDeg = (i / 31) * 360
+              const endDeg = ((i + 1) / 31) * 360
+              const isSelected = day === birthDate.day
+              const [dx, dy] = polarToXY(startDeg + 5.8, (DATE_D_R1 + DATE_D_R2) / 2)
+              return (
+                <g key={`day-${i}`}
+                   onClick={() => onBirthDateChange({ ...birthDate, day })}
+                   style={{ cursor:'pointer' }}>
+                  <path d={arc(startDeg, endDeg, DATE_D_R1, DATE_D_R2)}
+                    fill={isSelected ? 'rgba(168,85,247,0.2)' : 'rgba(168,85,247,0.05)'}
+                    stroke={isSelected ? 'rgba(168,85,247,0.6)' : 'rgba(168,85,247,0.2)'}
+                    strokeWidth="0.6" />
+                  {day % 5 === 1 && (
+                    <text x={dx} y={dy} textAnchor="middle" dominantBaseline="middle"
+                      fontSize="4" fontWeight={isSelected ? '700' : '500'}
+                      fill={isSelected ? '#c084fc' : 'rgba(200,168,240,0.6)'}>
+                      {day}
+                    </text>
+                  )}
+                </g>
+              )
+            })}
+
+            {/* Year ring (labeled span) */}
+            {(() => {
+              const startDeg = 0
+              const endDeg = 360
+              const [yx, yy] = polarToXY(90, (DATE_Y_R1 + DATE_Y_R2) / 2)
+              return (
+                <g onClick={() => {/* year selector could be interactive */}}
+                   style={{ cursor:'default' }}>
+                  <path d={arc(startDeg, endDeg, DATE_Y_R1, DATE_Y_R2)}
+                    fill="rgba(168,85,247,0.05)"
+                    stroke="rgba(168,85,247,0.2)"
+                    strokeWidth="0.8" />
+                  <text x={yx} y={yy} textAnchor="middle" dominantBaseline="middle"
+                    fontSize="6" fontWeight="600"
+                    fill="rgba(200,168,240,0.7)">
+                    {birthDate.year}
+                  </text>
+                </g>
+              )
+            })()}
+          </>
+        )}
 
         {/* house slices */}
         {Array.from({length:12}, (_,i) => {
@@ -295,76 +516,8 @@ export function HouseWheel({ placements, houseCusps, size = 300, hideStellium, s
 
         <circle cx={cx} cy={cy} r="10" fill="#0e0a1e" />
       </svg>
-
-      {(lockedPoint || hovered) && (() => {
-        const active = (hovered?.type === 'planet' && hovered.id === lockedPoint)
-          ? { ...hovered, locked: true }
-          : (hovered || {
-              type: 'planet',
-              id: lockedPoint,
-              label: PLANET_NAMES[lockedPoint] ?? lockedPoint,
-              glyph: PLANET_GLYPHS[lockedPoint],
-              color: ELEMENT_COLOR[SIGN_META[placements[lockedPoint]?.sign]?.element] ?? '#fff',
-              desc: getInterpretation(lockedPoint),
-              summary: PLANET_SUMMARY[lockedPoint],
-              locked: true
-            })
-
-        return (
-          <div style={{ padding:'12px 0 0', color:'#e8d4ff', fontFamily:'inherit', lineHeight:'1.6', width:'100%', flex: 1 }}>
-            {active.type === 'planet' ? (<>
-              <div style={{ color:active.color, fontWeight:700, fontSize:13 }}>{active.glyph} {active.label}{(active.locked || (lockedPoint === active.id)) && placements[active.id]?.sign ? (() => { const pd = placements[active.id]; const deg = Math.floor(pd.degrees); const theme = HOUSE_THEMES[pd.house]; return ` · ${pd.sign} ${deg}°${pd.house ? ` · H${pd.house}${theme ? ` (${theme})` : ''}` : ''}` })() : ''}</div>
-              <div style={{ fontSize:11, color:'rgba(232,212,255,0.6)', fontStyle:'italic', marginBottom: (active.locked || lockedPoint === active.id) ? 4 : 0, lineHeight:'1.4' }}>{active.summary}</div>
-              {(active.locked || lockedPoint === active.id) && <div style={{ fontSize:11, color:'rgba(232,212,255,0.8)', lineHeight:'1.5' }}>{active.desc}</div>}
-            </>) : active.type === 'sign' ? (<>
-              <div style={{ color:active.color, fontWeight:700, fontSize:13, marginBottom:4 }}>{active.label}</div>
-              <div style={{ fontSize:11, color:'rgba(232,212,255,0.8)', lineHeight:'1.4', marginBottom:8 }}>{active.desc}</div>
-              {active.planets && active.planets.length > 0 && (
-                <div style={{ fontSize:10, color:'rgba(232,212,255,0.7)', marginTop:8, paddingTop:8, borderTop:'1px solid rgba(232,212,255,0.2)' }}>
-                  <div style={{ fontWeight:600, marginBottom:4 }}>Placements in {active.label}:</div>
-                  {active.planets.map(pName => {
-                    const pd = placements[pName]
-                    const col = ELEMENT_COLOR[SIGN_META[pd.sign]?.element] ?? '#fff'
-                    const deg = Math.floor(pd.degrees)
-                    const theme = HOUSE_THEMES[pd.house]
-                    return (
-                      <div key={pName} style={{ display:'flex', justifyContent:'space-between', paddingLeft:8, marginBottom:3 }}>
-                        <span style={{ color:col }}>{PLANET_GLYPHS[pName]} {PLANET_NAMES[pName] ?? pName}</span>
-                        <span style={{ color:'rgba(232,212,255,0.5)', fontSize:9 }}>H{pd.house}{theme ? ` (${theme})` : ''}</span>
-                      </div>
-                    )
-                  })}
-                </div>
-              )}
-            </>) : (<>
-              <div style={{ color:'#e8d4ff', fontWeight:700, fontSize:13, marginBottom:4 }}>{HOUSE_NAMES[active.id]}</div>
-              <div style={{ fontSize:11, color:'rgba(232,212,255,0.8)', lineHeight:'1.4', marginBottom:8 }}>{active.desc}</div>
-              {active.planets && active.planets.length > 0 && (
-                <div style={{ fontSize:10, color:'rgba(232,212,255,0.7)', marginTop:8, paddingTop:8, borderTop:'1px solid rgba(232,212,255,0.2)' }}>
-                  <div style={{ fontWeight:600, marginBottom:4 }}>Placements in House {active.id}:</div>
-                  {active.planets.map(pName => {
-                    const pd = placements[pName]
-                    const col = ELEMENT_COLOR[SIGN_META[pd.sign]?.element] ?? '#fff'
-                    const deg = Math.floor(pd.degrees)
-                    return (
-                      <div key={pName} style={{ display:'flex', justifyContent:'space-between', paddingLeft:8, marginBottom:3 }}>
-                        <span style={{ color:col }}>{PLANET_GLYPHS[pName]} {PLANET_NAMES[pName] ?? pName}</span>
-                        <span style={{ color:'rgba(232,212,255,0.5)', fontSize:9 }}>{pd.sign} {deg}°</span>
-                      </div>
-                    )
-                  })}
-                </div>
-              )}
-            </>)}
-          </div>
-        )
-      })()}
-
-      {!hideStellium && maxHouseEntry && (
-        <div style={{ fontSize:11, fontStyle:'italic', color:ELEMENT_COLOR[maxHouseEl], marginTop:12, textAlign:'center', opacity:0.8 }}>
-          {maxHouseCount >= 3 ? 'Stellium' : 'Focus'} in H{maxHouseEntry[0]} ({HOUSE_THEMES[Number(maxHouseEntry[0])]}) — {maxHouseCount} placements.
-        </div>
-      )}
     </div>
+    {infoContent && <div style={{ marginTop: '8px' }}>{infoContent}</div>}
+    </>
   )
 }
