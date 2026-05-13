@@ -337,13 +337,13 @@ export function TimeWheel({ value, onChange, onPreview, size = 220, style }) {
       onSelect: (v, i) => { onChange({ hour: v.hour, minute: i }); return v }
     },
     {
-      count: 24,
+      count: 12,
       r1: 54, r2: 76,
-      isSelected: (v, i) => i === v.hour,
+      isSelected: (v, i) => (i === 0 ? 12 : i) === v.hour,
       shouldShowLabel: () => true,
-      label: (i) => String(i).padStart(2,'0'),
-      onHover: (v, i) => ({ hour: i, minute: v.minute }),
-      onSelect: (v, i) => { onChange({ hour: i, minute: v.minute }); return v }
+      label: (i) => i === 0 ? '12' : String(i).padStart(2,'0'),
+      onHover: (v, i) => ({ hour: i === 0 ? 12 : i, minute: v.minute }),
+      onSelect: (v, i) => { onChange({ hour: i === 0 ? 12 : i, minute: v.minute }); return v }
     }
   ]
 

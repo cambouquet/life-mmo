@@ -51,27 +51,6 @@
   padding: 0;
 }
 
-.logo-panel {
-  flex: 0 0 auto;
-  width: 80px;
-  height: $hud-h;
-  border-right: 1px solid rgba(255, 255, 255, 0.06);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  margin: 0;
-
-  &__image {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    user-select: none;
-    pointer-events: none;
-    display: block;
-  }
-}
-
 // ── 3 – Minimap panel (between CharPanel and Clock) ──────────────────────────
 .minimap-container {
   flex: 0 0 auto;

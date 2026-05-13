@@ -20,7 +20,8 @@
       "Bash(Get-ChildItem -Path . -Recurse -Filter \"*.tsx\" -ErrorAction SilentlyContinue)",
       "Bash(Select-Object -First 20)",
       "Bash(Select-String -Pattern \"birth|chart|wheel\")",
-      "PowerShell(Get-ChildItem -Path \"C:\\\\Users\\\\bouqu\\\\gitclones\\\\life-mmo\\\\src\" -Recurse -File | Where-Object { $_.Extension -in '.jsx', '.js', '.tsx', '.ts' } | Select-String -Pattern 'birth|chart|wheel' | head -20)"
+      "PowerShell(Get-ChildItem -Path \"C:\\\\Users\\\\bouqu\\\\gitclones\\\\life-mmo\\\\src\" -Recurse -File | Where-Object { $_.Extension -in '.jsx', '.js', '.tsx', '.ts' } | Select-String -Pattern 'birth|chart|wheel' | head -20)",
+      "Bash(git log *)"
     ]
   }
 }
