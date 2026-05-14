@@ -130,12 +130,9 @@ function StateTab() {
     return () => clearInterval(interval)
   }, [])
 
-  if (!screenDebug) {
+  if (!screenDebug && history.length === 0) {
     return <div className="debug-data-field"><div className="debug-data-label">—</div></div>
   }
-
-  const { actions, ...stateData } = screenDebug
-  const debugText = JSON.stringify(stateData, null, 2)
 
   const currentEntry = selectedIndex >= 0 && history[selectedIndex]
   const displayData = currentEntry ? currentEntry.parsed : screenDebug
