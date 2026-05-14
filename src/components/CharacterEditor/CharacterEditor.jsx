@@ -386,7 +386,7 @@ export default function CharacterEditor({ initialColors, initialBirthData, initi
     return () => el.removeEventListener('scroll', handleScroll)
   }, [pageSequence, defaultPage])
 
-  // Scroll to default page on mount or when sequence changes
+  // Scroll to default page on initial mount only
   useEffect(() => {
     const el = modalRef.current
     if (el) {
@@ -396,7 +396,7 @@ export default function CharacterEditor({ initialColors, initialBirthData, initi
     } else {
       console.log('⚠️ modalRef not ready yet')
     }
-  }, [pageSequence, defaultPage])
+  }, [])
 
   // External scroll control for playback
   useEffect(() => {
