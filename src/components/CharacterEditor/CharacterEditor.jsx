@@ -327,7 +327,8 @@ export default function CharacterEditor({ initialColors, initialBirthData, initi
     console.log('📄 pageSequence built:', seq, 'limited:', limited)
     return seq
   }, [limited])
-  const defaultPage = pageSequence[0]
+
+  const defaultPage = useMemo(() => pageSequence[0], [pageSequence])
 
   // UI state
   const [activePage, setActivePage] = useState(defaultPage)
@@ -384,7 +385,7 @@ export default function CharacterEditor({ initialColors, initialBirthData, initi
     }
     el.addEventListener('scroll', handleScroll, { passive: true })
     return () => el.removeEventListener('scroll', handleScroll)
-  }, [pageSequence, defaultPage])
+  }, [pageSequence])
 
   // Scroll to default page on initial mount only
   useEffect(() => {
