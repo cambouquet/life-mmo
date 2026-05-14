@@ -88,6 +88,8 @@ function StateTab() {
   const [modalInfo, setModalInfo] = useState(null)
   const [history, setHistory] = useState([])
   const [selectedIndex, setSelectedIndex] = useState(-1)
+  const timelineRef = useRef(null)
+  const touchStartX = useRef(0)
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -144,14 +146,18 @@ function StateTab() {
       {/* History timeline */}
       {history.length > 0 && (
         <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '2px 0', marginBottom: '4px' }}>
-          <div style={{ display: 'flex', gap: '1px', flex: 1 }}>
-            {history.map((entry, idx) => {
-              const isSelected = selectedIndex === idx
-              const isLatest = idx === history.length - 1
+          {selectedIndex > 9 && (
+            <div style={{ fontSize: '8px', color: '#60a8ff', minWidth: '12px', textAlign: 'center' }}>◀</div>
+          )}
+          <div style={{ display: 'flex', gap: '1px', minWidth: '80px' }}>
+            {history.slice(Math.max(0, selectedIndex - 4), Math.min(history.length, selectedIndex + 6)).map((entry, i) => {
+              const actualIdx = Math.max(0, selectedIndex - 4) + i
+              const isSelected = selectedIndex === actualIdx
+              const isLatest = actualIdx === history.length - 1
               return (
                 <button
-                  key={idx}
-                  onClick={() => setSelectedIndex(idx)}
+                  key={actualIdx}
+                  onClick={() => setSelectedIndex(actualIdx)}
                   style={{
                     width: isSelected ? '24px' : '5px',
                     height: '5px',
@@ -168,6 +174,9 @@ function StateTab() {
               )
             })}
           </div>
+          {selectedIndex < history.length - 6 && (
+            <div style={{ fontSize: '8px', color: '#60a8ff', minWidth: '12px', textAlign: 'center' }}>▶</div>
+          )}
           {currentEntry && (
             <div style={{ fontSize: '9px', color: '#a1a1aa', whiteSpace: 'nowrap', flexShrink: 0 }}>
               {currentEntry.timestamp.toLocaleTimeString()}
