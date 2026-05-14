@@ -143,8 +143,8 @@ function StateTab() {
     <div className="debug-data-field" style={{ display: 'flex', flexDirection: 'column', gap: '8px', overflow: 'auto', height: '100%' }}>
       {/* History timeline */}
       {history.length > 0 && (
-        <div style={{ marginBottom: '12px' }}>
-          <div style={{ display: 'flex', gap: '2px', marginBottom: '4px', alignItems: 'center' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px', padding: '4px 0' }}>
+          <div style={{ display: 'flex', gap: '2px', flex: 1, overflowX: 'auto', paddingY: '4px' }}>
             {history.map((entry, idx) => {
               const isSelected = selectedIndex === idx
               const isLatest = idx === history.length - 1
@@ -152,10 +152,17 @@ function StateTab() {
                 <button
                   key={idx}
                   onClick={() => setSelectedIndex(idx)}
+                  onWheel={(e) => {
+                    if (e.deltaY !== 0) {
+                      e.preventDefault()
+                      const newIdx = e.deltaY > 0 ? Math.min(idx + 1, history.length - 1) : Math.max(idx - 1, 0)
+                      if (newIdx !== idx) setSelectedIndex(newIdx)
+                    }
+                  }}
                   style={{
-                    width: isSelected ? '24px' : '8px',
-                    height: '8px',
-                    borderRadius: '2px',
+                    width: isSelected ? '24px' : '6px',
+                    height: '6px',
+                    borderRadius: '1px',
                     background: isSelected ? 'rgba(192, 132, 252, 0.9)' : isLatest ? 'rgba(168, 85, 247, 0.6)' : 'rgba(168, 85, 247, 0.2)',
                     border: isSelected ? '1px solid rgba(192, 132, 252, 1)' : 'none',
                     cursor: 'pointer',
@@ -169,13 +176,8 @@ function StateTab() {
             })}
           </div>
           {currentEntry && (
-            <div style={{ fontSize: '10px', color: '#a1a1aa' }}>
+            <div style={{ fontSize: '10px', color: '#a1a1aa', whiteSpace: 'nowrap', flexShrink: 0 }}>
               {currentEntry.timestamp.toLocaleTimeString()}
-              {selectedIndex < history.length - 1 && (
-                <span style={{ marginLeft: '8px', color: '#60a8ff' }}>
-                  +{history.length - selectedIndex - 1}
-                </span>
-              )}
             </div>
           )}
         </div>
