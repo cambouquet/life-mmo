@@ -323,9 +323,7 @@ export default function CharacterEditor({ initialColors, initialBirthData, initi
 
   // Build page sequence based on mode (first page is always default)
   const pageSequence = useMemo(() => {
-    const seq = getPageSequence(limited)
-    console.log('📄 pageSequence built:', seq, 'limited:', limited)
-    return seq
+    return getPageSequence(limited)
   }, [limited])
 
   const defaultPage = useMemo(() => pageSequence[0], [pageSequence])
@@ -369,9 +367,6 @@ export default function CharacterEditor({ initialColors, initialBirthData, initi
     if (initialColors) setColors(initialColors)
   }, [initialColors])
 
-  useEffect(() => {
-    console.log('🎯 activePage changed:', activePage)
-  }, [activePage])
 
   // Track scroll to update active page
   useEffect(() => {
@@ -380,22 +375,18 @@ export default function CharacterEditor({ initialColors, initialBirthData, initi
     const handleScroll = () => {
       const index = Math.round(el.scrollLeft / el.clientWidth)
       const newPage = pageSequence[index] || defaultPage
-      console.log('📜 Scroll detected - index:', index, 'page:', newPage, 'scrollLeft:', el.scrollLeft, 'clientWidth:', el.clientWidth)
       setActivePage(newPage)
     }
     el.addEventListener('scroll', handleScroll, { passive: true })
     return () => el.removeEventListener('scroll', handleScroll)
-  }, [pageSequence])
+  }, [pageSequence, defaultPage])
 
   // Scroll to default page on initial mount only
   useEffect(() => {
     const el = modalRef.current
     if (el) {
       const index = pageSequence.indexOf(defaultPage)
-      console.log('📍 Scrolling to default page:', defaultPage, 'index:', index, 'clientWidth:', el.clientWidth)
       el.scrollTo({ left: index * el.clientWidth, behavior: 'auto' })
-    } else {
-      console.log('⚠️ modalRef not ready yet')
     }
   }, [])
 
@@ -474,11 +465,13 @@ export default function CharacterEditor({ initialColors, initialBirthData, initi
 
   // Expose debug info and actions to debug console
   useEffect(() => {
+    const pageIndex = pageSequence.indexOf(activePage)
     window.__screenDebug = {
       // State
       pages: pageSequence,
       activePage,
       defaultPage,
+      activePageIndex: pageIndex,
       limited,
       hasDate,
       birthDate,
@@ -489,15 +482,19 @@ export default function CharacterEditor({ initialColors, initialBirthData, initi
       name: name,
 
       // Navigation
-      canGoLeft: pageSequence.indexOf(activePage) > 0,
-      canGoRight: pageSequence.indexOf(activePage) < pageSequence.length - 1,
+      canGoLeft: pageIndex > 0,
+      canGoRight: pageIndex < pageSequence.length - 1,
 
       // Actions
       actions: {
         goToPage: (pageId) => {
           const index = pageSequence.indexOf(pageId)
-          if (index >= 0 && modalRef.current) {
-            modalRef.current.scrollTo({ left: index * modalRef.current.clientWidth, behavior: 'smooth' })
+          if (index >= 0) {
+            setActivePage(pageId)
+            if (modalRef.current) {
+              const targetScroll = index * modalRef.current.clientWidth
+              modalRef.current.scrollTo({ left: targetScroll, behavior: 'smooth' })
+            }
           }
         },
         setDate: (year, month, day) => setBirthDate({ year: +year, month: +month, day: +day }),

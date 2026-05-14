@@ -85,11 +85,46 @@ function SaveSlots({ getSaveData, onLoad }) {
 
 function StateTab() {
   const [screenDebug, setScreenDebug] = useState(null)
+  const [modalInfo, setModalInfo] = useState(null)
+  const [history, setHistory] = useState([])
+  const [selectedIndex, setSelectedIndex] = useState(-1)
 
   useEffect(() => {
     const interval = setInterval(() => {
       if (window.__screenDebug) {
+        const current = JSON.stringify(window.__screenDebug, (key, value) => {
+          if (key === 'actions') return undefined
+          return value
+        })
+
+        // Only add to history if state changed
+        setHistory(prev => {
+          const lastEntry = prev[prev.length - 1]
+          if (lastEntry && lastEntry.state === current) {
+            return prev
+          }
+          const newEntry = {
+            timestamp: new Date(),
+            state: current,
+            parsed: JSON.parse(current)
+          }
+          // Keep last 20 entries
+          return [...prev.slice(-19), newEntry]
+        })
+
+        // Auto-select latest
+        setSelectedIndex(prev => prev === -1 ? 0 : prev)
         setScreenDebug(window.__screenDebug)
+      }
+      // Also check modal scroll state
+      const modal = document.querySelector('.char-editor-modal')
+      if (modal) {
+        setModalInfo({
+          scrollLeft: modal.scrollLeft,
+          clientWidth: modal.clientWidth,
+          scrollWidth: modal.scrollWidth,
+          offsetHeight: modal.offsetHeight
+        })
       }
     }, 100)
     return () => clearInterval(interval)
@@ -102,26 +137,89 @@ function StateTab() {
   const { actions, ...stateData } = screenDebug
   const debugText = JSON.stringify(stateData, null, 2)
 
+  const currentEntry = selectedIndex >= 0 && history[selectedIndex]
+  const displayData = currentEntry ? currentEntry.parsed : screenDebug
+  const { actions, ...stateData } = displayData || {}
+  const debugText = JSON.stringify(stateData, null, 2)
+
   return (
-    <div className="debug-data-field" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+    <div className="debug-data-field" style={{ display: 'flex', flexDirection: 'column', gap: '8px', overflow: 'auto', height: '100%' }}>
+      {/* History timeline */}
+      {history.length > 0 && (
+        <div style={{ padding: '8px', background: 'rgba(168, 85, 247, 0.1)', borderRadius: '4px', marginBottom: '8px' }}>
+          <div style={{ color: '#c084fc', marginBottom: '6px', fontWeight: 'bold', fontSize: '11px' }}>
+            STATE HISTORY ({history.length})
+          </div>
+          <div style={{ display: 'flex', gap: '4px', overflowX: 'auto', paddingBottom: '4px' }}>
+            {history.map((entry, idx) => (
+              <button
+                key={idx}
+                onClick={() => setSelectedIndex(idx)}
+                style={{
+                  padding: '4px 8px',
+                  fontSize: '9px',
+                  background: selectedIndex === idx ? 'rgba(168, 85, 247, 0.4)' : 'rgba(168, 85, 247, 0.15)',
+                  border: '1px solid rgba(168, 85, 247, 0.3)',
+                  color: '#c084fc',
+                  borderRadius: '3px',
+                  cursor: 'pointer',
+                  transition: 'all 0.15s',
+                  whiteSpace: 'nowrap',
+                  flexShrink: 0
+                }}
+                title={entry.timestamp.toLocaleTimeString()}
+              >
+                {entry.timestamp.toLocaleTimeString()}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {currentEntry && (
+        <div style={{ fontSize: '10px', color: '#a1a1aa', marginBottom: '8px' }}>
+          📌 Captured at {currentEntry.timestamp.toLocaleTimeString()}.
+          {selectedIndex < history.length - 1 && (
+            <span style={{ marginLeft: '8px', color: '#60a8ff' }}>
+              ({history.length - selectedIndex - 1} newer snapshots)
+            </span>
+          )}
+        </div>
+      )}
+
       <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
         <CopyButton text={debugText} />
       </div>
 
+      {/* Modal scroll state */}
+      {modalInfo && (
+        <div style={{ padding: '8px', background: 'rgba(168, 85, 247, 0.1)', borderRadius: '4px', fontSize: '11px' }}>
+          <div style={{ color: '#c084fc', marginBottom: '4px', fontWeight: 'bold' }}>MODAL STATE:</div>
+          <div style={{ fontFamily: 'monospace', fontSize: '10px', color: '#a1a1aa' }}>
+            scrollLeft: {modalInfo.scrollLeft.toFixed(1)}<br/>
+            clientWidth: {modalInfo.clientWidth}<br/>
+            scrollWidth: {modalInfo.scrollWidth}<br/>
+            height: {modalInfo.offsetHeight}
+          </div>
+        </div>
+      )}
+
       {/* State display */}
-      <div style={{ fontFamily: 'monospace', fontSize: '12px', color: '#c084fc', whiteSpace: 'pre-wrap', wordBreak: 'break-all', lineHeight: '1.4', marginBottom: '8px' }}>
-        {Object.entries(stateData).map(([key, value]) => {
-          let displayValue = value
-          if (typeof value === 'object' && value !== null) {
-            displayValue = JSON.stringify(value, null, 2)
-          }
-          return (
-            <div key={key} style={{ marginBottom: '4px' }}>
-              <strong>{key}:</strong> {displayValue}
-            </div>
-          )
-        })}
-      </div>
+      {stateData && (
+        <div style={{ fontFamily: 'monospace', fontSize: '12px', color: '#c084fc', whiteSpace: 'pre-wrap', wordBreak: 'break-all', lineHeight: '1.4', marginBottom: '8px' }}>
+          {Object.entries(stateData).map(([key, value]) => {
+            let displayValue = value
+            if (typeof value === 'object' && value !== null) {
+              displayValue = JSON.stringify(value, null, 2)
+            }
+            return (
+              <div key={key} style={{ marginBottom: '4px' }}>
+                <strong>{key}:</strong> {displayValue}
+              </div>
+            )
+          })}
+        </div>
+      )}
     </div>
   )
 }
@@ -142,9 +240,9 @@ function ActionsTab() {
     if (!screenDebug?.actions?.[actionName]) return
     try {
       screenDebug.actions[actionName](...args)
-      console.log(`✓ Debug action executed: ${actionName}`)
+      console.log(`✓ ${actionName}`)
     } catch (err) {
-      console.error(`✗ Debug action failed: ${actionName}`, err)
+      console.error(`✗ ${actionName}:`, err.message)
     }
   }
 
@@ -452,11 +550,13 @@ export default function DebugConsole({ onReset, getSaveData, onLoad }) {
             }}
           />
           <div className="debug-header">
-            <div className="debug-tabs">
-              <button className={`debug-tab ${tab === 'logs' ? 'debug-tab--active' : ''}`} onClick={() => setTab('logs')}>logs</button>
-              <button className={`debug-tab ${tab === 'data' ? 'debug-tab--active' : ''}`} onClick={() => setTab('data')}>data</button>
-              <button className={`debug-tab ${tab === 'state' ? 'debug-tab--active' : ''}`} onClick={() => setTab('state')}>state</button>
-              <button className={`debug-tab ${tab === 'actions' ? 'debug-tab--active' : ''}`} onClick={() => setTab('actions')}>actions</button>
+            <div className="debug-header-top">
+              <div className="debug-tabs">
+                <button className={`debug-tab ${tab === 'logs' ? 'debug-tab--active' : ''}`} onClick={() => setTab('logs')}>logs</button>
+                <button className={`debug-tab ${tab === 'data' ? 'debug-tab--active' : ''}`} onClick={() => setTab('data')}>data</button>
+                <button className={`debug-tab ${tab === 'state' ? 'debug-tab--active' : ''}`} onClick={() => setTab('state')}>state</button>
+                <button className={`debug-tab ${tab === 'actions' ? 'debug-tab--active' : ''}`} onClick={() => setTab('actions')}>actions</button>
+              </div>
             </div>
             {tab === 'logs' && (
               <div className="debug-filters">
