@@ -143,43 +143,40 @@ function StateTab() {
     <div className="debug-data-field" style={{ display: 'flex', flexDirection: 'column', gap: '8px', overflow: 'auto', height: '100%' }}>
       {/* History timeline */}
       {history.length > 0 && (
-        <div style={{ padding: '8px', background: 'rgba(168, 85, 247, 0.1)', borderRadius: '4px', marginBottom: '8px' }}>
-          <div style={{ color: '#c084fc', marginBottom: '6px', fontWeight: 'bold', fontSize: '11px' }}>
-            STATE HISTORY ({history.length})
+        <div style={{ marginBottom: '12px' }}>
+          <div style={{ display: 'flex', gap: '2px', marginBottom: '4px', alignItems: 'center' }}>
+            {history.map((entry, idx) => {
+              const isSelected = selectedIndex === idx
+              const isLatest = idx === history.length - 1
+              return (
+                <button
+                  key={idx}
+                  onClick={() => setSelectedIndex(idx)}
+                  style={{
+                    width: isSelected ? '24px' : '8px',
+                    height: '8px',
+                    borderRadius: '2px',
+                    background: isSelected ? 'rgba(192, 132, 252, 0.9)' : isLatest ? 'rgba(168, 85, 247, 0.6)' : 'rgba(168, 85, 247, 0.2)',
+                    border: isSelected ? '1px solid rgba(192, 132, 252, 1)' : 'none',
+                    cursor: 'pointer',
+                    transition: 'all 0.15s',
+                    flexShrink: 0,
+                    padding: 0
+                  }}
+                  title={entry.timestamp.toLocaleTimeString()}
+                />
+              )
+            })}
           </div>
-          <div style={{ display: 'flex', gap: '4px', overflowX: 'auto', paddingBottom: '4px' }}>
-            {history.map((entry, idx) => (
-              <button
-                key={idx}
-                onClick={() => setSelectedIndex(idx)}
-                style={{
-                  padding: '4px 8px',
-                  fontSize: '9px',
-                  background: selectedIndex === idx ? 'rgba(168, 85, 247, 0.4)' : 'rgba(168, 85, 247, 0.15)',
-                  border: '1px solid rgba(168, 85, 247, 0.3)',
-                  color: '#c084fc',
-                  borderRadius: '3px',
-                  cursor: 'pointer',
-                  transition: 'all 0.15s',
-                  whiteSpace: 'nowrap',
-                  flexShrink: 0
-                }}
-                title={entry.timestamp.toLocaleTimeString()}
-              >
-                {entry.timestamp.toLocaleTimeString()}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {currentEntry && (
-        <div style={{ fontSize: '10px', color: '#a1a1aa', marginBottom: '8px' }}>
-          📌 Captured at {currentEntry.timestamp.toLocaleTimeString()}.
-          {selectedIndex < history.length - 1 && (
-            <span style={{ marginLeft: '8px', color: '#60a8ff' }}>
-              ({history.length - selectedIndex - 1} newer snapshots)
-            </span>
+          {currentEntry && (
+            <div style={{ fontSize: '10px', color: '#a1a1aa' }}>
+              {currentEntry.timestamp.toLocaleTimeString()}
+              {selectedIndex < history.length - 1 && (
+                <span style={{ marginLeft: '8px', color: '#60a8ff' }}>
+                  +{history.length - selectedIndex - 1}
+                </span>
+              )}
+            </div>
           )}
         </div>
       )}
