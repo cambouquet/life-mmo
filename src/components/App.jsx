@@ -12,7 +12,7 @@ import DebugConsole          from './HUD/DebugConsole.jsx'
 import MapEditButton         from './DebugButton/MapEditButton.jsx'
 import SpritePickerModal     from './DebugButton/SpritePickerModal.jsx'
 import InteractionPlayground from './DebugButton/InteractionPlayground.jsx'
-import BottomToolbar         from './DebugButton/BottomToolbar.jsx'
+import AdminToolbar          from './DebugButton/BottomToolbar.jsx'
 import { useRecorder }       from '../playback/useRecorder.js'
 import { PlaybackEngine }    from '../playback/PlaybackEngine.js'
 import { mirrorVisit }       from '../playback/scenarios/mirrorVisit.js'
@@ -456,9 +456,9 @@ export default function App() {
           }}
         />
       )}
-      <BottomToolbar
-        adminOpen={debugActive}
-        onAdminToggle={() => setDebugActive(!debugActive)}
+      <AdminToolbar
+        isOpen={debugActive}
+        onToggle={() => setDebugActive(!debugActive)}
         onEditMap={() => setDebugActive(!debugActive)}
         onRecord={() => setShowGallery(prev => !prev)}
       />

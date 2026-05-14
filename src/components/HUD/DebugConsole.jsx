@@ -3,6 +3,21 @@ import './DebugConsole.scss'
 
 const CATEGORIES = ['log', 'warn', 'error', 'action']
 
+function CopyButton({ text, title = 'Copy to clipboard' }) {
+  return (
+    <button
+      className="debug-copy-btn"
+      title={title}
+      onClick={() => navigator.clipboard.writeText(text)}
+    >
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+      </svg>
+    </button>
+  )
+}
+
 const LS_COLORS  = 'life-mmo-colors-v3'
 const LS_BIRTH   = 'life-mmo-birth'
 const LS_NAME    = 'life-mmo-name'
@@ -64,6 +79,126 @@ function SaveSlots({ getSaveData, onLoad }) {
           )
         })}
       </div>
+    </div>
+  )
+}
+
+function DebugTab() {
+  const [screenDebug, setScreenDebug] = useState(null)
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (window.__screenDebug) {
+        setScreenDebug(window.__screenDebug)
+      }
+    }, 100)
+    return () => clearInterval(interval)
+  }, [])
+
+  const executeAction = (actionName, ...args) => {
+    if (!screenDebug?.actions?.[actionName]) return
+    try {
+      screenDebug.actions[actionName](...args)
+      console.log(`✓ Debug action executed: ${actionName}`)
+    } catch (err) {
+      console.error(`✗ Debug action failed: ${actionName}`, err)
+    }
+  }
+
+  if (!screenDebug) {
+    return <div className="debug-data-field"><div className="debug-data-label">—</div></div>
+  }
+
+  const { actions, ...stateData } = screenDebug
+  const debugText = JSON.stringify(stateData, null, 2)
+
+  return (
+    <div className="debug-data-field" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+      <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+        <CopyButton text={debugText} />
+      </div>
+
+      {/* State display */}
+      <div style={{ fontFamily: 'monospace', fontSize: '12px', color: '#c084fc', whiteSpace: 'pre-wrap', wordBreak: 'break-all', lineHeight: '1.4', marginBottom: '8px' }}>
+        {Object.entries(stateData).map(([key, value]) => {
+          let displayValue = value
+          if (typeof value === 'object' && value !== null) {
+            displayValue = JSON.stringify(value, null, 2)
+          }
+          return (
+            <div key={key} style={{ marginBottom: '4px' }}>
+              <strong>{key}:</strong> {displayValue}
+            </div>
+          )
+        })}
+      </div>
+
+      {/* Actions */}
+      {actions && (
+        <div style={{ borderTop: '1px solid rgba(168, 85, 247, 0.2)', paddingTop: '8px' }}>
+          <div style={{ fontSize: '11px', color: '#c084fc', marginBottom: '6px', fontWeight: 'bold' }}>ACTIONS</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+            {screenDebug.pages && (
+              <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
+                {screenDebug.pages.map(page => (
+                  <button
+                    key={page}
+                    onClick={() => executeAction('goToPage', page)}
+                    style={{
+                      padding: '4px 8px',
+                      fontSize: '10px',
+                      background: screenDebug.activePage === page ? 'rgba(168, 85, 247, 0.4)' : 'rgba(168, 85, 247, 0.15)',
+                      border: '1px solid rgba(168, 85, 247, 0.3)',
+                      color: '#c084fc',
+                      borderRadius: '3px',
+                      cursor: 'pointer',
+                      transition: 'all 0.15s',
+                    }}
+                    onMouseEnter={e => e.target.style.background = 'rgba(168, 85, 247, 0.3)'}
+                    onMouseLeave={e => e.target.style.background = screenDebug.activePage === page ? 'rgba(168, 85, 247, 0.4)' : 'rgba(168, 85, 247, 0.15)'}
+                  >
+                    → {page}
+                  </button>
+                ))}
+              </div>
+            )}
+            <button
+              onClick={() => executeAction('randomizeColors')}
+              style={{
+                padding: '4px 8px',
+                fontSize: '10px',
+                background: 'rgba(168, 85, 247, 0.15)',
+                border: '1px solid rgba(168, 85, 247, 0.3)',
+                color: '#c084fc',
+                borderRadius: '3px',
+                cursor: 'pointer',
+                transition: 'all 0.15s',
+              }}
+              onMouseEnter={e => e.target.style.background = 'rgba(168, 85, 247, 0.3)'}
+              onMouseLeave={e => e.target.style.background = 'rgba(168, 85, 247, 0.15)'}
+            >
+              randomize colors
+            </button>
+            <button
+              onClick={() => executeAction('logNatalData')}
+              style={{
+                padding: '4px 8px',
+                fontSize: '10px',
+                background: 'rgba(168, 85, 247, 0.15)',
+                border: '1px solid rgba(168, 85, 247, 0.3)',
+                color: '#c084fc',
+                borderRadius: '3px',
+                cursor: 'pointer',
+                transition: 'all 0.15s',
+              }}
+              onMouseEnter={e => e.target.style.background = 'rgba(168, 85, 247, 0.3)'}
+              onMouseLeave={e => e.target.style.background = 'rgba(168, 85, 247, 0.15)'}
+            >
+              log natal data
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
@@ -286,6 +421,7 @@ export default function DebugConsole({ onReset, getSaveData, onLoad }) {
             <div className="debug-tabs">
               <button className={`debug-tab ${tab === 'logs' ? 'debug-tab--active' : ''}`} onClick={() => setTab('logs')}>logs</button>
               <button className={`debug-tab ${tab === 'data' ? 'debug-tab--active' : ''}`} onClick={() => setTab('data')}>data</button>
+              <button className={`debug-tab ${tab === 'debug' ? 'debug-tab--active' : ''}`} onClick={() => setTab('debug')}>debug</button>
             </div>
             {tab === 'logs' && (
               <div className="debug-filters">
@@ -311,23 +447,16 @@ export default function DebugConsole({ onReset, getSaveData, onLoad }) {
                   <span className="debug-log-ts">{log.ts}</span>
                   <div className="debug-log-content">
                     <span className="debug-log-msg">{log.message}</span>
-                    <button
-                      className="debug-log-copy"
-                      title="Copy to clipboard"
-                      onClick={() => navigator.clipboard.writeText(log.message)}
-                    >
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                      </svg>
-                    </button>
+                    <CopyButton text={log.message} />
                   </div>
                 </div>
               ))}
             </div>
-          ) : (
+          ) : tab === 'data' ? (
             <DataTab onReset={onReset} getSaveData={getSaveData} onLoad={onLoad} />
-          )}
+          ) : tab === 'debug' ? (
+            <DebugTab />
+          ) : null}
         </div>
       )}
       <button

@@ -3,7 +3,7 @@
   bottom: 0;
   left: 0;
   right: 0;
-  z-index: 1001;
+  z-index: 2501;
   display: flex;
   flex-direction: column;
   pointer-events: none;
@@ -196,10 +196,17 @@
   font-size: 11px;
 }
 
+.debug-row {
+  &:hover .debug-copy-btn {
+    opacity: 1;
+  }
+}
+
 .debug-data-field {
   display: flex;
   flex-direction: column;
   gap: 4px;
+  @extend .debug-row;
 }
 
 .debug-data-label {
@@ -414,6 +421,7 @@
 }
 
 .debug-log {
+  @extend .debug-row;
   margin-bottom: 8px;
   word-break: break-all;
   white-space: pre-wrap;
@@ -497,5 +505,35 @@
     color: #60a8ff;
     background: rgba(96, 168, 255, 0.05);
     font-weight: 500;
+  }
+}
+
+.debug-copy-btn {
+  opacity: 0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: transparent;
+  color: rgba(255, 255, 255, 0.4);
+  padding: 4px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  svg {
+    width: 12px;
+    height: 12px;
+  }
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+    color: #fff;
+  }
+
+  &:active {
+    transform: scale(0.9);
   }
 }

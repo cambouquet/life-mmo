@@ -309,21 +309,11 @@ function formatTime(time) {
   return `${String(time.hour).padStart(2, '0')}:${String(time.minute).padStart(2, '0')}`
 }
 
-const PAGES = {
-  chart: { id: 'chart', order: 0, fullOnly: true },
-  location: { id: 'location', order: 1, fullOnly: true },
-  character: { id: 'character', order: 2, fullOnly: false },
-}
+const PAGES_FULL = ['chart', 'location', 'character']
+const PAGES_LIMITED = ['character']
 
 function getPageSequence(limited) {
-  return Object.values(PAGES)
-    .filter(page => limited ? !page.fullOnly : true)
-    .sort((a, b) => a.order - b.order)
-    .map(page => page.id)
-}
-
-function getDefaultPage(limited) {
-  return limited ? PAGES.character.id : PAGES.location.id
+  return limited ? PAGES_LIMITED : PAGES_FULL
 }
 
 export default function CharacterEditor({ initialColors, initialBirthData, initialName, scrollPage, limited, onSave, onClose, onChange }) {
@@ -331,9 +321,13 @@ export default function CharacterEditor({ initialColors, initialBirthData, initi
   const colorsRef = useRef(null)
   const readyRef = useRef(false)
 
-  // Build page sequence based on mode
-  const pageSequence = useMemo(() => getPageSequence(limited), [limited])
-  const defaultPage = useMemo(() => getDefaultPage(limited), [limited])
+  // Build page sequence based on mode (first page is always default)
+  const pageSequence = useMemo(() => {
+    const seq = getPageSequence(limited)
+    console.log('📄 pageSequence built:', seq, 'limited:', limited)
+    return seq
+  }, [limited])
+  const defaultPage = pageSequence[0]
 
   // UI state
   const [activePage, setActivePage] = useState(defaultPage)
@@ -374,26 +368,35 @@ export default function CharacterEditor({ initialColors, initialBirthData, initi
     if (initialColors) setColors(initialColors)
   }, [initialColors])
 
+  useEffect(() => {
+    console.log('🎯 activePage changed:', activePage)
+  }, [activePage])
+
   // Track scroll to update active page
   useEffect(() => {
     const el = modalRef.current
     if (!el) return
     const handleScroll = () => {
       const index = Math.round(el.scrollLeft / el.clientWidth)
-      setActivePage(pageSequence[index] || defaultPage)
+      const newPage = pageSequence[index] || defaultPage
+      console.log('📜 Scroll detected - index:', index, 'page:', newPage, 'scrollLeft:', el.scrollLeft, 'clientWidth:', el.clientWidth)
+      setActivePage(newPage)
     }
     el.addEventListener('scroll', handleScroll, { passive: true })
     return () => el.removeEventListener('scroll', handleScroll)
   }, [pageSequence, defaultPage])
 
-  // Scroll to default page on mount
+  // Scroll to default page on mount or when sequence changes
   useEffect(() => {
     const el = modalRef.current
     if (el) {
       const index = pageSequence.indexOf(defaultPage)
+      console.log('📍 Scrolling to default page:', defaultPage, 'index:', index, 'clientWidth:', el.clientWidth)
       el.scrollTo({ left: index * el.clientWidth, behavior: 'auto' })
+    } else {
+      console.log('⚠️ modalRef not ready yet')
     }
-  }, [])
+  }, [pageSequence, defaultPage])
 
   // External scroll control for playback
   useEffect(() => {
@@ -467,6 +470,51 @@ export default function CharacterEditor({ initialColors, initialBirthData, initi
       return { natalPlacements: null, houseCusps: null }
     }
   }, [hasDate, chartDate, chartTime, birthCity])
+
+  // Expose debug info and actions to debug console
+  useEffect(() => {
+    window.__screenDebug = {
+      // State
+      pages: pageSequence,
+      activePage,
+      defaultPage,
+      limited,
+      hasDate,
+      birthDate,
+      birthTime,
+      birthCity: birthCity?.name ?? 'none',
+      natalPlacements: natalPlacements ? Object.keys(natalPlacements).length : 0,
+      colors: colors,
+      name: name,
+
+      // Navigation
+      canGoLeft: pageSequence.indexOf(activePage) > 0,
+      canGoRight: pageSequence.indexOf(activePage) < pageSequence.length - 1,
+
+      // Actions
+      actions: {
+        goToPage: (pageId) => {
+          const index = pageSequence.indexOf(pageId)
+          if (index >= 0 && modalRef.current) {
+            modalRef.current.scrollTo({ left: index * modalRef.current.clientWidth, behavior: 'smooth' })
+          }
+        },
+        setDate: (year, month, day) => setBirthDate({ year: +year, month: +month, day: +day }),
+        setTime: (hour, minute) => setBirthTime({ hour: +hour, minute: +minute }),
+        setCity: (cityName) => {
+          const found = cityName ? require('../../game/astro/cities.js').searchCities(cityName)[0] : null
+          setBirthCity(found || null)
+        },
+        randomizeColors: () => {
+          const next = { ...colors, ...randomPalette() }
+          setColors(next)
+          setPreviewColors(null)
+          onChange?.(next)
+        },
+        logNatalData: () => console.log('Natal Placements:', natalPlacements, 'House Cusps:', houseCusps),
+      }
+    }
+  }, [pageSequence, activePage, defaultPage, limited, hasDate, birthDate, birthTime, birthCity, natalPlacements, colors, name, modalRef])
 
   return (
     <div className="char-editor-root">
