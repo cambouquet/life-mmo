@@ -80,8 +80,8 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
     const onMouseMove = e => {
       altHeldDown = e.altKey
 
-      // Handle camera panning in debug mode (middle mouse or spacebar drag)
-      if (isPanning && debugActiveRef.current) {
+      // Handle camera panning (middle mouse drag)
+      if (isPanning) {
         const deltaX = e.clientX - lastMouseX
         const deltaY = e.clientY - lastMouseY
         cameraOffsetX -= deltaX / zoomRef.current
@@ -115,15 +115,15 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
     }
 
     const onMouseDown = e => {
-      if (!debugActiveRef.current) return
-
-      // Middle mouse button or space+click: start panning
+      // Middle mouse button: start panning (always available)
       if (e.button === 1) {
         isPanning = true
         lastMouseX = e.clientX
         lastMouseY = e.clientY
         return
       }
+
+      if (!debugActiveRef.current) return
 
       // Don't start drag for Alt+Click (paste mode)
       if (e.altKey) return
@@ -202,11 +202,11 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
     }
 
     const onWheel = e => {
-      if (!debugActiveRef.current) return
       e.preventDefault()
 
       if (e.shiftKey) {
-        // Shift+Scroll: zoom
+        // Shift+Scroll: zoom (debug mode only)
+        if (!debugActiveRef.current) return
         const step = 0.25
         const minZoom = 1
         const maxZoom = 4
@@ -214,7 +214,7 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
         zoomRef.current = Math.max(minZoom, Math.min(maxZoom, zoomRef.current))
         onZoomChangeRef.current?.(zoomRef.current)
       } else {
-        // Scroll without shift: pan camera
+        // Scroll without shift: pan camera (always available)
         cameraOffsetX -= e.deltaX / zoomRef.current
         cameraOffsetY -= e.deltaY / zoomRef.current
       }

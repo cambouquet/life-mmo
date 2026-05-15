@@ -145,13 +145,15 @@ function StateTab() {
     <div className="debug-data-field" style={{ display: 'flex', flexDirection: 'column', gap: '8px', overflow: 'auto', height: '100%' }}>
       {/* History timeline */}
       {history.length > 0 && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '2px 0', marginBottom: '4px' }}>
-          {selectedIndex > 9 && (
-            <div style={{ fontSize: '8px', color: '#60a8ff', minWidth: '12px', textAlign: 'center' }}>◀</div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '2px', padding: '2px 0', marginBottom: '4px' }}>
+          {history.length > 10 && (
+            <div style={{ fontSize: '7px', color: '#60a8ff', minWidth: '14px', textAlign: 'center', fontWeight: 'bold' }}>
+              +{Math.max(0, selectedIndex - 9)}
+            </div>
           )}
-          <div style={{ display: 'flex', gap: '1px', minWidth: '80px' }}>
-            {history.slice(Math.max(0, selectedIndex - 4), Math.min(history.length, selectedIndex + 6)).map((entry, i) => {
-              const actualIdx = Math.max(0, selectedIndex - 4) + i
+          <div style={{ display: 'flex', gap: '1px' }}>
+            {history.slice(Math.max(0, history.length - 10)).map((entry, i) => {
+              const actualIdx = Math.max(0, history.length - 10) + i
               const isSelected = selectedIndex === actualIdx
               const isLatest = actualIdx === history.length - 1
               return (
@@ -174,14 +176,12 @@ function StateTab() {
               )
             })}
           </div>
-          {selectedIndex < history.length - 6 && (
-            <div style={{ fontSize: '8px', color: '#60a8ff', minWidth: '12px', textAlign: 'center' }}>▶</div>
-          )}
-          {currentEntry && (
-            <div style={{ fontSize: '9px', color: '#a1a1aa', whiteSpace: 'nowrap', flexShrink: 0 }}>
-              {currentEntry.timestamp.toLocaleTimeString()}
-            </div>
-          )}
+        </div>
+      )}
+      {history.length > 0 && (
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '8px', color: '#a1a1aa', marginBottom: '4px', gap: '8px' }}>
+          <span>{selectedIndex + 1} / {history.length}</span>
+          {currentEntry && <span>{currentEntry.timestamp.toLocaleTimeString()}</span>}
           <CopyButton text={debugText} />
         </div>
       )}
