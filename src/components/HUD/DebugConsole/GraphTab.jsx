@@ -6,7 +6,15 @@ export function GraphTab({ history, selectedIndex, setSelectedIndex }) {
   const { nodes, triggers } = useStateGraph(history)
   const [isLocked, setIsLocked] = useState(false)
   const [hoveredIndex, setHoveredIndex] = useState(null)
+  const [now, setNow] = useState(new Date())
   const panelRef = useRef(null)
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setNow(new Date())
+    }, 1000)
+    return () => clearInterval(interval)
+  }, [])
 
   const triggerMap = useMemo(() => {
     const map = {}
@@ -39,24 +47,33 @@ export function GraphTab({ history, selectedIndex, setSelectedIndex }) {
 
   return (
     <div
-      ref={panelRef}
-      style={{ display: 'flex', flexDirection: 'column', gap: '8px', padding: '12px', height: '100%', overflow: 'auto' }}
+      style={{ display: 'flex', flexDirection: 'column', height: '100%' }}
       tabIndex={0}
     >
-      <div style={{ fontSize: '9px', color: '#a1a1aa', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-        state timeline
-      </div>
-
-      {nodes.length === 0 ? (
-        <div style={{ color: 'rgba(255, 255, 255, 0.2)', fontSize: '12px' }}>No state changes recorded</div>
-      ) : (
-        <>
+      {/* Fixed timeline section */}
+      <div style={{ padding: '12px 12px 8px 12px', flexShrink: 0, borderBottom: '1px solid rgba(168, 85, 247, 0.1)' }}>
+        <div style={{ fontSize: '9px', color: '#a1a1aa', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '8px' }}>
+          state timeline
+        </div>
+        {nodes.length === 0 ? (
+          <div style={{ color: 'rgba(255, 255, 255, 0.2)', fontSize: '12px' }}>No state changes recorded</div>
+        ) : (
           <StateHeatmap
             history={nodes}
             selectedIndex={selectedIndex}
             setSelectedIndex={setSelectedIndex}
             onHover={setHoveredIndex}
           />
+        )}
+      </div>
+
+      {/* Scrollable content section */}
+      <div
+        ref={panelRef}
+        style={{ display: 'flex', flexDirection: 'column', gap: '8px', padding: '12px', overflow: 'auto', flex: 1 }}
+      >
+        {nodes.length > 0 && (
+          <>
 
           {/* Snapshot details panel */}
           {displayIndex >= 0 && selectedNode && (
@@ -96,6 +113,18 @@ export function GraphTab({ history, selectedIndex, setSelectedIndex }) {
                 </div>
               </div>
 
+              {/* Anomaly section */}
+              {selectedNode.isAnomalous && (
+                <div style={{ marginBottom: '8px', paddingBottom: '8px', borderBottom: '1px solid rgba(251, 191, 36, 0.2)' }}>
+                  <div style={{ fontSize: '8px', color: 'rgba(251, 191, 36, 0.8)', fontWeight: '600', marginBottom: '4px', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    ⚠️ Anomaly detected
+                  </div>
+                  <div style={{ fontSize: '9px', color: 'rgba(251, 191, 36, 0.7)', lineHeight: '1.4' }}>
+                    {selectedNode.changedKeys.length} properties changed (2x+ neighbors' average)
+                  </div>
+                </div>
+              )}
+
               {/* Trigger section */}
               {selectedTrigger ? (
                 <div style={{ marginBottom: '8px', paddingBottom: '8px', borderBottom: '1px solid rgba(168, 85, 247, 0.1)' }}>
@@ -120,9 +149,9 @@ export function GraphTab({ history, selectedIndex, setSelectedIndex }) {
 
               {/* Changed properties section */}
               {selectedNode.changedKeys.length > 0 && (
-                <div>
+                <div style={{ marginBottom: '8px', paddingBottom: '8px', borderBottom: '1px solid rgba(168, 85, 247, 0.1)' }}>
                   <div style={{ fontSize: '8px', color: 'rgba(192, 132, 252, 0.7)', fontWeight: '600', marginBottom: '4px', textTransform: 'uppercase' }}>
-                    Properties changed
+                    Properties changed ({selectedNode.changedKeys.length})
                   </div>
                   <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
                     {selectedNode.changedKeys.map((key) => (
@@ -144,10 +173,55 @@ export function GraphTab({ history, selectedIndex, setSelectedIndex }) {
                   </div>
                 </div>
               )}
+
+              {/* Additional state properties */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '9px', marginBottom: '8px', paddingBottom: '8px', borderBottom: '1px solid rgba(168, 85, 247, 0.1)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ color: 'rgba(255, 255, 255, 0.4)' }}>Snapshot age:</span>
+                  <span style={{ color: '#c084fc', fontFamily: 'monospace' }}>
+                    {selectedNode ? (() => {
+                      const totalSeconds = Math.floor((now - selectedNode.timestamp) / 1000)
+                      const minutes = Math.floor(totalSeconds / 60)
+                      const seconds = totalSeconds % 60
+                      return minutes > 0 ? `${minutes}m ${seconds}s` : `${seconds}s`
+                    })() : '0s'}
+                  </span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ color: 'rgba(255, 255, 255, 0.4)' }}>Index:</span>
+                  <span style={{ color: '#c084fc', fontFamily: 'monospace' }}>{displayIndex + 1} / {history.length}</span>
+                </div>
+                {selectedNode.unchangedSequence > 0 && (
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ color: 'rgba(255, 255, 255, 0.4)' }}>Held unchanged:</span>
+                    <span style={{ color: '#c084fc', fontFamily: 'monospace' }}>{selectedNode.unchangedSequence} snapshot{selectedNode.unchangedSequence > 1 ? 's' : ''}</span>
+                  </div>
+                )}
+              </div>
+
+              {/* State data details */}
+              {displayIndex >= 0 && displayIndex < history.length && history[displayIndex]?.parsed && (
+                <div data-state-data>
+                  <div style={{ fontSize: '8px', color: 'rgba(192, 132, 252, 0.7)', fontWeight: '600', marginBottom: '6px', textTransform: 'uppercase' }}>
+                    State data
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '9px' }}>
+                    {Object.entries(history[displayIndex].parsed).map(([key, value]) => (
+                      <div key={key} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '8px' }}>
+                        <span style={{ color: 'rgba(255, 255, 255, 0.4)', minWidth: '80px' }}>{key}:</span>
+                        <span style={{ color: '#c084fc', fontFamily: 'monospace', textAlign: 'right', wordBreak: 'break-word' }}>
+                          {typeof value === 'object' ? JSON.stringify(value) : String(value)}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </>
-      )}
+        )}
+      </div>
     </div>
   )
 }

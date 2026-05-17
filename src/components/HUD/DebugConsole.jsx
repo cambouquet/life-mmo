@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import './DebugConsole.scss'
 import { CopyButton } from './DebugConsole/CopyButton'
-import { StateTab } from './DebugConsole/StateTab'
 import { DataTab } from './DebugConsole/DataTab'
 import { ActionsTab } from './DebugConsole/ActionsTab'
 import { LogsTab } from './DebugConsole/LogsTab'
@@ -167,13 +166,7 @@ export default function DebugConsole({ onReset, getSaveData, onLoad }) {
                   className={`debug-tab ${tab === 'state' ? 'debug-tab--active' : ''}`}
                   onClick={() => setTab('state')}
                 >
-                  state
-                </button>
-                <button
-                  className={`debug-tab ${tab === 'graph' ? 'debug-tab--active' : ''}`}
-                  onClick={() => setTab('graph')}
-                >
-                  graph
+                  STATE
                 </button>
                 <button
                   className={`debug-tab ${tab === 'actions' ? 'debug-tab--active' : ''}`}
@@ -209,8 +202,6 @@ export default function DebugConsole({ onReset, getSaveData, onLoad }) {
           ) : tab === 'data' ? (
             <DataTab onReset={onReset} getSaveData={getSaveData} onLoad={onLoad} />
           ) : tab === 'state' ? (
-            <StateTab history={history} setHistory={setHistory} selectedIndex={selectedIndex} setSelectedIndex={setSelectedIndex} />
-          ) : tab === 'graph' ? (
             <GraphTab history={history} selectedIndex={selectedIndex} setSelectedIndex={setSelectedIndex} />
           ) : tab === 'actions' ? (
             <ActionsTab />
