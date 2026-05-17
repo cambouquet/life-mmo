@@ -83,11 +83,9 @@ function SaveSlots({ getSaveData, onLoad }) {
   )
 }
 
-function StateTab() {
+function StateTab({ history, setHistory, selectedIndex, setSelectedIndex }) {
   const [screenDebug, setScreenDebug] = useState(null)
   const [modalInfo, setModalInfo] = useState(null)
-  const [history, setHistory] = useState([])
-  const [selectedIndex, setSelectedIndex] = useState(-1)
   const timelineRef = useRef(null)
   const touchStartX = useRef(0)
 
@@ -145,43 +143,64 @@ function StateTab() {
     <div className="debug-data-field" style={{ display: 'flex', flexDirection: 'column', gap: '8px', overflow: 'auto', height: '100%' }}>
       {/* History timeline */}
       {history.length > 0 && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: '2px', padding: '2px 0', marginBottom: '4px' }}>
-          {history.length > 10 && (
-            <div style={{ fontSize: '7px', color: '#60a8ff', minWidth: '14px', textAlign: 'center', fontWeight: 'bold' }}>
-              +{Math.max(0, selectedIndex - 9)}
-            </div>
-          )}
-          <div style={{ display: 'flex', gap: '1px' }}>
-            {history.slice(Math.max(0, history.length - 10)).map((entry, i) => {
-              const actualIdx = Math.max(0, history.length - 10) + i
-              const isSelected = selectedIndex === actualIdx
-              const isLatest = actualIdx === history.length - 1
-              return (
-                <button
-                  key={actualIdx}
-                  onClick={() => setSelectedIndex(actualIdx)}
-                  style={{
-                    width: isSelected ? '24px' : '5px',
-                    height: '5px',
-                    borderRadius: '1px',
-                    background: isSelected ? 'rgba(192, 132, 252, 0.9)' : isLatest ? 'rgba(168, 85, 247, 0.6)' : 'rgba(168, 85, 247, 0.2)',
-                    border: isSelected ? '1px solid rgba(192, 132, 252, 1)' : 'none',
-                    cursor: 'pointer',
-                    transition: 'all 0.15s',
-                    flexShrink: 0,
-                    padding: 0
-                  }}
-                  title={entry.timestamp.toLocaleTimeString()}
-                />
-              )
-            })}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '8px' }}>
+          <div
+            style={{
+              flex: 1,
+              height: '12px',
+              background: 'rgba(168, 85, 247, 0.1)',
+              borderRadius: '3px',
+              position: 'relative',
+              cursor: 'pointer'
+            }}
+            onClick={(e) => {
+              const rect = e.currentTarget.getBoundingClientRect()
+              const percent = (e.clientX - rect.left) / rect.width
+              const newIdx = Math.round(percent * (history.length - 1))
+              setSelectedIndex(newIdx)
+            }}
+            onMouseDown={(e) => {
+              touchStartX.current = e.clientX
+              const startIdx = selectedIndex
+              const handleMove = (moveE) => {
+                const delta = moveE.clientX - touchStartX.current
+                if (Math.abs(delta) > 10) {
+                  const direction = delta > 0 ? -1 : 1
+                  const newIdx = Math.max(0, Math.min(history.length - 1, startIdx + direction))
+                  setSelectedIndex(newIdx)
+                }
+              }
+              const handleUp = () => {
+                document.removeEventListener('mousemove', handleMove)
+                document.removeEventListener('mouseup', handleUp)
+              }
+              document.addEventListener('mousemove', handleMove)
+              document.addEventListener('mouseup', handleUp)
+            }}
+          >
+            {/* Progress fill */}
+            <div style={{
+              position: 'absolute',
+              height: '100%',
+              background: 'rgba(192, 132, 252, 0.3)',
+              borderRadius: '3px',
+              width: `${((selectedIndex + 1) / history.length) * 100}%`
+            }} />
+            {/* Position marker */}
+            <div style={{
+              position: 'absolute',
+              width: '2px',
+              height: '100%',
+              background: 'rgba(192, 132, 252, 0.9)',
+              left: `${((selectedIndex + 1) / history.length) * 100}%`,
+              transform: 'translateX(-50%)',
+              borderRadius: '1px'
+            }} />
           </div>
-        </div>
-      )}
-      {history.length > 0 && (
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '8px', color: '#a1a1aa', marginBottom: '4px', gap: '8px' }}>
-          <span>{selectedIndex + 1} / {history.length}</span>
-          {currentEntry && <span>{currentEntry.timestamp.toLocaleTimeString()}</span>}
+          <div style={{ fontSize: '8px', color: '#a1a1aa', whiteSpace: 'nowrap', flexShrink: 0 }}>
+            {selectedIndex + 1}/{history.length}
+          </div>
+          {currentEntry && <div style={{ fontSize: '8px', color: '#a1a1aa', whiteSpace: 'nowrap', flexShrink: 0 }}>{currentEntry.timestamp.toLocaleTimeString()}</div>}
           <CopyButton text={debugText} />
         </div>
       )}
@@ -419,6 +438,8 @@ export default function DebugConsole({ onReset, getSaveData, onLoad }) {
   const [logs,     setLogs]     = useState([])
   const [hidden,   setHidden]   = useState(new Set())
   const [height,   setHeight]   = useState(380)
+  const [history, setHistory] = useState([])
+  const [selectedIndex, setSelectedIndex] = useState(-1)
   const scrollRef = useRef(null)
   const panelRef  = useRef(null)
   const isResizingRef = useRef(false)
@@ -542,13 +563,43 @@ export default function DebugConsole({ onReset, getSaveData, onLoad }) {
             }}
           />
           <div className="debug-header">
-            <div className="debug-header-top">
+            <div className="debug-header-top debug-row">
               <div className="debug-tabs">
                 <button className={`debug-tab ${tab === 'logs' ? 'debug-tab--active' : ''}`} onClick={() => setTab('logs')}>logs</button>
                 <button className={`debug-tab ${tab === 'data' ? 'debug-tab--active' : ''}`} onClick={() => setTab('data')}>data</button>
                 <button className={`debug-tab ${tab === 'state' ? 'debug-tab--active' : ''}`} onClick={() => setTab('state')}>state</button>
                 <button className={`debug-tab ${tab === 'actions' ? 'debug-tab--active' : ''}`} onClick={() => setTab('actions')}>actions</button>
               </div>
+              <CopyButton
+                text={(() => {
+                  const parts = []
+
+                  // LOGS
+                  if (visible.length > 0) {
+                    parts.push('=== LOGS ===')
+                    parts.push(visible.map(l => `[${l.ts}] ${l.type.toUpperCase()}: ${l.message}`).join('\n'))
+                  }
+
+                  // STATE
+                  if (history.length > 0) {
+                    const currentEntry = selectedIndex >= 0 ? history[selectedIndex] : history[history.length - 1]
+                    if (currentEntry) {
+                      parts.push('=== STATE ===')
+                      const { actions, ...stateData } = currentEntry.parsed || {}
+                      parts.push(JSON.stringify(stateData, null, 2))
+                    }
+                  }
+
+                  // ACTIONS
+                  if (window.__screenDebug?.actions) {
+                    parts.push('=== ACTIONS ===')
+                    parts.push(Object.keys(window.__screenDebug.actions).join('\n'))
+                  }
+
+                  return parts.join('\n\n')
+                })()}
+                title="Copy all (logs, state, actions)"
+              />
             </div>
             {tab === 'logs' && (
               <div className="debug-filters">
@@ -572,17 +623,15 @@ export default function DebugConsole({ onReset, getSaveData, onLoad }) {
               {visible.map(log => (
                 <div key={log.id} className={`debug-log debug-log--${log.type}`}>
                   <span className="debug-log-ts">{log.ts}</span>
-                  <div className="debug-log-content">
-                    <span className="debug-log-msg">{log.message}</span>
-                    <CopyButton text={log.message} />
-                  </div>
+                  <span className="debug-log-msg">{log.message}</span>
+                  <CopyButton text={log.message} />
                 </div>
               ))}
             </div>
           ) : tab === 'data' ? (
             <DataTab onReset={onReset} getSaveData={getSaveData} onLoad={onLoad} />
           ) : tab === 'state' ? (
-            <StateTab />
+            <StateTab history={history} setHistory={setHistory} selectedIndex={selectedIndex} setSelectedIndex={setSelectedIndex} />
           ) : tab === 'actions' ? (
             <ActionsTab />
           ) : null}
