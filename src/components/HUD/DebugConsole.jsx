@@ -43,10 +43,13 @@ export default function DebugConsole({ onReset, getSaveData, onLoad }) {
             state: current,
             parsed: JSON.parse(current),
           }
-          return [...prev.slice(-49), newEntry]
+          const updated = [...prev, newEntry]
+          // Keep last 200 entries
+          const final = updated.length > 200 ? updated.slice(-200) : updated
+          // Auto-select the latest state
+          setSelectedIndex(final.length - 1)
+          return final
         })
-
-        setSelectedIndex((prev) => (prev === -1 ? 0 : prev))
       }
     }, 100)
     return () => clearInterval(interval)
