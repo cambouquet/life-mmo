@@ -12,25 +12,6 @@ export function StateTab({ history, setHistory, selectedIndex, setSelectedIndex 
   useEffect(() => {
     const interval = setInterval(() => {
       if (window.__screenDebug) {
-        const current = JSON.stringify(window.__screenDebug, (key, value) => {
-          if (key === 'actions') return undefined
-          return value
-        })
-
-        setHistory((prev) => {
-          const lastEntry = prev[prev.length - 1]
-          if (lastEntry && lastEntry.state === current) {
-            return prev
-          }
-          const newEntry = {
-            timestamp: new Date(),
-            state: current,
-            parsed: JSON.parse(current),
-          }
-          return [...prev.slice(-49), newEntry]
-        })
-
-        setSelectedIndex((prev) => (prev === -1 ? 0 : prev))
         setScreenDebug(window.__screenDebug)
       }
 

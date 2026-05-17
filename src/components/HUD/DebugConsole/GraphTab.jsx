@@ -1,13 +1,17 @@
-import React, { useMemo } from 'react'
+import React, { useMemo, useState, useRef, useEffect } from 'react'
 import { useStateGraph } from './useStateGraph'
 
-function GraphNode({ node, isSelected, onClick, x, y, trigger }) {
+function GraphNode({ node, isSelected, onClick, x, y, trigger, onHover }) {
   const size = 28
   const hasChanges = node.changedKeys.length > 0
   const isUnchangedSequence = node.unchangedSequence > 0
 
   return (
-    <g key={node.id}>
+    <g
+      key={node.id}
+      onMouseEnter={() => onHover(node.id)}
+      onMouseLeave={() => onHover(null)}
+    >
       {/* Connection line to next node */}
       {node.id < 999 && (
         <line
@@ -162,6 +166,10 @@ function GraphNode({ node, isSelected, onClick, x, y, trigger }) {
 
 export function GraphTab({ history, selectedIndex, setSelectedIndex }) {
   const { nodes, triggers } = useStateGraph(history)
+  const [hoveredNodeId, setHoveredNodeId] = useState(null)
+  const [isLocked, setIsLocked] = useState(false)
+  const svgRef = useRef(null)
+  const panelRef = useRef(null)
 
   const visibleNodes = useMemo(() => {
     if (nodes.length <= 20) return nodes
@@ -181,11 +189,47 @@ export function GraphTab({ history, selectedIndex, setSelectedIndex }) {
   const width = visibleNodes.length * 48 + 40
   const height = 120
 
-  const selectedTrigger = triggerMap[selectedIndex]
-  const selectedNode = nodes[selectedIndex]
+  // Show hovered node if not locked, otherwise show selected
+  const displayNodeId = !isLocked && hoveredNodeId !== null ? hoveredNodeId : selectedIndex
+  const selectedTrigger = triggerMap[displayNodeId]
+  const selectedNode = nodes[displayNodeId]
+
+  // Auto-scroll timeline to show selected node
+  useEffect(() => {
+    if (svgRef.current && selectedIndex >= 0) {
+      const svg = svgRef.current
+      const viewBox = svg.viewBox.baseVal
+      const nodeX = (visibleNodes.findIndex((n) => n.id === selectedIndex) * 48 + 20 + 14) || 0
+      const svgWidth = viewBox.width
+
+      // Center the node in view
+      const targetScroll = nodeX - svgWidth / 2
+      svg.parentElement.scrollLeft = Math.max(0, targetScroll)
+    }
+  }, [selectedIndex, visibleNodes])
+
+  // Arrow key navigation
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (!panelRef.current || !panelRef.current.contains(document.activeElement)) return
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault()
+        setSelectedIndex((prev) => Math.max(0, prev - 1))
+      } else if (e.key === 'ArrowRight') {
+        e.preventDefault()
+        setSelectedIndex((prev) => Math.min(nodes.length - 1, prev + 1))
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [nodes.length])
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', padding: '12px', height: '100%', overflow: 'auto' }}>
+    <div
+      ref={panelRef}
+      style={{ display: 'flex', flexDirection: 'column', gap: '8px', padding: '12px', height: '100%', overflow: 'auto' }}
+      tabIndex={0}
+    >
       <div style={{ fontSize: '9px', color: '#a1a1aa', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
         state timeline
       </div>
@@ -194,7 +238,9 @@ export function GraphTab({ history, selectedIndex, setSelectedIndex }) {
         <div style={{ color: 'rgba(255, 255, 255, 0.2)', fontSize: '12px' }}>No state changes recorded</div>
       ) : (
         <>
-          <svg
+          <div style={{ overflowX: 'auto', overflowY: 'hidden', scrollBehavior: 'smooth' }}>
+            <svg
+              ref={svgRef}
             width="100%"
             height={height}
             style={{
@@ -205,18 +251,20 @@ export function GraphTab({ history, selectedIndex, setSelectedIndex }) {
             viewBox={`0 0 ${Math.max(600, width)} ${height}`}
             preserveAspectRatio="xMinYMid meet"
           >
-            {visibleNodes.map((node, i) => (
-              <GraphNode
-                key={node.id}
-                node={node}
-                isSelected={selectedIndex === node.id}
-                onClick={() => setSelectedIndex(node.id)}
-                x={i * 48 + 20}
-                y={50}
-                trigger={triggerMap[node.id]}
-              />
-            ))}
-          </svg>
+              {visibleNodes.map((node, i) => (
+                <GraphNode
+                  key={node.id}
+                  node={node}
+                  isSelected={selectedIndex === node.id}
+                  onClick={() => setSelectedIndex(node.id)}
+                  x={i * 48 + 20}
+                  y={50}
+                  trigger={triggerMap[node.id]}
+                  onHover={setHoveredNodeId}
+                />
+              ))}
+            </svg>
+          </div>
 
           {/* Legend */}
           <div style={{ display: 'flex', gap: '16px', fontSize: '8px', color: 'rgba(255, 255, 255, 0.5)', flexWrap: 'wrap' }}>
@@ -272,14 +320,40 @@ export function GraphTab({ history, selectedIndex, setSelectedIndex }) {
           </div>
 
               {/* Snapshot details panel */}
-          {selectedIndex >= 0 && selectedNode && (
+          {displayNodeId >= 0 && selectedNode && (
             <div style={{ padding: '10px', background: 'rgba(168, 85, 247, 0.08)', borderRadius: '4px', border: '1px solid rgba(168, 85, 247, 0.15)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '8px' }}>
                 <div style={{ fontSize: '8px', color: '#a1a1aa', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                  Snapshot {selectedIndex + 1}
-                </div>
-                <div style={{ fontSize: '8px', color: 'rgba(255, 255, 255, 0.35)' }}>
-                  {selectedNode.timestamp.toLocaleTimeString()}
+                Snapshot {displayNodeId + 1}
+              </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <div style={{ fontSize: '8px', color: 'rgba(255, 255, 255, 0.35)' }}>
+                    {selectedNode.timestamp.toLocaleTimeString()}
+                  </div>
+                  <button
+                    onClick={() => setIsLocked(!isLocked)}
+                    style={{
+                      padding: '3px 6px',
+                      fontSize: '7px',
+                      background: isLocked ? 'rgba(192, 132, 252, 0.2)' : 'rgba(255, 255, 255, 0.05)',
+                      border: '0.5px solid rgba(192, 132, 252, 0.3)',
+                      borderRadius: '2px',
+                      color: isLocked ? '#c084fc' : 'rgba(255, 255, 255, 0.4)',
+                      cursor: 'pointer',
+                      fontWeight: '600',
+                      transition: 'all 0.15s',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.3px',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.target.style.background = isLocked ? 'rgba(192, 132, 252, 0.3)' : 'rgba(255, 255, 255, 0.08)'
+                    }}
+                    onMouseLeave={(e) => {
+                      e.target.style.background = isLocked ? 'rgba(192, 132, 252, 0.2)' : 'rgba(255, 255, 255, 0.05)'
+                    }}
+                  >
+                    {isLocked ? '🔒 locked' : 'unlock'}
+                  </button>
                 </div>
               </div>
 
