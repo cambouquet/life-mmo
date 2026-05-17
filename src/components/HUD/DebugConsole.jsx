@@ -6,6 +6,7 @@ import { DataTab } from './DebugConsole/DataTab'
 import { ActionsTab } from './DebugConsole/ActionsTab'
 import { LogsTab } from './DebugConsole/LogsTab'
 import { useConsoleInterception } from './DebugConsole/useConsoleInterception'
+import { GraphTab } from './DebugConsole/GraphTab'
 
 export default function DebugConsole({ onReset, getSaveData, onLoad }) {
   const [isOpen, setIsOpen] = useState(false)
@@ -136,6 +137,12 @@ export default function DebugConsole({ onReset, getSaveData, onLoad }) {
                   state
                 </button>
                 <button
+                  className={`debug-tab ${tab === 'graph' ? 'debug-tab--active' : ''}`}
+                  onClick={() => setTab('graph')}
+                >
+                  graph
+                </button>
+                <button
                   className={`debug-tab ${tab === 'actions' ? 'debug-tab--active' : ''}`}
                   onClick={() => setTab('actions')}
                 >
@@ -170,6 +177,8 @@ export default function DebugConsole({ onReset, getSaveData, onLoad }) {
             <DataTab onReset={onReset} getSaveData={getSaveData} onLoad={onLoad} />
           ) : tab === 'state' ? (
             <StateTab history={history} setHistory={setHistory} selectedIndex={selectedIndex} setSelectedIndex={setSelectedIndex} />
+          ) : tab === 'graph' ? (
+            <GraphTab history={history} selectedIndex={selectedIndex} setSelectedIndex={setSelectedIndex} />
           ) : tab === 'actions' ? (
             <ActionsTab />
           ) : null}
