@@ -368,35 +368,12 @@ export default function CharacterEditor({ initialColors, initialBirthData, initi
   }, [initialColors])
 
 
-  // Track scroll to update active page
+  // Update active page from external scrollPage prop or arrow keys
   useEffect(() => {
-    const el = modalRef.current
-    if (!el) return
-    const handleScroll = () => {
-      const index = Math.round(el.scrollLeft / el.clientWidth)
-      const newPage = pageSequence[index] || defaultPage
-      setActivePage(newPage)
+    if (scrollPage !== undefined && scrollPage >= 0 && scrollPage < pageSequence.length) {
+      setActivePage(pageSequence[scrollPage])
     }
-    el.addEventListener('scroll', handleScroll, { passive: true })
-    return () => el.removeEventListener('scroll', handleScroll)
-  }, [pageSequence, defaultPage])
-
-  // Scroll to default page on initial mount only
-  useEffect(() => {
-    const el = modalRef.current
-    if (el) {
-      const index = pageSequence.indexOf(defaultPage)
-      el.scrollTo({ left: index * el.clientWidth, behavior: 'auto' })
-    }
-  }, [])
-
-  // External scroll control for playback
-  useEffect(() => {
-    if (scrollPage !== undefined && modalRef.current) {
-      const el = modalRef.current
-      el.scrollTo({ left: scrollPage * el.clientWidth, behavior: 'smooth' })
-    }
-  }, [scrollPage])
+  }, [scrollPage, pageSequence])
 
   useEffect(() => {
     readyRef.current = false
@@ -466,6 +443,25 @@ export default function CharacterEditor({ initialColors, initialBirthData, initi
   // Expose debug info and actions to debug console
   useEffect(() => {
     const pageIndex = pageSequence.indexOf(activePage)
+    console.log('[CharacterEditor] activePage changed:', { activePage, pageIndex, pageSequence })
+
+    const el = modalRef.current
+    const contentEl = el?.querySelector('.char-editor-content')
+    const scrollDebugInfo = {
+      modal: {
+        scrollLeft: el?.scrollLeft ?? -1,
+        clientWidth: el?.clientWidth ?? -1,
+        scrollWidth: el?.scrollWidth ?? -1,
+        overflowX: el ? window.getComputedStyle(el).overflowX : 'unknown',
+      },
+      content: contentEl ? {
+        scrollLeft: contentEl.scrollLeft,
+        clientWidth: contentEl.clientWidth,
+        scrollWidth: contentEl.scrollWidth,
+        overflowX: window.getComputedStyle(contentEl).overflowX,
+      } : null,
+    }
+
     window.__screenDebug = {
       // State
       pages: pageSequence,
@@ -480,6 +476,12 @@ export default function CharacterEditor({ initialColors, initialBirthData, initi
       natalPlacements: natalPlacements ? Object.keys(natalPlacements).length : 0,
       colors: colors,
       name: name,
+      scrollInfo: {
+        modalScrollLeft: modalRef.current?.scrollLeft ?? -1,
+        modalClientWidth: modalRef.current?.clientWidth ?? -1,
+        expectedScrollPosition: pageIndex * (modalRef.current?.clientWidth ?? 0),
+      },
+      scrollDebug: scrollDebugInfo,
 
       // Navigation
       canGoLeft: pageIndex > 0,
@@ -489,10 +491,12 @@ export default function CharacterEditor({ initialColors, initialBirthData, initi
       actions: {
         goToPage: (pageId) => {
           const index = pageSequence.indexOf(pageId)
+          console.log('[CharacterEditor] goToPage action:', { pageId, index, pageSequence })
           if (index >= 0) {
             setActivePage(pageId)
             if (modalRef.current) {
               const targetScroll = index * modalRef.current.clientWidth
+              console.log('[CharacterEditor] scrolling to:', { pageId, targetScroll, clientWidth: modalRef.current.clientWidth })
               modalRef.current.scrollTo({ left: targetScroll, behavior: 'smooth' })
             }
           }
@@ -510,9 +514,114 @@ export default function CharacterEditor({ initialColors, initialBirthData, initi
           onChange?.(next)
         },
         logNatalData: () => console.log('Natal Placements:', natalPlacements, 'House Cusps:', houseCusps),
+        debugScroll: () => {
+          const el = modalRef.current
+          if (el) {
+            const contentEl = el.querySelector('.char-editor-content')
+            console.log('[CharacterEditor] Debug scroll state:', {
+              modal: {
+                scrollLeft: el.scrollLeft,
+                clientWidth: el.clientWidth,
+                scrollWidth: el.scrollWidth,
+                overflow: window.getComputedStyle(el).overflow,
+              },
+              content: contentEl ? {
+                scrollLeft: contentEl.scrollLeft,
+                clientWidth: contentEl.clientWidth,
+                scrollWidth: contentEl.scrollWidth,
+                overflow: window.getComputedStyle(contentEl).overflow,
+              } : 'not found',
+              expectedIndex: Math.round(el.scrollLeft / el.clientWidth),
+              activePage,
+              pageSequence,
+            })
+          }
+        },
       }
     }
   }, [pageSequence, activePage, defaultPage, limited, hasDate, birthDate, birthTime, birthCity, natalPlacements, colors, name, modalRef])
+
+  const renderPageContent = () => {
+    if (activePage === 'chart') {
+      return natalPlacements ? (
+        <>
+          <div className="char-editor-chart-wheel">
+            <HouseWheelWithInfo
+              placements={natalPlacements}
+              houseCusps={houseCusps}
+              hideStellium
+              birthDate={birthDate}
+              onBirthDateChange={v => { setBirthDate(v); setHasDate(true); setPreviewDate(null) }}
+              birthTime={birthTime}
+              onBirthTimeChange={v => {
+                if (v.daysDiff) {
+                  const d = new Date(birthDate.year, birthDate.month - 1, birthDate.day)
+                  d.setDate(d.getDate() + v.daysDiff)
+                  setBirthDate({ day: d.getDate(), month: d.getMonth() + 1, year: d.getFullYear() })
+                }
+                setBirthTime({ hour: v.hour, minute: v.minute })
+                setPreviewTime(null)
+              }}
+              size={200}
+            />
+          </div>
+          <div className="char-editor-chart-summary">
+            <AstroSummary natalPlacements={natalPlacements} />
+          </div>
+        </>
+      ) : (
+        <div className="char-editor-loading">Loading chart...</div>
+      )
+    }
+
+    if (activePage === 'location') {
+      return (
+        <div className="char-editor-location">
+          <EarthGlobe city={birthCity} size={200} />
+          <div style={{ maxWidth: '300px' }}>
+            <CitySearch value={birthCity} onChange={setBirthCity} />
+          </div>
+        </div>
+      )
+    }
+
+    if (activePage === 'character') {
+      return (
+        <div className="char-editor-preview">
+          <CharacterTemplate colors={displayColors} scale={5} />
+          {limited ? (
+            <input
+              className="char-editor-name-input"
+              type="text"
+              value={name}
+              onChange={e => setName(e.target.value)}
+              onKeyDown={e => { if (e.key === 'Enter') onSave(colorsRef.current, birthDataOutput, name.trim() || null) }}
+              placeholder="Your name"
+              maxLength={24}
+              autoFocus
+            />
+          ) : (
+            <div className="char-editor-preview-label">{initialName || '?'}</div>
+          )}
+          <CassiopeiaWheel
+            colors={colors}
+            onChange={next => { setColors(next); setPreviewColors(null); onChange?.(next) }}
+            onPreview={next => setPreviewColors(next)}
+            onRandom={() => {
+              const next = { ...colors, ...randomPalette() }
+              setColors(next)
+              setPreviewColors(null)
+              onChange?.(next)
+            }}
+          />
+          <div className="char-editor-actions">
+            <button className="btn-save" onClick={() => onSave(colors, birthDataOutput, trimmedName)}>Embody</button>
+            <button className="btn-cancel" onClick={onClose}>Cancel</button>
+          </div>
+        </div>
+      )
+    }
+  }
 
   return (
     <div className="char-editor-root">
@@ -524,91 +633,9 @@ export default function CharacterEditor({ initialColors, initialBirthData, initi
         </div>
       )}
       <div className="char-editor-modal" ref={modalRef}>
-      <div className="char-editor-content">
-
-        {pageSequence.map((page) => (
-          <div key={page} className="char-editor-page">
-            {page === 'chart' && (
-              natalPlacements ? (
-                <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, gap: '8px' }}>
-                  <div style={{ flex: 0.6, minHeight: 0, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                    <HouseWheelWithInfo
-                      placements={natalPlacements}
-                      houseCusps={houseCusps}
-                      hideStellium
-                      birthDate={birthDate}
-                      onBirthDateChange={v => { setBirthDate(v); setHasDate(true); setPreviewDate(null) }}
-                      birthTime={birthTime}
-                      onBirthTimeChange={v => {
-                        if (v.daysDiff) {
-                          const d = new Date(birthDate.year, birthDate.month - 1, birthDate.day)
-                          d.setDate(d.getDate() + v.daysDiff)
-                          setBirthDate({ day: d.getDate(), month: d.getMonth() + 1, year: d.getFullYear() })
-                        }
-                        setBirthTime({ hour: v.hour, minute: v.minute })
-                        setPreviewTime(null)
-                      }}
-                      size={200}
-                    />
-                  </div>
-                  <div style={{ flex: 0.4, minHeight: 0, overflow: 'auto', padding: '8px 12px', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
-                    <AstroSummary natalPlacements={natalPlacements} />
-                  </div>
-                </div>
-              ) : (
-                <div style={{ padding: '20px', color: 'rgba(255,255,255,0.5)', textAlign: 'center' }}>
-                  Loading chart...
-                </div>
-              )
-            )}
-
-            {page === 'location' && (
-              <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', gap: '20px', padding: '20px' }}>
-                <EarthGlobe city={birthCity} size={200} />
-                <div style={{ maxWidth: '300px' }}>
-                  <CitySearch value={birthCity} onChange={setBirthCity} />
-                </div>
-              </div>
-            )}
-
-            {page === 'character' && (
-              <div className="char-editor-preview">
-                <CharacterTemplate colors={displayColors} scale={5} />
-                {limited ? (
-                  <input
-                    className="char-editor-name-input"
-                    type="text"
-                    value={name}
-                    onChange={e => setName(e.target.value)}
-                    onKeyDown={e => { if (e.key === 'Enter') onSave(colorsRef.current, birthDataOutput, name.trim() || null) }}
-                    placeholder="Your name"
-                    maxLength={24}
-                    autoFocus
-                  />
-                ) : (
-                  <div className="char-editor-preview-label">{initialName || '?'}</div>
-                )}
-                <CassiopeiaWheel
-                  colors={colors}
-                  onChange={next => { setColors(next); setPreviewColors(null); onChange?.(next) }}
-                  onPreview={next => setPreviewColors(next)}
-                  onRandom={() => {
-                    const next = { ...colors, ...randomPalette() }
-                    setColors(next)
-                    setPreviewColors(null)
-                    onChange?.(next)
-                  }}
-                />
-                <div className="char-editor-actions">
-                  <button className="btn-save" onClick={() => onSave(colors, birthDataOutput, trimmedName)}>Embody</button>
-                  <button className="btn-cancel" onClick={onClose}>Cancel</button>
-                </div>
-              </div>
-            )}
-          </div>
-        ))}
-
-      </div>
+        <div className="char-editor-content">
+          {renderPageContent()}
+        </div>
       </div>
     </div>
   )
