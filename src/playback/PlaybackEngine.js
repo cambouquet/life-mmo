@@ -1,17 +1,14 @@
-import { jitter, sleep, releaseAll, walkTo } from './playbackUtils.js'
+import { releaseAll } from './playbackUtils.js'
+import { PlaybackMovement } from './PlaybackMovement.js'
+import { PlaybackEditor } from './PlaybackEditor.js'
 
 export class PlaybackEngine {
   constructor({ getPlayerPos, onOpenEditor, onCloseEditor, onColorChange, onScrollEditor, onSetName, onSaveMirror, onComplete }) {
-    this._getPos = getPlayerPos
-    this._openEditor = onOpenEditor
-    this._closeEditor = onCloseEditor
-    this._colorChange = onColorChange
-    this._scrollEditor = onScrollEditor
-    this._setName = onSetName
-    this._saveMirror = onSaveMirror
-    this._onComplete = onComplete
-    this._running = false
     this._abortRef = { current: false }
+    this._running = false
+    this._onComplete = onComplete
+    this.movement = new PlaybackMovement(getPlayerPos, this._abortRef)
+    this.editor = new PlaybackEditor(onOpenEditor, onCloseEditor, onScrollEditor, onColorChange, onSetName, onSaveMirror, this._abortRef)
   }
 
   abort() {
@@ -33,71 +30,42 @@ export class PlaybackEngine {
   }
 
   getPlayerPos() {
-    return this._getPos()
+    return this.movement.getPlayerPos()
   }
 
   async moveTo(x, y, threshold = 10) {
-    if (this._abortRef.current) return
-    console.action(`Moving to (${x}, ${y})`)
-    await walkTo(this._getPos, x, y, threshold, this._abortRef)
-    if (!this._abortRef.current) await sleep(jitter(120, 0.3))
+    return this.movement.moveTo(x, y, threshold)
   }
 
   async wait(ms) {
-    if (this._abortRef.current) return
-    console.action(`Waiting ${ms}ms`)
-    await sleep(jitter(ms, 0.05))
+    return this.movement.wait(ms)
   }
 
   async openMirror() {
-    if (this._abortRef.current) return
-    console.action("Opening Mirror")
-    this._openEditor()
-    await sleep(jitter(600, 0.15))
+    return this.editor.openMirror()
   }
 
   async closeMirror() {
-    if (this._abortRef.current) return
-    console.action("Closing Mirror")
-    this._closeEditor()
-    await sleep(jitter(400, 0.15))
+    return this.editor.closeMirror()
   }
 
   async scrollEditor(pageIndex) {
-    if (this._abortRef.current) return
-    console.action(`Scrolling editor to page ${pageIndex}`)
-    this._scrollEditor?.(pageIndex)
-    await sleep(jitter(1200, 0.2))
+    return this.editor.scrollEditor(pageIndex)
   }
 
   async changeColor(colorKey, hexValue) {
-    if (this._abortRef.current) return
-    console.action(`Changing ${colorKey} to ${hexValue}`)
-    await sleep(jitter(180, 0.3))
-    this._colorChange(colorKey, hexValue)
-    await sleep(jitter(80, 0.3))
+    return this.editor.changeColor(colorKey, hexValue)
   }
 
   async setName(name) {
-    if (this._abortRef.current) return
-    console.action(`Setting name to "${name}"`)
-    this._setName?.(name)
-    await sleep(jitter(300, 0.2))
+    return this.editor.setName(name)
   }
 
   async saveMirror(colors, name) {
-    if (this._abortRef.current) return
-    console.action('Saving mirror (name + colors) and closing')
-    this._saveMirror?.(colors, name)
-    await sleep(jitter(500, 0.15))
+    return this.editor.saveMirror(colors, name)
   }
 
   async face(direction) {
-    if (this._abortRef.current) return
-    const map = { up: 'KeyW', down: 'KeyS', left: 'KeyA', right: 'KeyD' }
-    const code = map[direction]
-    if (!code) return
-    await sleep(jitter(60, 0.3))
-    await sleep(jitter(80, 0.3))
+    return this.movement.face(direction)
   }
 }

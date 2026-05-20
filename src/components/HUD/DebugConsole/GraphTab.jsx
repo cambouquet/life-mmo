@@ -4,6 +4,8 @@ import { StateHeatmap } from './StateHeatmap'
 import { SnapshotHeader } from './SnapshotHeader.jsx'
 import { AnomalySection, TriggerSection, ChangedKeysSection, SnapshotStats } from './SnapshotInfo.jsx'
 import { StateDataDisplay } from './StateDataDisplay.jsx'
+import { useGraphKeyboard } from './useGraphKeyboard'
+import { TAB_CONTAINER, HEADER_SECTION, TIMELINE_LABEL, EMPTY_MESSAGE, PANEL, SNAPSHOT_CARD } from './graphTabStyles'
 
 export function GraphTab({ history, selectedIndex, setSelectedIndex }) {
   const { nodes, triggers } = useStateGraph(history)
@@ -23,41 +25,26 @@ export function GraphTab({ history, selectedIndex, setSelectedIndex }) {
     return map
   }, [triggers])
 
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (!panelRef.current || !panelRef.current.contains(document.activeElement)) return
-      if (e.key === 'ArrowLeft') {
-        e.preventDefault()
-        setSelectedIndex((prev) => Math.max(0, prev - 1))
-      } else if (e.key === 'ArrowRight') {
-        e.preventDefault()
-        setSelectedIndex((prev) => Math.min(nodes.length - 1, prev + 1))
-      }
-    }
-    window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [nodes.length, setSelectedIndex])
+  useGraphKeyboard(panelRef, nodes.length, setSelectedIndex)
 
   const displayIndex = hoveredIndex !== null ? hoveredIndex : selectedIndex
   const selectedTrigger = triggerMap[displayIndex]
   const selectedNode = displayIndex >= 0 ? nodes[displayIndex] : null
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }} tabIndex={0}>
-      <div style={{ padding: '12px 12px 8px 12px', flexShrink: 0, borderBottom: '1px solid rgba(168, 85, 247, 0.1)' }}>
-        <div style={{ fontSize: '9px', color: '#a1a1aa', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '8px' }}>
-          state timeline
-        </div>
+    <div style={TAB_CONTAINER} tabIndex={0}>
+      <div style={HEADER_SECTION}>
+        <div style={TIMELINE_LABEL}>state timeline</div>
         {nodes.length === 0 ? (
-          <div style={{ color: 'rgba(255, 255, 255, 0.2)', fontSize: '12px' }}>No state changes recorded</div>
+          <div style={EMPTY_MESSAGE}>No state changes recorded</div>
         ) : (
           <StateHeatmap history={nodes} selectedIndex={selectedIndex} setSelectedIndex={setSelectedIndex} onHover={setHoveredIndex} />
         )}
       </div>
 
-      <div ref={panelRef} style={{ display: 'flex', flexDirection: 'column', gap: '8px', padding: '12px', overflow: 'auto', flex: 1 }}>
+      <div ref={panelRef} style={PANEL}>
         {nodes.length > 0 && displayIndex >= 0 && selectedNode && (
-          <div style={{ padding: '10px', background: 'rgba(168, 85, 247, 0.08)', borderRadius: '4px', border: '1px solid rgba(168, 85, 247, 0.15)' }}>
+          <div style={SNAPSHOT_CARD}>
             <SnapshotHeader displayIndex={displayIndex} selectedNode={selectedNode} isLocked={isLocked} setIsLocked={setIsLocked} />
             <AnomalySection selectedNode={selectedNode} />
             <TriggerSection selectedTrigger={selectedTrigger} selectedNode={selectedNode} />

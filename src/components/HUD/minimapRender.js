@@ -1,5 +1,6 @@
 import { TILE } from '../../game/constants.jsx'
-import { drawTile, adjustBrightness } from './minimapUtils.js'
+import { drawTile } from './minimapUtils.js'
+import { drawPlayerMarker } from './minimapPlayerRender'
 
 export function renderMinimap(canvas, playerPos, worldData, charColors, MINIMAP_WIDTH, MINIMAP_HEIGHT, VIEW_RADIUS) {
   const ctx = canvas.getContext('2d')
@@ -10,20 +11,13 @@ export function renderMinimap(canvas, playerPos, worldData, charColors, MINIMAP_
 
   const playerTileX = playerPos.x / TILE
   const playerTileY = playerPos.y / TILE
-
-  const tileSize = Math.min(
-    MINIMAP_WIDTH / (VIEW_RADIUS * 2),
-    MINIMAP_HEIGHT / (VIEW_RADIUS * 2)
-  )
-
+  const tileSize = Math.min(MINIMAP_WIDTH / (VIEW_RADIUS * 2), MINIMAP_HEIGHT / (VIEW_RADIUS * 2))
   const centerX = MINIMAP_WIDTH / 2
   const centerY = MINIMAP_HEIGHT / 2
-
   const collMap = worldData.collMap
   const rows = collMap.length
   const cols = collMap[0]?.length || 0
 
-  // Draw floor and objects
   for (let r = 0; r < rows; r++) {
     for (let c = 0; c < cols; c++) {
       const tileDistX = Math.abs(c - playerTileX)
@@ -35,32 +29,9 @@ export function renderMinimap(canvas, playerPos, worldData, charColors, MINIMAP_
       const offsetY = (r - playerTileY) * tileSize
       const x = centerX + offsetX - tileSize / 2
       const y = centerY + offsetY - tileSize / 2
-
       drawTile(ctx, tile, x, y, tileSize)
     }
   }
 
-  // Draw player
-  const outfitColor = charColors?.outfit || '#ffffff'
-  const brightColor = adjustBrightness(outfitColor, 2.5)
-
-  ctx.fillStyle = brightColor.replace('0.7)', '0.3)')
-  ctx.beginPath()
-  ctx.arc(centerX, centerY, 6, 0, Math.PI * 2)
-  ctx.fill()
-
-  ctx.fillStyle = brightColor
-  ctx.beginPath()
-  ctx.arc(centerX, centerY, 2, 0, Math.PI * 2)
-  ctx.fill()
-
-  ctx.strokeStyle = brightColor
-  ctx.lineWidth = 1.5
-  ctx.stroke()
-
-  ctx.lineWidth = 1
-  ctx.beginPath()
-  ctx.moveTo(centerX, centerY - 3)
-  ctx.lineTo(centerX, centerY - 7)
-  ctx.stroke()
+  drawPlayerMarker(ctx, centerX, centerY, charColors)
 }

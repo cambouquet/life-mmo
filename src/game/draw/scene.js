@@ -11,58 +11,46 @@ import { nearMirror, nearNpc } from '../systems/interact.js'
 import { reflectionData, drawSelectedTiles, drawPastePreview, drawHoveredTile } from './sceneHelpers.js'
 import { drawBehindPlayer, drawInFrontOfPlayer } from './sceneLayers.js'
 import { drawHoverPreview } from './hoverPreview.js'
+import { extractSceneVars, setupSceneContext } from './sceneSetup.js'
 
 export function renderScene(ctx, world, state, player, torchPhase, charColors, refs, zoom = DRAW_SCALE, cameraOffset = { x: 0, y: 0 }) {
-  const { map, door1Progress, door2Progress, near2, hoveredTile, selectedTiles, layerEdits, highlightColors, spriteColorOverrides, hoverPreview, pastePreviewData } = state
-  const { wallX, gapY1, gapY2, wall2X, gap2Y1, gap2Y2, MIRROR_CX, MIRROR_CY, MIRROR2_CX, MIRROR2_CY, NPC_CX, NPC_CY, NPC_X, NPC_Y, ROOMS, TORCHES, TORCHES2 } = world
+  const v = extractSceneVars(state, world, player)
+  setupSceneContext(ctx, zoom, v.pcx, v.pcy, cameraOffset)
 
-  const cw = ctx.canvas.width
-  const ch = ctx.canvas.height
-  const pcx = player.x + 8
-  const pcy = player.y + 8
+  drawProximityAura(ctx, v.NPC_CX, v.NPC_CY, v.pcx, v.pcy, 64, '96,232,255')
+  drawProximityAura(ctx, v.MIRROR_CX, v.MIRROR_CY, v.pcx, v.pcy, 56, '168,85,247')
+  drawProximityAura(ctx, v.MIRROR2_CX, v.MIRROR2_CY, v.pcx, v.pcy, 56, '168,85,247')
 
-  ctx.fillStyle = '#06040e'
-  ctx.fillRect(0, 0, cw, ch)
+  drawRoom(ctx, world.layers, v.map, v.layerEdits, v.spriteColorOverrides)
+  drawDoorCorridor(ctx, v.door1Progress, v.wallX, v.gapY1, v.gapY2)
+  drawDoorCorridor(ctx, v.door2Progress, v.wall2X, v.gap2Y1, v.gap2Y2, true)
 
-  ctx.save()
-  ctx.translate(cw / 2, ch / 2)
-  ctx.scale(zoom, zoom)
-  ctx.translate(-pcx + cameraOffset.x, -pcy + cameraOffset.y)
-
-  drawProximityAura(ctx, NPC_CX, NPC_CY, pcx, pcy, 64, '96,232,255')
-  drawProximityAura(ctx, MIRROR_CX, MIRROR_CY, pcx, pcy, 56, '168,85,247')
-  drawProximityAura(ctx, MIRROR2_CX, MIRROR2_CY, pcx, pcy, 56, '168,85,247')
-
-  drawRoom(ctx, world.layers, map, layerEdits, spriteColorOverrides)
-  drawDoorCorridor(ctx, door1Progress, wallX, gapY1, gapY2)
-  drawDoorCorridor(ctx, door2Progress, wall2X, gap2Y1, gap2Y2, true)
-
-  const refl1 = reflectionData(player, MIRROR_CX, MIRROR_CY, charColors)
-  const refl2 = reflectionData(player, MIRROR2_CX, MIRROR2_CY, charColors)
+  const refl1 = reflectionData(player, v.MIRROR_CX, v.MIRROR_CY, charColors)
+  const refl2 = reflectionData(player, v.MIRROR2_CX, v.MIRROR2_CY, charColors)
 
   drawBehindPlayer(ctx, world, player, torchPhase, charColors, refl1, refl2)
-  drawNpc(ctx, NPC_X, NPC_Y, torchPhase)
+  drawNpc(ctx, v.NPC_X, v.NPC_Y, torchPhase)
   drawWarriorSprite(ctx, player.x, player.y - player.jumpHeight, player.facing, player.frame, torchPhase, charColors, player.moving)
   drawInFrontOfPlayer(ctx, world, player, torchPhase, charColors, refl1, refl2)
 
   if (!refs.paused) {
-    if (nearNpc(player, NPC_CX, NPC_CY)) drawBadge(ctx, NPC_CX, NPC_CY - 2, torchPhase)
-    if (nearMirror(player, MIRROR_CX, MIRROR_CY)) drawBadge(ctx, MIRROR_CX, world.MIRROR_TY - 4, torchPhase, '[MIR]')
-    if (nearMirror(player, MIRROR2_CX, MIRROR2_CY)) drawBadge(ctx, MIRROR2_CX, world.MIRROR2_TY - 4, torchPhase, '[MIR]')
+    if (nearNpc(player, v.NPC_CX, v.NPC_CY)) drawBadge(ctx, v.NPC_CX, v.NPC_CY - 2, torchPhase)
+    if (nearMirror(player, v.MIRROR_CX, v.MIRROR_CY)) drawBadge(ctx, v.MIRROR_CX, world.MIRROR_TY - 4, torchPhase, '[MIR]')
+    if (nearMirror(player, v.MIRROR2_CX, v.MIRROR2_CY)) drawBadge(ctx, v.MIRROR2_CX, world.MIRROR2_TY - 4, torchPhase, '[MIR]')
   }
 
-  const gap1 = door1Progress > 0 ? { y1: gapY1, y2: gapY2 } : null
-  const gap2 = door2Progress > 0 ? { y1: gap2Y1, y2: gap2Y2 } : null
-  drawBoundsOfLight(ctx, ROOMS, torchPhase, pcx, pcy, gap1, gap2)
-  drawTorch(ctx, TORCHES[0].c, TORCHES[0].r, torchPhase, refs.nameSet)
-  drawTorch(ctx, TORCHES[1].c, TORCHES[1].r, torchPhase, refs.colorsSet)
-  drawTorch(ctx, TORCHES2[0].c, TORCHES2[0].r, torchPhase, near2)
-  drawTorch(ctx, TORCHES2[1].c, TORCHES2[1].r, torchPhase, near2)
+  const gap1 = v.door1Progress > 0 ? { y1: v.gapY1, y2: v.gapY2 } : null
+  const gap2 = v.door2Progress > 0 ? { y1: v.gap2Y1, y2: v.gap2Y2 } : null
+  drawBoundsOfLight(ctx, v.ROOMS, torchPhase, v.pcx, v.pcy, gap1, gap2)
+  drawTorch(ctx, v.TORCHES[0].c, v.TORCHES[0].r, torchPhase, refs.nameSet)
+  drawTorch(ctx, v.TORCHES[1].c, v.TORCHES[1].r, torchPhase, refs.colorsSet)
+  drawTorch(ctx, v.TORCHES2[0].c, v.TORCHES2[0].r, torchPhase, v.near2)
+  drawTorch(ctx, v.TORCHES2[1].c, v.TORCHES2[1].r, torchPhase, v.near2)
 
-  drawSelectedTiles(ctx, selectedTiles, highlightColors)
-  drawPastePreview(ctx, pastePreviewData, hoveredTile)
-  drawHoveredTile(ctx, hoveredTile, selectedTiles, highlightColors)
-  drawHoverPreview(ctx, hoverPreview, hoveredTile, spriteColorOverrides)
+  drawSelectedTiles(ctx, v.selectedTiles, v.highlightColors)
+  drawPastePreview(ctx, v.pastePreviewData, v.hoveredTile)
+  drawHoveredTile(ctx, v.hoveredTile, v.selectedTiles, v.highlightColors)
+  drawHoverPreview(ctx, v.hoverPreview, v.hoveredTile, v.spriteColorOverrides)
 
   ctx.restore()
 }

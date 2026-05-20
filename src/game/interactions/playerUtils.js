@@ -1,67 +1,33 @@
+import { addLog, validatePlayer, validateDirection, getTileCoordinates, movePlayerInDirection } from './playerUtilsHelpers'
+
 export function inspectPlayer(player, logs) {
-  if (!player) {
-    logs.push({ message: 'Player not initialized', type: 'error', timestamp: new Date().toLocaleTimeString() })
-    return
-  }
-
-  const tileX = Math.floor(player.x / 16)
-  const tileY = Math.floor(player.y / 16)
-
-  logs.push({ message: `Player Position: (${player.x.toFixed(1)}, ${player.y.toFixed(1)})`, type: 'info', timestamp: new Date().toLocaleTimeString() })
-  logs.push({ message: `Tile Coordinates: (${tileX}, ${tileY})`, type: 'info', timestamp: new Date().toLocaleTimeString() })
-  logs.push({ message: `Facing: ${player.facing}`, type: 'info', timestamp: new Date().toLocaleTimeString() })
-  logs.push({ message: `Velocity: (${player.vx.toFixed(2)}, ${player.vy.toFixed(2)})`, type: 'info', timestamp: new Date().toLocaleTimeString() })
+  if (!validatePlayer(player, logs)) return
+  const { tileX, tileY } = getTileCoordinates(player.x, player.y)
+  addLog(logs, `Player Position: (${player.x.toFixed(1)}, ${player.y.toFixed(1)})`)
+  addLog(logs, `Tile Coordinates: (${tileX}, ${tileY})`)
+  addLog(logs, `Facing: ${player.facing}`)
+  addLog(logs, `Velocity: (${player.vx.toFixed(2)}, ${player.vy.toFixed(2)})`)
 }
 
 export function teleportPlayer(player, x, y, logs) {
-  if (!player) {
-    logs.push({ message: 'Cannot teleport: player not initialized', type: 'error', timestamp: new Date().toLocaleTimeString() })
-    return false
-  }
-
-  player.x = x
-  player.y = y
-  player.vx = 0
-  player.vy = 0
-
-  logs.push({ message: `Teleported to (${x}, ${y})`, type: 'success', timestamp: new Date().toLocaleTimeString() })
+  if (!validatePlayer(player, logs, 'Cannot teleport: player not initialized')) return false
+  player.x = x; player.y = y; player.vx = 0; player.vy = 0
+  addLog(logs, `Teleported to (${x}, ${y})`, 'success')
   return true
 }
 
 export function setPlayerFacing(player, direction, logs) {
-  const validDirs = ['up', 'down', 'left', 'right']
-  if (!validDirs.includes(direction)) {
-    logs.push({ message: `Invalid direction. Valid: ${validDirs.join(', ')}`, type: 'error', timestamp: new Date().toLocaleTimeString() })
-    return false
-  }
-
+  if (!validateDirection(direction, logs)) return false
   player.facing = direction
-  logs.push({ message: `Player now facing: ${direction}`, type: 'success', timestamp: new Date().toLocaleTimeString() })
+  addLog(logs, `Player now facing: ${direction}`, 'success')
   return true
 }
 
 export function testMovementDirection(player, direction, logs) {
-  const validDirs = ['up', 'down', 'left', 'right']
-  if (!validDirs.includes(direction)) {
-    logs.push({ message: `Invalid direction: ${direction}`, type: 'error', timestamp: new Date().toLocaleTimeString() })
-    return
-  }
-
-  if (!player) {
-    logs.push({ message: 'Player not initialized', type: 'error', timestamp: new Date().toLocaleTimeString() })
-    return
-  }
-
+  if (!validateDirection(direction, logs)) return
+  if (!validatePlayer(player, logs)) return
   const startPos = { x: player.x, y: player.y }
-  const speed = 1.5
-
-  switch (direction) {
-    case 'up': player.y -= speed; break
-    case 'down': player.y += speed; break
-    case 'left': player.x -= speed; break
-    case 'right': player.x += speed; break
-  }
-
+  movePlayerInDirection(player, direction, 1.5)
   const distance = Math.hypot(player.x - startPos.x, player.y - startPos.y)
-  logs.push({ message: `Movement test ${direction}: ${distance.toFixed(2)}px`, type: distance > 0 ? 'success' : 'warning', timestamp: new Date().toLocaleTimeString() })
+  addLog(logs, `Movement test ${direction}: ${distance.toFixed(2)}px`, distance > 0 ? 'success' : 'warning')
 }

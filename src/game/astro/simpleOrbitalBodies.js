@@ -1,4 +1,5 @@
 import { norm, cos_, sin_, eccentricAnomaly, sunGeocentricCoordinates } from './ephemerisCore.js'
+import { applyMoonPerturbations } from './moonPerturbations.js'
 
 export function sunLongitude(d) {
   return sunGeocentricCoordinates(d).lon
@@ -14,7 +15,7 @@ export function moonLongitude(d) {
   const E = eccentricAnomaly(M, e)
   const xv = cos_(E) - e
   const yv = Math.sqrt(1 - e * e) * sin_(E)
-  const v  = Math.atan2(yv, xv) * 180 / Math.PI
+  const v = Math.atan2(yv, xv) * 180 / Math.PI
   const vw = v + w
   const xeclip = cos_(N) * cos_(vw) - sin_(N) * sin_(vw) * cos_(i)
   const yeclip = sin_(N) * cos_(vw) + cos_(N) * sin_(vw) * cos_(i)
@@ -22,23 +23,11 @@ export function moonLongitude(d) {
   const Ls = sunGeocentricCoordinates(d).lon
   const Lm = norm(N + w + M)
   const Ms = norm(356.0470 + 0.9856002585 * d)
-  const D  = Lm - Ls
-  const F  = Lm - N
+  const D = Lm - Ls
+  const F = Lm - N
 
   let lon = Math.atan2(yeclip, xeclip) * 180 / Math.PI
-  lon += -1.274 * sin_(M - 2*D)
-  lon +=  0.658 * sin_(2*D)
-  lon += -0.186 * sin_(Ms)
-  lon += -0.059 * sin_(2*M - 2*D)
-  lon += -0.057 * sin_(M - 2*D + Ms)
-  lon +=  0.053 * sin_(M + 2*D)
-  lon +=  0.046 * sin_(2*D - Ms)
-  lon +=  0.041 * sin_(M - Ms)
-  lon += -0.035 * sin_(D)
-  lon += -0.031 * sin_(M + Ms)
-  lon += -0.015 * sin_(2*D - 2*F)
-  lon +=  0.011 * sin_(2*D - M + Ms)
-
+  lon = applyMoonPerturbations(lon, M, D, F, Ms)
   return norm(lon)
 }
 

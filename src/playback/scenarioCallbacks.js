@@ -1,61 +1,21 @@
+import { createCommonEditorCallbacks, createCommonColorCallback, createCommonCompleteCallback } from './scenarioCommonCallbacks.js'
+
 export function createMirrorVisitCallbacks(gameRef, recorder, setShowEditor, setEditorPage, setCharColors) {
+  const common = createCommonEditorCallbacks(setShowEditor, setEditorPage, recorder)
   return {
     getPlayerPos: () => gameRef.current?.playerPos() ?? { x: 0, y: 0 },
-    onOpenEditor: () => {
-      console.action('⬡ Mirror opened')
-      setShowEditor(true)
-      setEditorPage(0)
-      recorder.updateOverlay({ showEditor: true })
-    },
-    onCloseEditor: () => {
-      console.action('⬡ Mirror closed')
-      setShowEditor(false)
-      setEditorPage(0)
-      recorder.updateOverlay({ showEditor: false })
-    },
-    onScrollEditor: (p) => setEditorPage(p),
-    onColorChange: (key, value) => {
-      console.action(`🎨 Color changed — ${key}: ${value}`)
-      setCharColors(prev => {
-        const next = { ...prev, [key]: value }
-        recorder.updateOverlay({ charColors: next })
-        return next
-      })
-    },
-    onComplete: () => {
-      console.action('✓ Scenario complete — converting in 1.5s')
-      setTimeout(() => {
-        const ts = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19)
-        recorder.stop(`mirror-visit_${ts}.mp4`)
-      }, 1500)
-    },
+    ...common,
+    onColorChange: createCommonColorCallback(setCharColors, recorder),
+    onComplete: createCommonCompleteCallback(recorder, 'mirror-visit'),
   }
 }
 
 export function createGateRunCallbacks(gameRef, recorder, setShowEditor, setEditorPage, setCharColors) {
+  const common = createCommonEditorCallbacks(setShowEditor, setEditorPage, recorder)
   return {
     getPlayerPos: () => gameRef.current?.playerPos() ?? { x: 0, y: 0 },
-    onOpenEditor: () => {
-      console.action('⬡ Mirror opened')
-      setShowEditor(true)
-      setEditorPage(0)
-      recorder.updateOverlay({ showEditor: true })
-    },
-    onCloseEditor: () => {
-      console.action('⬡ Mirror closed')
-      setShowEditor(false)
-      setEditorPage(0)
-      recorder.updateOverlay({ showEditor: false })
-    },
-    onScrollEditor: (p) => setEditorPage(p),
-    onColorChange: (key, value) => {
-      console.action(`🎨 Color changed — ${key}: ${value}`)
-      setCharColors(prev => {
-        const next = { ...prev, [key]: value }
-        recorder.updateOverlay({ charColors: next })
-        return next
-      })
-    },
+    ...common,
+    onColorChange: createCommonColorCallback(setCharColors, recorder),
     onSetName: (name) => {
       console.action(`✏ Name set — ${name}`)
       try { localStorage.setItem('life-mmo-name', JSON.stringify(name)) } catch {}
@@ -72,12 +32,6 @@ export function createGateRunCallbacks(gameRef, recorder, setShowEditor, setEdit
       setShowEditor(false)
       setEditorPage(0)
     },
-    onComplete: () => {
-      console.action('✓ Scenario complete — converting in 1.5s')
-      setTimeout(() => {
-        const ts = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19)
-        recorder.stop(`gate-run_${ts}.mp4`)
-      }, 1500)
-    },
+    onComplete: createCommonCompleteCallback(recorder, 'gate-run'),
   }
 }

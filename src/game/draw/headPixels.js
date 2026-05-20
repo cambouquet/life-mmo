@@ -1,3 +1,5 @@
+import { getColorForPixel } from './headShading.js'
+
 export function filterHeadPixels(standFrame) {
   return standFrame.filter(p => {
     if (p.type === 'stick') return false
@@ -27,34 +29,6 @@ export function calculateHeadOffset(bounds) {
 }
 
 export function getHeadPixelColor(p, colors, isBlinking) {
-  let fill = p.color
-
-  if (p.type === 'hair') fill = applyHeadShading(colors.hair, p.b)
-  else if (p.type === 'skin') {
-    const skinFactor = (p.b || 200) / 200
-    const sr = parseInt(colors.skin.slice(1, 3), 16)
-    const sg = parseInt(colors.skin.slice(3, 5), 16)
-    const sb = parseInt(colors.skin.slice(5, 7), 16)
-    fill = `rgb(${Math.min(255, sr * skinFactor)}, ${Math.min(255, sg * skinFactor)}, ${Math.min(255, sb * skinFactor)})`
-  } else if (p.type === 'outfit') fill = applyHeadShading(colors.outfit, p.b)
-  else if (p.type === 'eyes') {
-    if (isBlinking) return null
-    fill = applyHeadShading(colors.eyes, p.b)
-  } else if (p.type === 'secondary') fill = applyHeadShading(colors.secondary, p.b)
-  else if (p.type === 'stick') fill = applyHeadShading(colors.stick, p.b)
-  else if (p.type === 'accessory') fill = applyHeadShading('#ffd700', p.b)
-
-  return fill
-}
-
-function applyHeadShading(hex, originalBrightness) {
-  if (!hex) return '#000000'
-  const r = parseInt(hex.slice(1, 3), 16)
-  const g = parseInt(hex.slice(3, 5), 16)
-  const b = parseInt(hex.slice(5, 7), 16)
-  const factor = (originalBrightness || 160) / 160
-  const nr = Math.min(255, Math.floor(r * factor))
-  const ng = Math.min(255, Math.floor(g * factor))
-  const nb = Math.min(255, Math.floor(b * factor))
-  return `rgb(${nr}, ${ng}, ${nb})`
+  if (p.type === 'eyes' && isBlinking) return null
+  return getColorForPixel(p.type, colors, p.b) ?? p.color
 }

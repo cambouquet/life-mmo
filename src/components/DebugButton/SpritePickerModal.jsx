@@ -2,41 +2,22 @@ import React, { useState, useEffect } from 'react'
 import './SpritePickerModal.scss'
 import { SPRITESHEETS } from './spritePickerData.js'
 import { getCategoryId } from './spritePickerUtils.js'
+import { createBackupHandlers } from './spritePickerBackup.js'
 import { SpritePickerHeader } from './SpritePickerHeader.jsx'
 import { SpriteGrid } from './SpriteGrid.jsx'
 import { SpriteColorPicker } from './SpriteColorPicker.jsx'
+import { useSpriteHover } from './useSpriteHover.js'
 
-export default function SpritePickerModal({ category, currentSprite, onSelect, onClose, onHoverPreview, spriteColorOverrides = {}, activeSprite, onActiveSpriteChange, onSpriteColorChange }) {
+export default function SpritePickerModal({ category, currentSprite, onSelect, onClose, onHoverPreview, spriteColorOverrides = {}, onActiveSpriteChange, onSpriteColorChange }) {
   const ssId = getCategoryId(category)
   const ss = SPRITESHEETS[ssId]
   if (!ss) return null
 
   const spriteCount = category === 'floor' ? 1 : ss.rows
-  const [hoverIndex, setHoverIndex] = useState(null)
   const [backups, setBackups] = useState([])
   const [selectedColorIndex, setSelectedColorIndex] = useState(null)
-
-  const createBackup = () => {
-    const backup = { id: Date.now(), timestamp: new Date().toLocaleString() }
-    setBackups([backup, ...backups].slice(0, 5))
-  }
-
-  const restoreBackup = (backup) => {
-    // backup restore implementation
-  }
-
-  const deleteBackup = (id) => {
-    setBackups(backups.filter(b => b.id !== id))
-  }
-
-  useEffect(() => {
-    if (hoverIndex !== null) {
-      const sprite = category === 'floor' ? { ss: ssId, row: 0, variant: hoverIndex } : { ss: ssId, row: hoverIndex }
-      onHoverPreview?.(sprite)
-    } else {
-      onHoverPreview?.(null)
-    }
-  }, [hoverIndex, category, ssId, onHoverPreview])
+  const { hoverIndex, setHoverIndex } = useSpriteHover(category, ssId, onHoverPreview)
+  const { createBackup, restoreBackup, deleteBackup } = createBackupHandlers(setBackups)
 
   return (
     <div className="sprite-picker-overlay" onClick={onClose}>

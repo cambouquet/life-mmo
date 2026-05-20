@@ -10,6 +10,7 @@ import { useStateHistory, useResizeHandle, useClickOutside } from './DebugConsol
 import { buildCopyText, toggleCategory } from './DebugConsole/debugConsoleUtils.js'
 import { DebugTabs } from './DebugConsole/DebugTabs.jsx'
 import { DebugToggle } from './DebugConsole/DebugToggle.jsx'
+import { createKeyDownHandler, createResizeMouseDown } from './DebugConsole/debugConsoleHandlers.js'
 
 export default function DebugConsole({ onReset, getSaveData, onLoad }) {
   const [isOpen, setIsOpen] = useState(false)
@@ -26,58 +27,25 @@ export default function DebugConsole({ onReset, getSaveData, onLoad }) {
 
   const visible = logs.filter((l) => !hidden.has(l.type))
   const copyAllText = buildCopyText(visible, history, selectedIndex)
-
-  const handleKeyDown = (e) => {
-    if (!scrollRef.current) return
-    const step = 40
-    if (e.key === 'ArrowUp') {
-      scrollRef.current.scrollTop -= step
-      e.preventDefault()
-    } else if (e.key === 'ArrowDown') {
-      scrollRef.current.scrollTop += step
-      e.preventDefault()
-    }
-  }
+  const handleKeyDown = createKeyDownHandler(scrollRef)
+  const handleResizeMouseDown = createResizeMouseDown(isResizingRef)
 
   return (
     <div className="debug-container" style={{ '--debug-height': `${height}px` }}>
       {isOpen && (
         <div ref={panelRef} className="debug-panel" tabIndex={0} onKeyDown={handleKeyDown}>
-          <div
-            className="debug-resize-handle"
-            onMouseDown={(e) => {
-              e.preventDefault()
-              isResizingRef.current = true
-              document.body.style.cursor = 'ns-resize'
-              document.body.style.userSelect = 'none'
-            }}
-          />
+          <div className="debug-resize-handle" onMouseDown={handleResizeMouseDown} />
           <div className="debug-header">
             <div className="debug-header-top debug-row">
               <DebugTabs tab={tab} setTab={setTab} />
               <CopyButton text={copyAllText} title="Copy all (logs, state, actions)" />
             </div>
-            {tab === 'logs' && (
-              <LogsTab
-                visible={visible}
-                hidden={hidden}
-                toggleCategory={(cat) => setHidden(toggleCategory(hidden, cat))}
-                setLogs={setLogs}
-                scrollRef={scrollRef}
-              />
-            )}
+            {tab === 'logs' && (<LogsTab visible={visible} hidden={hidden} toggleCategory={(cat) => setHidden(toggleCategory(hidden, cat))} setLogs={setLogs} scrollRef={scrollRef} />)}
           </div>
-
           {tab === 'logs' ? (
             <div className="debug-logs" ref={scrollRef}>
               {visible.length === 0 && <div className="debug-empty">No logs.</div>}
-              {visible.map((log) => (
-                <div key={log.id} className={`debug-log debug-log--${log.type}`}>
-                  <span className="debug-log-ts">{log.ts}</span>
-                  <span className="debug-log-msg">{log.message}</span>
-                  <CopyButton text={log.message} />
-                </div>
-              ))}
+              {visible.map((log) => (<div key={log.id} className={`debug-log debug-log--${log.type}`}><span className="debug-log-ts">{log.ts}</span><span className="debug-log-msg">{log.message}</span><CopyButton text={log.message} /></div>))}
             </div>
           ) : tab === 'data' ? (
             <DataTab onReset={onReset} getSaveData={getSaveData} onLoad={onLoad} />

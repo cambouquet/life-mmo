@@ -1,5 +1,3 @@
-// Aspect detection — classical five aspects with standard orbs
-
 export const ASPECT_DEFS = [
   { name: 'Conjunction', symbol: '☌', angle: 0,   orb: 8,  nature: 'intense'    },
   { name: 'Sextile',     symbol: '⚹', angle: 60,  orb: 5,  nature: 'harmonious' },
@@ -8,12 +6,8 @@ export const ASPECT_DEFS = [
   { name: 'Opposition',  symbol: '☍', angle: 180, orb: 8,  nature: 'polarizing' },
 ]
 
-function separation(a, b) {
-  const diff = Math.abs(a - b) % 360
-  return diff > 180 ? 360 - diff : diff
-}
+import { separation, findMatchingAspects } from './aspectsMatcher.js'
 
-// Aspects within a single chart (sky-only reading)
 export function findAspects(positions) {
   const bodies  = Object.entries(positions)
   const results = []
@@ -23,19 +17,8 @@ export function findAspects(positions) {
       const [nameA, lonA] = bodies[i]
       const [nameB, lonB] = bodies[j]
       const angle = separation(lonA, lonB)
-
-      for (const def of ASPECT_DEFS) {
-        const orb = Math.abs(angle - def.angle)
-        if (orb <= def.orb) {
-          results.push({
-            bodyA:     nameA,
-            bodyB:     nameB,
-            aspect:    def,
-            orb:       orb,
-            exactness: 1 - orb / def.orb,
-          })
-        }
-      }
+      const matches = findMatchingAspects(angle)
+      results.push(...matches.map(m => ({ bodyA: nameA, bodyB: nameB, ...m })))
     }
   }
 
@@ -43,27 +26,14 @@ export function findAspects(positions) {
   return results
 }
 
-// Transit planets aspecting natal planets (personal reading)
-// Returns { transit: planetName, natal: planetName, aspect, orb, exactness }
 export function findTransitToNatal(transits, natal) {
   const results = []
 
   for (const [tName, tLon] of Object.entries(transits)) {
     for (const [nName, nLon] of Object.entries(natal)) {
       const angle = separation(tLon, nLon)
-
-      for (const def of ASPECT_DEFS) {
-        const orb = Math.abs(angle - def.angle)
-        if (orb <= def.orb) {
-          results.push({
-            transit:   tName,
-            natal:     nName,
-            aspect:    def,
-            orb,
-            exactness: 1 - orb / def.orb,
-          })
-        }
-      }
+      const matches = findMatchingAspects(angle)
+      results.push(...matches.map(m => ({ transit: tName, natal: nName, ...m })))
     }
   }
 

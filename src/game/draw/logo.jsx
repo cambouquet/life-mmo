@@ -1,61 +1,41 @@
-/**
- * Draw the logo onto a 72×26 canvas context.
- * Left (0-21): constellation stars
- * x=23: dotted divider
- * Right (25-71): "THE" / "LIFE" / "GAME" stacked pixel text
- */
+import { LOGO_CONSTELLATION, LOGO_GLYPHS, LOGO_TEXT } from './logoData.js'
+
 export function drawLogo(ctx) {
   const LW = 72, LH = 26
   ctx.fillStyle = '#060511'
   ctx.fillRect(0, 0, LW, LH)
 
   const p = (x, y, c) => { ctx.fillStyle = c; ctx.fillRect(x, y, 1, 1) }
+  const { stars, lines, colors } = LOGO_CONSTELLATION
 
-  // ── Constellation (six stars, five lines) ──────────────────────────────────
-  const S = [[2,13],[5,4],[10,19],[14,8],[19,13],[12,2]]
   ctx.save()
   ctx.globalAlpha = 0.28
-  ctx.strokeStyle = '#9060d8'
+  ctx.strokeStyle = colors.line
   ctx.lineWidth = 0.8
-  ;[[0,1],[1,5],[5,3],[3,4],[2,4]].forEach(([a, b]) => {
+  lines.forEach(([a, b]) => {
     ctx.beginPath()
-    ctx.moveTo(S[a][0] + 0.5, S[a][1] + 0.5)
-    ctx.lineTo(S[b][0] + 0.5, S[b][1] + 0.5)
+    ctx.moveTo(stars[a][0] + 0.5, stars[a][1] + 0.5)
+    ctx.lineTo(stars[b][0] + 0.5, stars[b][1] + 0.5)
     ctx.stroke()
   })
   ctx.restore()
-  for (const [x, y] of S) p(x, y, '#5030a0')
-  p(12, 2, '#ffffff')
-  p(11, 2, '#c0a0ff'); p(13, 2, '#c0a0ff')
-  p(12, 1, '#c0a0ff'); p(12, 3, '#c0a0ff')
-  p(5, 4, '#d8c8ff')
-  p(4, 4, '#7050b8'); p(6, 4, '#7050b8')
-  p(5, 3, '#7050b8'); p(5, 5, '#7050b8')
+  for (const [x, y] of stars) p(x, y, colors.star)
+  p(12, 2, colors.bright)
+  p(11, 2, colors.glow); p(13, 2, colors.glow)
+  p(12, 1, colors.glow); p(12, 3, colors.glow)
+  p(5, 4, colors.glow2)
+  p(4, 4, colors.dim); p(6, 4, colors.dim)
+  p(5, 3, colors.dim); p(5, 5, colors.dim)
 
-  // ── Dotted separator ───────────────────────────────────────────────────────
   for (let y = 2; y < LH - 2; y += 3) {
     ctx.fillStyle = '#2a1858'
     ctx.fillRect(23, y, 1, 2)
   }
 
-  // ── 3×5 pixel font ─────────────────────────────────────────────────────────
-  const G = {
-    T: ['111','010','010','010','010'],
-    H: ['101','101','111','101','101'],
-    E: ['11', '10', '11', '10', '11' ],
-    L: ['10', '10', '10', '10', '11' ],
-    I: ['1',  '1',  '1',  '1',  '1'  ],
-    F: ['11', '10', '11', '10', '10' ],
-    G: ['110','100','101','101','110'],
-    A: ['010','101','111','101','101'],
-    M: ['101','111','101','101','101'],
-    O: ['010','101','101','101','010'],
-  }
-
   function drawStr(str, sx, sy, sc, col) {
     let cx = sx
     for (const ch of str) {
-      const rows = G[ch]
+      const rows = LOGO_GLYPHS[ch]
       if (!rows) { cx += sc * 2; continue }
       rows.forEach((row, ry) =>
         [...row].forEach((b, rx) => {
@@ -66,7 +46,5 @@ export function drawLogo(ctx) {
     }
   }
 
-  drawStr('THE',  26,  2, 1, '#6a48a0')
-  drawStr('LIFE', 26,  9, 2, '#c8a8f0')
-  drawStr('GAME', 26, 21, 1, '#6a48a0')
+  LOGO_TEXT.forEach(({ str, x, y, scale, color }) => drawStr(str, x, y, scale, color))
 }

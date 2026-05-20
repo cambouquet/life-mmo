@@ -1,21 +1,20 @@
-import React, { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { searchCities } from '../../game/astro/cities.js'
+import { formatCityCoords, useCitySearchOutsideClick } from './citySearchHelpers'
 
 export function CitySearch({ value, onChange }) {
-  const [query,   setQuery]   = useState(value?.name ?? '')
+  const [query, setQuery] = useState(value?.name ?? '')
   const [results, setResults] = useState([])
-  const [open,    setOpen]    = useState(false)
+  const [open, setOpen] = useState(false)
   const wrapRef = useRef(null)
 
   useEffect(() => {
-    const handler = e => {
-      if (wrapRef.current && !wrapRef.current.contains(e.target)) setOpen(false)
-    }
+    const handler = useCitySearchOutsideClick(wrapRef, setOpen)
     document.addEventListener('mousedown', handler)
     return () => document.removeEventListener('mousedown', handler)
   }, [])
 
-  const handleInput = e => {
+  const handleInput = (e) => {
     const q = e.target.value
     setQuery(q)
     const found = searchCities(q)
@@ -24,7 +23,7 @@ export function CitySearch({ value, onChange }) {
     if (q === '') onChange(null)
   }
 
-  const select = city => {
+  const select = (city) => {
     setQuery(`${city.name}, ${city.country}`)
     setResults([])
     setOpen(false)
@@ -33,34 +32,20 @@ export function CitySearch({ value, onChange }) {
 
   return (
     <div className="city-search" ref={wrapRef}>
-      <input
-        className="input-birth input-city"
-        style={{ textAlign: 'center' }}
-        type="text"
-        value={query}
-        onChange={handleInput}
-        onFocus={() => query && setOpen(results.length > 0)}
-        placeholder="City of birth"
-        autoComplete="off"
-      />
+      <input className="input-birth input-city" style={{ textAlign: 'center' }} type="text" value={query}
+        onChange={handleInput} onFocus={() => query && setOpen(results.length > 0)}
+        placeholder="City of birth" autoComplete="off" />
       {open && (
         <div className="city-dropdown">
           {results.map(city => (
             <div key={`${city.name}-${city.country}`} className="city-option" onMouseDown={() => select(city)}>
               <span className="city-option__name">{city.name}</span>
-              <span className="city-option__meta">{city.country} · {city.lat > 0 ? city.lat.toFixed(1)+'°N' : Math.abs(city.lat).toFixed(1)+'°S'}</span>
+              <span className="city-option__meta">{city.country} · {formatCityCoords(city, true).split(' · ')[0]}</span>
             </div>
           ))}
         </div>
       )}
-      {value && (
-        <div className="city-coords" style={{ textAlign: 'center' }}>
-          {value.lat > 0 ? value.lat.toFixed(2)+'°N' : Math.abs(value.lat).toFixed(2)+'°S'}
-          {' · '}
-          {value.lng > 0 ? value.lng.toFixed(2)+'°E' : Math.abs(value.lng).toFixed(2)+'°W'}
-          {' · UTC'}{value.tz >= 0 ? '+' : ''}{value.tz}
-        </div>
-      )}
+      {value && <div className="city-coords" style={{ textAlign: 'center' }}>{formatCityCoords(value)}</div>}
     </div>
   )
 }

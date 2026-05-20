@@ -1,0 +1,3 @@
+export const MERCURY = { w_offset: 2.439, Omega: 48.3313, omegaDot: 3.24587e-5, i: 7.0047, iDot: 5.00e-8, omega: 29.1241, omegaDot2: 1.01444e-5, a: 0.387098, e: 0.205635, eDot: 5.59e-10, L: 168.6562, n: 4.0923344368 }
+export const VENUS = { w_offset: 2.3562, Omega: 76.6799, omegaDot: 2.46590e-5, i: 3.3946, iDot: 2.75e-8, omega: 54.8910, omegaDot2: 1.38374e-5, a: 0.723330, e: 0.006773, eDot: -1.302e-9, L: 48.0052, n: 1.6021302244 }
+export const MARS = { w_offset: 0.77747, Omega: 49.5574, omegaDot: 2.11081e-5, i: 1.8497, iDot: -1.78e-8, omega: 286.5016, omegaDot2: 2.92961e-5, a: 1.523688, e: 0.093405, eDot: 2.516e-9, L: 18.6021, n: 0.5240207766 }

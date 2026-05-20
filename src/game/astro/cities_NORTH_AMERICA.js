@@ -1,0 +1,16 @@
+export const NORTH_AMERICA = [
+  { name: 'New York', country: 'US', lat: 40.71, lng: -74.01, tz: -5 },
+  { name: 'Los Angeles', country: 'US', lat: 34.05, lng: -118.24, tz: -8 },
+  { name: 'Chicago', country: 'US', lat: 41.88, lng: -87.63, tz: -6 },
+  { name: 'Houston', country: 'US', lat: 29.76, lng: -95.37, tz: -6 },
+  { name: 'Phoenix', country: 'US', lat: 33.45, lng: -112.07, tz: -7 },
+  { name: 'San Francisco', country: 'US', lat: 37.77, lng: -122.42, tz: -8 },
+  { name: 'Seattle', country: 'US', lat: 47.61, lng: -122.33, tz: -8 },
+  { name: 'Miami', country: 'US', lat: 25.77, lng: -80.19, tz: -5 },
+  { name: 'Boston', country: 'US', lat: 42.36, lng: -71.06, tz: -5 },
+  { name: 'Denver', country: 'US', lat: 39.74, lng: -104.99, tz: -7 },
+  { name: 'Toronto', country: 'CA', lat: 43.65, lng: -79.38, tz: -5 },
+  { name: 'Montreal', country: 'CA', lat: 45.50, lng: -73.57, tz: -5 },
+  { name: 'Vancouver', country: 'CA', lat: 49.25, lng: -123.12, tz: -8 },
+  { name: 'Mexico City', country: 'MX', lat: 19.43, lng: -99.13, tz: -6 },
+]

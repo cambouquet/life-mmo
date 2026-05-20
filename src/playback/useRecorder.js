@@ -1,5 +1,6 @@
 import { useRef, useState, useCallback } from 'react'
-import { initFFmpeg, convertWebmToMp4 } from './ffmpegEngine.js'
+import { initFFmpeg } from './ffmpegEngine.js'
+import { createRecorderHandlers } from './recorderHandlers.js'
 
 export function useRecorder({ onReady } = {}) {
   const mediaRecorderRef = useRef(null)
@@ -19,78 +20,10 @@ export function useRecorder({ onReady } = {}) {
     return ff
   }, [])
 
-  const start = useCallback((stream) => {
-    if (statusRef.current === 'recording' || statusRef.current === 'converting') {
-      console.warn('useRecorder.start: already recording')
-      return false
-    }
-    if (!stream) {
-      console.error('useRecorder.start: no stream')
-      return false
-    }
+  const { start, stop, cancel } = useCallback(() =>
+    createRecorderHandlers(mediaRecorderRef, chunksRef, ffmpegRef, statusRef, onReadyRef, setStatus, setProgress, loadFfmpeg),
+    [loadFfmpeg]
+  )()
 
-    chunksRef.current = []
-    setProgress(0)
-
-    const mimeType = MediaRecorder.isTypeSupported('video/webm;codecs=vp9')
-      ? 'video/webm;codecs=vp9'
-      : 'video/webm'
-    const mr = new MediaRecorder(stream, { mimeType, videoBitsPerSecond: 8_000_000 })
-    mr.ondataavailable = e => {
-      if (e.data.size > 0) chunksRef.current.push(e.data)
-    }
-
-    stream.getVideoTracks()[0].addEventListener('ended', () => {
-      if (statusRef.current === 'recording') cancel()
-    })
-
-    mr.start(100)
-    mediaRecorderRef.current = mr
-    statusRef.current = 'recording'
-    setStatus('recording')
-    return true
-  }, [])
-
-  const stop = useCallback(async (filename = 'gameplay.mp4') => {
-    const mr = mediaRecorderRef.current
-    if (!mr || mr.state === 'inactive') return
-
-    mr.stream.getTracks().forEach(t => t.stop())
-    statusRef.current = 'idle'
-    setStatus('converting')
-    setProgress(0)
-
-    await new Promise(resolve => {
-      mr.onstop = resolve
-      mr.stop()
-    })
-
-    try {
-      const ff = await loadFfmpeg()
-      const webmBlob = new Blob(chunksRef.current, { type: 'video/webm' })
-      const mp4Blob = await convertWebmToMp4(ff, webmBlob)
-
-      setStatus('done')
-      setProgress(100)
-      onReadyRef.current?.(mp4Blob, filename)
-    } catch (err) {
-      console.error('Recording export failed:', err?.message ?? String(err))
-      setStatus('error')
-    }
-  }, [loadFfmpeg])
-
-  const cancel = useCallback(() => {
-    const mr = mediaRecorderRef.current
-    if (mr) {
-      mr.stream.getTracks().forEach(t => t.stop())
-      if (mr.state !== 'inactive') mr.stop()
-    }
-    statusRef.current = 'idle'
-    setStatus('idle')
-    setProgress(0)
-  }, [])
-
-  const updateOverlay = useCallback(() => {}, [])
-
-  return { start, stop, cancel, updateOverlay, status, progress }
+  return { start, stop, cancel, status, progress }
 }

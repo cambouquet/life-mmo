@@ -1,115 +1,50 @@
-import { useState, useCallback, useRef, useEffect } from 'react'
-import { useViewportScale } from '../hooks/useViewportScale.jsx'
-import { useRecordingScenarios } from '../hooks/useRecordingScenarios.js'
-import { useAppInteraction, useMapPersistence, useExploredTiles } from '../hooks/useAppInteraction.js'
-import HUD from './HUD/HUD.jsx'
-import Game from './Game/Game.jsx'
-import RecordButton from './RecordButton/RecordButton.jsx'
-import DebugConsole from './HUD/DebugConsole.jsx'
-import DebugLayer from './App/DebugLayer.jsx'
-import { useRecorder } from '../playback/useRecorder.js'
-import { AppModals } from './App/AppModals.jsx'
-import { buildDebugConsoleHandlers } from './App/appStateSetup.js'
-import { useAppState, updateRefFlags } from './App/appStateHooks.js'
+import { useState } from 'react'
+import { useViewportScale } from '../hooks/useViewportScale'
+import { useAppState, updateRefFlags } from './App/appStateHooks'
+import { buildDebugConsoleHandlers } from './App/appStateSetup'
+import { AppRenderTree } from './App/AppRenderTree'
+import { buildHUDProps, buildGameProps, buildModalsProps, buildRecordButtonProps, buildDebugLayerPropsHelper } from './App/appPropsBuilders'
+import { useAppRefs } from './App/useAppRefs'
+import { useAppRecorder, useAppStateHandlers, usePersistenceHooks } from './App/appStateSetupHooks'
 
 export default function App() {
-  const wrapRef = useViewportScale()
-  const gameRef = useRef(null)
-  const playerStateRef = useRef(null)
-  const worldDataRef = useRef(null)
-  const canvasWrapRef = useRef(null)
-  const doorUnlockedRef = useRef(false)
-  const nameSetRef = useRef(false)
-  const colorsSetRef = useRef(false)
-
   const { character, ui, game, mapEditor } = useAppState()
-  const { charColors, setCharColors, birthData, charName, syncCharToStorage, resetChar } = character
-  const { showDialog, setShowDialog, showHoroscope, setShowHoroscope, showEditor, setShowEditor, editorPage, setEditorPage, showGallery, setShowGallery, showGameTests, setShowGameTests, debugActive, setDebugActive, closeEditor, resetUI } = ui
-  const { facing, setFacing, moving, setMoving, logEntries, setLogEntries, guidance, setGuidance, worldData, setWorldData, exploredTiles, setExploredTiles, zoom, setZoom, playerPos, setPlayerPos, resetGame } = game
-  const { activeMapMenu, setActiveMapMenu, hoveredTile, setHoveredTile, hoverPreview, setHoverPreview, pickerState, setPickerState, activeSprite, setActiveSprite, layerEdits, setLayerEdits, spriteColorOverrides, setSpriteColorOverrides, highlightColors, setHighlightColors } = mapEditor
-
+  const { nameSetRef, colorsSetRef, doorUnlockedRef, ...refs } = useAppRefs(game.exploredTiles)
   const [recordings, setRecordings] = useState([])
 
-  updateRefFlags(charName, charColors, nameSetRef, colorsSetRef, doorUnlockedRef)
+  updateRefFlags(character.charName, character.charColors, nameSetRef, colorsSetRef, doorUnlockedRef)
+  usePersistenceHooks(mapEditor, game, character)
 
-  useEffect(() => {
-    window.__gameRef = gameRef.current
-    window.__exploredTiles = exploredTiles
-  }, [exploredTiles])
+  const recorder = useAppRecorder(ui.setShowGallery, setRecordings)
+  const { handleStateChange, handleInteract, handleRecord, handleRecordGate, handleStop } = useAppStateHandlers(character, game, ui, refs.gameRef, mapEditor, recorder)
 
-  useMapPersistence(layerEdits, spriteColorOverrides)
-  useExploredTiles(playerPos, setExploredTiles)
-
-  const recorder = useRecorder({
-    onReady: (blob, filename) => {
-      const url = URL.createObjectURL(blob)
-      setRecordings(prev => [...prev, { id: Date.now(), url, blob, filename, ts: Date.now() }])
-      setShowGallery(true)
-    }
-  })
-
-  const handleStateChange = useCallback(({ facing, moving, log, guidance, playerPos: newPlayerPos }) => {
-    setFacing(facing)
-    setMoving(moving)
-    setLogEntries(log)
-    setGuidance(guidance ?? null)
-    setPlayerPos(newPlayerPos)
-  }, [setFacing, setMoving, setLogEntries, setGuidance, setPlayerPos])
-
-  const { handleInteract } = useAppInteraction(showHoroscope, setShowHoroscope, showEditor, setShowEditor, setEditorPage, setShowDialog)
-  const { handleRecord, handleRecordGate, handleStop } = useRecordingScenarios(recorder, gameRef, null, setShowEditor, setEditorPage, setCharColors, charColors, charName, birthData)
-
-  const debugConsoleProps = buildDebugConsoleHandlers(playerStateRef, resetChar, resetUI, resetGame, charName, charColors, birthData)
+  const debugConsoleProps = buildDebugConsoleHandlers(refs.playerStateRef, character.resetChar, ui.resetUI, game.resetGame, character.charName, character.charColors, character.birthData)
+  const hudProps = buildHUDProps(game.facing, game.moving, game.logEntries, character.charColors, character.charName, game.playerPos, game.exploredTiles, game.worldData, ui.debugActive, mapEditor.activeMapMenu, mapEditor.setActiveMapMenu, mapEditor.hoveredTile, mapEditor.layerEdits, mapEditor.setLayerEdits, mapEditor.highlightColors, mapEditor.setHighlightColors, mapEditor.spriteColorOverrides, mapEditor.setSpriteColorOverrides, mapEditor.setHoverPreview, mapEditor.setPickerState, mapEditor.activeSprite, mapEditor.setActiveSprite, game.guidance, ui.showDialog, ui.showHoroscope)
+  const gameProps = buildGameProps(ui.showDialog, ui.showHoroscope, character.charColors, refs.playerStateRef, doorUnlockedRef, nameSetRef, colorsSetRef, ui.debugActive, mapEditor.layerEdits, mapEditor.highlightColors, mapEditor.spriteColorOverrides, mapEditor.hoverPreview, mapEditor.setHoveredTile, game.setWorldData, refs.worldDataRef, mapEditor.setLayerEdits, mapEditor.activeSprite)
+  const modalsProps = buildModalsProps(ui.showDialog, ui.setShowDialog, ui.showHoroscope, ui.setShowHoroscope, ui.showEditor, ui.showGallery, ui.setShowGallery, character.charColors, character.setCharColors, character.charName, character.birthData, ui.editorPage, ui.editorLimited, ui.closeEditor, character.syncCharToStorage, recordings)
+  const recordButtonProps = buildRecordButtonProps(recorder, recordings, handleRecord, handleRecordGate, handleStop)
+  const debugLayerProps = buildDebugLayerPropsHelper(ui.debugActive, ui.setDebugActive, mapEditor.pickerState, mapEditor.setPickerState, mapEditor.hoveredTile, mapEditor.setHoveredTile, mapEditor.spriteColorOverrides, mapEditor.setSpriteColorOverrides, mapEditor.activeSprite, mapEditor.setActiveSprite, ui.showGameTests, ui.setShowGameTests, refs.playerStateRef, refs.worldDataRef, mapEditor.setHoverPreview)
 
   return (
-    <div className={`game-wrap ${debugActive ? 'debug-active' : ''}`} ref={wrapRef} style={{ transform: `scale(${zoom})`, transformOrigin: '0 0' }}>
-      <HUD facing={facing} moving={moving} logEntries={logEntries} charColors={charColors} charName={charName} playerPos={playerPos} exploredTiles={exploredTiles} worldData={worldData} debugActive={debugActive} activeMapMenu={activeMapMenu} onMapMenuChange={setActiveMapMenu} hoveredTile={hoveredTile} layers={worldData?.layers} collMap={worldData?.collMap} layerEdits={layerEdits} onEditSprite={setLayerEdits} highlightColors={highlightColors} onHighlightColorsChange={setHighlightColors} spriteColorOverrides={spriteColorOverrides} onSpriteColorChange={setSpriteColorOverrides} onHoverPreview={setHoverPreview} onPickerStateChange={setPickerState} activeSprite={activeSprite} onActiveSpriteChange={setActiveSprite} guidance={guidance} showDialog={showDialog} showHoroscope={showHoroscope} />
-      <RecordButton status={recorder.status} progress={recorder.progress} recordingCount={recordings.length} onRecord={handleRecord} onRecordGate={handleRecordGate} onStop={handleStop} onOpenGallery={() => setShowGallery(true)} isOpen={showGallery} />
-      {!showEditor && (
-        <div className="canvas-wrap" ref={canvasWrapRef}>
-          <Game ref={gameRef} onStateChange={handleStateChange} onInteract={handleInteract} paused={showDialog || showHoroscope} charColors={charColors} playerStateRef={playerStateRef} doorUnlockedRef={doorUnlockedRef} nameSetRef={nameSetRef} colorsSetRef={colorsSetRef} debugActive={debugActive} layerEdits={layerEdits} highlightColors={highlightColors} spriteColorOverrides={spriteColorOverrides} hoverPreview={hoverPreview} onHoveredTileChange={setHoveredTile} onWorldDataChange={(data) => { setWorldData(data); worldDataRef.current = data }} onEditSprite={setLayerEdits} activeSprite={activeSprite} />
-        </div>
-      )}
-      <AppModals
-        showDialog={showDialog}
-        setShowDialog={setShowDialog}
-        showHoroscope={showHoroscope}
-        setShowHoroscope={setShowHoroscope}
-        showEditor={showEditor}
-        showGallery={showGallery}
-        setShowGallery={setShowGallery}
-        charColors={charColors}
-        setCharColors={setCharColors}
-        charName={charName}
-        birthData={birthData}
-        editorPage={editorPage}
-        editorLimited={editorLimited}
-        closeEditor={closeEditor}
-        syncCharToStorage={syncCharToStorage}
-        recordings={recordings}
-      />
-      <DebugConsole
-        onReset={debugConsoleProps.onReset}
-        getSaveData={debugConsoleProps.getSaveData}
-        onLoad={(slot) => debugConsoleProps.onLoad(slot, syncCharToStorage)}
-      />
-      <DebugLayer
-        debugActive={debugActive}
-        setDebugActive={setDebugActive}
-        pickerState={pickerState}
-        setPickerState={setPickerState}
-        hoveredTile={hoveredTile}
-        setHoveredTile={setHoveredTile}
-        spriteColorOverrides={spriteColorOverrides}
-        setSpriteColorOverrides={setSpriteColorOverrides}
-        activeSprite={activeSprite}
-        setActiveSprite={setActiveSprite}
-        showGameTests={showGameTests}
-        setShowGameTests={setShowGameTests}
-        playerStateRef={playerStateRef}
-        worldDataRef={worldDataRef}
-        setHoverPreview={setHoverPreview}
-      />
-    </div>
+    <AppRenderTree
+      wrapRef={refs.wrapRef}
+      debugActive={ui.debugActive}
+      zoom={game.zoom}
+      showEditor={ui.showEditor}
+      canvasWrapRef={refs.canvasWrapRef}
+      gameRef={refs.gameRef}
+      onStateChange={handleStateChange}
+      onInteract={handleInteract}
+      recorder={recorder}
+      recordings={recordings}
+      setShowGallery={ui.setShowGallery}
+      showGallery={ui.showGallery}
+      gameProps={gameProps}
+      hudProps={hudProps}
+      recordButtonProps={recordButtonProps}
+      modalsProps={modalsProps}
+      debugConsoleProps={debugConsoleProps}
+      debugLayerProps={debugLayerProps}
+    />
   )
 }

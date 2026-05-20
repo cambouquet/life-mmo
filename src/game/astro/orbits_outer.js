@@ -1,0 +1,4 @@
+export const JUPITER = { w_offset: 0.0443, Omega: 100.4542, omegaDot: 2.76854e-5, i: 1.3030, iDot: -1.557e-7, omega: 273.8777, omegaDot2: 1.64505e-5, a: 5.20256, e: 0.048498, eDot: 4.469e-9, L: 19.8950, n: 0.0830853001 }
+export const SATURN = { w_offset: -0.11062, Omega: 113.6634, omegaDot: 2.38980e-5, i: 2.4886, iDot: -1.081e-7, omega: 339.3939, omegaDot2: 2.97661e-5, a: 9.55475, e: 0.055546, eDot: -9.499e-9, L: 316.9670, n: 0.0334442282 }
+export const URANUS = { Omega: 74.0005, omegaDot: 1.3978e-5, i: 0.7733, iDot: 1.9e-8, omega: 96.6612, omegaDot2: 3.0565e-5, a: 19.18171, e: 0.047318, eDot: 7.45e-9, L: 142.5905, n: 0.011725806 }
+export const NEPTUNE = { Omega: 131.7806, omegaDot: 3.0173e-5, i: 1.7700, iDot: -2.55e-7, omega: 272.8461, omegaDot2: -6.027e-6, a: 30.05826, e: 0.008606, eDot: 2.15e-9, L: 260.2471, n: 0.005995147 }

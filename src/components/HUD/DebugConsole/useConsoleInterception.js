@@ -1,19 +1,13 @@
 import { useEffect } from 'react'
+import { formatTimestamp, formatMessage, shouldFilterReactKey } from './consoleFormatters.js'
 
 export function useConsoleInterception(setLogs) {
   useEffect(() => {
-    const orig = {
-      log: console.log,
-      error: console.error,
-      warn: console.warn,
-    }
+    const orig = { log: console.log, error: console.error, warn: console.warn }
 
     const addLog = (type, args) => {
-      const message = args
-        .map((a) => (typeof a === 'object' ? JSON.stringify(a, null, 2) : String(a)))
-        .join(' ')
-      const now = new Date()
-      const ts = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}.${String(now.getMilliseconds()).padStart(3, '0')}`
+      const message = formatMessage(args)
+      const ts = formatTimestamp(new Date())
       setTimeout(() => {
         setLogs((prev) => {
           const newLog = { type, message, ts, id: `${performance.now()}-${Math.random()}` }
@@ -22,25 +16,16 @@ export function useConsoleInterception(setLogs) {
       }, 0)
     }
 
-    console.log = (...a) => {
-      orig.log(...a)
-      if (typeof a[0] === 'string' && a[0].includes('Encountered two children with the same key')) return
-      addLog('log', a)
+    const makeLogger = (orig_fn, type) => (...a) => {
+      orig_fn(...a)
+      if (shouldFilterReactKey(a[0])) return
+      addLog(type, a)
     }
-    console.error = (...a) => {
-      orig.error(...a)
-      if (typeof a[0] === 'string' && a[0].includes('Encountered two children with the same key')) return
-      addLog('error', a)
-    }
-    console.warn = (...a) => {
-      orig.warn(...a)
-      if (typeof a[0] === 'string' && a[0].includes('Encountered two children with the same key')) return
-      addLog('warn', a)
-    }
-    console.action = (...a) => {
-      orig.log(...a)
-      addLog('action', a)
-    }
+
+    console.log = makeLogger(orig.log, 'log')
+    console.error = makeLogger(orig.error, 'error')
+    console.warn = makeLogger(orig.warn, 'warn')
+    console.action = (...a) => { orig.log(...a); addLog('action', a) }
 
     const onError = (event) => {
       const msg = event.message || String(event)

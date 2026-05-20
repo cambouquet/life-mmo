@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import { getDebugState, processHistoryEntry } from './stateHistoryHelpers'
 
 export function useStateHistory(isOpen) {
   const [history, setHistory] = useState([])
@@ -8,20 +9,9 @@ export function useStateHistory(isOpen) {
     if (!isOpen) return
     const interval = setInterval(() => {
       if (window.__screenDebug) {
-        const current = JSON.stringify(window.__screenDebug, (key, value) => {
-          if (key === 'actions') return undefined
-          return value
-        })
+        const current = getDebugState()
         setHistory((prev) => {
-          const lastEntry = prev[prev.length - 1]
-          if (lastEntry && lastEntry.state === current) return prev
-          const newEntry = {
-            timestamp: new Date(),
-            state: current,
-            parsed: JSON.parse(current),
-          }
-          const updated = [...prev, newEntry]
-          const final = updated.length > 200 ? updated.slice(-200) : updated
+          const final = processHistoryEntry(prev, current)
           setSelectedIndex(final.length - 1)
           return final
         })
