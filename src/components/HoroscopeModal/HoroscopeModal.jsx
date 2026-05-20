@@ -7,8 +7,7 @@ import {
 import { toInputDate } from './astroFormatters.js'
 import { BirthChart } from './BirthChart.jsx'
 import { PlacementsTable } from './PlacementsTable.jsx'
-
-const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+import { MONTHS, MODE_TITLES } from './horoscopeData.js'
 
 export { PLANET_GLYPHS, SIGN_GLYPHS, PLANET_NAMES, ELEMENT_COLOR }
 
@@ -43,11 +42,9 @@ export default function HoroscopeModal({ birthData, onClose }) {
   }, [onClose])
 
   const { zodiac, cosmic, moonline, guidance, lucky, gated, _debug } = reading
-  const now       = new Date()
+  const now = new Date()
   const dateLabel = `${MONTHS[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}`
-
-  const titles = { reading: 'The Stars Speak', chart: 'Natal Chart', debug: 'Horoscope Engine' }
-  const wide   = mode !== 'reading'
+  const wide = mode !== 'reading'
 
   return (
     <div className="modal-overlay" onClick={onClose}>

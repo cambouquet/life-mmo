@@ -10,50 +10,29 @@ import { CitySearch } from './CitySearch.jsx'
 import { AstroSummary } from './AstroSummary.jsx'
 import { hslToHex, randomHsl, randomPalette } from './colorUtils.js'
 import { parseDateFromString, parseTimeFromString, formatDate, formatTime } from './dateTimeUtils.js'
+import { PAGES_FULL, PAGES_LIMITED, getPageSequence, DEFAULT_COLORS } from './editorState.js'
 import './CharacterEditor.scss'
 
 export { CitySearch }  from './CitySearch.jsx'
 export { AstroSummary } from './AstroSummary.jsx'
-
-const PAGES_FULL = ['chart', 'location', 'character']
-const PAGES_LIMITED = ['character']
-
-function getPageSequence(limited) {
-  return limited ? PAGES_LIMITED : PAGES_FULL
-}
 
 export default function CharacterEditor({ initialColors, initialBirthData, initialName, scrollPage, limited, onSave, onClose, onChange }) {
   const modalRef = useRef(null)
   const colorsRef = useRef(null)
   const readyRef = useRef(false)
 
-  // Build page sequence based on mode (first page is always default)
-  const pageSequence = useMemo(() => {
-    return getPageSequence(limited)
-  }, [limited])
-
+  const pageSequence = useMemo(() => getPageSequence(limited), [limited])
   const defaultPage = useMemo(() => pageSequence[0], [pageSequence])
 
-  // UI state
   const [activePage, setActivePage] = useState(defaultPage)
   const [name, setName] = useState(initialName ?? '')
-
-  // Birth data state
   const [birthDate, setBirthDate] = useState(() => parseDateFromString(initialBirthData?.date))
   const [birthTime, setBirthTime] = useState(() => parseTimeFromString(initialBirthData?.time))
   const [hasDate, setHasDate] = useState(!!initialBirthData?.date)
   const [birthCity, setBirthCity] = useState(initialBirthData?.city ?? null)
   const [previewDate, setPreviewDate] = useState(null)
   const [previewTime, setPreviewTime] = useState(null)
-
-  // Color state
-  const [colors, setColors] = useState(initialColors || {
-    hair: '#6030d0',
-    skin: '#f8c898',
-    eyes: '#8040e8',
-    outfit: '#4a1090',
-    stick: '#60a8ff',
-  })
+  const [colors, setColors] = useState(initialColors || DEFAULT_COLORS)
   const [previewColors, setPreviewColors] = useState(null)
 
   useEffect(() => {
