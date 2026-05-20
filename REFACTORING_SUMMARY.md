@@ -162,6 +162,32 @@ Refactored the codebase to improve code navigability and structure through singl
 
 ---
 
+### Phase 3.7: HouseWheel Decomposition (518 → 441 lines core + utilities)
+
+**Created:**
+1. **`WheelInfoPanel.jsx`** (80 lines)
+   - Legend/detail panel showing planet, sign, or house information
+   - **Purpose:** Isolated info rendering from wheel logic
+   - **Naming:** "InfoPanel" indicates info display component
+
+2. **`wheelGeometry.js`** (17 lines)
+   - `createWheelGeometry(cx, cy)` factory returns `polarToXY` and `arc` utilities
+   - **Purpose:** Reusable SVG geometry helpers for circular wheels
+   - **Naming:** "Geometry" indicates math/coordinate utilities
+
+**Refactored:**
+- **`HouseWheel.jsx`** (441 lines, down from 518)
+   - Removed inline getInterpretation and infoContent
+   - Imports WheelInfoPanel and wheelGeometry utilities
+   - Focuses on wheel rendering and state management
+
+**Benefits:**
+- WheelInfoPanel is pure and can be reused for other info displays
+- wheelGeometry utilities support any circular wheel design (date, time, houses)
+- HouseWheel is more focused on wheel structure, less on formatting details
+
+---
+
 ### Phase 5: HoroscopeModal Formatters
 
 **Created:** `src/components/HoroscopeModal/astroFormatters.js` (4 lines)
@@ -198,11 +224,14 @@ Refactored the codebase to improve code navigability and structure through singl
 | `AstroSummary.jsx` | 95 | Element/modality bar charts |
 | `colorUtils.js` | 39 | HSL/Hex conversion + palettes |
 | `dateTimeUtils.js` | 22 | Date/time parsing + formatting |
+| `HouseWheel.jsx` | 441 | Wheel rendering + state |
+| `WheelInfoPanel.jsx` | 80 | Legend/detail display |
+| `wheelGeometry.js` | 17 | Polar coordinates + arc paths |
 
-**Total new files created:** 25  
+**Total new files created:** 28  
 **Lines of boilerplate eliminated:** ~40  
 **Duplicated constant sources:** 5 → 1  
-**Reusable patterns:** useRefSync, WheelPicker, colorUtils, dateTimeUtils
+**Reusable patterns:** useRefSync, WheelPicker, colorUtils, dateTimeUtils, wheelGeometry
 
 ---
 
@@ -235,13 +264,13 @@ Refactored the codebase to improve code navigability and structure through singl
 
 | File | Lines | Priority | Approach |
 |------|-------|----------|----------|
-| HouseWheel.jsx | 518 | HIGH | Extract WheelInfoPanel, WheelTimeDatePicker to separate files |
 | MenuBar.jsx | 430 | MEDIUM | Extract ClockWidget, SeasonWidget, useMapBackups |
 | SpritePickerModal.jsx | 366 | LOW | Modular but functional |
 
-**Strategy:** Continue with HouseWheel (has clearly separable panels); MenuBar has good candidates for extraction
+**Strategy:** MenuBar has good candidates for extraction
 
 **Completed this session:**
 - ✅ CirclePicker → DateWheel + TimeWheel (separated wheel implementations)
 - ✅ HoroscopeModal → HoroscopeModal + BirthChart (separated display from routing)
 - ✅ CharacterEditor → EarthGlobe + CitySearch + AstroSummary + colorUtils + dateTimeUtils (extracted components and utilities)
+- ✅ HouseWheel → HouseWheel + WheelInfoPanel + wheelGeometry (extracted info panel and geometry utilities)

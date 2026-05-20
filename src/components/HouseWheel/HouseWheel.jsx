@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { SIGN_META } from '../../game/astro/horoscope.js'
 import { ELEMENT_COLOR, PLANET_GLYPHS, PLANET_NAMES, PLANET_ORDER } from '../HoroscopeModal/astroConstants.js'
+import { createWheelGeometry } from './wheelGeometry.js'
+import { WheelInfoPanel } from './WheelInfoPanel.jsx'
 
 const SIGN_NAMES = ['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces']
 
@@ -118,22 +120,7 @@ export function HouseWheel({ placements, houseCusps, size = 300, hideStellium, s
   const DATE_Y_R2 = 241 // year ring outer
   const INNER_R  = 20
   const GAP_DEG  = 1.0
-
-  function polarToXY(angleDeg, r) {
-    const a = (angleDeg - 90) * Math.PI / 180
-    return [cx + r * Math.cos(a), cy + r * Math.sin(a)]
-  }
-
-  function arc(startDeg, endDeg, r1, r2) {
-    if ([startDeg, endDeg, r1, r2].some(isNaN)) return ''
-    const s1 = polarToXY(startDeg, r1), e1 = polarToXY(endDeg, r1)
-    const s2 = polarToXY(startDeg, r2), e2 = polarToXY(endDeg, r2)
-    // Handle arcs that cross the 0 line or are near it
-    const delta = (endDeg - startDeg + 360) % 360
-    const large = delta > 180 ? 1 : 0
-    // Clean up small segments or use slight overlap if needed
-    return `M ${s1[0]} ${s1[1]} A ${r1} ${r1} 0 ${large} 1 ${e1[0]} ${e1[1]} L ${e2[0]} ${e2[1]} A ${r2} ${r2} 0 ${large} 0 ${s2[0]} ${s2[1]} Z`
-  }
+  const { polarToXY, arc } = createWheelGeometry(cx, cy)
 
   const rows = PLANET_ORDER.filter(p => placements[p])
   const ascLong = houseCusps ? houseCusps[0] : 0
@@ -158,81 +145,17 @@ export function HouseWheel({ placements, houseCusps, size = 300, hideStellium, s
     ? Object.entries(maxHouseEntry[1]).sort((a,b)=>b[1]-a[1])[0][0]
     : 'Air'
 
-  const getInterpretation = pName => {
-    const pd = placements[pName]
-    if (!pd) return ''
-    const deg   = Math.floor(pd.degrees)
-    const decan = deg <= 9 ? '1st decan' : deg <= 19 ? '2nd decan' : '3rd decan'
-    const hName = HOUSE_NAMES[pd.house] ?? `House ${pd.house}`
-    const hLong = HOUSE_LONG[pd.house] ?? ''
-    const sMeta = SIGN_META[pd.sign]
-    const sLong = SIGN_DESC_LONG[pd.sign] ?? pd.sign
-    return `${pName} in ${pd.sign} at ${deg}° (${decan}), ${hName}. ${sLong} ${hLong}`
-  }
 
-  const infoContent = (lockedPoint || hovered) && (() => {
-    const active = (hovered?.type === 'planet' && hovered.id === lockedPoint)
-      ? { ...hovered, locked: true }
-      : (hovered || {
-          type: 'planet',
-          id: lockedPoint,
-          label: PLANET_NAMES[lockedPoint] ?? lockedPoint,
-          glyph: PLANET_GLYPHS[lockedPoint],
-          color: ELEMENT_COLOR[SIGN_META[placements[lockedPoint]?.sign]?.element] ?? '#fff',
-          desc: getInterpretation(lockedPoint),
-          summary: PLANET_SUMMARY[lockedPoint],
-          locked: true
-        })
-
-    return (
-      <div style={{ color:'#e8d4ff', fontFamily:'inherit', lineHeight:'1.6', width:'100%' }}>
-        {active.type === 'planet' ? (<>
-          <div style={{ color:active.color, fontWeight:700, fontSize:13 }}>{active.glyph} {active.label}{(active.locked || (lockedPoint === active.id)) && placements[active.id]?.sign ? (() => { const pd = placements[active.id]; const deg = Math.floor(pd.degrees); const theme = HOUSE_THEMES[pd.house]; return ` · ${pd.sign} ${deg}°${pd.house ? ` · H${pd.house}${theme ? ` (${theme})` : ''}` : ''}` })() : ''}</div>
-          <div style={{ fontSize:11, color:'rgba(232,212,255,0.6)', fontStyle:'italic', marginBottom: (active.locked || lockedPoint === active.id) ? 4 : 0, lineHeight:'1.4' }}>{active.summary}</div>
-          {(active.locked || lockedPoint === active.id) && <div style={{ fontSize:11, color:'rgba(232,212,255,0.8)', lineHeight:'1.5' }}>{active.desc}</div>}
-        </>) : active.type === 'sign' ? (<>
-          <div style={{ color:active.color, fontWeight:700, fontSize:13, marginBottom:4 }}>{active.label}</div>
-          <div style={{ fontSize:11, color:'rgba(232,212,255,0.8)', lineHeight:'1.4', marginBottom:8 }}>{active.desc}</div>
-          {active.planets && active.planets.length > 0 && (
-            <div style={{ fontSize:10, color:'rgba(232,212,255,0.7)', marginTop:8, paddingTop:8, borderTop:'1px solid rgba(232,212,255,0.2)' }}>
-              <div style={{ fontWeight:600, marginBottom:4 }}>Placements in {active.label}:</div>
-              {active.planets.map(pName => {
-                const pd = placements[pName]
-                const col = ELEMENT_COLOR[SIGN_META[pd.sign]?.element] ?? '#fff'
-                const deg = Math.floor(pd.degrees)
-                const theme = HOUSE_THEMES[pd.house]
-                return (
-                  <div key={pName} style={{ display:'flex', justifyContent:'space-between', paddingLeft:8, marginBottom:3 }}>
-                    <span style={{ color:col }}>{PLANET_GLYPHS[pName]} {PLANET_NAMES[pName] ?? pName}</span>
-                    <span style={{ color:'rgba(232,212,255,0.5)', fontSize:9 }}>H{pd.house}{theme ? ` (${theme})` : ''}</span>
-                  </div>
-                )
-              })}
-            </div>
-          )}
-        </>) : (<>
-          <div style={{ color:'#e8d4ff', fontWeight:700, fontSize:13, marginBottom:4 }}>{HOUSE_NAMES[active.id]}</div>
-          <div style={{ fontSize:11, color:'rgba(232,212,255,0.8)', lineHeight:'1.4', marginBottom:8 }}>{active.desc}</div>
-          {active.planets && active.planets.length > 0 && (
-            <div style={{ fontSize:10, color:'rgba(232,212,255,0.7)', marginTop:8, paddingTop:8, borderTop:'1px solid rgba(232,212,255,0.2)' }}>
-              <div style={{ fontWeight:600, marginBottom:4 }}>Placements in House {active.id}:</div>
-              {active.planets.map(pName => {
-                const pd = placements[pName]
-                const col = ELEMENT_COLOR[SIGN_META[pd.sign]?.element] ?? '#fff'
-                const deg = Math.floor(pd.degrees)
-                return (
-                  <div key={pName} style={{ display:'flex', justifyContent:'space-between', paddingLeft:8, marginBottom:3 }}>
-                    <span style={{ color:col }}>{PLANET_GLYPHS[pName]} {PLANET_NAMES[pName] ?? pName}</span>
-                    <span style={{ color:'rgba(232,212,255,0.5)', fontSize:9 }}>{pd.sign} {deg}°</span>
-                  </div>
-                )
-              })}
-            </div>
-          )}
-        </>)}
-      </div>
-    )
-  })()
+  const infoContent = <WheelInfoPanel
+    lockedPoint={lockedPoint}
+    hovered={hovered}
+    placements={placements}
+    HOUSE_THEMES={HOUSE_THEMES}
+    HOUSE_NAMES={HOUSE_NAMES}
+    HOUSE_LONG={HOUSE_LONG}
+    SIGN_DESC_LONG={SIGN_DESC_LONG}
+    PLANET_SUMMARY={PLANET_SUMMARY}
+  />
 
   return (
     <>
