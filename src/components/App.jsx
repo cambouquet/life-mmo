@@ -6,24 +6,18 @@ import { useGameState } from '../hooks/useGameState.js'
 import { useMapEditorState } from '../hooks/useMapEditorState.js'
 import { useRecordingScenarios } from '../hooks/useRecordingScenarios.js'
 import { useAppInteraction, useMapPersistence, useExploredTiles } from '../hooks/useAppInteraction.js'
-import { DEFAULT_COLORS, DEFAULT_BIRTH } from '../constants/persistence.js'
 import HUD from './HUD/HUD.jsx'
 import Game from './Game/Game.jsx'
-import HoroscopeModal from './HoroscopeModal/HoroscopeModal.jsx'
-import DialogModal from './DialogModal/DialogModal.jsx'
-import GuidanceVoice from './GuidanceVoice/GuidanceVoice.jsx'
-import CharacterEditor from './CharacterEditor/CharacterEditor.jsx'
 import RecordButton from './RecordButton/RecordButton.jsx'
-import VideoGallery from './VideoGallery/VideoGallery.jsx'
 import DebugConsole from './HUD/DebugConsole.jsx'
 import DebugLayer from './App/DebugLayer.jsx'
 import { useRecorder } from '../playback/useRecorder.js'
+import { AppModals } from './App/AppModals.jsx'
+import { buildDebugConsoleHandlers } from './App/appStateSetup.js'
 
 export default function App() {
   const wrapRef = useViewportScale()
   const gameRef = useRef(null)
-  const uiOverlayRef = useRef(null)
-  const engineRef = useRef(null)
   const playerStateRef = useRef(null)
   const worldDataRef = useRef(null)
   const canvasWrapRef = useRef(null)
@@ -67,7 +61,9 @@ export default function App() {
   }, [setFacing, setMoving, setLogEntries, setGuidance, setPlayerPos])
 
   const { handleInteract } = useAppInteraction(showHoroscope, setShowHoroscope, showEditor, setShowEditor, setEditorPage, setShowDialog)
-  const { handleRecord, handleRecordGate, handleStop } = useRecordingScenarios(recorder, gameRef, engineRef, setShowEditor, setEditorPage, setCharColors, charColors, charName, birthData)
+  const { handleRecord, handleRecordGate, handleStop } = useRecordingScenarios(recorder, gameRef, null, setShowEditor, setEditorPage, setCharColors, charColors, charName, birthData)
+
+  const debugConsoleProps = buildDebugConsoleHandlers(playerStateRef, resetChar, resetUI, resetGame, charName, charColors, birthData)
 
   return (
     <div className={`game-wrap ${debugActive ? 'debug-active' : ''}`} ref={wrapRef} style={{ transform: `scale(${zoom})`, transformOrigin: '0 0' }}>
@@ -76,51 +72,30 @@ export default function App() {
       {!showEditor && (
         <div className="canvas-wrap" ref={canvasWrapRef}>
           <Game ref={gameRef} onStateChange={handleStateChange} onInteract={handleInteract} paused={showDialog || showHoroscope} charColors={charColors} playerStateRef={playerStateRef} doorUnlockedRef={doorUnlockedRef} nameSetRef={nameSetRef} colorsSetRef={colorsSetRef} debugActive={debugActive} layerEdits={layerEdits} highlightColors={highlightColors} spriteColorOverrides={spriteColorOverrides} hoverPreview={hoverPreview} onHoveredTileChange={setHoveredTile} onWorldDataChange={(data) => { setWorldData(data); worldDataRef.current = data }} onEditSprite={setLayerEdits} activeSprite={activeSprite} />
-          <div className="ui-overlay" ref={uiOverlayRef}>
-            {showDialog && <DialogModal onClose={() => setShowDialog(false)} onHoroscope={() => { setShowDialog(false); setShowHoroscope(true) }} />}
-            {showHoroscope && <HoroscopeModal birthData={birthData} onClose={() => setShowHoroscope(false)} />}
-          </div>
         </div>
       )}
-      {showEditor && (
-        <CharacterEditor
-          initialColors={charColors}
-          initialBirthData={birthData}
-          initialName={charName}
-          scrollPage={editorPage}
-          limited={editorLimited}
-          onClose={() => { console.action('Closing Mirror'); closeEditor() }}
-          onChange={(next) => {
-            const changed = Object.keys(next).find(k => next[k] !== charColors[k])
-            if (changed) console.action(`Changing ${changed} to ${next[changed]}`)
-            setCharColors(next)
-          }}
-          onSave={(colors, data, name) => {
-            console.action('Saving character data')
-            syncCharToStorage(colors, data, name)
-            closeEditor()
-          }}
-        />
-      )}
+      <AppModals
+        showDialog={showDialog}
+        setShowDialog={setShowDialog}
+        showHoroscope={showHoroscope}
+        setShowHoroscope={setShowHoroscope}
+        showEditor={showEditor}
+        showGallery={showGallery}
+        setShowGallery={setShowGallery}
+        charColors={charColors}
+        setCharColors={setCharColors}
+        charName={charName}
+        birthData={birthData}
+        editorPage={editorPage}
+        editorLimited={editorLimited}
+        closeEditor={closeEditor}
+        syncCharToStorage={syncCharToStorage}
+        recordings={recordings}
+      />
       <DebugConsole
-        onReset={() => {
-          playerStateRef.current = null
-          resetChar()
-          resetUI()
-          resetGame()
-        }}
-        getSaveData={() => ({
-          name: charName,
-          colors: charColors,
-          birth: birthData,
-          pos: playerStateRef.current ? { x: playerStateRef.current.x, y: playerStateRef.current.y, facing: playerStateRef.current.facing } : null,
-          savedAt: Date.now(),
-        })}
-        onLoad={(slot) => {
-          syncCharToStorage(slot.colors, slot.birth, slot.name)
-          if (slot.pos) playerStateRef.current = slot.pos
-          resetUI()
-        }}
+        onReset={debugConsoleProps.onReset}
+        getSaveData={debugConsoleProps.getSaveData}
+        onLoad={(slot) => debugConsoleProps.onLoad(slot, syncCharToStorage)}
       />
       <DebugLayer
         debugActive={debugActive}
@@ -139,7 +114,6 @@ export default function App() {
         worldDataRef={worldDataRef}
         setHoverPreview={setHoverPreview}
       />
-      {showGallery && <VideoGallery videos={recordings} onClose={() => setShowGallery(false)} />}
     </div>
   )
 }
