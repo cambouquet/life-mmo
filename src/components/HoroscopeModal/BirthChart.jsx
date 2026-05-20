@@ -1,27 +1,9 @@
 import React, { useState } from 'react'
 import { SIGN_META } from '../../game/astro/horoscope.js'
 import { HouseWheel } from '../HouseWheel/HouseWheel.jsx'
-import {
-  PLANET_GLYPHS, SIGN_GLYPHS, PLANET_NAMES, PLANET_ORDER,
-  PLANET_DESC, SIGN_DESC, HOUSE_DESC, ELEMENT_COLOR
-} from './astroConstants.js'
+import { PLANET_GLYPHS, SIGN_GLYPHS, PLANET_NAMES, PLANET_ORDER, PLANET_DESC, SIGN_DESC, HOUSE_DESC, ELEMENT_COLOR } from './astroConstants.js'
 import { PrimaryPlacementsPanel } from './PrimaryPlacementsPanel.jsx'
-
-function fmtDeg(decimal) {
-  const d = Math.floor(decimal)
-  const m = Math.floor((decimal - d) * 60)
-  const s = Math.floor(((decimal - d) * 60 - m) * 60)
-  return (
-    <span className="coord">
-      <span className="coord__deg">{d}</span>
-      <span className="coord__unit">°</span>
-      <span className="coord__val">{String(m).padStart(2, '0')}</span>
-      <span className="coord__unit">'</span>
-      <span className="coord__val">{String(s).padStart(2, '0')}</span>
-      <span className="coord__unit">"</span>
-    </span>
-  )
-}
+import { fmtDeg } from './birthChartFormatters.jsx'
 
 export function BirthChart({ placements, birthData, reading, mode, houseCusps }) {
   const [selected, setSelected] = useState(null)
