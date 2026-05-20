@@ -196,7 +196,168 @@ Refactored the codebase to improve code navigability and structure through singl
 
 ---
 
+### Phase 6: ColorPicker Extraction (201 → 47 lines core)
+
+**Created:**
+1. **`colorSpace.js`** (14 lines)
+   - `hslToHsv()`, `hsvToHsl()` — color space conversions
+   - **Purpose:** Pure math utilities for HSL ↔ HSV conversion
+   - **Naming:** "ColorSpace" indicates color model logic
+
+2. **`slSquareUtils.js`** (37 lines)
+   - `renderSLSquareCanvas()` — saturation/lightness canvas rendering
+   - `computeSLCursor()` — cursor position calculation
+   - `pickSLColor()` — color picking from mouse event
+   - **Purpose:** SL square rendering and interaction logic
+
+3. **`hueStripUtils.js`** (15 lines)
+   - `renderHueStripCanvas()` — hue spectrum rendering
+   - `pickHueColor()` — hue value from mouse event
+
+4. **`useCanvasDrag.js`** (31 lines)
+   - `useCanvasDrag(pickFn)` — reusable drag handler hook
+   - Handles mousedown/move/up and touch events
+   - **Purpose:** Canvas drag interaction abstraction
+
+5. **`SLSquare.jsx`** (40 lines)
+   - Saturation/lightness picker component
+   - Uses SL square utilities and drag hook
+
+6. **`HueStrip.jsx`** (36 lines)
+   - Hue selector component
+   - Uses hue strip utilities and drag hook
+
+**Refactored:**
+- **`ColorPicker.jsx`** (47 lines, down from 201)
+  - Main popup controller, composes SLSquare + HueStrip
+  - Manages HSL state and external sync
+
+**Benefits:**
+- Color conversion logic is testable and reusable
+- Canvas rendering is isolated and can be optimized independently
+- Drag handling is a reusable hook for other canvas interactions
+- Components are focused on rendering, not math or interaction
+
+---
+
+### Phase 7: HouseWheel Complete Decomposition (336 → 103 lines core)
+
+**Created:**
+1. **`WheelBackground.jsx`** (14 lines)
+   - Orbit guides and center decoration SVG
+
+2. **`SignRing.jsx`** (57 lines)
+   - Zodiac ring with hover/label logic
+
+3. **`TimePicker.jsx`** (71 lines)
+   - Hour and minute picker rings
+
+4. **`MonthPicker.jsx`** (39 lines)
+   - Month ring picker
+
+5. **`DayPicker.jsx`** (41 lines)
+   - Day ring picker
+
+6. **`YearRing.jsx`** (27 lines)
+   - Year display ring
+
+7. **`DatePicker.jsx`** (14 lines)
+   - Composes Month + Day + Year pickers
+
+8. **`HousesLayer.jsx`** (43 lines)
+   - Orchestrates house slice rendering
+
+9. **`HouseSlice.jsx`** (78 lines)
+   - Individual house with planets
+
+10. **`PlanetMarker.jsx`** (71 lines)
+    - Planet glyph with hover/lock states
+
+11. **`wheelPickers.js`** (38 lines)
+    - Segment generation utilities
+
+12. **`wheelInterpretation.js`** (10 lines)
+    - Planet interpretation text formatting
+
+**Refactored:**
+- **`HouseWheel.jsx`** (103 lines, down from 336)
+  - Focuses on composition and state management
+  - Delegates rendering to specialized components
+
+**Benefits:**
+- Each visual ring is an independent component
+- Pickers are parameterized and reusable (time, date)
+- Planet rendering is isolated and testable
+- Main component is easy to understand at a glance
+
+---
+
+### Phase 8: CirclePicker Complete Decomposition (225 → 36 lines core)
+
+**Created:**
+1. **`wheelGeometry.js`** (23 lines)
+   - `polarToXY()` — angle/radius to SVG coordinates
+   - `ringArc()` — annular sector SVG path
+   - `getPointerAngle()` — mouse angle relative to center
+
+2. **`useNeedle.js`** (41 lines)
+   - `useNeedle()` hook for needle rotation with delta tracking
+
+3. **`useImperativeRing.js`** (56 lines)
+   - `useImperativeRing()` hook for ring selection with hover/commit
+
+4. **`useWheelRings.js`** (20 lines)
+   - `useWheelRings()` — orchestrates multiple ring handlers
+
+5. **`useWheelNeedle.js`** (16 lines)
+   - `useWheelNeedle()` — needle state and unit conversion
+
+6. **`WheelRing.jsx`** (42 lines)
+   - Individual ring rendering with segments and labels
+
+7. **`WheelNeedle.jsx`** (10 lines)
+   - Needle SVG with double-line styling
+
+8. **`WheelCenter.jsx`** (18 lines)
+   - Center display text lines
+
+**Refactored:**
+- **`CirclePicker.jsx`** (36 lines, down from 225)
+  - Pure composition: WheelPicker = WheelRing* + WheelNeedle + WheelCenter
+  - All state and logic delegated to hooks and utilities
+
+**Benefits:**
+- All wheel geometry is in one place and reusable
+- Hooks encapsulate pointer handling and state management
+- Components are pure rendering functions
+- Easy to add new ring types or customize needle behavior
+
+---
+
 ## Current Status
+
+**Files analyzed:** 164 (`.jsx`, `.js`)
+**Files under 42 lines:** 66 (40%)
+**Remaining work:** 98 files still over 42 lines (mostly domain logic, hooks, and game loop code)
+
+**Key architectural improvements:**
+- **Utilities organized by domain:** wheelGeometry, colorSpace, dateTimeUtils
+- **Reusable hooks extracted:** useNeedle, useImperativeRing, useCanvasDrag, useWheelRings
+- **Components focused on rendering:** No business logic in JSX files
+- **Clear naming:** File names and function names describe intent (e.g., "wheelGeometry" not "geom", "colorSpace" not "conv")
+
+**Largest remaining targets (over 200 lines):**
+- MenuBar: 354 lines (navigation, backup UI)
+- CharacterEditor: 328 lines (form state, page routing)
+- BirthChart: 302 lines (chart rendering, tables)
+- useGameLoop: 261 lines (game loop, input handlers)
+- SpritePickerModal: 252 lines (sprite selection UI)
+- DebugConsole: 230 lines (debug tabs)
+- CassiopeiaWheel: 230 lines (color wheel animation)
+- GraphTab: 227 lines (state timeline chart)
+- MapEditorPanel: 227 lines (map editor tools)
+
+**Next priorities:** Domain-specific decomposition (not line-count driven) for game loop, menu, and debug UI
 
 ### Build & Test
 ✅ `npm run build` passes  
