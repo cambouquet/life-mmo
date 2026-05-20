@@ -1,5 +1,6 @@
 import { mouseTile } from '../draw/debug.js'
 import { FieldMap } from '../gameLoopState.js'
+import { updateDragSelection } from './dragSelection.js'
 
 export function createPointerHandlers(canvas, state, refs, zoomRef) {
   const onMouseMove = e => {
@@ -19,19 +20,7 @@ export function createPointerHandlers(canvas, state, refs, zoomRef) {
 
     if (state.isDragging && state.dragStart && refs.debugActiveRef.current) {
       state.dragMoved = true
-      const current = state.hoveredTile
-      const minC = Math.min(state.dragStart.c, current.c)
-      const maxC = Math.max(state.dragStart.c, current.c)
-      const minR = Math.min(state.dragStart.r, current.r)
-      const maxR = Math.max(state.dragStart.r, current.r)
-
-      state.selectedTiles = []
-      for (let c = minC; c <= maxC; c++) {
-        for (let r = minR; r <= maxR; r++) {
-          state.selectedTiles.push({ c, r })
-        }
-      }
-      state.selectedTile = state.selectedTiles.length > 0 ? { tiles: state.selectedTiles } : null
+      updateDragSelection(state, state.dragStart, state.hoveredTile)
       refs.onHoveredTileRef.current?.(state.selectedTile)
     } else {
       refs.onHoveredTileRef.current?.(state.selectedTile || state.hoveredTile)
@@ -46,8 +35,7 @@ export function createPointerHandlers(canvas, state, refs, zoomRef) {
       return
     }
 
-    if (!refs.debugActiveRef.current) return
-    if (e.altKey) return
+    if (!refs.debugActiveRef.current || e.altKey) return
 
     state.dragMoved = false
     const { player } = refs
@@ -57,9 +45,7 @@ export function createPointerHandlers(canvas, state, refs, zoomRef) {
   }
 
   const onMouseUp = e => {
-    if (e.button === 1) {
-      state.isPanning = false
-    }
+    if (e.button === 1) state.isPanning = false
     state.isDragging = false
     state.dragStart = null
     state.dragMoved = false

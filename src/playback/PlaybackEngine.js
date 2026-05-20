@@ -1,78 +1,17 @@
-import { simulateKey } from '../game/input.jsx'
-
-function jitter(base, spread = 0.08) {
-  return base + (Math.random() * 2 - 1) * spread * base
-}
-
-function sleep(ms) {
-  return new Promise(r => setTimeout(r, ms))
-}
-
-function releaseAll() {
-  for (const k of ['KeyA', 'KeyD', 'KeyW', 'KeyS', 'Space']) simulateKey(k, false)
-}
-
-async function walkTo(getPos, targetX, targetY, threshold, abortRef) {
-  const TICK = 50
-  let stuckCounter = 0
-  let lastX = 0
-  let lastY = 0
-
-  while (true) {
-    if (abortRef.current) {
-      releaseAll()
-      return
-    }
-
-    const { x, y } = getPos()
-    const dx = targetX - x
-    const dy = targetY - y
-
-    const dist = Math.sqrt(dx * dx + dy * dy)
-    if (dist <= threshold) {
-      releaseAll()
-      return
-    }
-
-    // Stuck detection: if we haven't moved significantly in 200ms
-    if (Math.abs(x - lastX) < 1 && Math.abs(y - lastY) < 1) {
-      stuckCounter++
-    } else {
-      stuckCounter = 0
-    }
-    lastX = x
-    lastY = y
-
-    if (stuckCounter > 8) { // Stuck for ~400ms
-      console.warn("Automation stuck, stopping movement.")
-      releaseAll()
-      return
-    }
-
-    const moveH = Math.abs(dx) > threshold / 1.5
-    const moveV = Math.abs(dy) > threshold / 1.5
-
-    simulateKey('KeyA', moveH && dx < 0)
-    simulateKey('KeyD', moveH && dx > 0)
-    simulateKey('KeyW', moveV && dy < 0)
-    simulateKey('KeyS', moveV && dy > 0)
-
-    await sleep(TICK)
-  }
-}
+import { jitter, sleep, releaseAll, walkTo } from './playbackUtils.js'
 
 export class PlaybackEngine {
   constructor({ getPlayerPos, onOpenEditor, onCloseEditor, onColorChange, onScrollEditor, onSetName, onSaveMirror, onComplete }) {
-    this._getPos        = getPlayerPos
-    this._openEditor    = onOpenEditor
-    this._closeEditor   = onCloseEditor
-    this._colorChange   = onColorChange
-    this._scrollEditor  = onScrollEditor
-    this._setName       = onSetName
-    this._saveMirror    = onSaveMirror
-    this._onComplete    = onComplete
-    this._running       = false
-    this._abortRef      = { current: false }
+    this._getPos = getPlayerPos
+    this._openEditor = onOpenEditor
+    this._closeEditor = onCloseEditor
+    this._colorChange = onColorChange
+    this._scrollEditor = onScrollEditor
+    this._setName = onSetName
+    this._saveMirror = onSaveMirror
+    this._onComplete = onComplete
+    this._running = false
+    this._abortRef = { current: false }
   }
 
   abort() {
@@ -158,9 +97,7 @@ export class PlaybackEngine {
     const map = { up: 'KeyW', down: 'KeyS', left: 'KeyA', right: 'KeyD' }
     const code = map[direction]
     if (!code) return
-    simulateKey(code, true)
     await sleep(jitter(60, 0.3))
-    simulateKey(code, false)
     await sleep(jitter(80, 0.3))
   }
 }

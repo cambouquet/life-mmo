@@ -1,22 +1,6 @@
-import React, { useRef, useEffect } from 'react'
-
-function getColorForChangeCount(count, isSelected, isAnomalous) {
-  if (isSelected) {
-    return 'rgba(192, 132, 252, 0.8)'
-  }
-
-  if (isAnomalous) {
-    return 'rgba(251, 191, 36, 0.6)'
-  }
-
-  // Gradient: blue → purple → red
-  if (count === 0) return 'rgba(100, 100, 120, 0.3)'
-  if (count === 1) return 'rgba(96, 168, 255, 0.5)'
-  if (count === 2) return 'rgba(168, 85, 247, 0.5)'
-  if (count === 3) return 'rgba(192, 132, 252, 0.5)'
-  if (count <= 5) return 'rgba(218, 112, 214, 0.6)'
-  return 'rgba(239, 68, 68, 0.6)' // 6+
-}
+import { useRef, useEffect } from 'react'
+import { getColorForChangeCount } from './heatmapUtils.js'
+import { HeatmapLegend } from './HeatmapLegend.jsx'
 
 export function StateHeatmap({ history, selectedIndex, setSelectedIndex, onHover }) {
   const containerRef = useRef(null)
@@ -65,51 +49,18 @@ export function StateHeatmap({ history, selectedIndex, setSelectedIndex, onHover
                 flex: '0 0 5px',
                 height: '20px',
                 minWidth: '5px',
-                background: getColorForChangeCount(
-                  changeCount,
-                  selectedIndex === idx,
-                  node.isAnomalous || false
-                ),
+                background: getColorForChangeCount(changeCount, selectedIndex === idx, node.isAnomalous || false),
                 borderRadius: '1px',
                 cursor: 'pointer',
                 transition: 'all 0.12s',
                 opacity: selectedIndex === idx ? 1 : 0.7,
                 border: selectedIndex === idx ? '1px solid rgba(192, 132, 252, 0.6)' : 'none',
-                transform: 'scaleY(1)',
               }}
             />
           )
         })}
       </div>
-
-      {/* Legend */}
-      <div style={{ display: 'flex', gap: '12px', fontSize: '8px', color: 'rgba(255, 255, 255, 0.5)', flexWrap: 'wrap' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-          <div style={{ width: '8px', height: '8px', borderRadius: '1px', background: 'rgba(100, 100, 120, 0.3)' }} />
-          <span>no change</span>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-          <div style={{ width: '8px', height: '8px', borderRadius: '1px', background: 'rgba(96, 168, 255, 0.5)' }} />
-          <span>1 prop</span>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-          <div style={{ width: '8px', height: '8px', borderRadius: '1px', background: 'rgba(168, 85, 247, 0.5)' }} />
-          <span>2 props</span>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-          <div style={{ width: '8px', height: '8px', borderRadius: '1px', background: 'rgba(218, 112, 214, 0.6)' }} />
-          <span>3-5 props</span>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-          <div style={{ width: '8px', height: '8px', borderRadius: '1px', background: 'rgba(239, 68, 68, 0.6)' }} />
-          <span>6+ props</span>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-          <div style={{ width: '8px', height: '8px', borderRadius: '1px', background: 'rgba(251, 191, 36, 0.6)' }} />
-          <span>anomaly</span>
-        </div>
-      </div>
-
+      <HeatmapLegend />
       <div style={{ fontSize: '9px', color: 'rgba(255, 255, 255, 0.4)' }}>
         {history.length} snapshots · showing all states
       </div>
