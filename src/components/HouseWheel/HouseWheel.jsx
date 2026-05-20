@@ -4,6 +4,7 @@ import { ELEMENT_COLOR, PLANET_GLYPHS, PLANET_NAMES, PLANET_ORDER } from '../Hor
 import { createWheelGeometry } from './wheelGeometry.js'
 import { WheelInfoPanel } from './WheelInfoPanel.jsx'
 import { SIGN_NAMES, PLANET_RINGS, HOUSE_THEMES, HOUSE_NAMES, HOUSE_LONG, SIGN_DESC_LONG, PLANET_SUMMARY } from './houseWheelData.js'
+import { WHEEL_RADIUS, computeHouseTally } from './houseWheelGeometry.js'
 
 export { HOUSE_THEMES }
 
@@ -32,49 +33,12 @@ export function HouseWheel({ placements, houseCusps, size = 300, hideStellium, s
 
   if (!placements) return null
 
-  // All radii are in SVG units (viewBox 300×300), rendered size handled by SVG scaling
-  const cx = 150, cy = 150
-  const BASE_R   = 122  // inner edge of house band (just outside outermost orbit r=121)
-  const HOUSE_R1 = 126  // house number band inner
-  const HOUSE_R2 = 138  // house number band outer  (+12)
-  const SIGN_R1  = 143  // sign band inner           (+5 gap)
-  const SIGN_R2  = 158  // sign band outer           (+15)
-  const TIME_H_R1 = 163 // hour ring inner (time picker)
-  const TIME_H_R2 = 175 // hour ring outer
-  const TIME_M_R1 = 180 // minute ring inner
-  const TIME_M_R2 = 190 // minute ring outer
-  const DATE_M_R1 = 195 // month ring inner (date picker)
-  const DATE_M_R2 = 207 // month ring outer
-  const DATE_D_R1 = 212 // day ring inner
-  const DATE_D_R2 = 224 // day ring outer
-  const DATE_Y_R1 = 229 // year ring inner
-  const DATE_Y_R2 = 241 // year ring outer
-  const INNER_R  = 20
-  const GAP_DEG  = 1.0
+  const { cx, cy, BASE_R, HOUSE_R1, HOUSE_R2, SIGN_R1, SIGN_R2, TIME_H_R1, TIME_H_R2, TIME_M_R1, TIME_M_R2, DATE_M_R1, DATE_M_R2, DATE_D_R1, DATE_D_R2, DATE_Y_R1, DATE_Y_R2, INNER_R, GAP_DEG } = WHEEL_RADIUS
   const { polarToXY, arc } = createWheelGeometry(cx, cy)
 
   const rows = PLANET_ORDER.filter(p => placements[p])
   const ascLong = houseCusps ? houseCusps[0] : 0
-
-  // House tally for gloss
-  const houseTally = {}
-  for (const p of rows) {
-    const pd = placements[p]
-    if (pd?.house) {
-      const h = pd.house
-      const el = SIGN_META[pd.sign]?.element
-      if (!houseTally[h]) houseTally[h] = {}
-      if (el) houseTally[h][el] = (houseTally[h][el] || 0) + 1
-    }
-  }
-  const houseTotal = h => houseTally[h] ? Object.values(houseTally[h]).reduce((s,v)=>s+v,0) : 0
-  const maxHouseEntry = Object.entries(houseTally).sort((a,b) =>
-    Object.values(b[1]).reduce((s,v)=>s+v,0) - Object.values(a[1]).reduce((s,v)=>s+v,0)
-  )[0]
-  const maxHouseCount = maxHouseEntry ? Object.values(maxHouseEntry[1]).reduce((s,v)=>s+v,0) : 0
-  const maxHouseEl = maxHouseEntry
-    ? Object.entries(maxHouseEntry[1]).sort((a,b)=>b[1]-a[1])[0][0]
-    : 'Air'
+  const { houseTally, houseTotal, maxHouseCount, maxHouseEl } = computeHouseTally(placements, PLANET_ORDER, SIGN_META)
 
 
   const infoContent = <WheelInfoPanel
