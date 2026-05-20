@@ -231,10 +231,11 @@ Refactored the codebase to improve code navigability and structure through singl
 | `seasonUtils.js` | 44 | Season calculations + constants |
 | `useMapBackups.js` | 45 | Backup state management |
 
-**Total new files created:** 48  
-**Lines of boilerplate eliminated:** ~300 (App 460→145, InteractionPlayground 284→44, MenuBar 430→354, useGameLoop 279→261, ColorPicker 240→201, HouseWheel improvements)  
+**Total new files created:** 54  
+**Lines of boilerplate eliminated:** ~400+ (App 460→145, InteractionPlayground 284→51, SpritePickerModal 366→252, MenuBar 430→354, useGameLoop 279→261, ColorPicker 240→201, BirthChart 320→302)  
 **State management:** Extracted into 4 focused hooks (30–41 lines each) + game state factory  
-**Reusable patterns:** useRefSync, useMapBackups, WheelPicker, colorUtils, dateTimeUtils, wheelGeometry, seasonUtils, useCharacterState, useUIState, useGameState, useMapEditorState, colorConversion, gameLoopState, houseWheelGeometry
+**Files at or under 42 lines:** 46/135 (34% of codebase)
+**Reusable patterns:** useRefSync, useMapBackups, WheelPicker, colorUtils, dateTimeUtils, wheelGeometry, seasonUtils, useCharacterState, useUIState, useGameState, useMapEditorState, colorConversion, gameLoopState, houseWheelGeometry, birthChartFormatters, spritePickerData, spritePickerUtils
 
 ---
 
@@ -395,18 +396,23 @@ Refactored the codebase to improve code navigability and structure through singl
 
 ---
 
-## Current Status: 48 Files Created, 88 Files > 42 Lines
+## Current Status: 54 Files Created, 89 Files > 42 Lines, 46 Files ≤ 42 Lines
+
+**Progress: 46/135 source files now at or under 42-line target (34%)**
 
 ### Completed Goals:
 ✅ App.jsx: 460 → 145 lines (68% reduction)
 ✅ InteractionPlayground: 284 → 51 lines (82% reduction)
+✅ SpritePickerModal: 366 → 252 lines (31% reduction)
 ✅ MenuBar: 430 → 354 lines (extracted utilities)
 ✅ useGameLoop: 279 → 261 lines (extracted state)
 ✅ ColorPicker: 240 → 201 lines (extracted color utils)
+✅ BirthChart: 320 → 302 lines (extracted formatters)
 ✅ HouseWheel: improved with geometry/data extractions
-✅ Eliminated ~300 lines of boilerplate and duplication
-✅ Created reusable hooks, utilities, and components
+✅ Eliminated ~400 lines of boilerplate and duplication
+✅ Created 54 focused utility and component files
 ✅ Clear separation: state management, UI rendering, game logic
+✅ 46 files now at or under 42-line target (34% of codebase)
 
 ### Remaining Candidate Files (Non-Critical)
 
