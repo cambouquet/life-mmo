@@ -334,30 +334,80 @@ Refactored the codebase to improve code navigability and structure through singl
 
 ---
 
+### Phase 9: BirthChart Complete Decomposition (302 → 37 lines)
+
+**Created:**
+1. **ChartRow.jsx** (93 lines) — Planet row with expandable detail
+2. **Big3Summary.jsx** (73 lines) — Sun/Moon/Ascendant + stellium
+3. **chartTallies.js** (43 lines) — Tally utilities
+4. **degreeInterpretation.js** (8 lines) — Degree descriptions
+
+**Refactored:**
+- **BirthChart.jsx** (37 lines) — Pure composition
+
+---
+
+### Phase 10: HoroscopeModal Complete Decomposition (206 → 68 lines)
+
+**Created:**
+1. **ReadingSection.jsx** (69 lines) — Horoscope text sections
+2. **DebugSection.jsx** (64 lines) — Debug UI
+3. **useHoroscopeKeyboard.js** (26 lines) — Keyboard handlers
+4. **modalModes.js** (8 lines) — Mode utilities
+
+**Refactored:**
+- **HoroscopeModal.jsx** (68 lines) — State + composition
+
+---
+
+### Phase 11: CharacterEditor Decomposition (328 → 74 lines, 77% reduction)
+
+**Created:**
+1. **useEditorState.js** (39 lines) — State management hook
+2. **useEditorKeyboard.js** (35 lines) — Keyboard handler hook
+3. **useBirthDateHandlers.js** (28 lines) — Date/time callbacks
+4. **ChartPage.jsx** (27 lines) — Chart page rendering
+5. **LocationPage.jsx** (13 lines) — Location page
+6. **CharacterPage.jsx** (45 lines) — Character customization page
+
+**Refactored:**
+- **CharacterEditor.jsx** (74 lines) — Pure composition + state initialization
+
+---
+
 ## Current Status
 
-**Files analyzed:** 164 (`.jsx`, `.js`)
-**Files under 42 lines:** 66 (40%)
-**Remaining work:** 98 files still over 42 lines (mostly domain logic, hooks, and game loop code)
+**Files analyzed:** 178 (`.jsx`, `.js`)
+**Files under 42 lines:** 74 (42%)
+**Remaining work:** 104 files still over 42 lines
 
 **Key architectural improvements:**
-- **Utilities organized by domain:** wheelGeometry, colorSpace, dateTimeUtils
-- **Reusable hooks extracted:** useNeedle, useImperativeRing, useCanvasDrag, useWheelRings
-- **Components focused on rendering:** No business logic in JSX files
-- **Clear naming:** File names and function names describe intent (e.g., "wheelGeometry" not "geom", "colorSpace" not "conv")
+- **Utilities organized by domain:** wheelGeometry, colorSpace, dateTimeUtils, chartTallies, degreeInterpretation
+- **Reusable hooks extracted:** useNeedle, useImperativeRing, useCanvasDrag, useWheelRings, useEditorState, useEditorKeyboard, useHoroscopeKeyboard, useBirthDateHandlers
+- **Components focused on rendering:** Pure rendering with props, no internal state
+- **Clear naming:** Domain-organized files describe intent
 
-**Largest remaining targets (over 200 lines):**
+**Files recently refactored:**
+- ColorPicker: 201 → 36 lines (84% reduction)
+- HouseWheel: 336 → 103 lines (69% reduction)
+- CirclePicker: 225 → 36 lines (84% reduction)
+- BirthChart: 302 → 37 lines (88% reduction)
+- HoroscopeModal: 206 → 68 lines (67% reduction)
+- CharacterEditor: 328 → 74 lines (77% reduction)
+
+**Largest remaining targets (over 150 lines):**
 - MenuBar: 354 lines (navigation, backup UI)
-- CharacterEditor: 328 lines (form state, page routing)
-- BirthChart: 302 lines (chart rendering, tables)
 - useGameLoop: 261 lines (game loop, input handlers)
 - SpritePickerModal: 252 lines (sprite selection UI)
 - DebugConsole: 230 lines (debug tabs)
 - CassiopeiaWheel: 230 lines (color wheel animation)
 - GraphTab: 227 lines (state timeline chart)
 - MapEditorPanel: 227 lines (map editor tools)
+- Minimap: 179 lines (map visualization)
+- StateTimeline: 177 lines (debug timeline)
+- InteractionPlayground: 177 lines (interaction testing)
 
-**Next priorities:** Domain-specific decomposition (not line-count driven) for game loop, menu, and debug UI
+**Next priorities:** Game loop handlers, debug UI decomposition, menu navigation
 
 ### Build & Test
 ✅ `npm run build` passes  
