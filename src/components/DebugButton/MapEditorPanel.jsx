@@ -1,37 +1,7 @@
 import { useState, useEffect } from 'react'
 import './MapEditorPanel.scss'
-import SPRITESHEETS_DATA from '../../game/config/spritesheets.json'
 import spriteColors from '../../game/config/spriteColors.json'
-
-const LS_MAP_BACKUPS = 'life-mmo-map-backups'
-
-function loadBackups() {
-  try {
-    const data = localStorage.getItem(LS_MAP_BACKUPS)
-    return data ? JSON.parse(data) : []
-  } catch {
-    return []
-  }
-}
-
-function saveBackups(backups) {
-  localStorage.setItem(LS_MAP_BACKUPS, JSON.stringify(backups))
-}
-
-const COLL_VALUES = {
-  0: 'floor',
-  1: 'wall',
-  5: 'void',
-  6: 'door',
-}
-
-const SPRITESHEET_VALUES = {
-  0x00: SPRITESHEETS_DATA['0x00'].name,
-  0x01: SPRITESHEETS_DATA['0x01'].name,
-  0x02: SPRITESHEETS_DATA['0x02'].name,
-  0x03: SPRITESHEETS_DATA['0x03'].name,
-  0x04: SPRITESHEETS_DATA['0x04'].name,
-}
+import { loadBackups, saveBackups, COLL_VALUES, SPRITESHEET_VALUES } from './mapEditorData.js'
 
 export default function MapEditorPanel({ activeMenu, onMenuChange, hoveredTile, layers, collMap, layerEdits, onEditSprite, highlightColors, onHighlightColorsChange, spriteColorOverrides, onSpriteColorChange, onHoverPreview, onPickerStateChange, activeSprite, onActiveSpriteChange }) {
   const [floorColors, setFloorColors] = useState(spriteColors.floor)
