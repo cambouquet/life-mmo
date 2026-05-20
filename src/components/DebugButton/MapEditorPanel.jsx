@@ -1,49 +1,34 @@
 import { useState } from 'react'
 import './MapEditorPanel.scss'
-import spriteColors from '../../game/config/spriteColors.json'
-import { loadBackups, saveBackups } from './mapEditorData.js'
 import { CategoryIcon } from './MapEditorIcons.jsx'
 import { MapBackupMenu } from './MapBackupMenu.jsx'
+import { initializeMapEditorState, createMapBackup, restoreMapBackup, deleteMapBackup } from './mapEditorState.js'
 
 const MENU_ITEMS = [
   { key: 'tiles', label: 'Tiles', icon: 'tiles' },
-  { key: 'animations', label: 'Animations', icon: 'animations' }
+  { key: 'animations', label: 'Animations', icon: 'animations' },
 ]
 
-export default function MapEditorPanel({ activeMenu, onMenuChange, hoveredTile, layers, collMap, layerEdits, onEditSprite, highlightColors, onHighlightColorsChange, spriteColorOverrides, onSpriteColorChange, onHoverPreview, onPickerStateChange, activeSprite, onActiveSpriteChange }) {
-  const [floorColors, setFloorColors] = useState(spriteColors.floor)
-  const [wallColors, setWallColors] = useState(spriteColors.wall)
-  const [backups, setBackups] = useState(loadBackups)
+export default function MapEditorPanel({ activeMenu, onMenuChange, layerEdits, onEditSprite, spriteColorOverrides, onSpriteColorChange }) {
+  const state = initializeMapEditorState()
+  const [floorColors, setFloorColors] = useState(state.floorColors)
+  const [wallColors, setWallColors] = useState(state.wallColors)
+  const [backups, setBackups] = useState(state.backups)
   const [showBackupMenu, setShowBackupMenu] = useState(false)
 
-  const createBackup = () => {
-    const backup = {
-      id: Date.now(),
-      timestamp: new Date().toLocaleString(),
-      layerEdits: JSON.parse(JSON.stringify(layerEdits)),
-      spriteColorOverrides: JSON.parse(JSON.stringify(spriteColorOverrides)),
-      floorColors: [...floorColors],
-      wallColors: [...wallColors]
-    }
-    const newBackups = [backup, ...backups].slice(0, 5)
+  const handleCreateBackup = () => {
+    const newBackups = createMapBackup(layerEdits, spriteColorOverrides, floorColors, wallColors, backups)
     setBackups(newBackups)
-    saveBackups(newBackups)
   }
 
-  const restoreBackup = (backup) => {
-    onEditSprite(() => JSON.parse(JSON.stringify(backup.layerEdits)))
-    onSpriteColorChange(() => JSON.parse(JSON.stringify(backup.spriteColorOverrides)))
-    setFloorColors([...backup.floorColors])
-    spriteColors.floor = [...backup.floorColors]
-    setWallColors([...backup.wallColors])
-    spriteColors.wall = [...backup.wallColors]
+  const handleRestoreBackup = (backup) => {
+    restoreMapBackup(backup, onEditSprite, onSpriteColorChange, setFloorColors, setWallColors)
     setShowBackupMenu(false)
   }
 
-  const deleteBackup = (id) => {
-    const newBackups = backups.filter(b => b.id !== id)
+  const handleDeleteBackup = (id) => {
+    const newBackups = deleteMapBackup(id, backups)
     setBackups(newBackups)
-    saveBackups(newBackups)
   }
 
   return (
@@ -73,7 +58,7 @@ export default function MapEditorPanel({ activeMenu, onMenuChange, hoveredTile, 
       </div>
       <div style={{ display: 'flex', gap: '4px' }}>
         <button
-          onClick={createBackup}
+          onClick={handleCreateBackup}
           style={{
             display: 'flex',
             alignItems: 'center',
@@ -112,7 +97,7 @@ export default function MapEditorPanel({ activeMenu, onMenuChange, hoveredTile, 
             ↩
           </button>
           {showBackupMenu && backups.length > 0 && (
-            <MapBackupMenu backups={backups} onRestore={restoreBackup} onDelete={deleteBackup} />
+            <MapBackupMenu backups={backups} onRestore={handleRestoreBackup} onDelete={handleDeleteBackup} />
           )}
         </div>
       </div>

@@ -1,9 +1,5 @@
 import { useState, useCallback, useRef, useEffect } from 'react'
 import { useViewportScale } from '../hooks/useViewportScale.jsx'
-import { useCharacterState } from '../hooks/useCharacterState.js'
-import { useUIState } from '../hooks/useUIState.js'
-import { useGameState } from '../hooks/useGameState.js'
-import { useMapEditorState } from '../hooks/useMapEditorState.js'
 import { useRecordingScenarios } from '../hooks/useRecordingScenarios.js'
 import { useAppInteraction, useMapPersistence, useExploredTiles } from '../hooks/useAppInteraction.js'
 import HUD from './HUD/HUD.jsx'
@@ -14,6 +10,7 @@ import DebugLayer from './App/DebugLayer.jsx'
 import { useRecorder } from '../playback/useRecorder.js'
 import { AppModals } from './App/AppModals.jsx'
 import { buildDebugConsoleHandlers } from './App/appStateSetup.js'
+import { useAppState, updateRefFlags } from './App/appStateHooks.js'
 
 export default function App() {
   const wrapRef = useViewportScale()
@@ -25,16 +22,15 @@ export default function App() {
   const nameSetRef = useRef(false)
   const colorsSetRef = useRef(false)
 
-  const { charColors, setCharColors, birthData, setBirthData, charName, setCharName, syncCharToStorage, resetChar } = useCharacterState()
-  const { showDialog, setShowDialog, showHoroscope, setShowHoroscope, showEditor, setShowEditor, editorPage, setEditorPage, editorLimited, setEditorLimited, showGallery, setShowGallery, showGameTests, setShowGameTests, debugActive, setDebugActive, closeEditor, resetUI } = useUIState()
-  const { facing, setFacing, moving, setMoving, logEntries, setLogEntries, guidance, setGuidance, worldData, setWorldData, exploredTiles, setExploredTiles, zoom, setZoom, playerPos, setPlayerPos, resetGame } = useGameState()
-  const { activeMapMenu, setActiveMapMenu, hoveredTile, setHoveredTile, hoverPreview, setHoverPreview, pickerState, setPickerState, activeSprite, setActiveSprite, layerEdits, setLayerEdits, spriteColorOverrides, setSpriteColorOverrides, highlightColors, setHighlightColors } = useMapEditorState()
+  const { character, ui, game, mapEditor } = useAppState()
+  const { charColors, setCharColors, birthData, charName, syncCharToStorage, resetChar } = character
+  const { showDialog, setShowDialog, showHoroscope, setShowHoroscope, showEditor, setShowEditor, editorPage, setEditorPage, showGallery, setShowGallery, showGameTests, setShowGameTests, debugActive, setDebugActive, closeEditor, resetUI } = ui
+  const { facing, setFacing, moving, setMoving, logEntries, setLogEntries, guidance, setGuidance, worldData, setWorldData, exploredTiles, setExploredTiles, zoom, setZoom, playerPos, setPlayerPos, resetGame } = game
+  const { activeMapMenu, setActiveMapMenu, hoveredTile, setHoveredTile, hoverPreview, setHoverPreview, pickerState, setPickerState, activeSprite, setActiveSprite, layerEdits, setLayerEdits, spriteColorOverrides, setSpriteColorOverrides, highlightColors, setHighlightColors } = mapEditor
 
   const [recordings, setRecordings] = useState([])
 
-  nameSetRef.current = !!charName
-  colorsSetRef.current = Object.values(charColors).every(v => v !== '#ffffff')
-  doorUnlockedRef.current = nameSetRef.current && colorsSetRef.current
+  updateRefFlags(charName, charColors, nameSetRef, colorsSetRef, doorUnlockedRef)
 
   useEffect(() => {
     window.__gameRef = gameRef.current
