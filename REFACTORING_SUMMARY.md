@@ -231,10 +231,10 @@ Refactored the codebase to improve code navigability and structure through singl
 | `seasonUtils.js` | 44 | Season calculations + constants |
 | `useMapBackups.js` | 45 | Backup state management |
 
-**Total new files created:** 43  
-**Lines of boilerplate eliminated:** ~200 (App 460→145, InteractionPlayground 284→44, MenuBar 430→354)  
-**State management:** Extracted into 4 focused hooks (50–70 lines each)  
-**Reusable patterns:** useRefSync, useMapBackups, WheelPicker, colorUtils, dateTimeUtils, wheelGeometry, seasonUtils, useCharacterState, useUIState, useGameState, useMapEditorState
+**Total new files created:** 48  
+**Lines of boilerplate eliminated:** ~300 (App 460→145, InteractionPlayground 284→44, MenuBar 430→354, useGameLoop 279→261, ColorPicker 240→201, HouseWheel improvements)  
+**State management:** Extracted into 4 focused hooks (30–41 lines each) + game state factory  
+**Reusable patterns:** useRefSync, useMapBackups, WheelPicker, colorUtils, dateTimeUtils, wheelGeometry, seasonUtils, useCharacterState, useUIState, useGameState, useMapEditorState, colorConversion, gameLoopState, houseWheelGeometry
 
 ---
 
@@ -368,6 +368,33 @@ Refactored the codebase to improve code navigability and structure through singl
 
 ---
 
+### Phase 5: Utility Extraction (HouseWheel, ColorPicker, useGameLoop)
+
+**Created:**
+1. **`houseWheelGeometry.js`** (38 lines)
+   - `WHEEL_RADIUS` constants — all SVG radii organized
+   - `computeHouseTally()` — house element tally logic
+   - **Purpose:** Separate wheel geometry from rendering
+
+2. **`colorConversion.js`** (35 lines)
+   - `hexToHsl()`, `hslToHex()` — color space conversion
+   - **Purpose:** Reusable color utilities for any color tool
+
+3. **`gameLoopState.js`** (32 lines)
+   - `initializeGameLoopState()` — factory for game state
+   - `FieldMap` — sprite category-to-field mapping
+   - **Purpose:** Eliminate state initialization boilerplate
+
+**Refactored:**
+- **`HouseWheel.jsx`** (336 lines, down from 372)
+   - Imports WHEEL_RADIUS and computeHouseTally
+- **`ColorPicker.jsx`** (201 lines, down from 240)
+   - Imports colorConversion utilities
+- **`useGameLoop.jsx`** (261 lines, down from 279)
+   - Uses initializeGameLoopState, FieldMap
+
+---
+
 ## Still Needs Refactoring (Tracked)
 
 | File | Lines | Priority | Approach |
@@ -384,3 +411,6 @@ Refactored the codebase to improve code navigability and structure through singl
 - ✅ App → App + 4 state hooks + useRecordingScenarios + useAppInteraction + DebugLayer (extracted state, handlers, debug UI)
 - ✅ HouseWheel → houseWheelData (extracted large constants)
 - ✅ InteractionPlayground → 5 utility modules (decomposed by domain)
+- ✅ HouseWheel → houseWheelGeometry (extracted radius constants and house tally logic)
+- ✅ ColorPicker → colorConversion (extracted HSL/hex conversion functions)
+- ✅ useGameLoop → gameLoopState (extracted state factory and field mapping)
