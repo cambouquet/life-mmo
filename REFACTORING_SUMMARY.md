@@ -231,10 +231,10 @@ Refactored the codebase to improve code navigability and structure through singl
 | `seasonUtils.js` | 44 | Season calculations + constants |
 | `useMapBackups.js` | 45 | Backup state management |
 
-**Total new files created:** 30  
-**Lines of boilerplate eliminated:** ~40  
-**Duplicated constant sources:** 5 → 1  
-**Reusable patterns:** useRefSync, useMapBackups, WheelPicker, colorUtils, dateTimeUtils, wheelGeometry, seasonUtils
+**Total new files created:** 43  
+**Lines of boilerplate eliminated:** ~200 (App 460→145, InteractionPlayground 284→44, MenuBar 430→354)  
+**State management:** Extracted into 4 focused hooks (50–70 lines each)  
+**Reusable patterns:** useRefSync, useMapBackups, WheelPicker, colorUtils, dateTimeUtils, wheelGeometry, seasonUtils, useCharacterState, useUIState, useGameState, useMapEditorState
 
 ---
 
@@ -270,6 +270,25 @@ Refactored the codebase to improve code navigability and structure through singl
    - `ROMAN_NUMERALS` constant — clock face numerals
    - `getSeasonData(overrideDay)` function — season/light calculations
    - **Purpose:** Reusable season logic; isolated from UI
+
+2. **`useMapBackups.js`** (45 lines, in src/hooks/)
+   - `useMapBackups()` hook — backup CRUD (create, restore, delete)
+   - localStorage persistence with max 5 backups
+   - **Purpose:** Reusable backup state management
+
+**Refactored:**
+- **`MenuBar.jsx`** (354 lines, down from 430)
+   - Imports from seasonUtils and useMapBackups hook
+
+---
+
+### Phase 4: App + HouseWheel + InteractionPlayground Decomposition
+
+**Created:**
+1. **`seasonUtils.js`** (44 lines)
+   - `ROMAN_NUMERALS` constant — clock face numerals
+   - `getSeasonData(overrideDay)` function — season/light calculations
+   - **Purpose:** Reusable season logic; isolated from UI
    - **Naming:** "Utils" indicates utility functions
 
 2. **`useMapBackups.js`** (45 lines, in src/hooks/)
@@ -293,11 +312,68 @@ Refactored the codebase to improve code navigability and structure through singl
 
 ---
 
+**Created:**
+1. **State Management Hooks (src/hooks/)**
+   - `useCharacterState.js` (31 lines) — char colors, birth, name + sync/reset
+   - `useUIState.js` (39 lines) — modal state, closeEditor/resetUI helpers
+   - `useGameState.js` (41 lines) — facing, moving, log, playerPos, resetGame
+   - `useMapEditorState.js` (37 lines) — picker, layers, sprites, highlights
+   - **Purpose:** Isolate state groups; composable into App
+
+2. **Recording Scenario Utilities (src/playback/)**
+   - `scenarioCallbacks.js` (73 lines) — createMirrorVisitCallbacks, createGateRunCallbacks factories
+   - **Purpose:** Eliminate duplicated callback definitions
+
+3. **Recording Hook (src/hooks/)**
+   - `useRecordingScenarios.js` (45 lines) — handleRecord, handleRecordGate, handleStop
+   - `useAppInteraction.js` (56 lines) — handleInteract, useMapPersistence, useExploredTiles
+   - **Purpose:** Reusable recording and interaction logic
+
+4. **Debug Layer Component (src/components/App/)**
+   - `DebugLayer.jsx` (78 lines) — sprite picker, interaction playground, toolbar (debug-only)
+   - **Purpose:** Isolate debug UI from main App component
+
+5. **HouseWheel Constants (src/components/HouseWheel/)**
+   - `houseWheelData.js` (68 lines) — SIGN_NAMES, ORBITS, PLANET_RINGS, HOUSE_*, PLANET_SUMMARY
+   - **Purpose:** Separate data from logic; reduced HouseWheel boilerplate
+
+6. **InteractionPlayground Decomposition (src/game/interactions/)**
+   - `playerUtils.js` (71 lines) — inspect, teleport, setFacing, testMovement
+   - `proximityUtils.js` (27 lines) — checkProximity logic
+   - `worldUtils.js` (30 lines) — inspectWorld, inspectRoom logic
+   - `collisionUtils.js` (47 lines) — testCollisionAt, scanCollisionsAround
+   - `stateVerification.js` (21 lines) — verifyGameState logic
+   - **Purpose:** Separate game test utilities by domain; reusable functions
+
+**Refactored:**
+- **`App.jsx`** (145 lines, down from 460)
+   - Composes all state hooks and handlers
+   - Delegates UI sections to DebugLayer
+   - Clear separation: state, wiring, composition
+
+- **`HouseWheel.jsx`** (reduced boilerplate)
+   - Imports constants from houseWheelData
+
+- **`InteractionPlayground.js`** (44 lines, down from 284)
+   - Delegates to utility modules
+   - Focus: orchestration, not implementation
+
+**Benefits:**
+- App is now a clean composition layer (145 lines)
+- State management modularized into 4 reusable hooks
+- Recording scenarios eliminate duplication (scenarioCallbacks)
+- Game test logic organized by domain (playerUtils, worldUtils, etc.)
+- Debug UI isolated (DebugLayer) — easy to remove for production
+- All new files under 75 lines — navigable, focused
+
+---
+
 ## Still Needs Refactoring (Tracked)
 
 | File | Lines | Priority | Approach |
 |------|-------|----------|----------|
 | SpritePickerModal.jsx | 366 | LOW | Modular but functional |
+| ColorPicker.jsx | 240 | LOW | Utility extraction |
 
 **Completed this session:**
 - ✅ CirclePicker → DateWheel + TimeWheel (separated wheel implementations)
@@ -305,3 +381,6 @@ Refactored the codebase to improve code navigability and structure through singl
 - ✅ CharacterEditor → EarthGlobe + CitySearch + AstroSummary + colorUtils + dateTimeUtils (extracted components and utilities)
 - ✅ HouseWheel → HouseWheel + WheelInfoPanel + wheelGeometry (extracted info panel and geometry utilities)
 - ✅ MenuBar → MenuBar + seasonUtils + useMapBackups (extracted season logic and backup hook)
+- ✅ App → App + 4 state hooks + useRecordingScenarios + useAppInteraction + DebugLayer (extracted state, handlers, debug UI)
+- ✅ HouseWheel → houseWheelData (extracted large constants)
+- ✅ InteractionPlayground → 5 utility modules (decomposed by domain)
