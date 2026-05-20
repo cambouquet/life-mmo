@@ -9,6 +9,7 @@ import { resolveInteract }      from '../game/systems/interact.js'
 import { renderScene }          from '../game/draw/scene.js'
 import { mouseTile } from '../game/draw/debug.js'
 import { DRAW_SCALE } from '../game/constants.jsx'
+import { initializeGameLoopState, FieldMap } from '../game/gameLoopState.js'
 
 export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, charColors, playerRef, playerStateRef, doorUnlockedRef, nameSetRef, colorsSetRef, debugActive, layerEdits, highlightColors, spriteColorOverrides, hoverPreview, onHoveredTileChange, onWorldDataChange, onEditSprite, activeSprite, onZoomChange }) {
   const pausedRef             = useRefSync(paused)
@@ -38,29 +39,11 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
     // Send world data to debug panel
     onWorldDataRef.current?.({ layers: world.layers, collMap: map })
 
-    let torchPhase         = 0
-    let last               = 0
-    let prevShift          = isKeyDown('ShiftLeft') || isKeyDown('ShiftRight')
-    let prevSpace          = isKeyDown('Space')
-    let elapsed            = 0
-    let guidance           = null
-    let mirrorOpened       = false
-    let hasMovedToCorridor = false
-    let log                = []
-    let door1              = { open: false, progress: 0 }
-    let door2              = { open: false, progress: 0 }
-    let hoveredTile = null
-    let selectedTile = null
-    let selectedTiles = []
-    let dragStart = null
-    let isDragging = false
-    let dragMoved = false
-    let altHeldDown = false
-    let cameraOffsetX = 0
-    let cameraOffsetY = 0
-    let lastMouseX = 0
-    let lastMouseY = 0
-    let isPanning = false
+    const state = initializeGameLoopState()
+    state.prevShift = isKeyDown('ShiftLeft') || isKeyDown('ShiftRight')
+    state.prevSpace = isKeyDown('Space')
+
+    let { torchPhase, last, prevShift, prevSpace, elapsed, guidance, mirrorOpened, hasMovedToCorridor, log, door1, door2, hoveredTile, selectedTile, selectedTiles, dragStart, isDragging, dragMoved, altHeldDown, cameraOffsetX, cameraOffsetY, lastMouseX, lastMouseY, isPanning } = state
 
     const canvas = canvasRef.current
     const onMouseMove = e => {
@@ -135,8 +118,7 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
 
       // Paint with active sprite
       if (activeSpriteRef.current?.sprite) {
-        const fieldMap = { floor: 'ground', wall: 'wall', table: 'obj', torch: 'entity' }
-        const field = fieldMap[activeSpriteRef.current.category]
+        const field = FieldMap[activeSpriteRef.current.category]
 
         if (onEditSpriteRef.current) {
           onEditSpriteRef.current(prev => ({
