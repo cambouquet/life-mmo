@@ -1,325 +1,87 @@
 import { useState, useCallback, useRef, useEffect } from 'react'
-import { useViewportScale }  from '../hooks/useViewportScale.jsx'
-import HUD                   from './HUD/HUD.jsx'
-import Game                  from './Game/Game.jsx'
-import HoroscopeModal        from './HoroscopeModal/HoroscopeModal.jsx'
-import DialogModal           from './DialogModal/DialogModal.jsx'
-import GuidanceVoice         from './GuidanceVoice/GuidanceVoice.jsx'
-import CharacterEditor       from './CharacterEditor/CharacterEditor.jsx'
-import RecordButton          from './RecordButton/RecordButton.jsx'
-import VideoGallery          from './VideoGallery/VideoGallery.jsx'
-import DebugConsole          from './HUD/DebugConsole.jsx'
-import MapEditButton         from './DebugButton/MapEditButton.jsx'
-import SpritePickerModal     from './DebugButton/SpritePickerModal.jsx'
-import InteractionPlayground from './DebugButton/InteractionPlayground.jsx'
-import AdminToolbar          from './DebugButton/BottomToolbar.jsx'
-import { useRecorder }       from '../playback/useRecorder.js'
-import { PlaybackEngine }    from '../playback/PlaybackEngine.js'
-import { mirrorVisit }       from '../playback/scenarios/mirrorVisit.js'
-import { gateRun }           from '../playback/scenarios/gateRun.js'
-import {
-  LS_COLORS, LS_BIRTH, LS_NAME, LS_MAP_EDITS, LS_SPRITE_COLORS,
-  DEFAULT_COLORS, DEFAULT_BIRTH, load
-} from '../constants/persistence.js'
+import { useViewportScale } from '../hooks/useViewportScale.jsx'
+import { useCharacterState } from '../hooks/useCharacterState.js'
+import { useUIState } from '../hooks/useUIState.js'
+import { useGameState } from '../hooks/useGameState.js'
+import { useMapEditorState } from '../hooks/useMapEditorState.js'
+import { useRecordingScenarios } from '../hooks/useRecordingScenarios.js'
+import { useAppInteraction, useMapPersistence, useExploredTiles } from '../hooks/useAppInteraction.js'
+import { DEFAULT_COLORS, DEFAULT_BIRTH } from '../constants/persistence.js'
+import HUD from './HUD/HUD.jsx'
+import Game from './Game/Game.jsx'
+import HoroscopeModal from './HoroscopeModal/HoroscopeModal.jsx'
+import DialogModal from './DialogModal/DialogModal.jsx'
+import GuidanceVoice from './GuidanceVoice/GuidanceVoice.jsx'
+import CharacterEditor from './CharacterEditor/CharacterEditor.jsx'
+import RecordButton from './RecordButton/RecordButton.jsx'
+import VideoGallery from './VideoGallery/VideoGallery.jsx'
+import DebugConsole from './HUD/DebugConsole.jsx'
+import DebugLayer from './App/DebugLayer.jsx'
+import { useRecorder } from '../playback/useRecorder.js'
 
 export default function App() {
-  const [facing,        setFacing]        = useState('down')
-  const [moving,        setMoving]        = useState(false)
-  const [logEntries,    setLogEntries]    = useState([
-    '<em>System:</em> Move with WASD.',
-    'The torches flicker in the dark.',
-    '<em>?</em> enters the dungeon.',
-  ])
-  const [guidance,      setGuidance]      = useState(null)
-  const [showDialog,    setShowDialog]    = useState(false)
-  const [showHoroscope, setShowHoroscope] = useState(false)
-  const [showEditor,    setShowEditor]    = useState(false)
-  const [editorPage,    setEditorPage]    = useState(0)
-  const [editorLimited, setEditorLimited] = useState(false)
-  const [showGallery,   setShowGallery]   = useState(false)
-  const [recordings,    setRecordings]    = useState([])
-  const [charColors,    setCharColors]    = useState(() => load(LS_COLORS, DEFAULT_COLORS))
-  const [birthData,     setBirthData]     = useState(() => load(LS_BIRTH,  DEFAULT_BIRTH))
-  const [charName,      setCharName]      = useState(() => load(LS_NAME,   null))
-  const [debugActive,   setDebugActive]   = useState(false)
-  const [activeMapMenu, setActiveMapMenu] = useState('tiles')
-  const [hoveredTile,   setHoveredTile]   = useState(null)
-  const [hoverPreview,  setHoverPreview]  = useState(null)
-  const [pickerState,   setPickerState]   = useState({ pickerOpen: null, activeTab: 'tiles', selectedSpriteForColor: null, ground: null, wall: null, obj: null, entity: null })
-  const [activeSprite,  setActiveSprite]  = useState({ category: 'ground', sprite: null })
-  const [worldData,     setWorldData]     = useState(null)
-  const [layerEdits,    setLayerEdits]    = useState(() => load(LS_MAP_EDITS, {}))
-  const [spriteColorOverrides, setSpriteColorOverrides] = useState(() => load(LS_SPRITE_COLORS, {}))
-  const [highlightColors, setHighlightColors] = useState({
-    selectedFill: 'rgba(100,200,255,0.15)',
-    selectedStroke: 'rgba(100,220,255,0.5)',
-    hoveredFill: 'rgba(100,200,255,0.15)',
-    hoveredStroke: 'rgba(100,220,255,0.4)',
-  })
-  const [exploredTiles, setExploredTiles] = useState(new Set())
-  const [zoom, setZoom] = useState(1)
-  const [playerPos, setPlayerPos] = useState(null)
-  const [showGameTests, setShowGameTests] = useState(false)
+  const wrapRef = useViewportScale()
+  const gameRef = useRef(null)
+  const uiOverlayRef = useRef(null)
+  const engineRef = useRef(null)
+  const playerStateRef = useRef(null)
+  const worldDataRef = useRef(null)
+  const canvasWrapRef = useRef(null)
+  const doorUnlockedRef = useRef(false)
+  const nameSetRef = useRef(false)
+  const colorsSetRef = useRef(false)
 
-  const wrapRef          = useViewportScale()
-  const gameRef          = useRef(null)
-  const uiOverlayRef     = useRef(null)
-  const engineRef        = useRef(null)
-  const playerStateRef   = useRef(null)
-  const worldDataRef     = useRef(null)
-  const canvasWrapRef    = useRef(null)
-  const doorUnlockedRef  = useRef(false)
-  const nameSetRef       = useRef(!!charName)
-  const colorsSetRef     = useRef(Object.values(charColors).every(v => v !== '#ffffff'))
+  const { charColors, setCharColors, birthData, setBirthData, charName, setCharName, syncCharToStorage, resetChar } = useCharacterState()
+  const { showDialog, setShowDialog, showHoroscope, setShowHoroscope, showEditor, setShowEditor, editorPage, setEditorPage, editorLimited, setEditorLimited, showGallery, setShowGallery, showGameTests, setShowGameTests, debugActive, setDebugActive, closeEditor, resetUI } = useUIState()
+  const { facing, setFacing, moving, setMoving, logEntries, setLogEntries, guidance, setGuidance, worldData, setWorldData, exploredTiles, setExploredTiles, zoom, setZoom, playerPos, setPlayerPos, resetGame } = useGameState()
+  const { activeMapMenu, setActiveMapMenu, hoveredTile, setHoveredTile, hoverPreview, setHoverPreview, pickerState, setPickerState, activeSprite, setActiveSprite, layerEdits, setLayerEdits, spriteColorOverrides, setSpriteColorOverrides, highlightColors, setHighlightColors } = useMapEditorState()
 
-  // Keep refs in sync each render
-  nameSetRef.current   = !!charName
+  const [recordings, setRecordings] = useState([])
+
+  nameSetRef.current = !!charName
   colorsSetRef.current = Object.values(charColors).every(v => v !== '#ffffff')
   doorUnlockedRef.current = nameSetRef.current && colorsSetRef.current
 
-  // Expose game API for testing
   useEffect(() => {
     window.__gameRef = gameRef.current
     window.__exploredTiles = exploredTiles
   }, [exploredTiles])
 
+  useMapPersistence(layerEdits, spriteColorOverrides)
+  useExploredTiles(playerPos, setExploredTiles)
 
-  // Save layer edits and sprite colors to both localStorage and backend
-  useEffect(() => {
-    localStorage.setItem(LS_MAP_EDITS, JSON.stringify(layerEdits))
-    localStorage.setItem(LS_SPRITE_COLORS, JSON.stringify(spriteColorOverrides))
-
-    // Save to backend if there are edits
-    if (Object.keys(layerEdits).length > 0 || Object.keys(spriteColorOverrides).length > 0) {
-      fetch('/api/map/save', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ layerEdits, spriteColorOverrides }),
-      }).catch(err => console.error('Failed to save map edits:', err))
-    }
-  }, [layerEdits, spriteColorOverrides])
-
-  const recorder      = useRecorder({
+  const recorder = useRecorder({
     onReady: (blob, filename) => {
       const url = URL.createObjectURL(blob)
       setRecordings(prev => [...prev, { id: Date.now(), url, blob, filename, ts: Date.now() }])
       setShowGallery(true)
     }
   })
+
   const handleStateChange = useCallback(({ facing, moving, log, guidance, playerPos: newPlayerPos }) => {
     setFacing(facing)
     setMoving(moving)
     setLogEntries(log)
     setGuidance(guidance ?? null)
     setPlayerPos(newPlayerPos)
+  }, [setFacing, setMoving, setLogEntries, setGuidance, setPlayerPos])
 
-    // Track explored tiles
-    if (newPlayerPos) {
-      const TILE = 16
-      const tileR = Math.floor(newPlayerPos.y / TILE)
-      const tileC = Math.floor(newPlayerPos.x / TILE)
-      const tileKey = `${tileR},${tileC}`
-      setExploredTiles(prev => new Set(prev).add(tileKey))
-    }
-  }, [])
-
-  const handleInteract = useCallback((target) => {
-    if (showHoroscope) setShowHoroscope(false)
-    else if (showEditor) {
-      setShowEditor(false)
-      setEditorPage(0)
-    }
-    else if (target === 'mirror1') {
-      console.action('Opening Mirror (limited)')
-      setEditorLimited(true)
-      setShowEditor(true)
-      setEditorPage(0)
-    }
-    else if (target === 'mirror2') {
-      console.action('Opening Mirror')
-      setEditorLimited(false)
-      setShowEditor(true)
-      setEditorPage(0)
-    }
-    else if (target === 'npc' || !showDialog) setShowDialog(true)
-  }, [showHoroscope, showDialog, showEditor])
-
-  const handleRecord = useCallback(async () => {
-    let stream
-    try {
-      stream = await navigator.mediaDevices.getDisplayMedia({ video: { frameRate: 30 }, audio: false })
-    } catch (err) {
-      console.error('[record] screen capture denied:', err?.message)
-      return
-    }
-    console.action('▶ Record started — scenario: mirrorVisit')
-    if (!recorder.start(stream)) return
-
-    const engine = new PlaybackEngine({
-      getPlayerPos:  () => gameRef.current?.playerPos() ?? { x: 0, y: 0 },
-      onOpenEditor:  () => { 
-        console.action('⬡ Mirror opened')
-        setShowEditor(true) 
-        setEditorPage(0)
-        recorder.updateOverlay({ showEditor: true })
-      },
-      onCloseEditor: () => { 
-        console.action('⬡ Mirror closed')
-        setShowEditor(false) 
-        setEditorPage(0)
-        recorder.updateOverlay({ showEditor: false })
-      },
-      onScrollEditor: (p) => {
-        setEditorPage(p)
-      },
-      onColorChange: (key, value) => {
-        console.action(`🎨 Color changed — ${key}: ${value}`)
-        setCharColors(prev => {
-          const next = { ...prev, [key]: value }
-          recorder.updateOverlay({ charColors: next })
-          return next
-        })
-      },
-      onComplete: () => {
-        console.action('✓ Scenario complete — converting in 1.5s')
-        setTimeout(() => {
-          const ts = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19)
-          recorder.stop(`mirror-visit_${ts}.mp4`)
-        }, 1500)
-      },
-    })
-
-    engineRef.current = engine
-    engine.run(mirrorVisit)
-  }, [recorder, charColors, birthData])
-
-  const handleRecordGate = useCallback(async () => {
-    let stream
-    try {
-      stream = await navigator.mediaDevices.getDisplayMedia({ video: { frameRate: 30 }, audio: false })
-    } catch (err) {
-      console.error('[record] screen capture denied:', err?.message)
-      return
-    }
-    console.action('▶ Record started — scenario: gateRun')
-    if (!recorder.start(stream)) return
-
-    const engine = new PlaybackEngine({
-      getPlayerPos:  () => gameRef.current?.playerPos() ?? { x: 0, y: 0 },
-      onOpenEditor:  () => {
-        console.action('⬡ Mirror opened')
-        setShowEditor(true)
-        setEditorPage(0)
-        recorder.updateOverlay({ showEditor: true })
-      },
-      onCloseEditor: () => {
-        console.action('⬡ Mirror closed')
-        setShowEditor(false)
-        setEditorPage(0)
-        recorder.updateOverlay({ showEditor: false })
-      },
-      onScrollEditor: (p) => {
-        setEditorPage(p)
-      },
-      onColorChange: (key, value) => {
-        console.action(`🎨 Color changed — ${key}: ${value}`)
-        setCharColors(prev => {
-          const next = { ...prev, [key]: value }
-          recorder.updateOverlay({ charColors: next })
-          return next
-        })
-      },
-      onSetName: (name) => {
-        console.action(`✏ Name set — ${name}`)
-        setCharName(name)
-        try { localStorage.setItem(LS_NAME, JSON.stringify(name)) } catch {}
-      },
-      onSaveMirror: (colors, name) => {
-        console.action('💾 Mirror saved')
-        setCharColors(prev => {
-          const merged = { ...prev, ...colors }
-          try { localStorage.setItem(LS_COLORS, JSON.stringify(merged)) } catch {}
-          recorder.updateOverlay({ charColors: merged, showEditor: false })
-          return merged
-        })
-        setCharName(name)
-        try { localStorage.setItem(LS_NAME, JSON.stringify(name)) } catch {}
-        setShowEditor(false)
-        setEditorPage(0)
-        setEditorLimited(false)
-      },
-      onComplete: () => {
-        console.action('✓ Scenario complete — converting in 1.5s')
-        setTimeout(() => {
-          const ts = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19)
-          recorder.stop(`gate-run_${ts}.mp4`)
-        }, 1500)
-      },
-    })
-
-    engineRef.current = engine
-    engine.run(gateRun)
-  }, [recorder])
-
-  const handleStop = useCallback(() => {
-    console.action('■ Recording stopped by user')
-    engineRef.current?.abort()
-    engineRef.current = null
-    recorder.cancel()
-    setShowEditor(false)
-  }, [recorder])
+  const { handleInteract } = useAppInteraction(showHoroscope, setShowHoroscope, showEditor, setShowEditor, setEditorPage, setShowDialog)
+  const { handleRecord, handleRecordGate, handleStop } = useRecordingScenarios(recorder, gameRef, engineRef, setShowEditor, setEditorPage, setCharColors, charColors, charName, birthData)
 
   return (
     <div className={`game-wrap ${debugActive ? 'debug-active' : ''}`} ref={wrapRef} style={{ transform: `scale(${zoom})`, transformOrigin: '0 0' }}>
       <HUD facing={facing} moving={moving} logEntries={logEntries} charColors={charColors} charName={charName} playerPos={playerPos} exploredTiles={exploredTiles} worldData={worldData} debugActive={debugActive} activeMapMenu={activeMapMenu} onMapMenuChange={setActiveMapMenu} hoveredTile={hoveredTile} layers={worldData?.layers} collMap={worldData?.collMap} layerEdits={layerEdits} onEditSprite={setLayerEdits} highlightColors={highlightColors} onHighlightColorsChange={setHighlightColors} spriteColorOverrides={spriteColorOverrides} onSpriteColorChange={setSpriteColorOverrides} onHoverPreview={setHoverPreview} onPickerStateChange={setPickerState} activeSprite={activeSprite} onActiveSpriteChange={setActiveSprite} guidance={guidance} showDialog={showDialog} showHoroscope={showHoroscope} />
-      <RecordButton
-        status={recorder.status}
-        progress={recorder.progress}
-        recordingCount={recordings.length}
-        onRecord={handleRecord}
-        onRecordGate={handleRecordGate}
-        onStop={handleStop}
-        onOpenGallery={() => setShowGallery(true)}
-        isOpen={showGallery}
-      />
+      <RecordButton status={recorder.status} progress={recorder.progress} recordingCount={recordings.length} onRecord={handleRecord} onRecordGate={handleRecordGate} onStop={handleStop} onOpenGallery={() => setShowGallery(true)} isOpen={showGallery} />
       {!showEditor && (
         <div className="canvas-wrap" ref={canvasWrapRef}>
-        <Game
-          ref={gameRef}
-          onStateChange={handleStateChange}
-          onInteract={handleInteract}
-          paused={showDialog || showHoroscope}
-          charColors={charColors}
-          playerStateRef={playerStateRef}
-          doorUnlockedRef={doorUnlockedRef}
-          nameSetRef={nameSetRef}
-          colorsSetRef={colorsSetRef}
-          debugActive={debugActive}
-          layerEdits={layerEdits}
-          highlightColors={highlightColors}
-          spriteColorOverrides={spriteColorOverrides}
-          hoverPreview={hoverPreview}
-          onHoveredTileChange={setHoveredTile}
-          onWorldDataChange={(data) => {
-            setWorldData(data)
-            worldDataRef.current = data
-          }}
-          onEditSprite={setLayerEdits}
-          activeSprite={activeSprite}
-        />
-        <div className="ui-overlay" ref={uiOverlayRef}>
-          {showDialog && (
-            <DialogModal
-              onClose={() => setShowDialog(false)}
-              onHoroscope={() => { setShowDialog(false); setShowHoroscope(true) }}
-            />
-          )}
-
-          {showHoroscope && <HoroscopeModal birthData={birthData} onClose={() => setShowHoroscope(false)} />}
-        </div>
+          <Game ref={gameRef} onStateChange={handleStateChange} onInteract={handleInteract} paused={showDialog || showHoroscope} charColors={charColors} playerStateRef={playerStateRef} doorUnlockedRef={doorUnlockedRef} nameSetRef={nameSetRef} colorsSetRef={colorsSetRef} debugActive={debugActive} layerEdits={layerEdits} highlightColors={highlightColors} spriteColorOverrides={spriteColorOverrides} hoverPreview={hoverPreview} onHoveredTileChange={setHoveredTile} onWorldDataChange={(data) => { setWorldData(data); worldDataRef.current = data }} onEditSprite={setLayerEdits} activeSprite={activeSprite} />
+          <div className="ui-overlay" ref={uiOverlayRef}>
+            {showDialog && <DialogModal onClose={() => setShowDialog(false)} onHoroscope={() => { setShowDialog(false); setShowHoroscope(true) }} />}
+            {showHoroscope && <HoroscopeModal birthData={birthData} onClose={() => setShowHoroscope(false)} />}
+          </div>
         </div>
       )}
-
       {showEditor && (
         <CharacterEditor
           initialColors={charColors}
@@ -327,134 +89,57 @@ export default function App() {
           initialName={charName}
           scrollPage={editorPage}
           limited={editorLimited}
-          onClose={() => {
-            console.action('Closing Mirror')
-            setShowEditor(false)
-            setEditorPage(0)
-            setEditorLimited(false)
-          }}
+          onClose={() => { console.action('Closing Mirror'); closeEditor() }}
           onChange={(next) => {
-            const keys = Object.keys(next)
-            const changed = keys.find(k => next[k] !== charColors[k])
+            const changed = Object.keys(next).find(k => next[k] !== charColors[k])
             if (changed) console.action(`Changing ${changed} to ${next[changed]}`)
             setCharColors(next)
           }}
           onSave={(colors, data, name) => {
             console.action('Saving character data')
-            setCharColors(colors)
-            setBirthData(data)
-            setCharName(name)
-            try { localStorage.setItem(LS_NAME, JSON.stringify(name)) } catch {}
-            try { localStorage.setItem(LS_COLORS, JSON.stringify(colors)) } catch {}
-            try { if (data) localStorage.setItem(LS_BIRTH, JSON.stringify(data)) } catch {}
-            setShowEditor(false)
-            setEditorPage(0)
-            setEditorLimited(false)
+            syncCharToStorage(colors, data, name)
+            closeEditor()
           }}
         />
       )}
       <DebugConsole
         onReset={() => {
           playerStateRef.current = null
-          setCharColors(DEFAULT_COLORS)
-          setBirthData(DEFAULT_BIRTH)
-          setCharName(null)
-          setShowEditor(false)
-          setEditorPage(0)
-          setEditorLimited(false)
-          setShowDialog(false)
-          setShowHoroscope(false)
-          setGuidance(null)
-          setLogEntries([
-            '<em>System:</em> Move with WASD.',
-            'The torches flicker in the dark.',
-            '<em>?</em> enters the dungeon.',
-          ])
+          resetChar()
+          resetUI()
+          resetGame()
         }}
         getSaveData={() => ({
-          name:    charName,
-          colors:  charColors,
-          birth:   birthData,
-          pos:     playerStateRef.current ? { x: playerStateRef.current.x, y: playerStateRef.current.y, facing: playerStateRef.current.facing } : null,
+          name: charName,
+          colors: charColors,
+          birth: birthData,
+          pos: playerStateRef.current ? { x: playerStateRef.current.x, y: playerStateRef.current.y, facing: playerStateRef.current.facing } : null,
           savedAt: Date.now(),
         })}
         onLoad={(slot) => {
-          if (slot.colors) { localStorage.setItem('life-mmo-colors-v3', JSON.stringify(slot.colors)); setCharColors(slot.colors) }
-          if (slot.birth)  { localStorage.setItem('life-mmo-birth',     JSON.stringify(slot.birth));  setBirthData(slot.birth) }
-          if (slot.name != null) { localStorage.setItem('life-mmo-name', JSON.stringify(slot.name));  setCharName(slot.name) }
-          if (slot.pos)    { playerStateRef.current = slot.pos }
-          setShowEditor(false)
-          setEditorPage(0)
-          setEditorLimited(false)
-          setShowDialog(false)
-          setShowHoroscope(false)
+          syncCharToStorage(slot.colors, slot.birth, slot.name)
+          if (slot.pos) playerStateRef.current = slot.pos
+          resetUI()
         }}
       />
-      {debugActive && pickerState.pickerOpen && (
-        <SpritePickerModal
-          category={pickerState.pickerOpen}
-          currentSprite={
-            pickerState.activeTab === 'tiles' ? (
-              pickerState.pickerOpen === 'floor' ? pickerState.ground :
-              pickerState.pickerOpen === 'wall' ? pickerState.wall :
-              pickerState.pickerOpen === 'table' ? pickerState.obj :
-              pickerState.pickerOpen === 'torch' ? pickerState.entity :
-              null
-            ) : (
-              pickerState.selectedSpriteForColor
-            )
-          }
-          spriteColorOverrides={spriteColorOverrides}
-          activeSprite={activeSprite}
-          onActiveSpriteChange={(newActive) => {
-            setActiveSprite(newActive)
-            if (newActive.sprite === null) {
-              setPickerState(prev => ({ ...prev, pickerOpen: newActive.category }))
-            }
-          }}
-          onSelect={(sprite) => {
-            if (pickerState.activeTab === 'colors') {
-              setPickerState(prev => ({ ...prev, selectedSpriteForColor: sprite, pickerOpen: null }))
-            } else {
-              setActiveSprite({ category: pickerState.pickerOpen, sprite })
-              setPickerState(prev => ({ ...prev, pickerOpen: null }))
-            }
-          }}
-          onClose={() => {
-            setPickerState(prev => ({ ...prev, pickerOpen: null }))
-            setHoverPreview(null)
-          }}
-          onHoverPreview={setHoverPreview}
-          onSpriteColorChange={setSpriteColorOverrides}
-        />
-      )}
-      {debugActive && showGameTests && (
-        <InteractionPlayground
-          playerStateRef={playerStateRef}
-          worldDataRef={worldDataRef}
-          onMovePlayer={(direction) => {
-            const keyMap = { up: 'KeyW', down: 'KeyS', left: 'KeyA', right: 'KeyD' }
-            const event = new KeyboardEvent('keydown', { code: keyMap[direction] })
-            window.dispatchEvent(event)
-          }}
-          onInteract={() => {
-            const event = new KeyboardEvent('keydown', { code: 'KeyE' })
-            window.dispatchEvent(event)
-          }}
-        />
-      )}
-      <AdminToolbar
-        isOpen={debugActive}
-        onToggle={() => setDebugActive(!debugActive)}
-        onEditMap={() => setDebugActive(!debugActive)}
-        onRecord={() => setShowGallery(prev => !prev)}
+      <DebugLayer
+        debugActive={debugActive}
+        setDebugActive={setDebugActive}
+        pickerState={pickerState}
+        setPickerState={setPickerState}
+        hoveredTile={hoveredTile}
+        setHoveredTile={setHoveredTile}
+        spriteColorOverrides={spriteColorOverrides}
+        setSpriteColorOverrides={setSpriteColorOverrides}
+        activeSprite={activeSprite}
+        setActiveSprite={setActiveSprite}
+        showGameTests={showGameTests}
+        setShowGameTests={setShowGameTests}
+        playerStateRef={playerStateRef}
+        worldDataRef={worldDataRef}
+        setHoverPreview={setHoverPreview}
       />
-      {showGallery && (
-        <VideoGallery
-          videos={recordings}
-          onClose={() => setShowGallery(false)}
-        />
-      )}
+      {showGallery && <VideoGallery videos={recordings} onClose={() => setShowGallery(false)} />}
     </div>
   )
 }
