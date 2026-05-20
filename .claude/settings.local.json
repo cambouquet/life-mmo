@@ -22,7 +22,8 @@
       "Bash(Select-String -Pattern \"birth|chart|wheel\")",
       "PowerShell(Get-ChildItem -Path \"C:\\\\Users\\\\bouqu\\\\gitclones\\\\life-mmo\\\\src\" -Recurse -File | Where-Object { $_.Extension -in '.jsx', '.js', '.tsx', '.ts' } | Select-String -Pattern 'birth|chart|wheel' | head -20)",
       "Bash(git log *)",
-      "Bash(grep -n \"^export\\\\|^function\\\\|^const.*=.*{$\" \"C:\\\\Users\\\\bouqu\\\\gitclones\\\\life-mmo\\\\src\\\\components\\\\HouseWheel\\\\HouseWheel.jsx\")"
+      "Bash(grep -n \"^export\\\\|^function\\\\|^const.*=.*{$\" \"C:\\\\Users\\\\bouqu\\\\gitclones\\\\life-mmo\\\\src\\\\components\\\\HouseWheel\\\\HouseWheel.jsx\")",
+      "Bash(grep -n \"^export\\\\|^function\\\\|^const.*=.*{$\" \"C:\\\\Users\\\\bouqu\\\\gitclones\\\\life-mmo\\\\src\\\\components\\\\MenuBar.jsx\")"
     ]
   }
 }

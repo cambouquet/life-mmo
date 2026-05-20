@@ -1,76 +1,14 @@
 import { useEffect, useState } from 'react'
+import { getSeasonData, ROMAN_NUMERALS } from './seasonUtils.js'
+import { useMapBackups } from '../../hooks/useMapBackups.js'
 import './MenuBar.scss'
-
-const LS_MAP_BACKUPS = 'life-mmo-map-backups'
-
-function loadBackups() {
-  try {
-    const data = localStorage.getItem(LS_MAP_BACKUPS)
-    return data ? JSON.parse(data) : []
-  } catch {
-    return []
-  }
-}
-
-function saveBackups(backups) {
-  localStorage.setItem(LS_MAP_BACKUPS, JSON.stringify(backups))
-}
-
-const ROMAN_NUMERALS = {
-  0:  'XII',
-  3:  'III',
-  6:  'VI',
-  9:  'IX'
-}
-
-function getSeasonData(overrideDay) {
-  const now = new Date()
-  const year = now.getFullYear()
-  const dayOfYear = overrideDay !== undefined ? overrideDay : Math.floor((now - new Date(year, 0, 0)) / 86400000)
-
-  // Approximate solstices
-  const summerSolstice = 172 // June 21
-  const winterSolstice = 355 // Dec 21
-
-  // Calculate light progress (0 = darkest/Winter, 1 = brightest/Summer)
-  let lightProgress
-  if (dayOfYear <= summerSolstice) {
-    const totalDays = summerSolstice + (365 - winterSolstice)
-    const daysSinceWinter = dayOfYear + (365 - winterSolstice)
-    lightProgress = daysSinceWinter / totalDays
-  } else if (dayOfYear <= winterSolstice) {
-    const totalDays = winterSolstice - summerSolstice
-    const daysSinceSummer = dayOfYear - summerSolstice
-    lightProgress = 1 - (daysSinceSummer / totalDays)
-  } else {
-    const totalDays = summerSolstice + (365 - winterSolstice)
-    const daysSinceWinter = dayOfYear - winterSolstice
-    lightProgress = daysSinceWinter / totalDays
-  }
-
-  // yearProgress for the full 360 rotation (0-1)
-  const yearProgress = dayOfYear / 365
-  
-  // Format date for display
-  const date = new Date(year, 0); // Jan 1st
-  date.setDate(dayOfYear + 1);
-  const dateString = date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
-
-  return {
-    light: Math.max(0, Math.min(1, lightProgress)),
-    year:  yearProgress,
-    isRising: dayOfYear > winterSolstice || dayOfYear < summerSolstice,
-    day: dayOfYear,
-    dateString
-  }
-}
 
 export default function MenuBar({ debugActive, activeMapMenu, onMapMenuChange, hoveredTile, layers, collMap, layerEdits, onEditSprite, highlightColors, onHighlightColorsChange, spriteColorOverrides, onSpriteColorChange, onHoverPreview, onPickerStateChange, activeSprite, onActiveSpriteChange }) {
   const [now, setNow] = useState(new Date())
   const [overridenDay, setOverridenDay] = useState(undefined)
   const [season, setSeason] = useState(getSeasonData())
-  const [backups, setBackups] = useState(loadBackups)
   const [showBackupMenu, setShowBackupMenu] = useState(false)
+  const { backups, createBackup: hookCreateBackup, restoreBackup: hookRestoreBackup, deleteBackup } = useMapBackups()
 
   useEffect(() => {
     const id = setInterval(() => {
@@ -90,27 +28,13 @@ export default function MenuBar({ debugActive, activeMapMenu, onMapMenuChange, h
   }
 
   const createBackup = () => {
-    const backup = {
-      id: Date.now(),
-      timestamp: new Date().toLocaleString(),
-      layerEdits: JSON.parse(JSON.stringify(layerEdits)),
-      spriteColorOverrides: JSON.parse(JSON.stringify(spriteColorOverrides))
-    }
-    const newBackups = [backup, ...backups].slice(0, 5)
-    setBackups(newBackups)
-    saveBackups(newBackups)
+    hookCreateBackup(layerEdits, spriteColorOverrides)
   }
 
   const restoreBackup = (backup) => {
     onEditSprite(() => JSON.parse(JSON.stringify(backup.layerEdits)))
     onSpriteColorChange(() => JSON.parse(JSON.stringify(backup.spriteColorOverrides)))
     setShowBackupMenu(false)
-  }
-
-  const deleteBackup = (id) => {
-    const newBackups = backups.filter(b => b.id !== id)
-    setBackups(newBackups)
-    saveBackups(newBackups)
   }
 
   const hours = now.getHours() % 12

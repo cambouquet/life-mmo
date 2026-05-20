@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -n \"^export\\\\|^function\\\\|^const.*=.*{$\\\\|^const.*=.*=>$\" \"C:\\\\Users\\\\bouqu\\\\gitclones\\\\life-mmo\\\\src\\\\components\\\\HUD\\\\MenuBar.jsx\")"
+    ]
+  }
+}
