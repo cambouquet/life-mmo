@@ -227,11 +227,14 @@ Refactored the codebase to improve code navigability and structure through singl
 | `HouseWheel.jsx` | 441 | Wheel rendering + state |
 | `WheelInfoPanel.jsx` | 80 | Legend/detail display |
 | `wheelGeometry.js` | 17 | Polar coordinates + arc paths |
+| `MenuBar.jsx` | 354 | UI rendering + state wiring |
+| `seasonUtils.js` | 44 | Season calculations + constants |
+| `useMapBackups.js` | 45 | Backup state management |
 
-**Total new files created:** 28  
+**Total new files created:** 30  
 **Lines of boilerplate eliminated:** ~40  
 **Duplicated constant sources:** 5 → 1  
-**Reusable patterns:** useRefSync, WheelPicker, colorUtils, dateTimeUtils, wheelGeometry
+**Reusable patterns:** useRefSync, useMapBackups, WheelPicker, colorUtils, dateTimeUtils, wheelGeometry, seasonUtils
 
 ---
 
@@ -260,17 +263,45 @@ Refactored the codebase to improve code navigability and structure through singl
 
 ---
 
+### Phase 3.8: MenuBar Decomposition (430 → 354 lines core + utilities)
+
+**Created:**
+1. **`seasonUtils.js`** (44 lines)
+   - `ROMAN_NUMERALS` constant — clock face numerals
+   - `getSeasonData(overrideDay)` function — season/light calculations
+   - **Purpose:** Reusable season logic; isolated from UI
+   - **Naming:** "Utils" indicates utility functions
+
+2. **`useMapBackups.js`** (45 lines, in src/hooks/)
+   - `useMapBackups()` hook — backup CRUD (create, restore, delete)
+   - localStorage persistence with max 5 backups
+   - **Purpose:** Reusable backup state management
+   - **Naming:** Hook name clearly indicates state management
+
+**Refactored:**
+- **`MenuBar.jsx`** (354 lines, down from 430)
+   - Removed: inline `loadBackups`, `saveBackups`, `ROMAN_NUMERALS`, `getSeasonData`
+   - Imports: `getSeasonData`, `ROMAN_NUMERALS` from seasonUtils
+   - Imports: `useMapBackups` from hooks
+   - Wrapper: `createBackup()` delegates to `hookCreateBackup()`
+
+**Benefits:**
+- seasonUtils can be used by any component (not MenuBar-specific)
+- useMapBackups can be shared with other map management UIs
+- MenuBar focuses on UI rendering and state wiring
+- Clear separation: utilities (pure), hook (state), component (rendering)
+
+---
+
 ## Still Needs Refactoring (Tracked)
 
 | File | Lines | Priority | Approach |
 |------|-------|----------|----------|
-| MenuBar.jsx | 430 | MEDIUM | Extract ClockWidget, SeasonWidget, useMapBackups |
 | SpritePickerModal.jsx | 366 | LOW | Modular but functional |
-
-**Strategy:** MenuBar has good candidates for extraction
 
 **Completed this session:**
 - ✅ CirclePicker → DateWheel + TimeWheel (separated wheel implementations)
 - ✅ HoroscopeModal → HoroscopeModal + BirthChart (separated display from routing)
 - ✅ CharacterEditor → EarthGlobe + CitySearch + AstroSummary + colorUtils + dateTimeUtils (extracted components and utilities)
 - ✅ HouseWheel → HouseWheel + WheelInfoPanel + wheelGeometry (extracted info panel and geometry utilities)
+- ✅ MenuBar → MenuBar + seasonUtils + useMapBackups (extracted season logic and backup hook)
