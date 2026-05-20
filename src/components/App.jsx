@@ -17,23 +17,10 @@ import { useRecorder }       from '../playback/useRecorder.js'
 import { PlaybackEngine }    from '../playback/PlaybackEngine.js'
 import { mirrorVisit }       from '../playback/scenarios/mirrorVisit.js'
 import { gateRun }           from '../playback/scenarios/gateRun.js'
-
-const LS_COLORS = 'life-mmo-colors-v3'
-const LS_BIRTH  = 'life-mmo-birth'
-const LS_NAME   = 'life-mmo-name'
-const LS_MAP_EDITS = 'life-mmo-map-edits-v2'
-const LS_SPRITE_COLORS = 'life-mmo-sprite-colors-v2'
-
-const DEFAULT_COLORS = { hair: '#ffffff', skin: '#ffffff', eyes: '#ffffff', outfit: '#ffffff', stick: '#ffffff' }
-const DEFAULT_BIRTH = {
-  date: '1988-01-27',
-  time: '03:55',
-  city: { name: 'Paris XIII', country: 'FR', lat: 48.83, lng: 2.36, tz: 1 }
-}
-
-function load(key, fallback) {
-  try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback } catch { return fallback }
-}
+import {
+  LS_COLORS, LS_BIRTH, LS_NAME, LS_MAP_EDITS, LS_SPRITE_COLORS,
+  DEFAULT_COLORS, DEFAULT_BIRTH, load
+} from '../constants/persistence.js'
 
 export default function App() {
   const [facing,        setFacing]        = useState('down')

@@ -1,11 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { SIGN_META } from '../../game/astro/horoscope.js'
-
-const ELEMENT_COLOR = { Fire: '#fb923c', Earth: '#86efac', Air: '#fef08a', Water: '#60a5fa' }
-
-const PLANET_GLYPHS = { Sun:'☉', Moon:'☽', Mercury:'☿', Venus:'♀', Mars:'♂', Jupiter:'♃', Saturn:'♄', Uranus:'♅', Neptune:'♆', Pluto:'♇', Chiron:'⚷', NorthNode:'☊', SouthNode:'☋', Lilith:'⚸', Ascendant:'Asc', Descendant:'Dsc', Midheaven:'MC', IC:'IC', Vertex:'Vx', PartOfFortune:'⊕' }
-const PLANET_NAMES  = { NorthNode:'North Node', SouthNode:'South Node', PartOfFortune:'Part of Fortune', IC: 'Imum Coeli', Ascendant: 'Ascendant', Midheaven: 'Midheaven' }
-const PLANET_ORDER  = ['Sun','Ascendant','Moon','Mercury','Venus','Mars','Jupiter','Saturn','Uranus','Neptune','Pluto','Chiron','NorthNode','SouthNode','Lilith','Descendant','Midheaven','IC','Vertex','PartOfFortune']
+import { ELEMENT_COLOR, PLANET_GLYPHS, PLANET_NAMES, PLANET_ORDER } from '../HoroscopeModal/astroConstants.js'
 
 const SIGN_NAMES = ['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces']
 

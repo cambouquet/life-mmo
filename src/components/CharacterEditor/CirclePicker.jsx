@@ -1,8 +1,6 @@
 import React, { useRef, useCallback, useEffect, useState } from 'react'
 
 const ACCENT = 'rgba(168,85,247,'
-const MONTHS_SHORT = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
-const DAYS_IN_MONTH = (m, y) => new Date(y, m, 0).getDate()
 
 function polarToXY(cx, cy, angleDeg, r) {
   const a = (angleDeg - 90) * Math.PI / 180
@@ -111,7 +109,7 @@ function useImperativeRing(svgRef, cx, cy, total, onPreview, onCommit) {
 
 // ── Generic Wheel Picker Component ────────────────────────────────────────────
 // Shared component for both date and time pickers
-function WheelPicker({ value, onChange, onPreview, size = 220, rings, needleConfig, centerDisplay, style }) {
+export function WheelPicker({ value, onChange, onPreview, size = 220, rings, needleConfig, centerDisplay, style }) {
   const svgRef = useRef(null)
   const VB = 240, cx = 120, cy = 120
   const needleRef = useRef(null)
@@ -223,169 +221,5 @@ function WheelPicker({ value, onChange, onPreview, size = 220, rings, needleConf
   )
 }
 
-// ── Date Wheel ────────────────────────────────────────────────────────────────
-export function DateWheel({ value, onChange, onPreview, size = 220, style }) {
-  const { day, month, year } = value
-  const valRef = useRef({ day, month, year })
-  useEffect(() => { valRef.current = { day, month, year } }, [day, month, year])
-
-  const maxDay = DAYS_IN_MONTH(month, year)
-  const YEARS = Array.from({length: 101}, (_, i) => 1930 + i)
-
-  const rings = [
-    {
-      count: maxDay,
-      r1: 28, r2: 50,
-      isSelected: (v) => false,
-      shouldShowLabel: (i) => i % 5 === 0,
-      label: (i) => String(i + 1),
-      onHover: (v, i) => ({ day: i + 1, month: v.month, year: v.year }),
-      onSelect: (v, i) => { onChange({ day: i + 1, month: v.month, year: v.year }); return v }
-    },
-    {
-      count: 12,
-      r1: 54, r2: 76,
-      isSelected: (v, i) => i + 1 === v.month,
-      shouldShowLabel: () => true,
-      label: (i) => MONTHS_SHORT[i],
-      onHover: (v, i) => {
-        const nm = i + 1
-        return { day: Math.min(v.day, DAYS_IN_MONTH(nm, v.year)), month: nm, year: v.year }
-      },
-      onSelect: (v, i) => {
-        const nm = i + 1
-        onChange({ day: Math.min(v.day, DAYS_IN_MONTH(nm, v.year)), month: nm, year: v.year })
-        return v
-      }
-    },
-    {
-      count: YEARS.length,
-      r1: 80, r2: 102,
-      isSelected: (v, i) => YEARS[i] === v.year,
-      shouldShowLabel: (i) => {
-        const yearIdx = YEARS.indexOf(value.year)
-        return i === yearIdx || Math.abs(i - yearIdx) <= 2 || Math.abs(i - yearIdx) >= YEARS.length - 2
-      },
-      label: (i) => String(YEARS[i]),
-      onHover: (v, i) => ({ day: v.day, month: v.month, year: YEARS[i] }),
-      onSelect: (v, i) => { onChange({ day: v.day, month: v.month, year: YEARS[i] }); return v }
-    }
-  ]
-
-  const dDisp = value.day
-  const mDisp = value.month
-  const yDisp = value.year
-
-  return (
-    <WheelPicker
-      value={value}
-      onChange={onChange}
-      onPreview={onPreview}
-      size={size}
-      rings={rings}
-      needleConfig={{
-        needleR1: 101,
-        needleR2: 113,
-        degreesToUnits: 365 / 360,
-        onDelta: (v, steps) => {
-          const d = new Date(v.year, v.month - 1, v.day)
-          d.setDate(d.getDate() + steps)
-          const minDate = new Date(1930, 0, 1)
-          const maxDate = new Date(2030, 11, 31)
-          if (d < minDate || d > maxDate) return v
-          onChange({ day: d.getDate(), month: d.getMonth() + 1, year: d.getFullYear() })
-          return { day: d.getDate(), month: d.getMonth() + 1, year: d.getFullYear() }
-        }
-      }}
-      centerDisplay={{
-        lines: [
-          {
-            offset: -7,
-            size: 13,
-            weight: 700,
-            color: '#e8d4ff',
-            text: (v) => `${String(v.day).padStart(2,'0')} ${MONTHS_SHORT[v.month-1]}`
-          },
-          {
-            offset: 9,
-            size: 11,
-            weight: 500,
-            color: 'rgba(200,168,240,0.7)',
-            text: (v) => String(v.year)
-          }
-        ]
-      }}
-      style={style}
-    />
-  )
-}
-
-// ── Time Wheel ────────────────────────────────────────────────────────────────
-export function TimeWheel({ value, onChange, onPreview, size = 220, style }) {
-  const { hour, minute } = value
-  const valRef = useRef({ hour, minute })
-  useEffect(() => { valRef.current = { hour, minute } }, [hour, minute])
-
-  const rings = [
-    {
-      count: 60,
-      r1: 28, r2: 50,
-      isSelected: (v) => false,
-      shouldShowLabel: (i) => i % 15 === 0,
-      label: (i) => String(i).padStart(2,'0'),
-      onHover: (v, i) => ({ hour: v.hour, minute: i }),
-      onSelect: (v, i) => { onChange({ hour: v.hour, minute: i }); return v }
-    },
-    {
-      count: 12,
-      r1: 54, r2: 76,
-      isSelected: (v, i) => (i === 0 ? 12 : i) === v.hour,
-      shouldShowLabel: () => true,
-      label: (i) => i === 0 ? '12' : String(i).padStart(2,'0'),
-      onHover: (v, i) => ({ hour: i === 0 ? 12 : i, minute: v.minute }),
-      onSelect: (v, i) => { onChange({ hour: i === 0 ? 12 : i, minute: v.minute }); return v }
-    }
-  ]
-
-  return (
-    <WheelPicker
-      value={value}
-      onChange={onChange}
-      onPreview={onPreview}
-      size={size}
-      rings={rings}
-      needleConfig={{
-        needleR1: 80,
-        needleR2: 102,
-        degreesToUnits: 60 / 360,
-        onDelta: (v, steps) => {
-          let totalMin = v.hour * 60 + v.minute + steps
-          let daysDiff = Math.floor(totalMin / 1440)
-          totalMin = ((totalMin % 1440) + 1440) % 1440
-          const nextVal = { hour: Math.floor(totalMin / 60), minute: totalMin % 60, daysDiff }
-          onChange(nextVal)
-          return nextVal
-        }
-      }}
-      centerDisplay={{
-        lines: [
-          {
-            offset: 0,
-            size: 13,
-            weight: 700,
-            color: '#e8d4ff',
-            text: (v) => `${String(v.hour).padStart(2,'0')}:${String(v.minute).padStart(2,'0')}`
-          },
-          {
-            offset: 12,
-            size: 11,
-            weight: 500,
-            color: 'rgba(200,168,240,0.7)',
-            text: (v) => v.hour === 0 ? '12 AM' : v.hour < 12 ? v.hour + ' AM' : v.hour === 12 ? '12 PM' : (v.hour - 12) + ' PM'
-          }
-        ]
-      }}
-      style={style}
-    />
-  )
-}
+export { DateWheel } from './DateWheel.jsx'
+export { TimeWheel } from './TimeWheel.jsx'

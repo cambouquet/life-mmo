@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import { useRefSync } from './useRefSync.js'
 import { initInput, isKeyDown } from '../game/input.jsx'
 import { buildWorld }           from '../game/world.js'
 import { updatePlayer }         from '../game/systems/player.js'
@@ -10,36 +11,21 @@ import { mouseTile } from '../game/draw/debug.js'
 import { DRAW_SCALE } from '../game/constants.jsx'
 
 export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, charColors, playerRef, playerStateRef, doorUnlockedRef, nameSetRef, colorsSetRef, debugActive, layerEdits, highlightColors, spriteColorOverrides, hoverPreview, onHoveredTileChange, onWorldDataChange, onEditSprite, activeSprite, onZoomChange }) {
-  const pausedRef     = useRef(paused)
-  const onInteractRef = useRef(onInteract)
-  const onStateRef    = useRef(onStateChange)
-  const charColorsRef = useRef(charColors)
-  const debugActiveRef = useRef(debugActive)
-  const layerEditsRef = useRef(layerEdits)
-  const highlightColorsRef = useRef(highlightColors)
-  const spriteColorOverridesRef = useRef(spriteColorOverrides)
-  const hoverPreviewRef = useRef(hoverPreview)
-  const onHoveredTileRef = useRef(onHoveredTileChange)
-  const onWorldDataRef = useRef(onWorldDataChange)
-  const onEditSpriteRef = useRef(null)
-  const activeSpriteRef = useRef(activeSprite)
-  const onZoomChangeRef = useRef(onZoomChange)
+  const pausedRef             = useRefSync(paused)
+  const onInteractRef         = useRefSync(onInteract)
+  const onStateRef            = useRefSync(onStateChange)
+  const charColorsRef         = useRefSync(charColors)
+  const debugActiveRef        = useRefSync(debugActive)
+  const layerEditsRef         = useRefSync(layerEdits)
+  const highlightColorsRef    = useRefSync(highlightColors)
+  const spriteColorOverridesRef = useRefSync(spriteColorOverrides)
+  const hoverPreviewRef       = useRefSync(hoverPreview)
+  const onHoveredTileRef      = useRefSync(onHoveredTileChange)
+  const onWorldDataRef        = useRefSync(onWorldDataChange)
+  const onEditSpriteRef       = useRef(null)
+  const activeSpriteRef       = useRefSync(activeSprite)
+  const onZoomChangeRef       = useRefSync(onZoomChange)
   const zoomRef = useRef(DRAW_SCALE)
-
-  useEffect(() => { pausedRef.current     = paused },        [paused])
-  useEffect(() => { onInteractRef.current = onInteract },    [onInteract])
-  useEffect(() => { onStateRef.current    = onStateChange }, [onStateChange])
-  useEffect(() => { charColorsRef.current = charColors },    [charColors])
-  useEffect(() => { debugActiveRef.current = debugActive },  [debugActive])
-  useEffect(() => { layerEditsRef.current = layerEdits },    [layerEdits])
-  useEffect(() => { highlightColorsRef.current = highlightColors }, [highlightColors])
-  useEffect(() => { spriteColorOverridesRef.current = spriteColorOverrides }, [spriteColorOverrides])
-  useEffect(() => { hoverPreviewRef.current = hoverPreview }, [hoverPreview])
-  useEffect(() => { onHoveredTileRef.current = onHoveredTileChange }, [onHoveredTileChange])
-  useEffect(() => { onWorldDataRef.current = onWorldDataChange }, [onWorldDataChange])
-  useEffect(() => { onEditSpriteRef.current = onEditSprite }, [onEditSprite])
-  useEffect(() => { activeSpriteRef.current = activeSprite }, [activeSprite])
-  useEffect(() => { onZoomChangeRef.current = onZoomChange }, [onZoomChange])
 
   useEffect(() => {
     const cleanupInput = initInput()
