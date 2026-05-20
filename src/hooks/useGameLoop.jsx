@@ -1,31 +1,28 @@
 import { useEffect, useRef } from 'react'
 import { useRefSync } from './useRefSync.js'
 import { initInput, isKeyDown } from '../game/input.jsx'
-import { buildWorld }           from '../game/world.js'
-import { updatePlayer }         from '../game/systems/player.js'
-import { updateDoors, isNearDoor } from '../game/systems/door.js'
-import { resolveGuidance }      from '../game/systems/guidance.js'
-import { resolveInteract }      from '../game/systems/interact.js'
-import { renderScene }          from '../game/draw/scene.js'
-import { mouseTile } from '../game/draw/debug.js'
+import { buildWorld } from '../game/world.js'
+import { initializeGameLoopState } from '../game/gameLoopState.js'
 import { DRAW_SCALE } from '../game/constants.jsx'
-import { initializeGameLoopState, FieldMap } from '../game/gameLoopState.js'
+import { createPointerHandlers } from '../game/input/pointerHandlers.js'
+import { updateGameLogic } from '../game/input/gameLoopLogic.js'
+import { renderGameFrame } from '../game/input/gameLoopRender.js'
 
 export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, charColors, playerRef, playerStateRef, doorUnlockedRef, nameSetRef, colorsSetRef, debugActive, layerEdits, highlightColors, spriteColorOverrides, hoverPreview, onHoveredTileChange, onWorldDataChange, onEditSprite, activeSprite, onZoomChange }) {
-  const pausedRef             = useRefSync(paused)
-  const onInteractRef         = useRefSync(onInteract)
-  const onStateRef            = useRefSync(onStateChange)
-  const charColorsRef         = useRefSync(charColors)
-  const debugActiveRef        = useRefSync(debugActive)
-  const layerEditsRef         = useRefSync(layerEdits)
-  const highlightColorsRef    = useRefSync(highlightColors)
+  const pausedRef = useRefSync(paused)
+  const onInteractRef = useRefSync(onInteract)
+  const onStateRef = useRefSync(onStateChange)
+  const charColorsRef = useRefSync(charColors)
+  const debugActiveRef = useRefSync(debugActive)
+  const layerEditsRef = useRefSync(layerEdits)
+  const highlightColorsRef = useRefSync(highlightColors)
   const spriteColorOverridesRef = useRefSync(spriteColorOverrides)
-  const hoverPreviewRef       = useRefSync(hoverPreview)
-  const onHoveredTileRef      = useRefSync(onHoveredTileChange)
-  const onWorldDataRef        = useRefSync(onWorldDataChange)
-  const onEditSpriteRef       = useRef(null)
-  const activeSpriteRef       = useRefSync(activeSprite)
-  const onZoomChangeRef       = useRefSync(onZoomChange)
+  const hoverPreviewRef = useRefSync(hoverPreview)
+  const onHoveredTileRef = useRefSync(onHoveredTileChange)
+  const onWorldDataRef = useRefSync(onWorldDataChange)
+  const onEditSpriteRef = useRef(null)
+  const activeSpriteRef = useRefSync(activeSprite)
+  const onZoomChangeRef = useRefSync(onZoomChange)
   const zoomRef = useRef(DRAW_SCALE)
 
   useEffect(() => {
@@ -35,157 +32,28 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
 
     const world = buildWorld(playerStateRef)
     let { map, player } = world
-
-    // Send world data to debug panel
     onWorldDataRef.current?.({ layers: world.layers, collMap: map })
 
     const state = initializeGameLoopState()
     state.prevShift = isKeyDown('ShiftLeft') || isKeyDown('ShiftRight')
     state.prevSpace = isKeyDown('Space')
-
-    let { torchPhase, last, prevShift, prevSpace, elapsed, guidance, mirrorOpened, hasMovedToCorridor, log, door1, door2, hoveredTile, selectedTile, selectedTiles, dragStart, isDragging, dragMoved, altHeldDown, cameraOffsetX, cameraOffsetY, lastMouseX, lastMouseY, isPanning } = state
+    state.map = map
+    state.player = player
+    state.door1 = world.door1
+    state.door2 = world.door2
 
     const canvas = canvasRef.current
-    const onMouseMove = e => {
-      altHeldDown = e.altKey
-
-      // Handle camera panning (middle mouse drag)
-      if (isPanning) {
-        const deltaX = e.clientX - lastMouseX
-        const deltaY = e.clientY - lastMouseY
-        cameraOffsetX -= deltaX / zoomRef.current
-        cameraOffsetY -= deltaY / zoomRef.current
-      }
-      lastMouseX = e.clientX
-      lastMouseY = e.clientY
-
-      hoveredTile = mouseTile(e, canvas, player.x + 8 + cameraOffsetX, player.y + 8 + cameraOffsetY, zoomRef.current)
-
-      if (isDragging && dragStart && debugActiveRef.current) {
-        dragMoved = true
-        // Update selection while dragging
-        const current = hoveredTile
-        const minC = Math.min(dragStart.c, current.c)
-        const maxC = Math.max(dragStart.c, current.c)
-        const minR = Math.min(dragStart.r, current.r)
-        const maxR = Math.max(dragStart.r, current.r)
-
-        selectedTiles = []
-        for (let c = minC; c <= maxC; c++) {
-          for (let r = minR; r <= maxR; r++) {
-            selectedTiles.push({ c, r })
-          }
-        }
-        selectedTile = selectedTiles.length > 0 ? { tiles: selectedTiles } : null
-        onHoveredTileRef.current?.(selectedTile)
-      } else {
-        onHoveredTileRef.current?.(selectedTile || hoveredTile)
-      }
+    const refs = {
+      pausedRef, onInteractRef, onStateRef, charColorsRef, debugActiveRef,
+      layerEditsRef, highlightColorsRef, spriteColorOverridesRef, hoverPreviewRef,
+      onHoveredTileRef, onWorldDataRef, onEditSpriteRef, activeSpriteRef, onZoomChangeRef,
+      doorUnlockedRef, nameSetRef, colorsSetRef
     }
 
-    const onMouseDown = e => {
-      // Middle mouse button: start panning (always available)
-      if (e.button === 1) {
-        isPanning = true
-        lastMouseX = e.clientX
-        lastMouseY = e.clientY
-        return
-      }
-
-      if (!debugActiveRef.current) return
-
-      // Don't start drag for Alt+Click (paste mode)
-      if (e.altKey) return
-
-      dragMoved = false
-      const tile = mouseTile(e, canvas, player.x + 8 + cameraOffsetX, player.y + 8 + cameraOffsetY, zoomRef.current)
-      dragStart = tile
-      isDragging = true
-    }
-
-    const onMouseUp = e => {
-      if (e.button === 1) {
-        isPanning = false
-      }
-      isDragging = false
-      dragStart = null
-      dragMoved = false
-    }
-
-    const onClick = e => {
-      if (!debugActiveRef.current || dragMoved) return
-      const tile = mouseTile(e, canvas, player.x + 8, player.y + 8, zoomRef.current)
-
-      // Paint with active sprite
-      if (activeSpriteRef.current?.sprite) {
-        const field = FieldMap[activeSpriteRef.current.category]
-
-        if (onEditSpriteRef.current) {
-          onEditSpriteRef.current(prev => ({
-            ...prev,
-            [`${tile.c},${tile.r}`]: { ...prev[`${tile.c},${tile.r}`], [field]: activeSpriteRef.current.sprite }
-          }))
-        }
-        return
-      }
-
-      if (e.altKey && selectedTile) {
-        // Alt+Click: paste the selected tile's data to the clicked tile
-        const sourceKey = `${selectedTiles[0].c},${selectedTiles[0].r}`
-        const editedData = layerEditsRef.current[sourceKey]
-
-        if (!editedData || Object.keys(editedData).length === 0) {
-          return
-        }
-
-        if (onEditSpriteRef.current) {
-          onEditSpriteRef.current(prev => ({
-            ...prev,
-            [`${tile.c},${tile.r}`]: { ...editedData }
-          }))
-        }
-        return
-      } else if (e.ctrlKey) {
-        // Ctrl+Click: toggle tile in multi-select
-        const key = `${tile.c},${tile.r}`
-        const existingIndex = selectedTiles.findIndex(t => `${t.c},${t.r}` === key)
-        if (existingIndex >= 0) {
-          selectedTiles.splice(existingIndex, 1)
-          console.log('➖ Deselect:', `(${tile.c},${tile.r})`)
-        } else {
-          selectedTiles.push(tile)
-          console.log('➕ Select:', `(${tile.c},${tile.r})`)
-        }
-        selectedTile = selectedTiles.length > 0 ? { tiles: selectedTiles } : null
-      } else {
-        // Single select
-        selectedTile = tile
-        selectedTiles = [tile]
-      }
-      onHoveredTileRef.current?.(selectedTile)
-    }
+    const { onMouseMove, onMouseDown, onMouseUp, onClick, onWheel } = createPointerHandlers(canvas, state, refs, zoomRef)
 
     const onKeyDown = e => {
       if (!debugActiveRef.current) return
-    }
-
-    const onWheel = e => {
-      e.preventDefault()
-
-      if (e.shiftKey) {
-        // Shift+Scroll: zoom (debug mode only)
-        if (!debugActiveRef.current) return
-        const step = 0.25
-        const minZoom = 1
-        const maxZoom = 4
-        zoomRef.current += e.deltaY < 0 ? step : -step
-        zoomRef.current = Math.max(minZoom, Math.min(maxZoom, zoomRef.current))
-        onZoomChangeRef.current?.(zoomRef.current)
-      } else {
-        // Scroll without shift: pan camera (always available)
-        cameraOffsetX -= e.deltaX / zoomRef.current
-        cameraOffsetY -= e.deltaY / zoomRef.current
-      }
     }
 
     canvas.addEventListener('mousemove', onMouseMove)
@@ -195,57 +63,18 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
     canvas.addEventListener('wheel', onWheel, { passive: false })
     document.addEventListener('keydown', onKeyDown)
 
-    function loop(ts) {
-      const dt = Math.min((ts - last) / 1000, 0.05)
-      last = ts
-      torchPhase += dt * 4.5
+    let rafId = requestAnimationFrame(function loop(ts) {
+      const dt = Math.min((ts - state.last) / 1000, 0.05)
+      state.last = ts
+      state.torchPhase += dt * 4.5
       if (playerRef) playerRef.current = player
 
-      if (!pausedRef.current) {
-        prevShift = updatePlayer(player, map, dt, prevShift)
-        elapsed  += dt
-
-        ;({ door1, door2, map } = updateDoors(door1, door2, player, world, !!doorUnlockedRef?.current, dt, map))
-
-        const g = resolveGuidance(player, elapsed, mirrorOpened, hasMovedToCorridor)
-        guidance           = g.text
-        hasMovedToCorridor = g.movedToCorridor
-
-        const spaceNow = isKeyDown('Space')
-        if (spaceNow && !prevSpace) {
-          const target = resolveInteract(player, world)
-          if (target) {
-            if (target === 'mirror1' || target === 'mirror2') mirrorOpened = true
-            guidance = null
-            onInteractRef.current?.(target)
-          }
-        }
-        prevSpace = spaceNow
-
-        onStateRef.current?.({ facing: player.facing, moving: player.moving, log, guidance, doorOpen: door1.open, door2Open: door2.open, playerPos: { x: player.x, y: player.y } })
-      } else {
-        const spaceNow = isKeyDown('Space')
-        if (spaceNow && !prevSpace) onInteractRef.current?.()
-        prevSpace = spaceNow
-      }
-
-      const near2 = door2.open || isNearDoor(player, world.DOOR2_WX, world.DOOR2_WY)
-      const selectedTiles = selectedTile?.tiles || (selectedTile ? [selectedTile] : [])
-      const pastePreviewData = altHeldDown && selectedTile ? {
-        sourceC: selectedTiles[0].c,
-        sourceR: selectedTiles[0].r,
-        sourceData: layerEditsRef.current[`${selectedTiles[0].c},${selectedTiles[0].r}`]
-      } : null
-      renderScene(ctx, world, { map, door1Progress: door1.progress, door2Progress: door2.progress, near2, hoveredTile, selectedTile, selectedTiles, layerEdits: layerEditsRef.current, highlightColors: highlightColorsRef.current, spriteColorOverrides: spriteColorOverridesRef.current, hoverPreview: hoverPreviewRef.current, pastePreviewData }, player, torchPhase, charColorsRef.current, {
-        paused:    pausedRef.current,
-        nameSet:   !!nameSetRef?.current,
-        colorsSet: !!colorsSetRef?.current,
-      }, zoomRef.current, debugActiveRef.current ? { x: cameraOffsetX, y: cameraOffsetY } : { x: 0, y: 0 })
+      updateGameLogic(state, world, refs, dt)
+      renderGameFrame(ctx, world, state, refs, state.player, state.torchPhase, charColorsRef.current, zoomRef)
 
       rafId = requestAnimationFrame(loop)
-    }
+    })
 
-    let rafId = requestAnimationFrame(loop)
     return () => {
       cleanupInput()
       canvas.removeEventListener('mousemove', onMouseMove)
@@ -255,7 +84,7 @@ export function useGameLoop(canvasRef, { onStateChange, onInteract, paused, char
       canvas.removeEventListener('wheel', onWheel)
       document.removeEventListener('keydown', onKeyDown)
       cancelAnimationFrame(rafId)
-      if (playerStateRef) playerStateRef.current = { x: player.x, y: player.y, facing: player.facing }
+      if (playerStateRef) playerStateRef.current = { x: state.player.x, y: state.player.y, facing: state.player.facing }
     }
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 }
