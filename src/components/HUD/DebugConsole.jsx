@@ -1,101 +1,31 @@
-import React, { useState, useEffect, useRef } from 'react'
+import { useState, useRef } from 'react'
 import './DebugConsole.scss'
 import { CopyButton } from './DebugConsole/CopyButton'
 import { DataTab } from './DebugConsole/DataTab'
 import { ActionsTab } from './DebugConsole/ActionsTab'
 import { LogsTab } from './DebugConsole/LogsTab'
-import { useConsoleInterception } from './DebugConsole/useConsoleInterception'
 import { GraphTab } from './DebugConsole/GraphTab'
+import { useConsoleInterception } from './DebugConsole/useConsoleInterception'
+import { useStateHistory, useResizeHandle, useClickOutside } from './DebugConsole/debugConsoleHooks.js'
+import { buildCopyText, toggleCategory } from './DebugConsole/debugConsoleUtils.js'
+import { DebugTabs } from './DebugConsole/DebugTabs.jsx'
+import { DebugToggle } from './DebugConsole/DebugToggle.jsx'
 
 export default function DebugConsole({ onReset, getSaveData, onLoad }) {
   const [isOpen, setIsOpen] = useState(false)
   const [tab, setTab] = useState('logs')
   const [logs, setLogs] = useState([])
   const [hidden, setHidden] = useState(new Set())
-  const [height, setHeight] = useState(380)
-  const [history, setHistory] = useState([])
-  const [selectedIndex, setSelectedIndex] = useState(-1)
   const scrollRef = useRef(null)
   const panelRef = useRef(null)
-  const isResizingRef = useRef(false)
 
   useConsoleInterception(setLogs)
-
-  // Track state history when debug panel is open
-  useEffect(() => {
-    if (!isOpen) return
-
-    const interval = setInterval(() => {
-      if (window.__screenDebug) {
-        const current = JSON.stringify(window.__screenDebug, (key, value) => {
-          if (key === 'actions') return undefined
-          return value
-        })
-
-        setHistory((prev) => {
-          const lastEntry = prev[prev.length - 1]
-          if (lastEntry && lastEntry.state === current) {
-            return prev
-          }
-          const newEntry = {
-            timestamp: new Date(),
-            state: current,
-            parsed: JSON.parse(current),
-          }
-          const updated = [...prev, newEntry]
-          // Keep last 200 entries
-          const final = updated.length > 200 ? updated.slice(-200) : updated
-          // Auto-select the latest state
-          setSelectedIndex(final.length - 1)
-          return final
-        })
-      }
-    }, 100)
-    return () => clearInterval(interval)
-  }, [isOpen])
-
-  useEffect(() => {
-    const onMouseMove = (e) => {
-      if (!isResizingRef.current) return
-      const newHeight = window.innerHeight - e.clientY
-      setHeight(Math.max(100, Math.min(newHeight, window.innerHeight * 0.9)))
-    }
-    const onMouseUp = () => {
-      isResizingRef.current = false
-      document.body.style.cursor = 'default'
-      document.body.style.userSelect = 'auto'
-    }
-    window.addEventListener('mousemove', onMouseMove)
-    window.addEventListener('mouseup', onMouseUp)
-    return () => {
-      window.removeEventListener('mousemove', onMouseMove)
-      window.removeEventListener('mouseup', onMouseUp)
-    }
-  }, [])
-
-  useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (isOpen && panelRef.current && !panelRef.current.contains(e.target) && !e.target.closest('.debug-toggle')) {
-        setIsOpen(false)
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [isOpen])
-
-  useEffect(() => {
-    if (isOpen && tab === 'logs' && scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight
-  }, [logs, isOpen, tab])
-
-  const toggleCategory = (cat) => {
-    setHidden((prev) => {
-      const next = new Set(prev)
-      next.has(cat) ? next.delete(cat) : next.add(cat)
-      return next
-    })
-  }
+  const { history, selectedIndex, setSelectedIndex } = useStateHistory(isOpen)
+  const { height, isResizingRef } = useResizeHandle()
+  useClickOutside(isOpen, setIsOpen, panelRef)
 
   const visible = logs.filter((l) => !hidden.has(l.type))
+  const copyAllText = buildCopyText(visible, history, selectedIndex)
 
   const handleKeyDown = (e) => {
     if (!scrollRef.current) return
@@ -108,31 +38,6 @@ export default function DebugConsole({ onReset, getSaveData, onLoad }) {
       e.preventDefault()
     }
   }
-
-  const copyAllText = (() => {
-    const parts = []
-
-    if (visible.length > 0) {
-      parts.push('=== LOGS ===')
-      parts.push(visible.map((l) => `[${l.ts}] ${l.type.toUpperCase()}: ${l.message}`).join('\n'))
-    }
-
-    if (history.length > 0) {
-      const currentEntry = selectedIndex >= 0 ? history[selectedIndex] : history[history.length - 1]
-      if (currentEntry) {
-        parts.push('=== STATE ===')
-        const { actions, ...stateData } = currentEntry.parsed || {}
-        parts.push(JSON.stringify(stateData, null, 2))
-      }
-    }
-
-    if (window.__screenDebug?.actions) {
-      parts.push('=== ACTIONS ===')
-      parts.push(Object.keys(window.__screenDebug.actions).join('\n'))
-    }
-
-    return parts.join('\n\n')
-  })()
 
   return (
     <div className="debug-container" style={{ '--debug-height': `${height}px` }}>
@@ -149,39 +54,14 @@ export default function DebugConsole({ onReset, getSaveData, onLoad }) {
           />
           <div className="debug-header">
             <div className="debug-header-top debug-row">
-              <div className="debug-tabs">
-                <button
-                  className={`debug-tab ${tab === 'logs' ? 'debug-tab--active' : ''}`}
-                  onClick={() => setTab('logs')}
-                >
-                  logs
-                </button>
-                <button
-                  className={`debug-tab ${tab === 'data' ? 'debug-tab--active' : ''}`}
-                  onClick={() => setTab('data')}
-                >
-                  data
-                </button>
-                <button
-                  className={`debug-tab ${tab === 'state' ? 'debug-tab--active' : ''}`}
-                  onClick={() => setTab('state')}
-                >
-                  STATE
-                </button>
-                <button
-                  className={`debug-tab ${tab === 'actions' ? 'debug-tab--active' : ''}`}
-                  onClick={() => setTab('actions')}
-                >
-                  actions
-                </button>
-              </div>
+              <DebugTabs tab={tab} setTab={setTab} />
               <CopyButton text={copyAllText} title="Copy all (logs, state, actions)" />
             </div>
             {tab === 'logs' && (
               <LogsTab
                 visible={visible}
                 hidden={hidden}
-                toggleCategory={toggleCategory}
+                toggleCategory={(cat) => setHidden(toggleCategory(hidden, cat))}
                 setLogs={setLogs}
                 scrollRef={scrollRef}
               />
@@ -208,23 +88,7 @@ export default function DebugConsole({ onReset, getSaveData, onLoad }) {
           ) : null}
         </div>
       )}
-      <button
-        className={`debug-toggle ${isOpen ? 'debug-toggle--open' : ''}`}
-        onClick={() => setIsOpen((v) => !v)}
-        title="Toggle Debug Console"
-      >
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-          <rect width="8" height="14" x="8" y="6" rx="4" />
-          <path d="m19 7-3 2" />
-          <path d="m5 7 3 2" />
-          <path d="m19 19-3-2" />
-          <path d="m5 19 3-2" />
-          <path d="M20 13h-4" />
-          <path d="M4 13h4" />
-          <path d="m10 4 1 2" />
-          <path d="m14 4-1 2" />
-        </svg>
-      </button>
+      <DebugToggle isOpen={isOpen} onClick={() => setIsOpen((v) => !v)} />
     </div>
   )
 }
